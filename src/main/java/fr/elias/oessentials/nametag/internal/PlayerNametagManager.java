@@ -1,9 +1,6 @@
 package fr.elias.oessentials.nametag.internal;
 
 
-import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.util.Vector3d;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -754,20 +751,8 @@ public class PlayerNametagManager implements Listener {
                 // PacketEvents per-viewer smooth teleport — sends a direct position packet
                 // to every current viewer so movement is interpolated client-side each tick.
                 if (PACKET_EVENTS_AVAILABLE && viewers != null && !viewers.isEmpty()) {
-                    final int entityId = entity.getEntityId();
-                    final double tx = target.getX();
-                    final double ty = target.getY();
-                    final double tz = target.getZ();
-                    WrapperPlayServerEntityTeleport packet = new WrapperPlayServerEntityTeleport(
-                            entityId,
-                            new Vector3d(tx, ty, tz),
-                            0f, 0f, false);
-                    for (UUID viewerId : viewers) {
-                        Player viewer = Bukkit.getPlayer(viewerId);
-                        if (viewer != null && viewer.isOnline()) {
-                            PacketEvents.getAPI().getPlayerManager().sendPacket(viewer, packet);
-                        }
-                    }
+                    NametagTeleportPackets.send(viewers, entity.getEntityId(),
+                            target.getX(), target.getY(), target.getZ());
                 }
             }
         }

@@ -190,9 +190,9 @@ public final class OEssentials extends JavaPlugin {
             java.util.List<String> moduleIds = modulith.runtime().modules().stream()
                     .map(dev.oreo.modulith.core.ModuleDescriptor::id)
                     .collect(java.util.stream.Collectors.toList());
-            fr.elias.oessentials.platform.StartupBanner.print(this, moduleIds);
-            modulith.runtime().diagnostics().failures().forEach((id, reason) ->
-                    getLogger().warning("Module '" + id + "' is unavailable: " + reason));
+            java.util.Map<String, String> failures = modulith.runtime().diagnostics().failures();
+            fr.elias.oessentials.platform.StartupBanner.print(this, moduleIds, failures.keySet());
+            failures.forEach((id, reason) -> getLogger().warning("Module '" + id + "' is unavailable: " + reason));
         } catch (RuntimeException failure) {
             getLogger().log(java.util.logging.Level.SEVERE, "OEssentials module startup failed", failure);
             getServer().getPluginManager().disablePlugin(this);

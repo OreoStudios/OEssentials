@@ -75,7 +75,7 @@ public final class StartupBanner {
         return List.of(rows);
     }
 
-    public static void print(JavaPlugin plugin, List<String> moduleIds) {
+    public static void print(JavaPlugin plugin, List<String> moduleIds, java.util.Set<String> unavailable) {
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         String version = plugin.getDescription().getVersion();
 
@@ -87,15 +87,18 @@ public final class StartupBanner {
 
         // ---- Modules checklist -------------------------------------------------
         send(console, ChatColor.DARK_GRAY + ">> " + ChatColor.WHITE + "Modules "
-                + ChatColor.GRAY + "(" + moduleIds.size() + " loaded)");
+                + ChatColor.GRAY + "(" + (moduleIds.size() - unavailable.size()) + " loaded"
+                + (unavailable.isEmpty() ? "" : ", " + ChatColor.RED + unavailable.size() + " unavailable"
+                        + ChatColor.GRAY) + ")");
         List<String> sorted = new ArrayList<>(moduleIds);
         sorted.sort(String::compareTo);
         int columns = 3, cellWidth = 22;
         for (int i = 0; i < sorted.size(); i += columns) {
             StringBuilder row = new StringBuilder("   ");
             for (int j = i; j < Math.min(i + columns, sorted.size()); j++) {
-                row.append(ChatColor.GREEN).append(OK).append(' ')
-                   .append(ChatColor.GRAY).append(pad(sorted.get(j), cellWidth));
+                boolean down = unavailable.contains(sorted.get(j));
+                row.append(down ? ChatColor.RED + NO : ChatColor.GREEN + OK).append(' ')
+                   .append(down ? ChatColor.RED : ChatColor.GRAY).append(pad(sorted.get(j), cellWidth));
             }
             send(console, row.toString());
         }
