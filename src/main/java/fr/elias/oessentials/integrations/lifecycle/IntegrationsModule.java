@@ -19,7 +19,7 @@ import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-@PluginModule(value = "integrations", dependencies = {"command-toggle::services", "configuration::services", "currency-system::services", "custom-crafting::services", "kits::services", "nametag"})
+@PluginModule(value = "integrations", dependencies = {"command-toggle::services", "configuration::services", "currency-system::services", "custom-crafting::services", "kits::services"}, after = {"nametag"}, optional = true)
 public final class IntegrationsModule extends ManagedModule implements IntegrationsServices {
     private Metrics metrics;
     private PlaceholderAPIHook placeholderHook;

@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
 
-@PluginModule(value = "proxy-messaging", dependencies = {"kits"})
+@PluginModule(value = "proxy-messaging", after = {"kits"})
 public final class ProxyMessagingModule extends ManagedModule implements ProxyMessagingServices {
     private ProxyMessenger proxyMessenger;
     private fr.elias.oessentials.commandcontrol.internal.aliases.AliasService aliasService;

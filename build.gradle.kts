@@ -31,6 +31,7 @@ repositories {
     maven("https://raw.github.com/dominicfeliton/SmartInvs/bukkit-maven-repo")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://maven.oreostudios.fr/oreostudioslib")
     maven("https://jitpack.io")
     maven("https://repo.codemc.io/repository/maven-releases/")
     maven("https://repo.codemc.io/repository/maven-snapshots/")
@@ -53,13 +54,13 @@ configurations.testImplementation {
     extendsFrom(configurations.compileOnly.get())
 }
 
-val modulithVersion = "v0.2.1"
+val modulithVersion = "0.5.0"
 
 dependencies {
     // ── MinecraftModulith (shaded + relocated) ──────────────────────────────
-    implementation("com.github.el211.MinecraftModulith:modulith-paper:$modulithVersion")
-    annotationProcessor("com.github.el211.MinecraftModulith:modulith-processor:$modulithVersion")
-    testImplementation("com.github.el211.MinecraftModulith:modulith-test:$modulithVersion")
+    implementation("dev.oreo.modulith:modulith-paper:$modulithVersion")
+    annotationProcessor("dev.oreo.modulith:modulith-processor:$modulithVersion")
+    testImplementation("dev.oreo.modulith:modulith-test:$modulithVersion")
 
     // ── Bundled runtime libraries (shaded into the plugin jar) ──────────────
     implementation("fr.traqueur.commands:platform-spigot:5.2.1")

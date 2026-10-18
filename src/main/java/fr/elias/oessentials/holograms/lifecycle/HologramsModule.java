@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "holograms", dependencies = {"configuration::services", "tab"})
+@PluginModule(value = "holograms", dependencies = {"configuration::services"}, after = {"tab"}, optional = true)
 public final class HologramsModule extends ManagedModule implements HologramsServices {
     private fr.elias.oessentials.holograms.internal.OHolograms embeddedOHolograms;
 

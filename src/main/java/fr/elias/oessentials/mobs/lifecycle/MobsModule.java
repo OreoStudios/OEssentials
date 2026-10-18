@@ -6,7 +6,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.commands.internal.commands.core.admins.KillallLogViewCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.KillallRecorderCommand;
 
-@PluginModule(value = "mobs", dependencies = {"configuration::services", "discord-integration"})
+@PluginModule(value = "mobs", dependencies = {"configuration::services"}, after = {"discord-integration"}, optional = true)
 public final class MobsModule extends ManagedModule implements MobsServices {
     private fr.elias.oessentials.mobs.internal.HealthBarListener healthBarListener;
 

@@ -48,7 +48,7 @@ class CustomTablistLayoutTest {
                 Action.UPDATE_DISPLAY_NAME);
         var packet = new WrapperPlayServerPlayerInfoUpdate(actions.clone(), List.of(real));
 
-        assertTrue(CustomTablistLayout.delistRealEntries(packet));
+        assertTrue(VanillaTabInterceptor.delistRealEntries(packet));
 
         assertEquals(actions, packet.getActions());
         assertSame(real, packet.getEntries().getFirst());
@@ -65,7 +65,7 @@ class CustomTablistLayoutTest {
     void skinRefreshKeepsAddPlayerWithoutRequiringChatInitialization() {
         var packet = new WrapperPlayServerPlayerInfoUpdate(
                 EnumSet.of(Action.ADD_PLAYER, Action.UPDATE_LISTED), List.of(realPlayer()));
-        assertTrue(CustomTablistLayout.delistRealEntries(packet));
+        assertTrue(VanillaTabInterceptor.delistRealEntries(packet));
         assertTrue(packet.getActions().contains(Action.ADD_PLAYER));
         assertEquals(1, packet.getEntries().size());
         assertFalse(packet.getEntries().getFirst().isListed());
@@ -79,17 +79,17 @@ class CustomTablistLayoutTest {
         var packet = new WrapperPlayServerPlayerInfoUpdate(
                 EnumSet.of(Action.ADD_PLAYER, Action.UPDATE_LISTED), List.of(fake, real));
 
-        assertTrue(CustomTablistLayout.delistRealEntries(packet));
+        assertTrue(VanillaTabInterceptor.delistRealEntries(packet));
         assertTrue(fake.isListed());
         assertFalse(real.isListed());
         assertEquals(2, packet.getEntries().size());
-        assertFalse(CustomTablistLayout.delistRealEntries(packet), "Already delisted packets need no rewrite");
+        assertFalse(VanillaTabInterceptor.delistRealEntries(packet), "Already delisted packets need no rewrite");
     }
 
     @Test
     void standaloneListingUpdateCannotRelistRealPlayers() {
         var packet = new WrapperPlayServerPlayerInfoUpdate(Action.UPDATE_LISTED, List.of(realPlayer()));
-        assertTrue(CustomTablistLayout.delistRealEntries(packet));
+        assertTrue(VanillaTabInterceptor.delistRealEntries(packet));
         assertFalse(packet.getEntries().getFirst().isListed());
     }
 
@@ -98,7 +98,7 @@ class CustomTablistLayoutTest {
         for (Action action : List.of(Action.ADD_PLAYER, Action.INITIALIZE_CHAT, Action.UPDATE_LATENCY)) {
             PlayerInfo real = realPlayer();
             var packet = new WrapperPlayServerPlayerInfoUpdate(action, List.of(real));
-            assertFalse(CustomTablistLayout.delistRealEntries(packet));
+            assertFalse(VanillaTabInterceptor.delistRealEntries(packet));
             assertEquals(EnumSet.of(action), packet.getActions());
             assertTrue(real.isListed());
         }

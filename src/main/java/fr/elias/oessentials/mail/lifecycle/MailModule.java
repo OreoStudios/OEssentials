@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "mail", dependencies = {"configuration::services", "rules"})
+@PluginModule(value = "mail", dependencies = {"configuration::services"}, after = {"rules"})
 public final class MailModule extends ManagedModule implements MailServices {
     private fr.elias.oessentials.mail.internal.MailService mailService;
     private fr.elias.oessentials.mail.internal.MailListener mailListener;

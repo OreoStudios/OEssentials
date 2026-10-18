@@ -3,7 +3,7 @@ package fr.elias.oessentials.playervaults.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 
-@PluginModule(value = "player-vaults", dependencies = {"jump-pads"})
+@PluginModule(value = "player-vaults", after = {"jump-pads"}, optional = true)
 public final class PlayerVaultsModule extends ManagedModule implements PlayerVaultsServices {
     private fr.elias.oessentials.playervaults.internal.PlayerVaultsConfig playerVaultsConfig;
     private fr.elias.oessentials.playervaults.internal.PlayerVaultsService playervaultsService;

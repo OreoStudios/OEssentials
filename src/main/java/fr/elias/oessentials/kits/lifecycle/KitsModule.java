@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "kits", dependencies = {"command-toggle", "configuration::services"})
+@PluginModule(value = "kits", dependencies = {"configuration::services"}, after = {"command-toggle"})
 public final class KitsModule extends ManagedModule implements KitsServices {
     private fr.elias.oessentials.kits.internal.KitsManager kitsManager;
 

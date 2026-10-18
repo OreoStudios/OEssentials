@@ -92,7 +92,7 @@ import fr.elias.oessentials.storage.internal.warps.commands.WarpCommand;
 import fr.elias.oessentials.storage.internal.warps.commands.WarpsAdminCommand;
 import fr.elias.oessentials.storage.internal.warps.commands.WarpsCommand;
 
-@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "custom-worlds", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"})
+@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, after = {"custom-worlds"})
 public final class CommandsModule extends ManagedModule implements CommandsServices {
     private fr.elias.oessentials.commands.internal.ic.ICManager icManager;
 

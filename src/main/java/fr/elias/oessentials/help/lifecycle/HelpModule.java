@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "help", dependencies = {"configuration::services", "maintenance"})
+@PluginModule(value = "help", dependencies = {"configuration::services"}, after = {"maintenance"})
 public final class HelpModule extends ManagedModule implements HelpServices {
 
     @Override

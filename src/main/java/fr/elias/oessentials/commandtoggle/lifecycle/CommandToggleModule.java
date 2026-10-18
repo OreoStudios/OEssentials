@@ -6,7 +6,7 @@ import fr.elias.oessentials.commandtoggle.internal.CommandToggleConfig;
 import fr.elias.oessentials.commandtoggle.internal.CommandToggleListener;
 import fr.elias.oessentials.commandtoggle.internal.CommandToggleService;
 
-@PluginModule(value = "command-toggle", dependencies = {"skins"})
+@PluginModule(value = "command-toggle", after = {"skins"})
 public final class CommandToggleModule extends ManagedModule implements CommandToggleServices {
     private CommandToggleConfig commandToggleConfig;
     private CommandToggleService commandToggleService;

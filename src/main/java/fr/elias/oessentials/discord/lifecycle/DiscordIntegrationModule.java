@@ -6,7 +6,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.economy.lifecycle.EconomyServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 
-@PluginModule(value = "discord-integration", dependencies = {"configuration::services", "economy::services", "mute-system", "storage::services"})
+@PluginModule(value = "discord-integration", dependencies = {"configuration::services", "economy::services", "storage::services"}, after = {"mute-system"}, optional = true)
 public final class DiscordIntegrationModule extends ManagedModule implements DiscordIntegrationServices {
     private fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier discordMod;
     private fr.elias.oessentials.discord.internal.discordbot.DiscordLinkManager discordLinkManager;

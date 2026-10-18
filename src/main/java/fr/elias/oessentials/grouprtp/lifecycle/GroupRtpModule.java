@@ -5,7 +5,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 
-@PluginModule(value = "group-rtp", dependencies = {"messaging::events", "portals"})
+@PluginModule(value = "group-rtp", dependencies = {"messaging::events"}, after = {"portals"}, optional = true)
 public final class GroupRtpModule extends ManagedModule implements GroupRtpServices {
     private fr.elias.oessentials.grouprtp.internal.GroupRtpModule groupRtpModule;
 

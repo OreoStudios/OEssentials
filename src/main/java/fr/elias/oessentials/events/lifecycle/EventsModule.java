@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "events", dependencies = {"configuration::services", "web-panel"})
+@PluginModule(value = "events", dependencies = {"configuration::services"}, after = {"web-panel"})
 public final class EventsModule extends ManagedModule implements EventsServices {
     private fr.elias.oessentials.events.internal.EventConfig eventConfig;
     private fr.elias.oessentials.events.internal.DeathMessageService deathMessages;

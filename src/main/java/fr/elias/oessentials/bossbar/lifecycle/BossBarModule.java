@@ -7,7 +7,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.bossbar.internal.BossBarService;
 import fr.elias.oessentials.bossbar.internal.BossBarToggleCommand;
 
-@PluginModule(value = "boss-bar", dependencies = {"configuration::services", "rtp"})
+@PluginModule(value = "boss-bar", dependencies = {"configuration::services"}, after = {"rtp"}, optional = true)
 public final class BossBarModule extends ManagedModule implements BossBarServices {
     private fr.elias.oessentials.bossbar.internal.BossBarService bossBarService;
 

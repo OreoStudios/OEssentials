@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.redis.internal.persistence.database.RedisManager;
 
-@PluginModule(value = "redis", dependencies = {"configuration::services", "storage"})
+@PluginModule(value = "redis", dependencies = {"configuration::services"}, after = {"storage"})
 public final class RedisModule extends ManagedModule implements RedisServices {
     private RedisManager redis;
 

@@ -11,7 +11,7 @@ import fr.elias.oessentials.rtp.internal.RtpConfig;
 import fr.elias.oessentials.rtp.internal.RtpPendingService;
 import fr.elias.oessentials.rtp.internal.listeners.RtpJoinListener;
 
-@PluginModule(value = "rtp", dependencies = {"messaging::events", "configuration::services", "messaging::services", "player-vaults"})
+@PluginModule(value = "rtp", dependencies = {"messaging::events", "configuration::services", "messaging::services"}, after = {"player-vaults"}, optional = true)
 public final class RtpModule extends ManagedModule implements RtpServices {
     private fr.elias.oessentials.rtp.internal.RtpCrossServerBridge rtpBridge;
     @Override public fr.elias.oessentials.rtp.internal.RtpCrossServerBridge getRtpBridge() { return rtpBridge; }

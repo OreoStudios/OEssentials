@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.skins.internal.skin.SkinDebug;
 import fr.elias.oessentials.skins.internal.skin.SkinRefresherBootstrap;
 
-@PluginModule(value = "skins", dependencies = {"command-control"})
+@PluginModule(value = "skins", after = {"command-control"}, optional = true)
 public final class SkinsModule extends ManagedModule implements SkinsServices {
 
     @Override

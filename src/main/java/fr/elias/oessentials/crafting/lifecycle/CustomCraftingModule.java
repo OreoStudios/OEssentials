@@ -7,7 +7,7 @@ import fr.elias.oessentials.inventory.lifecycle.InventoriesServices;
 import fr.elias.oessentials.crafting.internal.customcraft.CustomCraftingService;
 import fr.elias.oessentials.crafting.internal.customcraft.OeCraftCommand;
 
-@PluginModule(value = "custom-crafting", dependencies = {"configuration::services", "inventories::services", "trade"})
+@PluginModule(value = "custom-crafting", dependencies = {"configuration::services", "inventories::services"}, after = {"trade"})
 public final class CustomCraftingModule extends ManagedModule implements CustomCraftingServices {
     private CustomCraftingService customCraftingService;
 

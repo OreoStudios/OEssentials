@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "daily", dependencies = {"configuration::services", "freeze"})
+@PluginModule(value = "daily", dependencies = {"configuration::services"}, after = {"freeze"})
 public final class DailyModule extends ManagedModule implements DailyServices {
     private fr.elias.oessentials.daily.internal.DailyConfig dailyConfig;
     private fr.elias.oessentials.daily.internal.RewardsConfig dailyRewardsConfig;

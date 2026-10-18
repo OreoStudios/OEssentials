@@ -8,7 +8,7 @@ import fr.elias.oessentials.scoreboard.internal.ScoreboardConfig;
 import fr.elias.oessentials.scoreboard.internal.ScoreboardService;
 import fr.elias.oessentials.scoreboard.internal.ScoreboardToggleCommand;
 
-@PluginModule(value = "scoreboard", dependencies = {"boss-bar", "configuration::services"})
+@PluginModule(value = "scoreboard", dependencies = {"configuration::services"}, after = {"boss-bar"}, optional = true)
 public final class ScoreboardModule extends ManagedModule implements ScoreboardServices {
     private ScoreboardService scoreboardService;
 

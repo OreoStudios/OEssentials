@@ -15,7 +15,7 @@ import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.player.internal.services.MessageService;
 import fr.elias.oessentials.player.internal.services.VanishService;
 
-@PluginModule(value = "player-services", dependencies = {"configuration::services", "inventory-sync", "storage::services"})
+@PluginModule(value = "player-services", dependencies = {"configuration::services", "storage::services"}, after = {"inventory-sync"})
 public final class PlayerServicesModule extends ManagedModule implements PlayerServices {
     private TeleportService teleportService;
     private BackService backService;

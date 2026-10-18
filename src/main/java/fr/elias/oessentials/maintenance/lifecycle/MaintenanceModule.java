@@ -6,7 +6,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import java.io.File;
 
-@PluginModule(value = "maintenance", dependencies = {"afk", "configuration::services"})
+@PluginModule(value = "maintenance", dependencies = {"configuration::services"}, after = {"afk"})
 public final class MaintenanceModule extends ManagedModule implements MaintenanceServices {
     private fr.elias.oessentials.maintenance.internal.MaintenanceConfig maintenanceConfig;
     private fr.elias.oessentials.maintenance.internal.MaintenanceService maintenanceService;

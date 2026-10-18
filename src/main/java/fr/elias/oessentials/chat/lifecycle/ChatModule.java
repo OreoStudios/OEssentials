@@ -11,7 +11,7 @@ import fr.elias.oessentials.chat.internal.FormatManager;
 import fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener;
 import org.bukkit.event.Listener;
 
-@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "shop", "storage::services"})
+@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, after = {"shop"})
 public final class ChatModule extends ManagedModule implements ChatServices {
     private fr.elias.oessentials.chat.internal.channels.ChatChannelManager channelManager;
     private CustomConfig chatConfig;

@@ -7,7 +7,7 @@ import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpWhitelistCommand;
 import fr.elias.oessentials.storage.internal.playerwarp.command.PlayerWarpCommand;
 
-@PluginModule(value = "jails", dependencies = {"commands", "configuration::services", "storage::services"})
+@PluginModule(value = "jails", dependencies = {"configuration::services", "storage::services"}, after = {"commands"})
 public final class JailsModule extends ManagedModule implements JailsServices {
     private fr.elias.oessentials.jails.internal.jail.JailService jailService;
 

@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@PluginModule(value = "messaging", dependencies = {"afk::services", "configuration::services", "dialogs", "economy::services", "inventories::services", "mail::services", "player-services::services", "proxy-messaging::services", "storage::services", "trade::services"})
+@PluginModule(value = "messaging", dependencies = {"afk::services", "configuration::services", "economy::services", "inventories::services", "mail::services", "player-services::services", "proxy-messaging::services", "storage::services", "trade::services"}, after = {"dialogs"})
 public final class MessagingModule extends ManagedModule implements MessagingServices {
     private TpCrossServerBroker tpBroker;
     private BackBroker backBroker;

@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "command-control", dependencies = {"economy"})
+@PluginModule(value = "command-control", after = {"economy"})
 public final class CommandControlModule extends ManagedModule implements CommandControlServices {
     private fr.elias.oessentials.commandcontrol.internal.CommandControlService commandControlService;
 

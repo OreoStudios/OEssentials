@@ -3,7 +3,7 @@ package fr.elias.oessentials.ignore.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 
-@PluginModule(value = "ignore", dependencies = {"help"})
+@PluginModule(value = "ignore", after = {"help"})
 public final class IgnoreModule extends ManagedModule implements IgnoreServices {
     private fr.elias.oessentials.ignore.internal.IgnoreService ignoreService;
 

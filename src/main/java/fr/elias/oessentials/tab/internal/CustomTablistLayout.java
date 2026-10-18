@@ -1,11 +1,6 @@
 package fr.elias.oessentials.tab.internal;
 
-import com.github.retrooper.packetevents.event.PacketListenerAbstract;
-import com.github.retrooper.packetevents.event.PacketListenerPriority;
-import com.github.retrooper.packetevents.event.PacketSendEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.TextureProperty;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -113,14 +108,14 @@ public class CustomTablistLayout {
     private static final int COL_DEBOUNCE_CYCLES = 3;
 
     // Hide vanilla list entries while retaining their profile and chat data.
-    private PacketListenerAbstract vanillaTabInterceptor;
+    private VanillaTabInterceptor vanillaTabInterceptor;
     private Listener joinQuitListener;
 
     /** MSB range used by all our fake tab UUIDs — anything outside this is a real player UUID. */
     private static final long FAKE_UUID_HIGH_MIN = 0x4F72656F54616201L;
     private static final long FAKE_UUID_HIGH_MAX = 0x4F72656F54616206L;
 
-    private static boolean isFakeUuid(UUID uuid) {
+    static boolean isFakeUuid(UUID uuid) {
         if (uuid == null) return false;
         long high = uuid.getMostSignificantBits();
         return high >= FAKE_UUID_HIGH_MIN && high <= FAKE_UUID_HIGH_MAX;
@@ -183,10 +178,7 @@ public class CustomTablistLayout {
         targetNumCols = -1;
         targetNumColsStableCount = 0;
         if (vanillaTabInterceptor != null) {
-            try {
-                com.github.retrooper.packetevents.PacketEvents.getAPI()
-                        .getEventManager().unregisterListener(vanillaTabInterceptor);
-            } catch (Throwable ignored) {}
+            vanillaTabInterceptor.unregister();
             vanillaTabInterceptor = null;
         }
         if (packetTablistManager != null) {
@@ -234,52 +226,8 @@ public class CustomTablistLayout {
     }
 
     private void registerVanillaTabInterceptor() {
-        final PacketTablistManager ptm = packetTablistManager;
-        vanillaTabInterceptor = new PacketListenerAbstract(PacketListenerPriority.HIGH) {
-            @Override
-            public void onPacketSend(PacketSendEvent event) {
-                if (event.isCancelled()) return;
-                if (event.getPacketType() != PacketType.Play.Server.PLAYER_INFO_UPDATE) return;
-                if (ptm == null) return;
-
-                com.github.retrooper.packetevents.protocol.player.User user = event.getUser();
-                if (user == null) return;
-                if (!ptm.isInitialized(user.getUUID())) return;
-
-                try {
-                    WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(event);
-                    // The client needs ADD_PLAYER profiles to spawn players in the world.
-                    // Preserve every action (including signed chat), changing only tab visibility.
-                    if (delistRealEntries(wrapper)) {
-                        event.markForReEncode(true);
-                    }
-                } catch (Throwable t) {
-                    plugin.getLogger().warning("[CustomTab] Interceptor error: " + t.getMessage());
-                }
-            }
-        };
-        try {
-            com.github.retrooper.packetevents.PacketEvents.getAPI()
-                    .getEventManager().registerListener(vanillaTabInterceptor);
-        } catch (Throwable t) {
-            plugin.getLogger().warning("[CustomTab] Failed to register vanilla tab interceptor: " + t.getMessage());
-            vanillaTabInterceptor = null;
-        }
-    }
-
-    static boolean delistRealEntries(WrapperPlayServerPlayerInfoUpdate wrapper) {
-        if (!wrapper.getActions().contains(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED)) {
-            return false;
-        }
-        boolean changed = false;
-        for (WrapperPlayServerPlayerInfoUpdate.PlayerInfo info : wrapper.getEntries()) {
-            // Handle mixed packets per entry so decorative rows remain listed.
-            if (!isFakeUuid(info.getProfileId()) && info.isListed()) {
-                info.setListed(false);
-                changed = true;
-            }
-        }
-        return changed;
+        VanillaTabInterceptor interceptor = new VanillaTabInterceptor(plugin);
+        vanillaTabInterceptor = interceptor.register(packetTablistManager) ? interceptor : null;
     }
 
     // ── Main update loop ──────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "inventory-sync", dependencies = {"configuration::services", "ender-chest", "storage::services"})
+@PluginModule(value = "inventory-sync", dependencies = {"configuration::services", "storage::services"}, after = {"ender-chest"})
 public final class InventorySyncModule extends ManagedModule implements InventorySyncServices {
 
     @Override

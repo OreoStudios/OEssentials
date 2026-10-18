@@ -6,7 +6,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.clearlag.internal.ClearLagManager;
 
-@PluginModule(value = "clear-lag", dependencies = {"configuration::services", "mobs"})
+@PluginModule(value = "clear-lag", dependencies = {"configuration::services"}, after = {"mobs"}, optional = true)
 public final class ClearLagModule extends ManagedModule implements ClearLagServices {
     private ClearLagManager clearLag;
 

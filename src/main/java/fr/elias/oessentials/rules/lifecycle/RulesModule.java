@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "rules", dependencies = {"configuration::services", "motd"})
+@PluginModule(value = "rules", dependencies = {"configuration::services"}, after = {"motd"})
 public final class RulesModule extends ManagedModule implements RulesServices {
 
     @Override

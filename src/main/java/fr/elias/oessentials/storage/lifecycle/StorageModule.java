@@ -24,7 +24,7 @@ import fr.elias.oessentials.storage.internal.services.JsonStorage;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
 import fr.elias.oessentials.storage.internal.services.yaml.YamlPlayerWarpStorage;
 
-@PluginModule(value = "storage", dependencies = {"configuration::services", "performance-guards"})
+@PluginModule(value = "storage", dependencies = {"configuration::services"}, after = {"performance-guards"})
 public final class StorageModule extends ManagedModule implements StorageServices {
     private MongoClient homesMongoClient;
     private HomeDirectory homeDirectory;

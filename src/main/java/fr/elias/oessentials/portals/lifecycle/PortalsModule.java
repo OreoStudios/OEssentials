@@ -7,7 +7,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 
-@PluginModule(value = "portals", dependencies = {"messaging::events", "configuration::services", "jails", "messaging::services"})
+@PluginModule(value = "portals", dependencies = {"messaging::events", "configuration::services", "messaging::services"}, after = {"jails"})
 public final class PortalsModule extends ManagedModule implements PortalsServices {
     private fr.elias.oessentials.portals.internal.PortalsManager portals;
 

@@ -6,7 +6,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "ender-chest", dependencies = {"chat", "configuration::services", "storage::services"})
+@PluginModule(value = "ender-chest", dependencies = {"configuration::services", "storage::services"}, after = {"chat"})
 public final class EnderChestModule extends ManagedModule implements EnderChestServices {
     private fr.elias.oessentials.enderchest.internal.EnderChestConfig ecConfig;
     private fr.elias.oessentials.enderchest.internal.EnderChestService ecService;

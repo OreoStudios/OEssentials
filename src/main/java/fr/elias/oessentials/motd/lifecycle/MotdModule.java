@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "motd", dependencies = {"configuration::services", "punishment-logger"})
+@PluginModule(value = "motd", dependencies = {"configuration::services"}, after = {"punishment-logger"})
 public final class MotdModule extends ManagedModule implements MotdServices {
 
     @Override

@@ -3,7 +3,7 @@ package fr.elias.oessentials.worlds.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 
-@PluginModule(value = "custom-worlds", dependencies = {"currency-system"})
+@PluginModule(value = "custom-worlds", after = {"currency-system"})
 public final class CustomWorldsModule extends ManagedModule implements CustomWorldsServices {
 
     @Override

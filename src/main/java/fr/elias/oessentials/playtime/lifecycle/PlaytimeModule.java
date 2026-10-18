@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "playtime", dependencies = {"configuration::services", "sharding"})
+@PluginModule(value = "playtime", dependencies = {"configuration::services"}, after = {"sharding"}, optional = true)
 public final class PlaytimeModule extends ManagedModule implements PlaytimeServices {
     private fr.elias.oessentials.playtime.internal.PlaytimeRewardsService playtimeRewards;
     private fr.elias.oessentials.playtime.internal.PlaytimeTracker playtimeTracker;

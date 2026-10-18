@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "sharding", dependencies = {"configuration::services", "holograms"})
+@PluginModule(value = "sharding", dependencies = {"configuration::services"}, after = {"holograms"})
 public final class ShardingModule extends ManagedModule implements ShardingServices {
     private fr.elias.oessentials.shards.internal.OreoShardsModule shardsModule;
 

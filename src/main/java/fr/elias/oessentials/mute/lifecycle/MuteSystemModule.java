@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.chat.internal.MuteListener;
 import fr.elias.oessentials.chat.internal.chatservices.MuteService;
 
-@PluginModule(value = "mute-system", dependencies = {"daily"})
+@PluginModule(value = "mute-system", after = {"daily"})
 public final class MuteSystemModule extends ManagedModule implements MuteSystemServices {
     private MuteService muteService;
 

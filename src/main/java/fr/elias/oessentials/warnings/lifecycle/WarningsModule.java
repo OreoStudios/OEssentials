@@ -3,7 +3,7 @@ package fr.elias.oessentials.warnings.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 
-@PluginModule(value = "warnings", dependencies = {"ignore"})
+@PluginModule(value = "warnings", after = {"ignore"})
 public final class WarningsModule extends ManagedModule implements WarningsServices {
     private fr.elias.oessentials.warnings.internal.WarnService warnService;
 

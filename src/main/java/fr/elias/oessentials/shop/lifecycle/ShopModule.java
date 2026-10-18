@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "shop", dependencies = {"clear-lag", "configuration::services"})
+@PluginModule(value = "shop", dependencies = {"configuration::services"}, after = {"clear-lag"})
 public final class ShopModule extends ManagedModule implements ShopServices {
     private fr.elias.oessentials.shop.internal.ShopModule shopModule;
 

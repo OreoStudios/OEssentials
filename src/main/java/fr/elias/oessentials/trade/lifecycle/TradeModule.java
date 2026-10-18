@@ -8,7 +8,7 @@ import fr.elias.oessentials.trade.internal.command.TradeCommand;
 import fr.elias.oessentials.trade.internal.config.TradeConfig;
 import fr.elias.oessentials.trade.internal.service.TradeService;
 
-@PluginModule(value = "trade", dependencies = {"configuration::services", "notes"})
+@PluginModule(value = "trade", dependencies = {"configuration::services"}, after = {"notes"})
 public final class TradeModule extends ManagedModule implements TradeServices {
     private TradeConfig tradeConfig;
     private TradeService tradeService;
