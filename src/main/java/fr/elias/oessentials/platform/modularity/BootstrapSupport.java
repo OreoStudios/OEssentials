@@ -9,6 +9,17 @@ public final class BootstrapSupport {
     private BootstrapSupport() {}
 
     @SuppressWarnings("unchecked")
+    private static boolean isOreoCommand(OEssentials plugin, org.bukkit.command.Command command) {
+        if (command instanceof org.bukkit.command.PluginIdentifiableCommand owned) {
+            try {
+                return owned.getPlugin() == plugin;
+            } catch (Throwable ignored) {
+                return false;
+            }
+        }
+        return command != null && command.getClass().getName().startsWith("fr.elias.oessentials.");
+    }
+
     public static void unregisterCommandHard(OEssentials plugin, String label) {
         try {
             Object craftServer = plugin.getServer();
@@ -29,10 +40,16 @@ public final class BootstrapSupport {
             f2.setAccessible(true);
             Map<String, org.bukkit.command.Command> known = (Map<String, Command>) f2.get(map);
             String lower = label.toLowerCase(java.util.Locale.ROOT);
-            known.entrySet().removeIf(e -> {
+            // Only Oreo's own commands: vanilla /bossbar, /scoreboard or another plugin's
+            // /kit, /hologram, /rtp... share these labels and must survive a disabled feature.
+            java.util.List<String> keys = new java.util.ArrayList<>();
+            for (Map.Entry<String, org.bukkit.command.Command> e : new java.util.ArrayList<>(known.entrySet())) {
                 String k = e.getKey().toLowerCase(java.util.Locale.ROOT);
-                return k.equals(lower) || k.endsWith(":" + lower);
-            });
+                if ((k.equals(lower) || k.endsWith(":" + lower)) && isOreoCommand(plugin, e.getValue())) {
+                    keys.add(e.getKey());
+                }
+            }
+            keys.forEach(known::remove);
         } catch (Throwable ignored) {}
     }
 

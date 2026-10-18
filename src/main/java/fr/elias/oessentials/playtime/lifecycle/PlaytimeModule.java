@@ -30,8 +30,10 @@ public final class PlaytimeModule extends ManagedModule implements PlaytimeServi
             plugin.getLogger().info("[Prewards] Enabled.");
         }
 
-        var prewardsCmd = new fr.elias.oessentials.playtime.internal.PrewardsCommand(plugin, this.playtimeRewards);
-        services(ConfigurationServices.class).getCommands().registerLegacy("prewards", prewardsCmd, prewardsCmd);
+        if (services(ConfigurationServices.class).getSettingsConfig().playtimeRewardsEnabled()) {
+            var prewardsCmd = new fr.elias.oessentials.playtime.internal.PrewardsCommand(plugin, this.playtimeRewards);
+            services(ConfigurationServices.class).getCommands().registerLegacy("prewards", prewardsCmd, prewardsCmd);
+        }
 
         var playtimeCmd = new fr.elias.oessentials.playtime.internal.commands.core.playercommands.PlaytimeCommand();
         services(ConfigurationServices.class).getCommands().registerLegacy("playtime", playtimeCmd, playtimeCmd);

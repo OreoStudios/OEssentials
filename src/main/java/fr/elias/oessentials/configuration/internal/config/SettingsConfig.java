@@ -164,9 +164,24 @@ public class SettingsConfig {
     public boolean worldShardingEnabled() {
         return getRoot().getBoolean("features.world-sharding.enabled", false);
     }
+    /** settings.yml keeps maintenance at the top level; the settings menu writes features.maintenance. */
     public boolean maintenanceEnabled() {
-        return raw().getBoolean("features.maintenance.enabled", true);
+        if (cfg.isSet("features.maintenance.enabled")) {
+            return cfg.getBoolean("features.maintenance.enabled", true);
+        }
+        return cfg.getBoolean("maintenance.enabled", true);
     }
+
+    /** Older configs used a top-level shop.enabled; either switch set to false disables the shop. */
+    public boolean shopEnabled() {
+        return isEnabled("shop") && cfg.getBoolean("shop.enabled", true);
+    }
+
+    public boolean helpEnabled() { return isEnabled("help"); }
+
+    public boolean homesEnabled() { return isEnabled("home"); }
+
+    public boolean playerWarpsEnabled() { return isEnabled("playerwarps"); }
     public boolean mobsHealthbarEnabled() {
         return mobsEnabled() && featureOption("mobs", "healthbar", true);
     }

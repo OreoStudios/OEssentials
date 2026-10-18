@@ -13,6 +13,10 @@ public final class HelpModule extends ManagedModule implements HelpServices {
     }
 
     private void initHelp() {
+        if (!services(ConfigurationServices.class).getSettingsConfig().helpEnabled()) {
+            plugin.getLogger().info("[Help] Disabled by settings.yml.");
+            return;
+        }
         try {
             var helpConfig = new fr.elias.oessentials.help.internal.HelpConfig(plugin);
             var helpCmd    = new fr.elias.oessentials.help.internal.HelpCommand(helpConfig);

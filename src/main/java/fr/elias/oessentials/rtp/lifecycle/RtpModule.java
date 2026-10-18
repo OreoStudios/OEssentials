@@ -33,8 +33,9 @@ public final class RtpModule extends ManagedModule implements RtpServices {
     private void initRtp() {
         this.rtpPendingService = new RtpPendingService();
         this.rtpConfig         = new RtpConfig(plugin);
-        plugin.getServer().getPluginManager().registerEvents(new RtpJoinListener(plugin), plugin);
-
+        if (services(ConfigurationServices.class).getSettingsConfig().rtpEnabled()) {
+            plugin.getServer().getPluginManager().registerEvents(new RtpJoinListener(plugin), plugin);
+        }
         if (!services(ConfigurationServices.class).getSettingsConfig().rtpEnabled()) {
             BootstrapSupport.unregisterCommandHard(plugin, "rtp"); BootstrapSupport.unregisterCommandHard(plugin, "wild");
             plugin.getLogger().info("[RTP] Disabled by settings.yml.");

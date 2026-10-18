@@ -15,13 +15,14 @@ disabled-command-message: "&cThis command is currently disabled."
 #                    TELEPORTATION COMMANDS
 # ═══════════════════════════════════════════════════════════
 
-# SAFETY NOTE:
-# The following vanilla-collision primaries are intentionally not managed here:
-# tp, ban, kick, gamemode, clear, msg, enchant, kill, bossbar.
-# CommandsAPI 5.1.1 does not create Oreo's Bukkit command when the primary
-# label already exists, so CommandToggle cannot safely alias/disable those
-# without risking the vanilla command. Fix those later at the CommandsAPI
-# registration layer, not inside CommandToggleService.
+# HOW DISABLING WORKS:
+# enabled: false removes OEssentials' version of the command entirely: its
+# label, aliases, "oessentials:" name, tab completion and /help entry. If
+# OEssentials had replaced a vanilla or another plugin's command with the same
+# name (for example /tp or /spawn), that original command answers again.
+# Commands disabled at startup are never registered at all.
+# You can also add vanilla-colliding commands such as tp, ban, kick, gamemode,
+# clear, msg, enchant, kill or bossbar here to hand them back to vanilla.
 commands:
   spawn:
     enabled: true

@@ -83,7 +83,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         plugin.getServer().getPluginManager().registerEvents(chatListener, plugin);
         this.activeChatListener = chatListener;
 
-        if (channelManager.isEnabled()) {
+        if (channelManager.isEnabled() && plugin.getSettingsConfig().chatEnabled()) {
             var channelsCmd  = new fr.elias.oessentials.chat.internal.channels.commands.OeChannelsCommand(plugin, channelManager);
             var channelCmd   = new fr.elias.oessentials.chat.internal.channels.commands.OeChannelCommand(plugin, channelManager);
             services(ConfigurationServices.class).getCommands().register(channelsCmd);

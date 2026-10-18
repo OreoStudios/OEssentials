@@ -113,6 +113,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         services(ConfigurationServices.class).getCommands().rewireTab("tphere", tphere);
         services(ConfigurationServices.class).getCommands().register(nickCmd);
 
+        final boolean homes = services(ConfigurationServices.class).getSettingsConfig().homesEnabled();
         services(ConfigurationServices.class).getCommands()
                 .register(new SpawnCommand(services(StorageServices.class).getSpawnService()))
                 .register(new SetSpawnCommand(services(StorageServices.class).getSpawnService()))
@@ -122,10 +123,10 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new SetWarpCommand(services(StorageServices.class).getWarpService()))
                 .register(new WarpsCommand(services(StorageServices.class).getWarpService()))
                 .register(new WarpsAdminCommand(services(StorageServices.class).getWarpService()))
-                .register(new HomeCommand(services(StorageServices.class).getHomeService()))
+                .registerIf(homes, new HomeCommand(services(StorageServices.class).getHomeService()))
                 .register(new DelWarpCommand(services(StorageServices.class).getWarpService()))
-                .register(new SetHomeCommand(services(StorageServices.class).getHomeService(), services(ConfigurationServices.class).getConfigService()))
-                .register(new DelHomeCommand(services(StorageServices.class).getHomeService()))
+                .registerIf(homes, new SetHomeCommand(services(StorageServices.class).getHomeService(), services(ConfigurationServices.class).getConfigService()))
+                .registerIf(homes, new DelHomeCommand(services(StorageServices.class).getHomeService()))
                 .register(new TpaCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new TpAcceptCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new TpDenyCommand(services(PlayerServices.class).getTeleportService()))
@@ -135,8 +136,8 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(buildMsgCommand(services(PlayerServices.class).getMessageService()))
                 .register(new ReplyCommand(services(PlayerServices.class).getMessageService(), plugin))
                 .register(new BroadcastCommand())
-                .register(new HomesCommand(services(StorageServices.class).getHomeService()))
-                .register(new HomesGuiCommand(services(StorageServices.class).getHomeService()))
+                .registerIf(homes, new HomesCommand(services(StorageServices.class).getHomeService()))
+                .registerIf(homes, new HomesGuiCommand(services(StorageServices.class).getHomeService()))
                 .register(new DeathBackCommand(services(PlayerServices.class).getDeathBackService()))
                 .register(new GodCommand(services(PlayerServices.class).getGodService()))
                 .register(new AfeliusReloadCommand(plugin, services(ChatServices.class).getChatConfig()))
@@ -186,7 +187,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new BalTopCommand(plugin))
                 .register(new EcSeeCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.admins.ReloadAllCommand())
-                .register(new fr.elias.oessentials.playervaults.internal.commands.core.playercommands.VaultsCommand())
+                .registerIf(services(ConfigurationServices.class).getSettingsConfig().playerVaultsEnabled(), new fr.elias.oessentials.playervaults.internal.commands.core.playercommands.VaultsCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.UuidCommand())
                 .register(new TpCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new ZEssentialsHomesImportCommand(plugin, services(StorageServices.class).getStorage(), services(StorageServices.class).getHomeDirectory()))
@@ -276,11 +277,13 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         });
 
         // Commands that have no OreoCommand registration — use registerLegacy.
-        var otherHomesCmd = new OtherHomesListCommand(plugin, services(StorageServices.class).getHomeService());
-        services(ConfigurationServices.class).getCommands().registerLegacy("otherhomes", otherHomesCmd, otherHomesCmd);
+        if (services(ConfigurationServices.class).getSettingsConfig().homesEnabled()) {
+            var otherHomesCmd = new OtherHomesListCommand(plugin, services(StorageServices.class).getHomeService());
+            services(ConfigurationServices.class).getCommands().registerLegacy("otherhomes", otherHomesCmd, otherHomesCmd);
 
-        // otherhome is an OreoCommand; register() already wires its tab completer.
-        services(ConfigurationServices.class).getCommands().register(new OtherHomeCommand(plugin, services(StorageServices.class).getHomeService()));
+            // otherhome is an OreoCommand; register() already wires its tab completer.
+            services(ConfigurationServices.class).getCommands().register(new OtherHomeCommand(plugin, services(StorageServices.class).getHomeService()));
+        }
 
         var aliasCmd = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasEditorCommand(services(ProxyMessagingServices.class).getAliasService(), services(InventoriesServices.class).getInvManager());
         services(ConfigurationServices.class).getCommands().registerLegacy("aliaseditor", aliasCmd, aliasCmd);

@@ -1,5 +1,6 @@
 package fr.elias.oessentials.commandtoggle.internal;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * The service physically removes disabled commands from the CommandMap, but this
  * listener still provides a friendly message instead of Minecraft's generic
- * "Unknown command" response.
+ * "Unknown command" response. It never blocks a label that vanilla or another
+ * plugin still answers.
  */
 public class CommandToggleListener implements Listener {
     private final JavaPlugin plugin;
@@ -45,6 +47,15 @@ public class CommandToggleListener implements Listener {
 
         if (player.hasPermission("oreo.commandtoggle.bypass")) {
             return;
+        }
+
+        // Oreo's command is gone from the CommandMap. If vanilla or another plugin
+        // answers this label now, let it run instead of blocking the label.
+        try {
+            if (Bukkit.getCommandMap().getCommand(rawLabel.toLowerCase(java.util.Locale.ROOT)) != null) {
+                return;
+            }
+        } catch (Throwable ignored) {
         }
 
         event.setCancelled(true);

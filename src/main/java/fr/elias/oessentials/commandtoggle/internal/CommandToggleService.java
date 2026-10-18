@@ -26,6 +26,12 @@ import java.util.*;
  * - Dynamic aliases.yml commands are excluded from primary-command matching.
  * - Configured aliases use forwarding wrapper commands so CommandsAPI receives
  *   the canonical primary label instead of the alias label.
+ * - Every OEssentials command overrides its label, which renames the previous
+ *   holder to "namespace:label". Disabling hands each bare label back to that
+ *   displaced command (vanilla or another plugin) so only Oreo's version is gone.
+ * - Commands that are still disabled when a module registers them are never
+ *   registered (see CommandManager#setRegistrationGate) and are registered on
+ *   demand when they are enabled again.
  */
 public class CommandToggleService {
 
@@ -33,6 +39,7 @@ public class CommandToggleService {
 
     private final JavaPlugin plugin;
     private final CommandToggleConfig config;
+    private final fr.elias.oessentials.platform.commands.CommandManager commandManager;
 
     /** Primary command -> exact CommandMap bindings removed by this service. */
     private final Map<String, DisabledCommandState> disabledCommands = new LinkedHashMap<>();
@@ -44,8 +51,17 @@ public class CommandToggleService {
     private long applyGeneration = 0L;
 
     public CommandToggleService(JavaPlugin plugin, CommandToggleConfig config) {
+        this(plugin, config, null);
+    }
+
+    public CommandToggleService(
+            JavaPlugin plugin,
+            CommandToggleConfig config,
+            fr.elias.oessentials.platform.commands.CommandManager commandManager
+    ) {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.config = Objects.requireNonNull(config, "config");
+        this.commandManager = commandManager;
     }
 
     /**
@@ -252,12 +268,101 @@ public class CommandToggleService {
             return false;
         }
 
+        // Give each bare label back to the command OEssentials displaced, if any.
+        LinkedHashMap<String, Fallback> fallbacks = new LinkedHashMap<>();
+        for (String key : removed.keySet()) {
+            if (key.indexOf(':') >= 0 || knownCommands.containsKey(key)) continue;
+            Fallback fallback = findDisplacedCommand(key, knownCommands);
+            if (fallback == null) continue;
+            try {
+                knownCommands.put(key, fallback.command());
+                fallback.command().setLabel(key);
+                fallbacks.put(key, fallback);
+            } catch (Throwable t) {
+                knownCommands.remove(key, fallback.command());
+                plugin.getLogger().warning("[CommandToggle] Could not hand /" + key + " back to "
+                        + fallback.namespacedKey() + ": " + t.getMessage());
+            }
+        }
+
+        replaceHelpTopics(removed.keySet(), fallbacks, null);
+
         disabledCommands.put(
                 primary,
-                new DisabledCommandState(target, removed)
+                new DisabledCommandState(target, removed, fallbacks)
         );
 
+        if (!fallbacks.isEmpty()) {
+            plugin.getLogger().info("[CommandToggle] /" + primary + " disabled; restored "
+                    + String.join(", ", fallbacks.values().stream().map(Fallback::namespacedKey).toList()));
+        }
         return true;
+    }
+
+    /**
+     * Finds the non-Oreo command still registered under "namespace:label".
+     * Commands renamed by an override (label == "namespace:label") win, then
+     * other plugins, then the server's own commands.
+     */
+    private Fallback findDisplacedCommand(String label, Map<String, Command> knownCommands) {
+        Fallback best = null;
+        int bestRank = Integer.MAX_VALUE;
+        for (Map.Entry<String, Command> entry : new ArrayList<>(knownCommands.entrySet())) {
+            String key = entry.getKey();
+            Command candidate = entry.getValue();
+            if (key == null || candidate == null) continue;
+            String lower = key.toLowerCase(Locale.ROOT);
+            if (!lower.endsWith(":" + label)) continue;
+            if (isOwnedByThisPlugin(candidate) || isCustomAliasMacro(candidate)) continue;
+
+            int rank;
+            if (lower.equalsIgnoreCase(candidate.getLabel())) rank = 0;
+            else if (!lower.startsWith("minecraft:")) rank = 1;
+            else rank = 2;
+            if (rank < bestRank) {
+                best = new Fallback(candidate, lower);
+                bestRank = rank;
+            }
+        }
+        return best;
+    }
+
+    /** Re-applies the rename an override performs, before Oreo takes the label back. */
+    private void displace(Fallback fallback) {
+        try {
+            CommandMap map = getCommandMap();
+            if (map != null) fallback.command().unregister(map);
+            fallback.command().setLabel(fallback.namespacedKey());
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private boolean isFallbackBinding(Command existing, Fallback fallback) {
+        if (existing == null || fallback == null) return false;
+        if (existing == fallback.command()) return true;
+        // Some forks rebuild wrapper objects on every lookup.
+        return !isOwnedByThisPlugin(existing)
+                && existing.getClass() == fallback.command().getClass()
+                && Objects.equals(existing.getName(), fallback.command().getName());
+    }
+
+    /** Keeps /help in line with the command that now answers each bare label. */
+    private void replaceHelpTopics(Set<String> keys, Map<String, Fallback> fallbacks, Command restored) {
+        try {
+            org.bukkit.help.HelpMap helpMap = Bukkit.getHelpMap();
+            for (String key : keys) {
+                if (key.indexOf(':') >= 0) continue;
+                String topicName = "/" + key;
+                helpMap.getHelpTopics().removeIf(topic -> topicName.equalsIgnoreCase(topic.getName()));
+                Command answering = restored != null ? restored
+                        : fallbacks.containsKey(key) ? fallbacks.get(key).command() : null;
+                if (answering != null && key.equalsIgnoreCase(answering.getLabel())) {
+                    helpMap.addTopic(new org.bukkit.help.GenericCommandHelpTopic(answering));
+                }
+            }
+        } catch (Throwable ignored) {
+            // Help topics are cosmetic; some forks expose an immutable view.
+        }
     }
 
     private boolean restoreCommand(
@@ -269,7 +374,8 @@ public class CommandToggleService {
 
         DisabledCommandState state = disabledCommands.remove(primary);
         if (state == null) {
-            return false;
+            // Disabled before its module registered it: register it now.
+            return commandManager != null && commandManager.registerDeferred(primary);
         }
 
         boolean restoredAny = false;
@@ -279,8 +385,10 @@ public class CommandToggleService {
 
             String key = binding.getKey();
             Command existing = knownCommands.get(key);
+            Fallback fallback = state.fallbacks.get(key);
 
-            if (existing == null || existing == state.command) {
+            if (existing == null || existing == state.command || isFallbackBinding(existing, fallback)) {
+                if (fallback != null) displace(fallback);
                 knownCommands.put(key, state.command);
                 restoredAny = true;
             } else {
@@ -297,6 +405,9 @@ public class CommandToggleService {
             restoredAny = true;
         }
 
+        if (restoredAny) {
+            replaceHelpTopics(state.removedBindings.keySet(), Map.of(), state.command);
+        }
         return restoredAny;
     }
 
@@ -761,8 +872,12 @@ public class CommandToggleService {
 
     private record DisabledCommandState(
             Command command,
-            Map<String, Command> removedBindings
+            Map<String, Command> removedBindings,
+            Map<String, Fallback> fallbacks
     ) {}
+
+    /** A displaced command and the "namespace:label" key it is still registered under. */
+    private record Fallback(Command command, String namespacedKey) {}
 
     private record ApplyStats(
             int disabled,

@@ -33,12 +33,46 @@ public class CommandManager {
     private final fr.traqueur.commands.spigot.CommandManager<OEssentials> api;
     private final OwnedCommands ownedCommands = new OwnedCommands();
 
+    /** Answers whether a primary label may be registered; null until command toggles are loaded. */
+    private java.util.function.Predicate<String> registrationGate;
+    /** Registrations held back because their command is disabled in commands-toggle.yml. */
+    private final Map<String, Runnable> deferred = new LinkedHashMap<>();
+
     public CommandManager(OEssentials plugin) {
         this.plugin = plugin;
         this.api = new fr.traqueur.commands.spigot.CommandManager<>(plugin);
     }
 
+    /**
+     * Installs the commands-toggle.yml check. Commands it rejects are not registered at all, so a
+     * disabled command never displaces another plugin's or the server's command; they are kept
+     * until {@link #registerDeferred(String)} is called when the command is enabled again.
+     */
+    public void setRegistrationGate(java.util.function.Predicate<String> gate) {
+        this.registrationGate = gate;
+    }
+
+    /** Registers a command held back by the gate. Returns false when nothing was deferred. */
+    public boolean registerDeferred(String name) {
+        Runnable registration = deferred.remove(name.toLowerCase(Locale.ROOT));
+        if (registration == null) return false;
+        registration.run();
+        return true;
+    }
+
+    private boolean deferIfDisabled(String name, Runnable registration) {
+        if (registrationGate == null || registrationGate.test(name)) return false;
+        deferred.put(name.toLowerCase(Locale.ROOT), registration);
+        plugin.getLogger().fine("[Commands] /" + name + " is disabled in commands-toggle.yml; not registered.");
+        return true;
+    }
+
     public CommandManager register(OreoCommand cmd) {
+        if (deferIfDisabled(cmd.name(), () -> doRegister(cmd))) return this;
+        return doRegister(cmd);
+    }
+
+    private CommandManager doRegister(OreoCommand cmd) {
         CommandMap commandMap = getCommandMap();
         Set<Command> before = commandMap == null ? Set.of() : new HashSet<>(commandMap.getKnownCommands().values());
         api.registerCommand(new OreoCommandAdapter(plugin, cmd));
@@ -68,6 +102,11 @@ public class CommandManager {
      * No plugin.yml entry is needed.
      */
     public CommandManager registerLegacy(String name, CommandExecutor exec, TabCompleter tab) {
+        if (deferIfDisabled(name, () -> doRegisterLegacy(name, exec, tab))) return this;
+        return doRegisterLegacy(name, exec, tab);
+    }
+
+    private CommandManager doRegisterLegacy(String name, CommandExecutor exec, TabCompleter tab) {
         CommandMap map = getCommandMap();
         if (map == null) {
             plugin.getLogger().warning("[Commands] CommandMap unavailable — cannot register '" + name + "'");
