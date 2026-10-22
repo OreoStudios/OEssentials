@@ -22,6 +22,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
     private org.bukkit.event.Listener activeQuitMessagesListener;
     private org.bukkit.configuration.file.FileConfiguration joinQuitCfg;
     private fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener activeConversationListener;
+    private fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler autoMessageScheduler;
 
     @Override
     protected void start() {
@@ -118,7 +119,13 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         }
         activeQuitMessagesListener = new fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.QuitMessagesListener(plugin, joinQuitCfg);
         plugin.getServer().getPluginManager().registerEvents(activeQuitMessagesListener, plugin);
-        new fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler(plugin, joinQuitCfg).start();
+        startAutoMessages();
+    }
+
+    private void startAutoMessages() {
+        if (autoMessageScheduler != null) autoMessageScheduler.stop();
+        autoMessageScheduler = new fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler(plugin, joinQuitCfg);
+        autoMessageScheduler.start();
     }
 
     private org.bukkit.configuration.file.FileConfiguration loadJoinQuitConfig() {
@@ -177,5 +184,6 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         if (activeConversationListener != null) {
             activeConversationListener.setChatMessagingCfg(joinQuitCfg);
         }
+        startAutoMessages();
     }
 }
