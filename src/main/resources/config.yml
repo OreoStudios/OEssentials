@@ -13,6 +13,11 @@ server:
 # Players can run /weblink in-game to get a one-time login code instead of typing their UUID.
 web-panel:
   enabled: false
+  achievement-announcements: true # Private chat notifications; requires RabbitMQ
+  prometheus:
+    enabled: false # Requires web-panel.enabled and a configured API key
+    host: "127.0.0.1" # Scrape /metrics; change only for a trusted monitoring network
+    port: 9100
   url: "https://api.oreostudios.fr"  # URL of your OreoStudios web panel
   api-key: ""    # Paste the key shown on the panel after registering your server
 

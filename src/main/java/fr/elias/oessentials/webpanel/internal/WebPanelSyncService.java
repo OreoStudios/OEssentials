@@ -44,6 +44,8 @@ public class WebPanelSyncService implements Listener {
     private final WebPanelClient client;
     private WebPanelRabbitPublisher rabbitPublisher;
     private OreTask periodicTask;
+    private final WebPanelMetrics metrics = new WebPanelMetrics();
+    private boolean announceAchievements;
     // Debounce: UUID → scheduled task, prevents spamming on rapid inventory changes
     private final Map<UUID, OreTask> debounce = new ConcurrentHashMap<>();
     private static final long DEBOUNCE_TICKS = 20L; // 1 second
@@ -61,6 +63,8 @@ public class WebPanelSyncService implements Listener {
     }
 
     public void start() {
+        announceAchievements = plugin.getConfig().getBoolean("web-panel.achievement-announcements", true);
+        metrics.start(plugin);
         // Connect to RabbitMQ if configured (uses the same rabbitmq.uri as cross-server features)d
         WebPanelConfig cfg = new WebPanelConfig(plugin);
         if (cfg.isAmqpEnabled()) {
@@ -71,6 +75,11 @@ public class WebPanelSyncService implements Listener {
                 rabbitPublisher.startActionConsumer(action -> {
                     try {
                         String type = action.has("type") ? action.get("type").getAsString() : "";
+
+                        if ("ACHIEVEMENT_UNLOCKED".equals(type)) {
+                            if (announceAchievements) announceAchievement(action);
+                            return;
+                        }
 
                         // ── LuckPerms group permission update (no playerUuid) ──────────────
                         if ("luckperms_group_permission_update".equals(type)) {
@@ -150,8 +159,9 @@ public class WebPanelSyncService implements Listener {
             java.util.List<String> onlineUuids = online.stream()
                     .map(p -> p.getUniqueId().toString())
                     .collect(java.util.stream.Collectors.toList());
-            OreScheduler.runAsync(plugin, () -> client.pushHeartbeat(onlineUuids));
-        }, 600L, 600L);
+            JsonObject sample = metrics.sample(online.size());
+            OreScheduler.runAsync(plugin, () -> client.pushHeartbeat(onlineUuids, sample));
+        }, 20L, 600L);
 
         // Sync all active market orders every 30 seconds (same period as player sync)
         OreScheduler.runAsyncTimer(plugin, this::syncAllOrders, 200L, 600L);
@@ -183,6 +193,7 @@ public class WebPanelSyncService implements Listener {
     }
 
     public void stop() {
+        metrics.close();
         if (periodicTask != null) {
             periodicTask.cancel();
             periodicTask = null;
@@ -191,6 +202,23 @@ public class WebPanelSyncService implements Listener {
             rabbitPublisher.close();
             rabbitPublisher = null;
         }
+    }
+
+    private void announceAchievement(JsonObject action) {
+        UUID uuid = UUID.fromString(action.get("playerUuid").getAsString());
+        String name = action.get("name").getAsString();
+        String description = action.get("description").getAsString();
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
+        OreScheduler.runForEntity(plugin, player, () -> {
+            if (!player.isOnline()) return;
+            player.sendMessage(net.kyori.adventure.text.Component.text("Achievement unlocked: ",
+                    net.kyori.adventure.text.format.NamedTextColor.GOLD)
+                    .append(net.kyori.adventure.text.Component.text(name,
+                            net.kyori.adventure.text.format.NamedTextColor.YELLOW)));
+            player.sendMessage(net.kyori.adventure.text.Component.text(description,
+                    net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -887,8 +915,8 @@ public class WebPanelSyncService implements Listener {
 
     /**
      * Applies a CONFIG_PATCH message received from the web panel via RabbitMQ.
-     * Routes keys to settings.yml (features.*, auto-reboot.*, performance.*, maintenance.*)
-     * or config.yml (everything else). Saves and reloads on the main thread.
+     * Routes maintenance to its dedicated file, feature settings to settings.yml,
+     * and remaining keys to config.yml. Saves and reloads on the global scheduler.
      */
     private void handleConfigPatch(JsonObject action) {
         if (!action.has("settings") || action.get("settings").isJsonNull()) {
@@ -900,9 +928,14 @@ public class WebPanelSyncService implements Listener {
 
         java.util.Map<String, Object> settingsYml = new java.util.LinkedHashMap<>();
         java.util.Map<String, Object> configYml   = new java.util.LinkedHashMap<>();
+        java.util.Map<String, Object> maintenanceYml = new java.util.LinkedHashMap<>();
 
         for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry : settings.entrySet()) {
             String key = entry.getKey();
+            // Accept patches from older panel versions using the incomplete path.
+            if (key.equals("performance.join-flood-protection.max-logins-per-window")) {
+                key = "performance.join-flood-protection.login-rate-limit.max-logins-per-window";
+            }
             com.google.gson.JsonElement el = entry.getValue();
 
             Object value;
@@ -915,7 +948,7 @@ public class WebPanelSyncService implements Listener {
                 } else if (prim.isNumber()) {
                     Number n = prim.getAsNumber();
                     if (n.doubleValue() == Math.floor(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
-                        value = n.intValue();
+                        value = n.longValue();
                     } else {
                         value = n.doubleValue();
                     }
@@ -934,10 +967,10 @@ public class WebPanelSyncService implements Listener {
 
             boolean toSettingsYml = key.startsWith("features.")
                     || key.startsWith("auto-reboot.")
-                    || key.startsWith("performance.")
-                    || key.startsWith("maintenance.");
+                    || key.startsWith("performance.");
 
-            if (toSettingsYml) settingsYml.put(key, value);
+            if (key.startsWith("maintenance.")) maintenanceYml.put(key, value);
+            else if (toSettingsYml) settingsYml.put(key, value);
             else configYml.put(key, value);
         }
 
@@ -946,9 +979,32 @@ public class WebPanelSyncService implements Listener {
                 org.bukkit.configuration.file.FileConfiguration raw = plugin.getSettingsConfig().raw();
                 for (java.util.Map.Entry<String, Object> e : settingsYml.entrySet()) {
                     raw.set(e.getKey(), e.getValue());
+                    // Older configs may use this higher-priority legacy section.
+                    if (e.getKey().startsWith("features.chat.banned-words.")
+                            && raw.isConfigurationSection("chat.banned-words")) {
+                        raw.set(e.getKey().substring("features.".length()), e.getValue());
+                    }
                 }
                 plugin.getSettingsConfig().save();
                 plugin.getSettingsConfig().reload();
+                if (settingsYml.keySet().stream().anyMatch(k -> k.startsWith("auto-reboot."))
+                        && plugin.getAutoRebootService() != null) {
+                    plugin.getAutoRebootService().reload();
+                }
+            }
+
+            if (!maintenanceYml.isEmpty()) {
+                var service = plugin.getMaintenanceService();
+                if (service != null) {
+                    try {
+                        service.getConfig().applyPatch(maintenanceYml);
+                        service.reload();
+                    } catch (java.io.IOException ex) {
+                        plugin.getLogger().warning("[WebPanel] Could not save maintenance settings: " + ex.getMessage());
+                    }
+                } else {
+                    plugin.getLogger().warning("[WebPanel] Maintenance service is unavailable; maintenance patch not applied.");
+                }
             }
 
             if (!configYml.isEmpty()) {
@@ -1043,7 +1099,7 @@ public class WebPanelSyncService implements Listener {
                 plugin.getDailyRewardsConfig().load();
             }
             case "afk.yml"                -> plugin.getAfkService().getAfkConfig().reload();
-            case "maintenance.yml"        -> plugin.getMaintenanceService().getConfig().reload();
+            case "maintenance.yml"        -> plugin.getMaintenanceService().reload();
             case "clearlag.yml"           -> plugin.getClearLagManager().reload();
             case "craft-actions.yml"      -> plugin.getCraftActionsConfig().reload();
             case "playervaults.yml"       -> plugin.getPlayerVaultsService().reload();

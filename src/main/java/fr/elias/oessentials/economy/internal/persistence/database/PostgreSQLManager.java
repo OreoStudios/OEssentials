@@ -34,12 +34,24 @@ public class PostgreSQLManager implements PlayerEconomyDatabase {
     private final RedisManager redis;
 
     private static final String TABLE = "economy";
-    private static final double STARTING_BALANCE = 100.0;
-    private static final double MAX_BALANCE = 1_000_000_000.0;
+    // Read from config.yml (economy.*); they used to be hard-coded
+    private final double STARTING_BALANCE;
+    private final double MIN_BALANCE;
+    private final double MAX_BALANCE;
+    private final boolean ALLOW_NEGATIVE;
 
     public PostgreSQLManager(OEssentials plugin, RedisManager redis) {
         this.plugin = plugin;
         this.redis = redis;
+        this.STARTING_BALANCE = plugin.getConfig().getDouble("economy.starting-balance", 100.0);
+        this.MIN_BALANCE = plugin.getConfig().getDouble("economy.min-balance", 0.0);
+        this.MAX_BALANCE = plugin.getConfig().getDouble("economy.max-balance", 1_000_000_000.0);
+        this.ALLOW_NEGATIVE = plugin.getConfig().getBoolean("economy.allow-negative", false);
+    }
+
+    private double clamp(double value) {
+        double v = ALLOW_NEGATIVE ? value : Math.max(MIN_BALANCE, value);
+        return Math.min(MAX_BALANCE, v);
     }
 
     /** Opens a fresh connection from the driver.  Always use in try-with-resources. */
@@ -171,7 +183,7 @@ public class PostgreSQLManager implements PlayerEconomyDatabase {
 
     @Override
     public void setBalance(UUID playerUUID, String name, double amount) {
-        double clamped = Math.max(0, Math.min(amount, MAX_BALANCE));
+        double clamped = clamp(amount);
         String query = "INSERT INTO " + TABLE + " (player_uuid, name, balance) VALUES (?, ?, ?) " +
                 "ON CONFLICT (player_uuid) DO UPDATE SET name = EXCLUDED.name, balance = EXCLUDED.balance";
         OreScheduler.runAsync(plugin, () -> {
@@ -212,7 +224,7 @@ public class PostgreSQLManager implements PlayerEconomyDatabase {
 
     @Override
     public void setAll(double amount) {
-        double clamped = Math.max(0, Math.min(amount, MAX_BALANCE));
+        double clamped = clamp(amount);
         String sql = "UPDATE " + TABLE + " SET balance = ?";
         OreScheduler.runAsync(plugin, () -> {
             try (Connection conn = openConnection();

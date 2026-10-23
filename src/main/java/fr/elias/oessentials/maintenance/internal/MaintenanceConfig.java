@@ -93,6 +93,19 @@ public class MaintenanceConfig {
         }
     }
 
+    /** Persist the complete patch before refreshing cached fields, preserving other settings. */
+    public void applyPatch(java.util.Map<String, Object> values) throws IOException {
+        YamlConfiguration updated = YamlConfiguration.loadConfiguration(configFile);
+        for (var entry : values.entrySet()) {
+            if (!entry.getKey().startsWith("maintenance.")) {
+                throw new IllegalArgumentException("Not a maintenance setting: " + entry.getKey());
+            }
+            updated.set(entry.getKey(), entry.getValue());
+        }
+        updated.save(configFile);
+        reload();
+    }
+
     // Getters and setters
     public boolean isEnabled() {
         return enabled;
