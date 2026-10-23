@@ -325,6 +325,11 @@ public class WebPanelSyncService implements Listener {
         final int    kills      = stat(player, Statistic.PLAYER_KILLS);
         final int    deaths     = stat(player, Statistic.DEATHS);
         final int    joinCount  = stat(player, Statistic.LEAVE_GAME);
+        final String extraStats = "\"mobKills\":" + stat(player, Statistic.MOB_KILLS) + "," +
+                "\"distanceCm\":" + ((long) stat(player, Statistic.WALK_ONE_CM) + stat(player, Statistic.SPRINT_ONE_CM)
+                        + stat(player, Statistic.SWIM_ONE_CM) + stat(player, Statistic.FLY_ONE_CM)) + "," +
+                "\"jumps\":" + stat(player, Statistic.JUMP) + "," +
+                "\"fishCaught\":" + stat(player, Statistic.FISH_CAUGHT);
         final int    homes      = homesCount(uuid);
         final String inv        = serializeItems(player.getInventory().getContents());
         final String armor      = serializeItems(player.getInventory().getArmorContents());
@@ -344,7 +349,7 @@ public class WebPanelSyncService implements Listener {
             final String orders2 = serializeOrders(uuid);
             if (currencies2.isEmpty()) {
                 sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                        kills, deaths, joinCount, homes, inv, armor, shopPrices, lastSeen, "{}", ipFallback, orders2));
+                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ipFallback, orders2));
                 return;
             }
             List<CompletableFuture<Void>> futures2 = new ArrayList<>();
@@ -356,7 +361,7 @@ public class WebPanelSyncService implements Listener {
             CompletableFuture.allOf(futures2.toArray(new CompletableFuture[0])).thenRun(() -> {
                 String currenciesJson2 = buildCurrenciesJson(currencies2, balances2);
                 sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                        kills, deaths, joinCount, homes, inv, armor, shopPrices, lastSeen, currenciesJson2, ipFallback, orders2));
+                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson2, ipFallback, orders2));
             });
             return;
         }
@@ -367,7 +372,7 @@ public class WebPanelSyncService implements Listener {
 
         if (currencies.isEmpty()) {
             sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                    kills, deaths, joinCount, homes, inv, armor, shopPrices, lastSeen, "{}", ip, orders));
+                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ip, orders));
             return;
         }
 
@@ -381,7 +386,7 @@ public class WebPanelSyncService implements Listener {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
             String currenciesJson = buildCurrenciesJson(currencies, balances);
             sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                    kills, deaths, joinCount, homes, inv, armor, shopPrices, lastSeen, currenciesJson, ip, orders));
+                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson, ip, orders));
         });
     }
 
@@ -547,7 +552,7 @@ public class WebPanelSyncService implements Listener {
 
     private String buildJson(UUID uuid, String name, boolean online, double balance,
                               long playtime, int kills, int deaths, int joinCount,
-                              int homes, String inv, String armor, String shopPrices,
+                              String extraStats, int homes, String inv, String armor, String shopPrices,
                               String lastSeen, String currencies, String ip, String orders) {
         return "{" +
                 "\"uuid\":\"" + uuid + "\"," +
@@ -559,7 +564,8 @@ public class WebPanelSyncService implements Listener {
                 "\"stats\":{" +
                     "\"kills\":" + kills + "," +
                     "\"deaths\":" + deaths + "," +
-                    "\"joinCount\":" + joinCount +
+                    "\"joinCount\":" + joinCount + "," +
+                    extraStats +
                 "}," +
                 "\"inventory\":" + inv + "," +
                 "\"armor\":" + armor + "," +
