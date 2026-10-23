@@ -70,7 +70,10 @@ public final class StorageModule extends ManagedModule implements StorageService
         this.playerWarpsConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(pwCfgFile);
 
         final String essentialsStorage = plugin.getConfig().getString("essentials.storage", "yaml").toLowerCase();
-        var pwRoot    = services(ConfigurationServices.class).getSettingsConfig().getRoot().getConfigurationSection("playerwarps");
+        var pwRoot = services(ConfigurationServices.class).getSettingsConfig().getRoot().getConfigurationSection("features.playerwarps");
+        if (pwRoot == null) {
+            pwRoot = services(ConfigurationServices.class).getSettingsConfig().getRoot().getConfigurationSection("playerwarps");
+        }
         boolean pwEnabled = (pwRoot == null) || pwRoot.getBoolean("enabled", true);
         boolean pwCross   = (pwRoot == null) || pwRoot.getBoolean("cross-server", true);
 

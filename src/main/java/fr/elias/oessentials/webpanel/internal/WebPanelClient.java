@@ -354,6 +354,10 @@ public class WebPanelClient {
      * @return true if the backend accepted the heartbeat (HTTP 200).
      */
     public boolean pushHeartbeat(java.util.Collection<String> onlineUuids) {
+        return pushHeartbeat(onlineUuids, null);
+    }
+
+    public boolean pushHeartbeat(java.util.Collection<String> onlineUuids, com.google.gson.JsonObject metrics) {
         try {
             URL endpoint = new URL(config.getUrl() + "/api/v1/plugin/heartbeat");
             HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
@@ -371,7 +375,9 @@ public class WebPanelClient {
                 sb.append('"').append(uuid).append('"');
                 first = false;
             }
-            sb.append("]}");
+            sb.append(']');
+            if (metrics != null) sb.append(",\"metrics\":").append(metrics);
+            sb.append('}');
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(sb.toString().getBytes(StandardCharsets.UTF_8));

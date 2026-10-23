@@ -97,7 +97,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
 
     private void initRabbitMQ() {
-        final boolean invSyncEnabled = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "inventory", true);
+        final boolean invSyncEnabled = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "invsee", true);
 
         if (!services(ConfigurationServices.class).getRabbitEnabled()) {
             plugin.getLogger().info("[RABBIT] Disabled.");

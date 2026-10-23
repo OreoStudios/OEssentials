@@ -46,15 +46,19 @@ public class MongoDBManager implements PlayerEconomyDatabase {
     private MongoCollection<Document> collection;
     private volatile boolean connected = false;
 
-    private static final double STARTING_BALANCE = 100.0;
-    private static final double MIN_BALANCE = 0.0;
+    // Read from config.yml (economy.*); they used to be hard-coded
+    private final double STARTING_BALANCE;
+    private final double MIN_BALANCE;
     private final double MAX_BALANCE;
-    private static final boolean ALLOW_NEGATIVE = false;
+    private final boolean ALLOW_NEGATIVE;
 
     public MongoDBManager(OEssentials plugin, RedisManager redis)
     {
         this.redis = redis;
         this.MAX_BALANCE = plugin.getConfig().getDouble("economy.max-balance", 1_000_000_000.0);
+        this.STARTING_BALANCE = plugin.getConfig().getDouble("economy.starting-balance", 100.0);
+        this.MIN_BALANCE = plugin.getConfig().getDouble("economy.min-balance", 0.0);
+        this.ALLOW_NEGATIVE = plugin.getConfig().getBoolean("economy.allow-negative", false);
 
     }
 

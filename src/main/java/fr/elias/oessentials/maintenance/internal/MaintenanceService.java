@@ -124,9 +124,19 @@ public class MaintenanceService {
         String kickMsg = ChatColor.translateAlternateColorCodes('&', config.getKickMessage());
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!canJoin(player)) {
-                player.kickPlayer(kickMsg);
-            }
+            OreScheduler.runForEntity(plugin, player, () -> {
+                if (player.isOnline() && !canJoin(player)) player.kickPlayer(kickMsg);
+            });
+        }
+    }
+
+    /** Reconcile timers and online players after a panel or file reload. */
+    public void reload() {
+        config.reload();
+        stopTimer();
+        if (config.isEnabled()) {
+            if (config.isUseTimer()) startTimerCheck();
+            kickNonWhitelistedPlayers();
         }
     }
 
