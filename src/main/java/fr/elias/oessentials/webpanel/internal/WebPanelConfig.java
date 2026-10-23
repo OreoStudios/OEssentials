@@ -10,12 +10,13 @@ public class WebPanelConfig {
     private final String amqpUri;       // from rabbitmq.uri — empty if rabbitmq.enabled=false
     private final boolean amqpEnabled;
 
-    private static final String PANEL_URL = "http://oreostudios.fr/panel-dashboard.html";
+    private static final String PANEL_URL = "https://oreostudios.fr/panel-dashboard.html";
 
     public WebPanelConfig(OEssentials plugin) {
         this.enabled      = plugin.getConfig().getBoolean("web-panel.enabled", false);
         this.apiKey       = plugin.getConfig().getString("web-panel.api-key", "").trim();
-        this.apiUrl       = plugin.getConfig().getString("web-panel.url", "https://oreostudios.fr").trim();
+        this.apiUrl       = plugin.getConfig().getString("web-panel.url", "https://api.oreostudios.fr")
+                .trim().replaceAll("/+$", "");
         this.amqpEnabled  = plugin.getConfig().getBoolean("rabbitmq.enabled", false);
         this.amqpUri      = amqpEnabled
                 ? plugin.getConfig().getString("rabbitmq.uri", "").trim()

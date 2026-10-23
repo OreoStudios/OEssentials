@@ -211,22 +211,21 @@ public class WebPanelSyncService implements Listener {
             if (response != null && response.has("actions")) {
                 JsonArray actions = response.getAsJsonArray("actions");
                 if (actions != null && actions.size() > 0) {
-                    OreScheduler.run(plugin, () -> {
-                        for (var elem : actions) {
-                            try {
-                                JsonObject action = elem.getAsJsonObject();
-                                String uuidStr = action.get("playerUuid").getAsString();
-                                String type    = action.get("type").getAsString();
-                                String mat     = action.get("material").getAsString();
-                                int    amount  = action.get("amount").getAsInt();
-                                Player target  = Bukkit.getPlayer(UUID.fromString(uuidStr));
-                                if (target == null || !target.isOnline()) continue;
-                                processWebAction(target, type, mat, amount);
-                            } catch (Exception ex) {
-                                plugin.getLogger().warning("[WebPanel] Failed to process join action: " + ex.getMessage());
-                            }
+                    for (var elem : actions) {
+                        try {
+                            JsonObject action = elem.getAsJsonObject();
+                            String uuidStr = action.get("playerUuid").getAsString();
+                            String type    = action.get("type").getAsString();
+                            String mat     = action.get("material").getAsString();
+                            int    amount  = action.get("amount").getAsInt();
+                            Player target  = Bukkit.getPlayer(UUID.fromString(uuidStr));
+                            if (target == null || !target.isOnline()) continue;
+                            if (isDuplicate(uuidStr, type, mat, amount)) continue;
+                            OreScheduler.runForEntity(plugin, target, () -> processWebAction(target, type, mat, amount));
+                        } catch (Exception ex) {
+                            plugin.getLogger().warning("[WebPanel] Failed to process join action: " + ex.getMessage());
                         }
-                    });
+                    }
                 }
             }
 
@@ -628,6 +627,7 @@ public class WebPanelSyncService implements Listener {
         java.util.Set<String> onlineUuids = Bukkit.getOnlinePlayers().stream()
                 .map(p -> p.getUniqueId().toString())
                 .collect(java.util.stream.Collectors.toSet());
+        if (onlineUuids.isEmpty()) return;
 
         JsonObject response = client.pollPendingActions(onlineUuids);
         if (response == null || !response.has("actions")) return;
@@ -635,28 +635,26 @@ public class WebPanelSyncService implements Listener {
         JsonArray actions = response.getAsJsonArray("actions");
         if (actions == null || actions.size() == 0) return;
 
-        // Process each action on the Bukkit main thread (required for inventory changes)
-        OreScheduler.run(plugin, () -> {
-            for (var elem : actions) {
-                try {
-                    JsonObject action = elem.getAsJsonObject();
-                    String uuidStr = action.get("playerUuid").getAsString();
-                    String type    = action.get("type").getAsString();
-                    String mat     = action.get("material").getAsString();
-                    int    amount  = action.get("amount").getAsInt();
+        // Each action runs on its player's region thread (required for inventory changes, Folia-safe)
+        for (var elem : actions) {
+            try {
+                JsonObject action = elem.getAsJsonObject();
+                String uuidStr = action.get("playerUuid").getAsString();
+                String type    = action.get("type").getAsString();
+                String mat     = action.get("material").getAsString();
+                int    amount  = action.get("amount").getAsInt();
 
-                    Player player = Bukkit.getPlayer(UUID.fromString(uuidStr));
-                    if (player == null || !player.isOnline()) continue;
+                Player player = Bukkit.getPlayer(UUID.fromString(uuidStr));
+                if (player == null || !player.isOnline()) continue;
 
-                    // Skip if already handled via RabbitMQ in the last 15 seconds
-                    if (isDuplicate(uuidStr, type, mat, amount)) continue;
+                // Skip if already handled via RabbitMQ in the last 15 seconds
+                if (isDuplicate(uuidStr, type, mat, amount)) continue;
 
-                    processWebAction(player, type, mat, amount);
-                } catch (Exception e) {
-                    plugin.getLogger().warning("[WebPanel] Failed to process action: " + e.getMessage());
-                }
+                OreScheduler.runForEntity(plugin, player, () -> processWebAction(player, type, mat, amount));
+            } catch (Exception e) {
+                plugin.getLogger().warning("[WebPanel] Failed to process action: " + e.getMessage());
             }
-        });
+        }
     }
 
     /**

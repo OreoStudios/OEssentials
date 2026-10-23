@@ -53,6 +53,6 @@ public final class WebPanelModule extends ManagedModule implements WebPanelServi
                 new fr.elias.oessentials.webpanel.internal.RegisterRewardCommand(
                         plugin, rrConfig, rrService, rrIaHook, rrNexoHook));
 
-        plugin.getLogger().info("[WebPanel] Enabled Ã¢â‚¬â€ syncing to " + wpConfig.getUrl());
+        plugin.getLogger().info("[WebPanel] Enabled - syncing to " + wpConfig.getUrl());
     }
 }
