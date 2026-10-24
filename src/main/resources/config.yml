@@ -13,7 +13,8 @@ server:
 # Players can run /weblink in-game to get a one-time login code instead of typing their UUID.
 web-panel:
   enabled: false
-  achievement-announcements: true # Private chat notifications; requires RabbitMQ
+  transport: "websocket" # websocket: API key only; rabbitmq: use rabbitmq.uri for panel sync
+  achievement-announcements: true # Private chat notifications over WebSocket or RabbitMQ
   prometheus:
     enabled: false # Requires web-panel.enabled and a configured API key
     host: "127.0.0.1" # Scrape /metrics; change only for a trusted monitoring network

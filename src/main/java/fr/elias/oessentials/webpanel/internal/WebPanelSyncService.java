@@ -43,6 +43,7 @@ public class WebPanelSyncService implements Listener {
     private final OEssentials plugin;
     private final WebPanelClient client;
     private WebPanelRabbitPublisher rabbitPublisher;
+    private WebPanelWebSocket webSocket;
     private OreTask periodicTask;
     private final WebPanelMetrics metrics = new WebPanelMetrics();
     private boolean announceAchievements;
@@ -62,83 +63,89 @@ public class WebPanelSyncService implements Listener {
         this.client = client;
     }
 
+    private void handlePanelAction(JsonObject action) {
+        try {
+            String type = action.has("type") ? action.get("type").getAsString() : "";
+
+            if ("ACHIEVEMENT_UNLOCKED".equals(type)) {
+                if (announceAchievements) announceAchievement(action);
+                return;
+            }
+
+            // ── LuckPerms group permission update (no playerUuid) ──────────────
+            if ("luckperms_group_permission_update".equals(type)) {
+                applyLuckPermsUpdate(action);
+                return;
+            }
+
+            // ── Config patch (no playerUuid) ───────────────────────────────────
+            if ("CONFIG_PATCH".equals(type)) {
+                handleConfigPatch(action);
+                return;
+            }
+
+            // ── Fetch config files from plugin ─────────────────────────────────
+            if ("CONFIG_FETCH".equals(type)) {
+                handleConfigFetch(action);
+                return;
+            }
+
+            // ── Write a config file pushed from the panel ──────────────────────
+            if ("CONFIG_FILE_PUSH".equals(type)) {
+                handleConfigFilePush(action);
+                return;
+            }
+
+            // ── Player-targeted actions ────────────────────────────────────────
+            String uuidStr = action.get("playerUuid").getAsString();
+            String mat     = action.has("material") && !action.get("material").isJsonNull() ? action.get("material").getAsString() : null;
+            int    amount  = action.has("amount") && !action.get("amount").isJsonNull() ? action.get("amount").getAsInt() : 0;
+
+            if ("DELIVER_ITEM".equals(type)) {
+                // Instant delivery attempt for the recipient (if currently online)
+                String senderName = action.has("senderName") && !action.get("senderName").isJsonNull() ? action.get("senderName").getAsString() : "Someone";
+                long   deliveryId = action.has("deliveryId") && !action.get("deliveryId").isJsonNull() ? action.get("deliveryId").getAsLong() : -1L;
+                Player recipient = Bukkit.getPlayer(UUID.fromString(uuidStr));
+                if (recipient != null && recipient.isOnline()) {
+                    OreScheduler.runForEntity(plugin, recipient, () ->
+                            deliverItem(recipient, mat, amount, senderName, deliveryId));
+                }
+                // If offline, the onJoin HTTP poll will pick it up next login
+            } else {
+                Player target = Bukkit.getPlayer(UUID.fromString(uuidStr));
+                if (target != null && target.isOnline()) {
+                    // Must run on the entity's region thread (Folia-safe) for inventory ops
+                    OreScheduler.runForEntity(plugin, target, () -> {
+                        boolean executed = processWebAction(target, type, mat, amount);
+                        // Only mark executed if the action actually ran successfully.
+                        // If it failed (e.g. unknown material), leave the DB record so
+                        // the HTTP poll can log and drain it separately.
+                        if (executed) markExecuted(uuidStr, type, mat, amount);
+                    });
+                }
+                // If offline: don't mark executed — the DB entry stays unprocessed
+                // and will be delivered by the periodic poll once the player comes online.
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("[WebPanel] Bad action message: " + e.getMessage());
+        }
+    }
+
     public void start() {
         announceAchievements = plugin.getConfig().getBoolean("web-panel.achievement-announcements", true);
         metrics.start(plugin);
-        // Connect to RabbitMQ if configured (uses the same rabbitmq.uri as cross-server features)d
+        // The panel transport is independent of cross-server messaging.
         WebPanelConfig cfg = new WebPanelConfig(plugin);
+        if (cfg.isWebSocketEnabled()) {
+            webSocket = new WebPanelWebSocket(cfg, this::handlePanelAction, plugin.getLogger());
+            webSocket.start();
+        }
         if (cfg.isAmqpEnabled()) {
             try {
                 rabbitPublisher = new WebPanelRabbitPublisher(cfg.getAmqpUri(), plugin.getLogger());
                 plugin.getLogger().info("[WebPanel] Using RabbitMQ for live player sync.");
                 // Subscribe to action messages (SELL / DELETE) sent from the web panel
-                rabbitPublisher.startActionConsumer(action -> {
-                    try {
-                        String type = action.has("type") ? action.get("type").getAsString() : "";
-
-                        if ("ACHIEVEMENT_UNLOCKED".equals(type)) {
-                            if (announceAchievements) announceAchievement(action);
-                            return;
-                        }
-
-                        // ── LuckPerms group permission update (no playerUuid) ──────────────
-                        if ("luckperms_group_permission_update".equals(type)) {
-                            applyLuckPermsUpdate(action);
-                            return;
-                        }
-
-                        // ── Config patch (no playerUuid) ───────────────────────────────────
-                        if ("CONFIG_PATCH".equals(type)) {
-                            handleConfigPatch(action);
-                            return;
-                        }
-
-                        // ── Fetch config files from plugin ─────────────────────────────────
-                        if ("CONFIG_FETCH".equals(type)) {
-                            handleConfigFetch(action);
-                            return;
-                        }
-
-                        // ── Write a config file pushed from the panel ──────────────────────
-                        if ("CONFIG_FILE_PUSH".equals(type)) {
-                            handleConfigFilePush(action);
-                            return;
-                        }
-
-                        // ── Player-targeted actions ────────────────────────────────────────
-                        String uuidStr = action.get("playerUuid").getAsString();
-                        String mat     = action.has("material") ? action.get("material").getAsString() : null;
-                        int    amount  = action.has("amount")   ? action.get("amount").getAsInt()   : 0;
-
-                        if ("DELIVER_ITEM".equals(type)) {
-                            // Instant delivery attempt for the recipient (if currently online)
-                            String senderName = action.has("senderName") ? action.get("senderName").getAsString() : "Someone";
-                            long   deliveryId = action.has("deliveryId") ? action.get("deliveryId").getAsLong()   : -1L;
-                            Player recipient = Bukkit.getPlayer(UUID.fromString(uuidStr));
-                            if (recipient != null && recipient.isOnline()) {
-                                OreScheduler.runForEntity(plugin, recipient, () ->
-                                        deliverItem(recipient, mat, amount, senderName, deliveryId));
-                            }
-                            // If offline, the onJoin HTTP poll will pick it up next login
-                        } else {
-                            Player target = Bukkit.getPlayer(UUID.fromString(uuidStr));
-                            if (target != null && target.isOnline()) {
-                                // Must run on the entity's region thread (Folia-safe) for inventory ops
-                                OreScheduler.runForEntity(plugin, target, () -> {
-                                    boolean executed = processWebAction(target, type, mat, amount);
-                                    // Only mark executed if the action actually ran successfully.
-                                    // If it failed (e.g. unknown material), leave the DB record so
-                                    // the HTTP poll can log and drain it separately.
-                                    if (executed) markExecuted(uuidStr, type, mat, amount);
-                                });
-                            }
-                            // If offline: don't mark executed — the DB entry stays unprocessed
-                            // and will be delivered by the periodic poll once the player comes online.
-                        }
-                    } catch (Exception e) {
-                        plugin.getLogger().warning("[WebPanel] Bad action message: " + e.getMessage());
-                    }
-                });
+                rabbitPublisher.startActionConsumer(this::handlePanelAction);
             } catch (Exception e) {
                 plugin.getLogger().warning("[WebPanel] RabbitMQ connect failed — falling back to HTTP: " + e.getMessage());
                 rabbitPublisher = null;
@@ -193,6 +200,7 @@ public class WebPanelSyncService implements Listener {
     }
 
     public void stop() {
+        if (webSocket != null) { webSocket.close(); webSocket = null; }
         metrics.close();
         if (periodicTask != null) {
             periodicTask.cancel();
@@ -1047,6 +1055,8 @@ public class WebPanelSyncService implements Listener {
                             java.nio.charset.StandardCharsets.UTF_8);
                     if (pub != null) {
                         pub.publishConfigFileSync(filename, content);
+                        sent++;
+                    } else if (client.uploadConfigFile(filename, content)) {
                         sent++;
                     }
                 } catch (Exception e) {

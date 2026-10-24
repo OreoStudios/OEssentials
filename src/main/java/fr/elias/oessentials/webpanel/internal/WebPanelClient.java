@@ -24,6 +24,31 @@ public class WebPanelClient {
         this.log    = log;
     }
 
+    /** Answer an explicit config fetch even when the panel already has an older copy. */
+    public boolean uploadConfigFile(String filename, String content) {
+        HttpURLConnection conn = null;
+        try {
+            String encoded = java.net.URLEncoder.encode(filename, StandardCharsets.UTF_8);
+            conn = (HttpURLConnection) new URL(config.getUrl()
+                    + "/api/v1/plugin/config/" + encoded + "/upload?replace=true").openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("X-Api-Key", config.getApiKey());
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            conn.setDoOutput(true);
+            JsonObject body = new JsonObject();
+            body.addProperty("content", content);
+            try (OutputStream out = conn.getOutputStream()) {
+                out.write(body.toString().getBytes(StandardCharsets.UTF_8));
+            }
+            return conn.getResponseCode() == 200;
+        } catch (Exception ex) {
+            log.warning("[WebPanel] Config upload failed for " + filename);
+            return false;
+        } finally { if (conn != null) conn.disconnect(); }
+    }
+
     /**
      * Sends a POST to /api/v1/plugin/weblink/register with the generated code.
      *
