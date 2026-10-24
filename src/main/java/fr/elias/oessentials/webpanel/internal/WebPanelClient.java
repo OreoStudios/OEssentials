@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -18,6 +20,46 @@ public class WebPanelClient {
 
     private final WebPanelConfig config;
     private final Logger log;
+    private static final long FAILURE_LOG_INTERVAL_NANOS = TimeUnit.MINUTES.toNanos(1);
+    private final ConcurrentHashMap<String, FailureState> failures = new ConcurrentHashMap<>();
+
+    private static final class FailureState {
+        boolean failing;
+        long lastWarning;
+        int suppressed;
+    }
+
+    /** Log the first failure immediately, then summarize repeats once a minute. */
+    private void reportFailure(String operation, String detail) {
+        FailureState state = failures.computeIfAbsent(operation, ignored -> new FailureState());
+        synchronized (state) {
+            long now = System.nanoTime();
+            if (!state.failing || now - state.lastWarning >= FAILURE_LOG_INTERVAL_NANOS) {
+                String repeats = state.suppressed == 0 ? "" :
+                        " (" + state.suppressed + " similar failures suppressed)";
+                log.warning("[WebPanel] " + operation + " failed: " + detail + repeats);
+                state.lastWarning = now;
+                state.suppressed = 0;
+            } else {
+                state.suppressed++;
+            }
+            state.failing = true;
+        }
+    }
+
+    private void reportSuccess(String operation) {
+        FailureState state = failures.get(operation);
+        if (state == null) return;
+        synchronized (state) {
+            if (!state.failing) return;
+            String repeats = state.suppressed == 0 ? "" :
+                    " (" + state.suppressed + " similar failures suppressed)";
+            log.info("[WebPanel] " + operation + " recovered" + repeats);
+            state.failing = false;
+            state.lastWarning = 0;
+            state.suppressed = 0;
+        }
+    }
 
     public WebPanelClient(WebPanelConfig config, Logger log) {
         this.config = config;
@@ -96,9 +138,10 @@ public class WebPanelClient {
      * @return true if the panel accepted the sync (HTTP 200), false otherwise.
      */
     public boolean syncPlayer(UUID uuid, String playerName, String dataJson) {
+        HttpURLConnection conn = null;
         try {
             URL endpoint = new URL(config.getUrl() + "/api/v1/plugin/sync");
-            HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
+            conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("X-Api-Key", config.getApiKey());
@@ -106,7 +149,6 @@ public class WebPanelClient {
             conn.setReadTimeout(5_000);
             conn.setDoOutput(true);
 
-            // Use Gson so playerDataJson is properly escaped as a JSON string value
             JsonObject outer = new JsonObject();
             outer.addProperty("playerUuid", uuid.toString());
             outer.addProperty("playerName", playerName);
@@ -118,13 +160,18 @@ public class WebPanelClient {
             }
 
             int status = conn.getResponseCode();
-            conn.disconnect();
-            if (status != 200) log.warning("[WebPanel] /sync returned HTTP " + status);
-            return status == 200;
-
+            if (status != 200) {
+                reportFailure("player sync", "HTTP " + status);
+                return false;
+            }
+            reportSuccess("player sync");
+            return true;
         } catch (Exception e) {
-            log.warning("[WebPanel] Failed to sync player " + playerName + ": " + e.getMessage());
+            // A single slow backend used to generate one warning for every online player.
+            reportFailure("player sync", e.getClass().getSimpleName() + ": " + e.getMessage());
             return false;
+        } finally {
+            if (conn != null) conn.disconnect();
         }
     }
 
@@ -171,28 +218,32 @@ public class WebPanelClient {
      * @return the parsed JSON object with an "actions" array, or null on failure.
      */
     public JsonObject pollPendingActions(java.util.Collection<String> onlinePlayerUuids) {
+        HttpURLConnection conn = null;
         try {
             StringBuilder url = new StringBuilder(config.getUrl() + "/api/v1/plugin/actions");
             if (onlinePlayerUuids != null && !onlinePlayerUuids.isEmpty()) {
                 url.append("?onlinePlayers=").append(String.join(",", onlinePlayerUuids));
             }
-            URL endpoint = new URL(url.toString());
-            HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
+            conn = (HttpURLConnection) new URL(url.toString()).openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("X-Api-Key", config.getApiKey());
             conn.setConnectTimeout(5_000);
             conn.setReadTimeout(5_000);
+
             int status = conn.getResponseCode();
             if (status != 200) {
-                log.warning("[WebPanel] Poll actions returned HTTP " + status);
+                reportFailure("action polling", "HTTP " + status);
                 return null;
             }
-            String body = new String(conn.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
-            conn.disconnect();
-            return new Gson().fromJson(body, JsonObject.class);
+            String body = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            JsonObject response = new Gson().fromJson(body, JsonObject.class);
+            reportSuccess("action polling");
+            return response;
         } catch (Exception e) {
-            log.warning("[WebPanel] Failed to poll actions: " + e.getMessage());
+            reportFailure("action polling", e.getClass().getSimpleName() + ": " + e.getMessage());
             return null;
+        } finally {
+            if (conn != null) conn.disconnect();
         }
     }
 
@@ -383,9 +434,10 @@ public class WebPanelClient {
     }
 
     public boolean pushHeartbeat(java.util.Collection<String> onlineUuids, com.google.gson.JsonObject metrics) {
+        HttpURLConnection conn = null;
         try {
             URL endpoint = new URL(config.getUrl() + "/api/v1/plugin/heartbeat");
-            HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
+            conn = (HttpURLConnection) endpoint.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("X-Api-Key", config.getApiKey());
@@ -409,11 +461,17 @@ public class WebPanelClient {
             }
 
             int status = conn.getResponseCode();
-            conn.disconnect();
-            return status == 200;
+            if (status != 200) {
+                reportFailure("heartbeat", "HTTP " + status);
+                return false;
+            }
+            reportSuccess("heartbeat");
+            return true;
         } catch (Exception e) {
-            log.warning("[WebPanel] Failed to push heartbeat: " + e.getMessage());
+            reportFailure("heartbeat", e.getClass().getSimpleName() + ": " + e.getMessage());
             return false;
+        } finally {
+            if (conn != null) conn.disconnect();
         }
     }
 
