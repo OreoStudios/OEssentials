@@ -42,6 +42,7 @@ public class WebPanelSyncService implements Listener {
 
     private final OEssentials plugin;
     private final WebPanelClient client;
+    private final WebPanelHttpSyncQueue httpSyncQueue;
     private WebPanelRabbitPublisher rabbitPublisher;
     private WebPanelWebSocket webSocket;
     private OreTask periodicTask;
@@ -61,6 +62,9 @@ public class WebPanelSyncService implements Listener {
     public WebPanelSyncService(OEssentials plugin, WebPanelClient client) {
         this.plugin = plugin;
         this.client = client;
+        this.httpSyncQueue = new WebPanelHttpSyncQueue(
+                snapshot -> client.syncPlayer(snapshot.uuid(), snapshot.name(), snapshot.dataJson()),
+                plugin.getLogger());
     }
 
     private void handlePanelAction(JsonObject action) {
@@ -200,6 +204,7 @@ public class WebPanelSyncService implements Listener {
     }
 
     public void stop() {
+        httpSyncQueue.close();
         if (webSocket != null) { webSocket.close(); webSocket = null; }
         metrics.close();
         if (periodicTask != null) {
@@ -515,9 +520,9 @@ public class WebPanelSyncService implements Listener {
             OreScheduler.runAsync(plugin,
                     () -> pub.publish(uuid, name, dataJson));
         } else {
-            // HTTP fallback: direct REST POST to backend
-            OreScheduler.runAsync(plugin,
-                    () -> client.syncPlayer(uuid, name, dataJson));
+            // Bound the number of simultaneous HTTP requests. A newer snapshot replaces
+            // the pending one for the same player when the backend is slow or offline.
+            httpSyncQueue.offer(uuid, name, dataJson);
         }
     }
 
