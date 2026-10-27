@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.mute.lifecycle.MuteSystemModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "mute-system")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "mute-system", lifecycle = fr.elias.oessentials.mute.lifecycle.MuteSystemModule.class)
 package fr.elias.oessentials.mute;

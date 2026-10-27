@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.events.lifecycle.EventsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "events")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "events", lifecycle = fr.elias.oessentials.events.lifecycle.EventsModule.class)
 package fr.elias.oessentials.events;

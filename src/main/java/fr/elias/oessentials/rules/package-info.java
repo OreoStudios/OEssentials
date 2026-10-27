@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.rules.lifecycle.RulesModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "rules")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "rules", lifecycle = fr.elias.oessentials.rules.lifecycle.RulesModule.class)
 package fr.elias.oessentials.rules;
