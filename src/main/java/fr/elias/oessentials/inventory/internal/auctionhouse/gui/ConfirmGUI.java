@@ -18,6 +18,8 @@ import java.util.List;
 import static fr.elias.oessentials.inventory.internal.auctionhouse.gui.BrowseGUI.*;
 
 public class ConfirmGUI implements InventoryProvider {
+    private java.util.function.Consumer<org.bukkit.event.inventory.InventoryClickEvent> onConfirm;
+    private volatile boolean purchased;
 
     private final AuctionHouseModule module;
     private final Auction auction;
@@ -56,14 +58,17 @@ public class ConfirmGUI implements InventoryProvider {
         }
         contents.set(1, 4, ClickableItem.empty(display));
 
-        // BUG-02: register the purchase click handler ONLY here in init(), not in update().
-        //         Registering it in update() re-adds the handler every tick, causing every
-        //         click to fire multiple times (once per elapsed tick).
+        // The handler is kept in a field so update() can refresh the button without losing it.
+        // (update() used to replace it with ClickableItem.empty every tick, so the confirm button
+        // stopped working one tick after the menu opened and purchases never went through.)
         int confirmSlot = cfg.guiSlot("confirm", "confirm", 11);
-        contents.set(confirmSlot / 9, confirmSlot % 9, ClickableItem.of(confirmBtn(player, cfg), e -> {
+        this.onConfirm = e -> {
+            if (purchased) return; // one purchase per menu, however fast the clicks
+            purchased = true;
             click(player); player.closeInventory();
             module.purchaseAuction(player, auction.getId());
-        }));
+        };
+        contents.set(confirmSlot / 9, confirmSlot % 9, ClickableItem.of(confirmBtn(player, cfg), onConfirm));
 
         int cancelSlot = cfg.guiSlot("confirm", "cancel", 15);
         contents.set(cancelSlot / 9, cancelSlot % 9, ClickableItem.of(
@@ -89,11 +94,12 @@ public class ConfirmGUI implements InventoryProvider {
 
     @Override
     public void update(Player player, InventoryContents contents) {
-        // BUG-02: do NOT re-register click handlers here — only update the visual of the
-        //         confirm button (balance display) without re-attaching any click logic.
+        // Refresh the balance shown on the button; setting the slot replaces the previous item and
+        // handler, so reusing onConfirm does not stack handlers.
         var cfg = module.getConfig();
         int confirmSlot = cfg.guiSlot("confirm", "confirm", 11);
-        contents.set(confirmSlot / 9, confirmSlot % 9, ClickableItem.empty(confirmBtn(player, cfg)));
+        contents.set(confirmSlot / 9, confirmSlot % 9,
+                onConfirm == null ? ClickableItem.empty(confirmBtn(player, cfg)) : ClickableItem.of(confirmBtn(player, cfg), onConfirm));
     }
 
     private ItemStack confirmBtn(Player p, fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseConfig cfg) {
