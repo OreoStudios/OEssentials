@@ -3,8 +3,8 @@ package fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.handlers;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.packets.PlayerJoinPacket;
 import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 
 import java.util.UUID;
 

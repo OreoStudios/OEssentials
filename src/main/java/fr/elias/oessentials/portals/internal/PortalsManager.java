@@ -2,7 +2,7 @@ package fr.elias.oessentials.portals.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.portals.internal.rabbit.PortalsCrossServerBroker;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -127,7 +127,7 @@ public class PortalsManager implements Listener {
 
     // ── Cross-server setup ────────────────────────────────────────────────────
 
-    public void initCrossServer(PacketManager pm) {
+    public void initCrossServer(PacketBus pm) {
         if (pm == null) return;
         this.crossServerBroker = new PortalsCrossServerBroker(plugin, pm);
         plugin.getLogger().info("[Portals] Cross-server support enabled.");
@@ -370,7 +370,7 @@ public class PortalsManager implements Listener {
                             "<red>Cross-server portals require RabbitMQ + BungeeCord/Velocity.</red>");
                     return;
                 }
-                PacketManager pm = plugin.getPacketManager();
+                PacketBus pm = plugin.getPacketBus();
                 if (pm == null) { return; }
 
                 // P-1: record teleport time before sending cross-server

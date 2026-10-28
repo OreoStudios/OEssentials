@@ -31,8 +31,8 @@ public class PlayerListener implements Listener {
             plugin.getLogger().warning("[CROSS] Bedrock player joined with prefixed name: " + playerName + " (" + playerUUID + ")");
         }
 
-        if (plugin.getPacketManager() != null && plugin.getPacketManager().isInitialized()) {
-            plugin.getPacketManager().sendPacket(new PlayerJoinPacket(playerUUID, playerName));
+        if (plugin.getPacketBus() != null && plugin.getPacketBus().isInitialized()) {
+            plugin.getPacketBus().sendPacket(new PlayerJoinPacket(playerUUID, playerName));
             if (isDebugEnabled()) {
                 plugin.getLogger().info("[CROSS] Sent PlayerJoinPacket: " + playerName + " (" + playerUUID + ")");
             }
@@ -44,8 +44,8 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.getPacketManager() != null && plugin.getPacketManager().isInitialized()) {
-            plugin.getPacketManager().sendPacket(new PlayerQuitPacket(playerUUID));
+        if (plugin.getPacketBus() != null && plugin.getPacketBus().isInitialized()) {
+            plugin.getPacketBus().sendPacket(new PlayerQuitPacket(playerUUID));
             if (isDebugEnabled()) {
                 plugin.getLogger().info("[CROSS] Sent PlayerQuitPacket: " + player.getName() + " (" + playerUUID + ")");
             }

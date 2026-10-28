@@ -1,6 +1,6 @@
 package fr.elias.oessentials.player.internal.tp.rabbit.brokers;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.spawn.rabbit.packets.SpawnTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.WarpTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.spawn.SpawnService;
@@ -22,7 +22,7 @@ public final class CrossServerTeleportBroker implements Listener {
     private final Plugin plugin;
     private final SpawnService spawnService;
     private final WarpService  warpService;
-    private final PacketManager pm;
+    private final PacketBus pm;
     private final String thisServer;
     private final Logger log;
 
@@ -32,7 +32,7 @@ public final class CrossServerTeleportBroker implements Listener {
     public CrossServerTeleportBroker(Plugin plugin,
                                      SpawnService spawnService,
                                      WarpService warpService,
-                                     PacketManager pm,
+                                     PacketBus pm,
                                      String thisServer) {
         this.plugin = plugin;
         this.spawnService = spawnService;

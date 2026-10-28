@@ -1,6 +1,6 @@
 package fr.elias.oessentials.currency.internal.rabbitmq;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 /**
  * RabbitMQ packet namespace for currency system

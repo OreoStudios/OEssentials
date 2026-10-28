@@ -1,6 +1,6 @@
 package fr.elias.oessentials.messaging.internal.cross.rabbit.namespace;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 import fr.elias.oessentials.messaging.internal.cross.rabbit.packets.CrossInvPacket;
 
 public final class CrossInvPacketNamespace extends PacketNamespace {

@@ -1,8 +1,8 @@
 package fr.elias.oessentials.storage.internal.spawn.rabbit.packets;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import fr.elias.oessentials.messaging.api.Packet;
+import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 
 import java.util.UUID;
 

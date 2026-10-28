@@ -2,7 +2,7 @@ package fr.elias.oessentials.grouprtp.internal.rabbit;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.grouprtp.internal.service.SafeLocationFinder;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +44,7 @@ public final class GroupRtpCrossServerBroker implements Listener {
 
     private final OEssentials plugin;
 
-    public GroupRtpCrossServerBroker(OEssentials plugin, PacketManager pm) {
+    public GroupRtpCrossServerBroker(OEssentials plugin, PacketBus pm) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
 

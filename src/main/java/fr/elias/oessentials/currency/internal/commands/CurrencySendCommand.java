@@ -208,11 +208,11 @@ public class CurrencySendCommand implements OreoCommand {
         }
 
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             if (pm == null || !pm.isInitialized()) return;
 
             pm.sendPacket(
-                    fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels.GLOBAL,
+                    fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL,
                     new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, msg)
             );
         } catch (Throwable ignored) {}

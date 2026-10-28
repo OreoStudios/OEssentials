@@ -89,7 +89,7 @@ public final class OrdersEventBus {
 
     private void sendPacket(OrderSyncPacket pkt) {
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             if (pm != null && pm.isInitialized()) {
                 pm.sendPacket(pkt);
             } else {

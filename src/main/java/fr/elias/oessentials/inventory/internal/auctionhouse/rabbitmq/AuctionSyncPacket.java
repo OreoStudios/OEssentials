@@ -2,9 +2,9 @@ package fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq;
 
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.Auction;
 import fr.elias.oessentials.inventory.internal.auctionhouse.utils.ItemSerializer;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import fr.elias.oessentials.messaging.api.Packet;
+import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public class AuctionSyncPacket extends Packet {
     private UUID   buyerUuid;
     private String buyerName;
 
-    /** Required no-arg constructor for the PacketManager. */
+    /** Required no-arg constructor for the PacketBus. */
     public AuctionSyncPacket() {}
 
     // ── Factories ─────────────────────────────────────────────────────────────

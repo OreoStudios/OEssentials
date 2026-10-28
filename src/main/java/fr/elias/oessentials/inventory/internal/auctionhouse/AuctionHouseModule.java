@@ -540,7 +540,7 @@ public final class AuctionHouseModule {
     /** Sends a sync packet to all other servers (no-op if RabbitMQ is not available). */
     private void broadcastSync(AuctionSyncPacket pkt) {
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             if (pm != null && pm.isInitialized()) pm.sendPacket(pkt);
         } catch (Throwable ignored) {}
     }
@@ -551,7 +551,7 @@ public final class AuctionHouseModule {
     }
 
     /**
-     * Called by the PacketManager subscriber when another server broadcasts
+     * Called by the PacketBus subscriber when another server broadcasts
      * an AuctionSyncPacket. Applies the change to this server's in-memory lists,
      * then schedules a main-thread GUI refresh for all open BrowseGUI viewers.
      */

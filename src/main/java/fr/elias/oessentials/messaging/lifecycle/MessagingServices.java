@@ -9,7 +9,7 @@ import fr.elias.oessentials.messaging.internal.invsee.rabbit.InvseeCrossServerBr
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker;
 import fr.elias.oessentials.trade.internal.rabbit.TradeCrossServerBroker;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +24,8 @@ public interface MessagingServices {
     fr.elias.oessentials.messaging.internal.invlook.manager.InvlookManager getInvlookManager();
     InvseeCrossServerBroker getInvseeBroker();
     TradeCrossServerBroker getTradeBroker();
-    PacketManager getPacketManager();
+    /** Cross-server packets, or {@code null} when RabbitMQ is disabled. */
+    PacketBus getPacketBus();
     fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker();
     Map<UUID, BackLocation> getPendingBackTeleports();
 }

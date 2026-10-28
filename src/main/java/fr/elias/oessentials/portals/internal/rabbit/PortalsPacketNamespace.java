@@ -1,6 +1,6 @@
 package fr.elias.oessentials.portals.internal.rabbit;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 public final class PortalsPacketNamespace extends PacketNamespace {
 

@@ -2,7 +2,7 @@
 package fr.elias.oessentials.events.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.DeathMessagePacket;
 import org.bukkit.Bukkit;
@@ -338,7 +338,7 @@ public final class EventEngine implements Listener {
 
         // NEW: Broadcast to all servers if cross-server messaging is enabled and message is not null
         OEssentials plugin = OEssentials.get();
-        PacketManager pm = plugin.getPacketManager();
+        PacketBus pm = plugin.getPacketBus();
 
         if (pm != null && pm.isInitialized() && msg != null && !msg.isEmpty()) {
             String serverName = plugin.getServerConfig().serverName();
@@ -351,7 +351,7 @@ public final class EventEngine implements Listener {
             );
 
             // *** FIXED: Use PacketChannels.GLOBAL instead of PacketChannel.broadcast() ***
-            pm.sendPacket(fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels.GLOBAL, packet);
+            pm.sendPacket(fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL, packet);
 
             plugin.getLogger().info("[Death/Broadcast] player=" + dead.getName()
                     + " server=" + serverName

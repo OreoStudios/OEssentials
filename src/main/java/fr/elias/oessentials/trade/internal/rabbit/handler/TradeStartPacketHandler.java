@@ -1,8 +1,8 @@
 package fr.elias.oessentials.trade.internal.rabbit.handler;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStartPacket;
 
 

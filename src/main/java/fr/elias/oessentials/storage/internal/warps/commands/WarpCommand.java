@@ -4,8 +4,8 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.storage.internal.warps.WarpService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.WarpTeleportRequestPacket;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
@@ -259,7 +259,7 @@ public class WarpCommand implements OreoCommand {
             return;
         }
 
-        final PacketManager pm = plugin.getPacketManager();
+        final PacketBus pm = plugin.getPacketBus();
         log.info("[WarpCmd] Remote warp. pm=" + (pm == null ? "null" : "ok")
                 + " pm.init=" + (pm != null && pm.isInitialized()));
 

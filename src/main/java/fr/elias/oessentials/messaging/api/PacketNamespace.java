@@ -1,12 +1,15 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
+package fr.elias.oessentials.messaging.api;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
+import dev.oreo.modulith.core.ModuleApi;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * A group of packets with fixed ids. Ids are on the wire: never renumber a packet that has shipped.
+ */
+@ModuleApi("services")
 public abstract class PacketNamespace {
 
     private final short namespaceId;
@@ -64,13 +67,4 @@ public abstract class PacketNamespace {
         return definitions;
     }
 
-    /**
-     * Convenience: register all definitions from this namespace into a registry.
-     */
-    public final void registerInto(PacketRegistry registry) {
-        ensureRegistered();
-        for (PacketDefinition<?> def : definitions) {
-            registry.register(def);
-        }
-    }
 }

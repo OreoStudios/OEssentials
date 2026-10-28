@@ -1,23 +1,26 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.packet;
 
+import fr.elias.oessentials.messaging.api.Packet;
+import fr.elias.oessentials.messaging.api.PacketBus;
+
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketDefinition;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketDefinition;
 import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketRegistry;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.IncomingPacketListener;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSender;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriptionQueue;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-public class PacketManager implements IncomingPacketListener {
+public class PacketManager implements IncomingPacketListener, PacketBus {
 
     private final OEssentials plugin;
     private final PacketSender sender;

@@ -11,10 +11,10 @@ import fr.elias.oessentials.trade.internal.rabbit.packet.TradeInvitePacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStartPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStatePacket;
 import fr.elias.oessentials.trade.internal.service.TradeService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
+import fr.elias.oessentials.messaging.api.Packet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class TradeCrossServerBroker {
 
     private final OEssentials plugin;
-    private final PacketManager pm;
+    private final PacketBus pm;
     private final String serverName;
     private final TradeService tradeService;
 
@@ -55,7 +55,7 @@ public final class TradeCrossServerBroker {
 
     private final Map<UUID, XSession> sessions = new ConcurrentHashMap<>();
 
-    public TradeCrossServerBroker(OEssentials plugin, PacketManager packetManager,
+    public TradeCrossServerBroker(OEssentials plugin, PacketBus packetManager,
                                   String serverName, TradeService tradeService) {
         this.plugin = plugin;
         this.pm = packetManager;

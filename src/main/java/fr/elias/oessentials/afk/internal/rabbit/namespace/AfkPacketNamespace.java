@@ -1,6 +1,6 @@
 package fr.elias.oessentials.afk.internal.rabbit.namespace;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkPoolEnterPacket;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkPoolExitPacket;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkStatusPacket;

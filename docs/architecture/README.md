@@ -144,8 +144,9 @@ files.
 | 1. Modules nothing depends on | 6 / 56 | 1,548 | `discord-integration`, `events`, `help`, `motd`, `mute-system`, `rules` had no inbound references |
 | 2a. Configuration settings contract | 6 / 56 | 1,408 | `configuration` 177 → 37; see below |
 | 2b. Configuration protected | 7 / 56 | 1,313 | Non-configuration features moved to their owners; `messaging` 366 → 344, `storage` 188 → 173 |
+| 3a. Messaging packet contract | 7 / 56 | 1,241 | `messaging` internals 344 → 44; 228 references now fail only because their module does not declare `messaging` (see below) |
 
-The largest providers are `messaging` (344), `storage` (173) and `player-services` (108).
+The largest providers are `storage` (173) and `player-services` (108).
 Their public contracts should be designed before their consumers are migrated.
 
 ### Configuration contract
@@ -196,6 +197,22 @@ before it was protected, because several of them depended on modules that start 
 
 The released `OEssentials` getters for these keep their names; where a class moved package,
 its return type changed with it (recorded in `class-relocations.json`).
+
+### Messaging contract
+
+The packet framework is messaging's published contract in `fr.elias.oessentials.messaging.api`:
+`Packet`, `FriendlyByteInputStream`/`FriendlyByteOutputStream`, `PacketChannel`/`PacketChannels`,
+`PacketNamespace`/`PacketDefinition`/`PacketProvider`, `PacketSubscriber` and `PacketBus` (implemented
+by the internal `PacketManager`). Modules get the bus from `MessagingServices.getPacketBus()`,
+`MessagingReady.packets()` or `OEssentials.getPacketBus()`; the released `getPacketManager()` remains.
+
+Packet ids are on the wire. `PacketWireIdsTest` pins every id, including the 23 packets numbered
+from 27006 in the order `MessagingModule` registers them at startup, so moving packets between
+modules cannot silently change them.
+
+The remaining work is a dependency cycle: `messaging` depends on `afk`, `economy`, `inventories`,
+`mail`, `player-services`, `storage` and `trade` only to build their cross-server brokers and
+handlers, so those modules cannot declare the `messaging` dependency they need for packets.
 
 ## Compatibility and diagnostics
 

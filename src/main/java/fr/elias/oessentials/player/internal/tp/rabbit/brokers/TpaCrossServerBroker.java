@@ -4,9 +4,9 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaRequestPacket;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaSummonPacket;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -29,7 +29,7 @@ public final class TpaCrossServerBroker implements Listener {
     private final OEssentials plugin;
     @SuppressWarnings("unused")
     private final TeleportService teleportService;
-    private final PacketManager pm;
+    private final PacketBus pm;
     private final ProxyMessenger proxy;
     private final String localServer;
 
@@ -46,7 +46,7 @@ public final class TpaCrossServerBroker implements Listener {
     }
 
     public TpaCrossServerBroker(OEssentials plugin, TeleportService teleportService,
-                                PacketManager pm, ProxyMessenger proxy, String localServer) {
+                                PacketBus pm, ProxyMessenger proxy, String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
         this.pm = pm;

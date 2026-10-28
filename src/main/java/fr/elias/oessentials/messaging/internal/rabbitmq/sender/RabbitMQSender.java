@@ -4,8 +4,8 @@ import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.IncomingPacketListener;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSender;
 

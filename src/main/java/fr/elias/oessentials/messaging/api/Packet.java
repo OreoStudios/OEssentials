@@ -1,33 +1,27 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq.packet;
+package fr.elias.oessentials.messaging.api;
 
-
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import dev.oreo.modulith.core.ModuleApi;
 
 import java.util.UUID;
 
+@ModuleApi("services")
 public abstract class Packet {
 
     private UUID packetId = UUID.randomUUID();
 
-
     protected abstract void read(FriendlyByteInputStream stream);
 
-
     protected abstract void write(FriendlyByteOutputStream stream);
-
 
     public void readData(FriendlyByteInputStream stream) {
         this.packetId = stream.readUUID();
         read(stream);
     }
 
-
     public void writeData(FriendlyByteOutputStream stream) {
         stream.writeUUID(packetId);
         write(stream);
     }
-
 
     public UUID getPacketId() {
         return packetId;

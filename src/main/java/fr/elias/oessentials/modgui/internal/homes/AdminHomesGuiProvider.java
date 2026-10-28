@@ -4,8 +4,8 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService.StoredHome;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.OtherHomeTeleportRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -142,7 +142,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
                 });
             } else {
                 OreScheduler.runForEntity(plugin, admin, () -> {
-                    PacketManager pm = plugin.getPacketManager();
+                    PacketBus pm = plugin.getPacketBus();
                     if (pm != null && pm.isInitialized()) {
                         String requestId = UUID.randomUUID().toString();
                         OtherHomeTeleportRequestPacket pkt = new OtherHomeTeleportRequestPacket(

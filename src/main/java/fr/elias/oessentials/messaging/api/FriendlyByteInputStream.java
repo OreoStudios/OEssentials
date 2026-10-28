@@ -1,4 +1,6 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq.stream;
+package fr.elias.oessentials.messaging.api;
+
+import dev.oreo.modulith.core.ModuleApi;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -8,6 +10,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+@ModuleApi("services")
 public class FriendlyByteInputStream {
 
     private final ByteArrayInputStream stream;

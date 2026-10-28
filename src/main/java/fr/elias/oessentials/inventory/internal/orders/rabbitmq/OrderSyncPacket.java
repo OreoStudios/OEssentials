@@ -2,9 +2,9 @@ package fr.elias.oessentials.inventory.internal.orders.rabbitmq;
 
 import fr.elias.oessentials.inventory.internal.orders.model.Order;
 import fr.elias.oessentials.inventory.internal.orders.model.OrderStatus;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import fr.elias.oessentials.messaging.api.Packet;
+import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 
 import java.util.UUID;
 
@@ -49,7 +49,7 @@ public class OrderSyncPacket extends Packet {
     private double unitPrice;
     private String currencyId;
 
-    /** No-arg constructor required by PacketManager. */
+    /** No-arg constructor required by PacketBus. */
     public OrderSyncPacket() {}
 
 

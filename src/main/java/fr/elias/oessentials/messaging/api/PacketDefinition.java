@@ -1,7 +1,8 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
+package fr.elias.oessentials.messaging.api;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
+import dev.oreo.modulith.core.ModuleApi;
 
+@ModuleApi("services")
 public final class PacketDefinition<T extends Packet> {
     private final long registryId;
     private final Class<T> packetClass;

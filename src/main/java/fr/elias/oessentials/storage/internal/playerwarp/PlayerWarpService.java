@@ -1,7 +1,7 @@
 package fr.elias.oessentials.storage.internal.playerwarp;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.PlayerWarpTeleportRequestPacket;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -402,7 +402,7 @@ public class PlayerWarpService {
                 "<gray>Sending you to server</gray> <yellow>%server%</yellow> <gray>for warp</gray> <white>%name%</white>…",
                 Map.of("name", warp.getName(), "server", targetServer));
 
-        var pm = plugin.getPacketManager();
+        var pm = plugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) {
             plugin.getLogger().warning("[OEssentials] [PW] PacketManager unavailable during cross-server playerwarp teleport.");
             Lang.send(player, "playerwarps.teleport.messaging-disabled",

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.messaging.internal.cross.rabbit.packets.CrossModPacket;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
 import fr.elias.oessentials.messaging.internal.cross.rabbit.packets.CrossInvPacket;
 import fr.elias.oessentials.player.internal.services.VanishService;

@@ -1,7 +1,7 @@
 package fr.elias.oessentials.economy.internal.rabbit.namespace;
 
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 import fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.packets.PlayerJoinPacket;
 import fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.packets.PlayerQuitPacket;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket;

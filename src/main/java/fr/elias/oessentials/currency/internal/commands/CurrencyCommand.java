@@ -418,7 +418,7 @@ public class CurrencyCommand implements OreoCommand {
         }
 
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             var dir = plugin.getPlayerDirectory();
             if (pm == null || !pm.isInitialized() || dir == null) return;
 
@@ -426,7 +426,7 @@ public class CurrencyCommand implements OreoCommand {
             if (server == null) return;
 
             pm.sendPacket(
-                    fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(server),
+                    fr.elias.oessentials.messaging.api.PacketChannel.individual(server),
                     new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, msg)
             );
         } catch (Throwable ignored) {}

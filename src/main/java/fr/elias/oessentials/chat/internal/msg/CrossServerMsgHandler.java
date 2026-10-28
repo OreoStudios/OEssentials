@@ -2,9 +2,9 @@ package fr.elias.oessentials.chat.internal.msg;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.player.internal.services.MessageService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

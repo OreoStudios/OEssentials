@@ -371,7 +371,7 @@ public final class OEssentials extends JavaPlugin {
     // Utility
     // -------------------------------------------------------------------------
 
-    public boolean isMessagingAvailable() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager) != null && moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager).isInitialized(); }
+    public boolean isMessagingAvailable() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus) != null && moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus).isInitialized(); }
 
     // -------------------------------------------------------------------------
     // Getters
@@ -445,7 +445,10 @@ public final class OEssentials extends JavaPlugin {
 
     public PlayerEconomyDatabase getDatabase() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getDatabase); }
 
-    public PacketManager getPacketManager() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager); }
+    /** Released API. Feature modules use {@link #getPacketBus()} instead. */
+    public PacketManager getPacketManager() { return (PacketManager) getPacketBus(); }
+
+    public fr.elias.oessentials.messaging.api.PacketBus getPacketBus() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus); }
 
     public ScoreboardService getScoreboardService() { return moduleRegistry.read(ScoreboardServices.class, ScoreboardServices::getScoreboardService); }
 

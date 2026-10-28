@@ -2,8 +2,8 @@ package fr.elias.oessentials.storage.internal.playerwarp;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.PlayerWarpTeleportRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
@@ -22,14 +22,14 @@ public final class PlayerWarpCrossServerBroker implements Listener {
 
     private final OEssentials plugin;
     private final PlayerWarpService playerWarpService;
-    private final PacketManager packetManager;
+    private final PacketBus packetManager;
     private final ProxyMessenger proxyMessenger;
     private final String localServerName;
     private final Map<UUID, PendingWarp> pending = new ConcurrentHashMap<>();
 
     public PlayerWarpCrossServerBroker(OEssentials plugin,
                                        PlayerWarpService playerWarpService,
-                                       PacketManager packetManager,
+                                       PacketBus packetManager,
                                        ProxyMessenger proxyMessenger,
                                        String localServerName) {
         this.plugin = plugin;

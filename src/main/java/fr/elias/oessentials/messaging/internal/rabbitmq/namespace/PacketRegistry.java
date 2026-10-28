@@ -1,10 +1,14 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
 
+import fr.elias.oessentials.messaging.api.PacketDefinition;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketProvider;
+
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomesPacketNamespace;
 import fr.elias.oessentials.storage.internal.spawn.rabbit.namespace.SpawnPacketNamespace;
 import fr.elias.oessentials.storage.internal.warps.rabbit.namespace.WarpsPacketNamespace;
 import fr.elias.oessentials.messaging.internal.cross.rabbit.namespace.CrossInvPacketNamespace;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
+import fr.elias.oessentials.messaging.api.Packet;
 import fr.elias.oessentials.trade.internal.rabbit.namespace.TradePacketNamespace;
 
 import java.util.Map;
@@ -47,7 +51,9 @@ public class PacketRegistry {
     }
 
     public void register(PacketNamespace namespace) {
-        namespace.registerInto(this);
+        for (PacketDefinition<?> definition : namespace.getDefinitions()) {
+            register(definition);
+        }
     }
 
     public PacketDefinition<? extends Packet> getDefinition(Class<? extends Packet> packetClass) {

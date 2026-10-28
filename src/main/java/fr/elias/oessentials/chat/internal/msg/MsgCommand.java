@@ -3,9 +3,9 @@ package fr.elias.oessentials.chat.internal.msg;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.ignore.internal.IgnoreService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.player.internal.services.MessageService;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -95,7 +95,7 @@ public class MsgCommand implements OreoCommand {
             return;
         }
 
-        PacketManager pm = plugin.getPacketManager();
+        PacketBus pm = plugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) {
             Lang.send(sender, "msg.not-found", "<red>Player not found.</red>");
             return;

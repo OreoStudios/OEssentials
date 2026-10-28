@@ -37,8 +37,8 @@ public final class PortalsModule extends ManagedModule implements PortalsService
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
 
         // Wire up cross-server support if RabbitMQ is available
-        if (services(MessagingServices.class).getPacketManager() != null && services(MessagingServices.class).getPacketManager().isInitialized()) {
-            this.portals.initCrossServer(services(MessagingServices.class).getPacketManager());
+        if (services(MessagingServices.class).getPacketBus() != null && services(MessagingServices.class).getPacketBus().isInitialized()) {
+            this.portals.initCrossServer(services(MessagingServices.class).getPacketBus());
             plugin.getLogger().info("[Portals] Cross-server support enabled.");
         } else {
             plugin.getLogger().info("[Portals] RabbitMQ unavailable — cross-server portals disabled.");

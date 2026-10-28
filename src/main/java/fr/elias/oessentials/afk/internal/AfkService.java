@@ -2,8 +2,8 @@ package fr.elias.oessentials.afk.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkStatusPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -138,7 +138,7 @@ public class AfkService implements Listener {
         if (crossHandlersRegistered) return;
         if (orePlugin == null) return;
 
-        PacketManager pm = orePlugin.getPacketManager();
+        PacketBus pm = orePlugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) return;
 
         try { pm.subscribeChannel(PacketChannels.GLOBAL); } catch (Throwable ignored) {}
@@ -173,7 +173,7 @@ public class AfkService implements Listener {
 
         // Cross-server plugin broadcast via RabbitMQ (AfkStatusPacket)
         if (orePlugin != null) {
-            PacketManager pm = orePlugin.getPacketManager();
+            PacketBus pm = orePlugin.getPacketBus();
             if (pm != null && pm.isInitialized()) {
                 AfkStatusPacket pkt = new AfkStatusPacket(
                         player.getUniqueId(), player.getName(),

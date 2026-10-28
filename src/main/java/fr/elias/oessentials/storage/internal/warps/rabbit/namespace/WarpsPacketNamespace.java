@@ -1,6 +1,6 @@
 package fr.elias.oessentials.storage.internal.warps.rabbit.namespace;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.WarpTeleportRequestPacket;
 
 public final class WarpsPacketNamespace extends PacketNamespace {

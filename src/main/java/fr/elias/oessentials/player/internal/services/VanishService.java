@@ -225,9 +225,9 @@ public class VanishService {
 
     private void broadcastState(UUID playerId, boolean vanish) {
         if (!crossServerSyncEnabled) return;
-        if (plugin.getPacketManager() == null || !plugin.getPacketManager().isInitialized()) return;
+        if (plugin.getPacketBus() == null || !plugin.getPacketBus().isInitialized()) return;
         try {
-            plugin.getPacketManager().sendPacket(new VanishSyncPacket(playerId, vanish, localServerName));
+            plugin.getPacketBus().sendPacket(new VanishSyncPacket(playerId, vanish, localServerName));
         } catch (Throwable t) {
             plugin.getLogger().warning("[VANISH] Failed to broadcast cross-server state: " + t.getMessage());
         }

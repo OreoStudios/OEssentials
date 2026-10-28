@@ -1,11 +1,11 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq;
+package fr.elias.oessentials.messaging.api;
 
+import dev.oreo.modulith.core.ModuleApi;
 
 import fr.elias.oessentials.messaging.internal.rabbitmq.IndividualPacketChannel;
 import fr.elias.oessentials.messaging.internal.rabbitmq.MultiPacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
 
-
+@ModuleApi("services")
 public final class PacketChannels {
     private PacketChannels() {}
 

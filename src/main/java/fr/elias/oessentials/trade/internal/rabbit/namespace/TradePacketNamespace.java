@@ -6,7 +6,7 @@ import fr.elias.oessentials.trade.internal.rabbit.packet.TradeGrantPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeInvitePacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStartPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStatePacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 public final class TradePacketNamespace extends PacketNamespace {
 

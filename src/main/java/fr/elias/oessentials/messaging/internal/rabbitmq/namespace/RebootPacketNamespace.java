@@ -1,5 +1,7 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
 
+import fr.elias.oessentials.messaging.api.PacketNamespace;
+
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.tp.SafeZoneEnterPacket;
 
 /** Auto-reboot safe-zone handoff; ids are on the wire, keep them stable. */

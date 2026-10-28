@@ -2,8 +2,8 @@ package fr.elias.oessentials.storage.internal.homes.home;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomeTeleportRequestPacket;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
@@ -119,7 +119,7 @@ public class HomesGuiCommand implements OreoCommand {
         }
 
         final var plugin = OEssentials.get();
-        final PacketManager pm = plugin.getPacketManager();
+        final PacketBus pm = plugin.getPacketBus();
         if (pm != null && pm.isInitialized()) {
             final String requestId = UUID.randomUUID().toString();
             HomeTeleportRequestPacket pkt = new HomeTeleportRequestPacket(p.getUniqueId(), key, targetServer, requestId);

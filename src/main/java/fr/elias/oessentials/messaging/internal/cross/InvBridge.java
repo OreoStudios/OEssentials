@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.enderchest.internal.EnderChestService;
 import fr.elias.oessentials.enderchest.internal.EnderChestStorage;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
 import fr.elias.oessentials.messaging.internal.cross.rabbit.packets.CrossInvPacket;
 import fr.elias.oessentials.sync.internal.services.InventoryService;

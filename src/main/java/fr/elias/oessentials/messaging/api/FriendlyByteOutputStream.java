@@ -1,11 +1,13 @@
-package fr.elias.oessentials.messaging.internal.rabbitmq.stream;
+package fr.elias.oessentials.messaging.api;
 
+import dev.oreo.modulith.core.ModuleApi;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+@ModuleApi("services")
 public class FriendlyByteOutputStream {
 
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -1,5 +1,7 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
 
+import fr.elias.oessentials.messaging.api.PacketNamespace;
+
 import fr.elias.oessentials.afk.internal.rabbit.namespace.AfkPacketNamespace;
 import fr.elias.oessentials.economy.internal.rabbit.namespace.EconomyPacketNamespace;
 

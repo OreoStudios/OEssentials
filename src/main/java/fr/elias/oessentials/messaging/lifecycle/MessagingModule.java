@@ -57,7 +57,7 @@ import fr.elias.oessentials.trade.internal.rabbit.packet.TradeInvitePacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStartPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStatePacket;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.PlayerWarpTeleportRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.internal.rabbitmq.handler.RemoteMessagePacketHandler;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
 import fr.elias.oessentials.messaging.internal.rabbitmq.sender.RabbitMQSender;
@@ -103,7 +103,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     @Override public InvlookManager getInvlookManager() { return invlookManager; }
     @Override public InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
     @Override public TradeCrossServerBroker getTradeBroker() { return tradeBroker; }
-    @Override public PacketManager getPacketManager() { return packetManager; }
+    @Override public PacketManager getPacketBus() { return packetManager; }
     @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
 
@@ -197,7 +197,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
                 }
 
                 this.packetManager.subscribeChannel(PacketChannels.GLOBAL);
-                this.packetManager.subscribeChannel(fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(services(ConfigurationServices.class).getServerConfig().serverName()));
+                this.packetManager.subscribeChannel(fr.elias.oessentials.messaging.api.PacketChannel.individual(services(ConfigurationServices.class).getServerConfig().serverName()));
                 plugin.getLogger().info("[RABBIT] Subscribed channels: global + individual(" + services(ConfigurationServices.class).getServerConfig().serverName() + ")");
 
                 if (this.invseeBroker != null) {

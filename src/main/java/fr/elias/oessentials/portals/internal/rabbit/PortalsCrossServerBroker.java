@@ -1,8 +1,8 @@
 package fr.elias.oessentials.portals.internal.rabbit;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,7 +28,7 @@ public final class PortalsCrossServerBroker implements Listener {
             String worldName, double x, double y, double z,
             float yaw, float pitch, boolean keepYawPitch, String requestId) {}
 
-    public PortalsCrossServerBroker(OEssentials plugin, PacketManager pm) {
+    public PortalsCrossServerBroker(OEssentials plugin, PacketBus pm) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
@@ -104,7 +104,7 @@ public final class PortalsCrossServerBroker implements Listener {
         }
     }
 
-    public void sendCrossServerPortal(PacketManager pm, Player player,
+    public void sendCrossServerPortal(PacketBus pm, Player player,
                                       String destServer, String destWorld,
                                       double x, double y, double z,
                                       float yaw, float pitch, boolean keepYawPitch) {
