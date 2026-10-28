@@ -61,4 +61,25 @@ class OwnedCommandsTest {
         verify(own).unregister(map);
         verify(other, never()).unregister(map);
     }
+
+    @Test
+    void removesOnlyTheGivenCommands() {
+        Command disabled = mock(Command.class);
+        Command kept = mock(Command.class);
+        CommandMap map = mock(CommandMap.class);
+        var entries = new HashMap<String, Command>();
+        entries.put("spawn", disabled);
+        entries.put("oessentials:spawn", disabled);
+        entries.put("warp", kept);
+        when(map.getKnownCommands()).thenReturn(entries);
+        var owned = new OwnedCommands();
+        owned.add(disabled);
+        owned.add(kept);
+        owned.remove(java.util.List.of(disabled), map);
+        assertEquals(Map.of("warp", kept), entries);
+        verify(disabled).unregister(map);
+        owned.removeFrom(map);
+        assertTrue(entries.isEmpty());
+        verify(disabled, times(1)).unregister(map);
+    }
 }
