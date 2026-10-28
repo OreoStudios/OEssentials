@@ -185,7 +185,7 @@ public class MuteService {
         // Accept: 30s, 10m, 2h, 1d — also plain seconds like "120"
         try {
             token = token.trim().toLowerCase(Locale.ROOT);
-            if (token.matches("\\d+")) return Long.parseLong(token) * 1000L;
+            if (token.matches("\\d+")) return fr.elias.oessentials.shared.Durations.times(Long.parseLong(token), 1000L);
             long mult = switch (token.charAt(token.length()-1)) {
                 case 's' -> 1000L;
                 case 'm' -> 60_000L;
@@ -194,7 +194,7 @@ public class MuteService {
                 default -> 1000L;
             };
             long val = Long.parseLong(token.substring(0, token.length()-1));
-            return val * mult;
+            return fr.elias.oessentials.shared.Durations.times(val, mult); // -1 (invalid) when absurdly long
         } catch (Exception e) {
             return -1;
         }

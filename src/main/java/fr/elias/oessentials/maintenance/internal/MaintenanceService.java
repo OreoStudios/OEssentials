@@ -248,21 +248,26 @@ public class MaintenanceService {
             try {
                 long number = Long.parseLong(numberStr);
 
+                long unitMillis;
                 switch (unit) {
                     case 'd': // days
-                        totalMillis += number * 24 * 60 * 60 * 1000;
+                        unitMillis = 86_400_000L;
                         break;
                     case 'h': // hours
-                        totalMillis += number * 60 * 60 * 1000;
+                        unitMillis = 3_600_000L;
                         break;
                     case 'm': // minutes
-                        totalMillis += number * 60 * 1000;
+                        unitMillis = 60_000L;
                         break;
                     case 's': // seconds
-                        totalMillis += number * 1000;
+                        unitMillis = 1000L;
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid time unit: " + unit + ". Use d, h, m, or s");
+                }
+                totalMillis = fr.elias.oessentials.shared.Durations.plus(totalMillis, fr.elias.oessentials.shared.Durations.times(number, unitMillis));
+                if (totalMillis < 0) {
+                    throw new IllegalArgumentException("Duration is too long (max 100 years)");
                 }
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid number format: " + numberStr);

@@ -6,8 +6,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -183,15 +181,18 @@ public class WarnService {
         Matcher m = DURATION_TOKEN.matcher(s);
         long total = 0;
         while (m.find()) {
-            long val = Long.parseLong(m.group(1));
-            total += switch (Character.toLowerCase(m.group(2).charAt(0))) {
-                case 's' -> Duration.ofSeconds(val).toMillis();
-                case 'm' -> Duration.ofMinutes(val).toMillis();
-                case 'h' -> Duration.ofHours(val).toMillis();
-                case 'd' -> Duration.ofDays(val).toMillis();
-                case 'w' -> Duration.ofDays(val * 7).toMillis();
+            long val;
+            try { val = Long.parseLong(m.group(1)); } catch (NumberFormatException e) { return -1; }
+            long unit = switch (Character.toLowerCase(m.group(2).charAt(0))) {
+                case 's' -> 1000L;
+                case 'm' -> 60_000L;
+                case 'h' -> 3_600_000L;
+                case 'd' -> 86_400_000L;
+                case 'w' -> 604_800_000L;
                 default  -> 0L;
             };
+            total = fr.elias.oessentials.shared.Durations.plus(total, fr.elias.oessentials.shared.Durations.times(val, unit));
+            if (total < 0) return -1; // longer than 100 years: treated as unset
         }
         return total == 0 ? -1 : total;
     }

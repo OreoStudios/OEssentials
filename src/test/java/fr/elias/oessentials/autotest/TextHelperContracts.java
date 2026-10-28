@@ -13,6 +13,7 @@ import fr.elias.oessentials.commandtoggle.internal.CommandToggleConfig;
 import fr.elias.oessentials.maintenance.internal.MaintenanceService;
 import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.platform.ui.ConfirmDialogHandler;
+import fr.elias.oessentials.shared.Durations;
 import fr.elias.oessentials.shared.TimeText;
 
 /**
@@ -60,6 +61,21 @@ public class TextHelperContracts {
     @NotNullResult
     public String muteRemaining(@TestRange(min = -1, max = 1.0E15) long millis) {
         return MuteService.friendlyRemaining(millis);
+    }
+
+    /** Duration arithmetic is either in [0, 100 years] or -1; it never wraps. */
+    @AutoTest(samples = 500)
+    @ResultRange(min = -1, max = Durations.MAX_MILLIS)
+    public long durationTimes(@TestRange(min = -10, max = 9.0E18) long value,
+                              @TestRange(min = 0, max = 604_800_000) long unitMillis) {
+        return Durations.times(value, unitMillis);
+    }
+
+    @AutoTest(samples = 500)
+    @ResultRange(min = -1, max = Durations.MAX_MILLIS)
+    public long durationPlus(@TestRange(min = -10, max = 9.0E18) long a,
+                             @TestRange(min = -10, max = 9.0E18) long b) {
+        return Durations.plus(a, b);
     }
 
     // --- command arguments --------------------------------------------------------------------
