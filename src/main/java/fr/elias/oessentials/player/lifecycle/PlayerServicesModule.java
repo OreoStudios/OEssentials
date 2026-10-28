@@ -130,7 +130,6 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
         plugin.getServer().getPluginManager().registerEvents(new DeathBackListener(deathBackService), plugin);
         plugin.getServer().getPluginManager().registerEvents(new GodListener(godService), plugin);
         plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.rtp.internal.listeners.DeathRespawnListener(plugin), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.storage.internal.spawn.FirstJoinSpawnListener(plugin), plugin);
         vanishService.restoreOnlinePlayers();
 
         // store vanishService ref for commands block

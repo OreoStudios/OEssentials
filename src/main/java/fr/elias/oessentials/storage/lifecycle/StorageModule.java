@@ -61,6 +61,7 @@ public final class StorageModule extends ManagedModule implements StorageService
         messaging.registerNamespace(new fr.elias.oessentials.storage.internal.playerwarp.rabbit.PlayerWarpPacketNamespace());
         initStorage();
         registerImportCommands();
+        registerCommands();
         listenForModuleEvents(this);
     }
 
@@ -96,6 +97,45 @@ public final class StorageModule extends ManagedModule implements StorageService
     @Override public fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory() { return playerDirectory; }
     @Override public void setBalanceImportTarget(BalanceImportTarget target) { this.balanceImportTarget = target; }
     @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
+
+    /** Spawn, warp, home and player-warp commands, and the first-join spawn. */
+    private void registerCommands() {
+        var commands = services(ConfigurationServices.class).getCommands();
+        final boolean homes = services(ConfigurationServices.class).getFeatureSettings().homesEnabled();
+        commands
+                .register(new fr.elias.oessentials.storage.internal.spawn.SpawnCommand(spawnService))
+                .register(new fr.elias.oessentials.storage.internal.spawn.SetSpawnCommand(spawnService))
+                .register(new fr.elias.oessentials.storage.internal.spawn.SetFirstSpawnCommand(spawnService))
+                .register(new fr.elias.oessentials.storage.internal.warps.commands.WarpCommand(warpService))
+                .register(new fr.elias.oessentials.storage.internal.warps.commands.SetWarpCommand(warpService))
+                .register(new fr.elias.oessentials.storage.internal.warps.commands.WarpsCommand(warpService))
+                .register(new fr.elias.oessentials.storage.internal.warps.commands.WarpsAdminCommand(warpService))
+                .registerIf(homes, new fr.elias.oessentials.storage.internal.homes.home.HomeCommand(homeService))
+                .register(new fr.elias.oessentials.storage.internal.warps.commands.DelWarpCommand(warpService))
+                .registerIf(homes, new fr.elias.oessentials.storage.internal.homes.home.SetHomeCommand(homeService, services(ConfigurationServices.class).getServerConfig()))
+                .registerIf(homes, new fr.elias.oessentials.storage.internal.homes.home.DelHomeCommand(homeService))
+                .registerIf(homes, new fr.elias.oessentials.storage.internal.homes.HomesCommand(homeService))
+                .registerIf(homes, new fr.elias.oessentials.storage.internal.homes.home.HomesGuiCommand(homeService));
+        if (homes) {
+            var otherHomesCmd = new fr.elias.oessentials.storage.internal.homes.OtherHomesListCommand(plugin, homeService);
+            commands.registerLegacy("otherhomes", otherHomesCmd, otherHomesCmd);
+            // otherhome is an OreoCommand; register() already wires its tab completer.
+            commands.register(new fr.elias.oessentials.storage.internal.homes.OtherHomeCommand(plugin, homeService));
+        }
+        commands.rewireTab("home", new fr.elias.oessentials.storage.internal.homes.HomeTabCompleter(homeService));
+        commands.rewireTab("warp", new fr.elias.oessentials.storage.internal.warps.WarpTabCompleter(warpService));
+
+        // /pw keeps PlayerWarpCommand's own completer: the old PlayerWarpTabCompleter rewire ran
+        // before /pw was registered and never took effect.
+        if (playerWarpService != null && services(ConfigurationServices.class).getFeatureSettings().playerWarpsEnabled()) {
+            commands.register(new fr.elias.oessentials.storage.internal.playerwarp.command.PlayerWarpCommand(playerWarpService));
+            var pwwCmd = new fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpWhitelistCommand(playerWarpService);
+            commands.registerLegacy("pwwhitelist", pwwCmd, pwwCmd);
+            plugin.getLogger().info("[PlayerWarps] /pwwhitelist registered.");
+        }
+
+        plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.storage.internal.spawn.FirstJoinSpawnListener(plugin), plugin);
+    }
 
     /** CMI, EssentialsX and zEssentials data importers; balances go to whichever economy registered itself. */
     private void registerImportCommands() {

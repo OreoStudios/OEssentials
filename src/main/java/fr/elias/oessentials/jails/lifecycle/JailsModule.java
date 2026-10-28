@@ -4,8 +4,6 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
-import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpWhitelistCommand;
-import fr.elias.oessentials.storage.internal.playerwarp.command.PlayerWarpCommand;
 
 @PluginModule(value = "jails", dependencies = {"configuration::services", "storage::services"}, after = {"commands"})
 public final class JailsModule extends ManagedModule implements JailsServices {
@@ -48,14 +46,6 @@ public final class JailsModule extends ManagedModule implements JailsServices {
         services(ConfigurationServices.class).getCommands().registerLegacy("jaillist",
                 new fr.elias.oessentials.jails.internal.jail.commands.JailListCommand(jailService),
                 new fr.elias.oessentials.jails.internal.jail.commands.JailListCommandTabCompleter(jailService));
-
-        if (services(StorageServices.class).getPlayerWarpService() != null
-                && services(ConfigurationServices.class).getFeatureSettings().playerWarpsEnabled()) {
-            services(ConfigurationServices.class).getCommands().register(new PlayerWarpCommand(services(StorageServices.class).getPlayerWarpService()));
-            PlayerWarpWhitelistCommand pwwCmd = new PlayerWarpWhitelistCommand(services(StorageServices.class).getPlayerWarpService());
-            services(ConfigurationServices.class).getCommands().registerLegacy("pwwhitelist", pwwCmd, pwwCmd);
-            plugin.getLogger().info("[PlayerWarps] /pwwhitelist registered.");
-        }
 
         plugin.getLogger().info("[Jails] System initialized with " + jailStorage.getClass().getSimpleName());
     }

@@ -54,24 +54,13 @@ import fr.elias.oessentials.economy.internal.ecocommands.EcoMigrateCommand;
 import fr.elias.oessentials.enderchest.internal.EcCommand;
 import fr.elias.oessentials.enderchest.internal.EcSeeCommand;
 import fr.elias.oessentials.commands.internal.furnace.FurnaceCommand;
-import fr.elias.oessentials.storage.internal.homes.HomeTabCompleter;
-import fr.elias.oessentials.storage.internal.homes.HomesCommand;
-import fr.elias.oessentials.storage.internal.homes.OtherHomeCommand;
-import fr.elias.oessentials.storage.internal.homes.OtherHomesListCommand;
-import fr.elias.oessentials.storage.internal.homes.home.DelHomeCommand;
-import fr.elias.oessentials.storage.internal.homes.home.HomeCommand;
-import fr.elias.oessentials.storage.internal.homes.home.HomesGuiCommand;
-import fr.elias.oessentials.storage.internal.homes.home.SetHomeCommand;
 import fr.elias.oessentials.sync.internal.invsee.command.InvseeCommand;
 import fr.elias.oessentials.commands.internal.near.NearCommand;
 import fr.elias.oessentials.chat.internal.nick.NickCommand;
 import fr.elias.oessentials.chat.internal.nick.RealNameCommand;
 import fr.elias.oessentials.commands.internal.ping.PingCommand;
-import fr.elias.oessentials.storage.internal.playerwarp.command.PlayerWarpTabCompleter;
 import fr.elias.oessentials.inventory.internal.sellgui.command.SellGuiCommand;
 import fr.elias.oessentials.skins.internal.skin.SkinCommand;
-import fr.elias.oessentials.storage.internal.spawn.SetSpawnCommand;
-import fr.elias.oessentials.storage.internal.spawn.SpawnCommand;
 import fr.elias.oessentials.player.internal.tp.command.TpAcceptCommand;
 import fr.elias.oessentials.player.internal.tp.command.TpCommand;
 import fr.elias.oessentials.player.internal.tp.command.TpDenyCommand;
@@ -79,12 +68,6 @@ import fr.elias.oessentials.player.internal.tp.command.TpaCommand;
 import fr.elias.oessentials.player.internal.tp.command.TphereCommand;
 import fr.elias.oessentials.player.internal.tp.completer.TpTabCompleter;
 import fr.elias.oessentials.player.internal.tp.completer.TpaTabCompleter;
-import fr.elias.oessentials.storage.internal.warps.WarpTabCompleter;
-import fr.elias.oessentials.storage.internal.warps.commands.DelWarpCommand;
-import fr.elias.oessentials.storage.internal.warps.commands.SetWarpCommand;
-import fr.elias.oessentials.storage.internal.warps.commands.WarpCommand;
-import fr.elias.oessentials.storage.internal.warps.commands.WarpsAdminCommand;
-import fr.elias.oessentials.storage.internal.warps.commands.WarpsCommand;
 
 @PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, after = {"custom-worlds"})
 public final class CommandsModule extends ManagedModule implements CommandsServices {
@@ -109,18 +92,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
 
         final boolean homes = services(ConfigurationServices.class).getFeatureSettings().homesEnabled();
         services(ConfigurationServices.class).getCommands()
-                .register(new SpawnCommand(services(StorageServices.class).getSpawnService()))
-                .register(new SetSpawnCommand(services(StorageServices.class).getSpawnService()))
-                .register(new fr.elias.oessentials.storage.internal.spawn.SetFirstSpawnCommand(services(StorageServices.class).getSpawnService()))
                 .register(new BackCommand(services(PlayerServices.class).getBackService(), services(PlayerServices.class).getTeleportService(), plugin))
-                .register(new WarpCommand(services(StorageServices.class).getWarpService()))
-                .register(new SetWarpCommand(services(StorageServices.class).getWarpService()))
-                .register(new WarpsCommand(services(StorageServices.class).getWarpService()))
-                .register(new WarpsAdminCommand(services(StorageServices.class).getWarpService()))
-                .registerIf(homes, new HomeCommand(services(StorageServices.class).getHomeService()))
-                .register(new DelWarpCommand(services(StorageServices.class).getWarpService()))
-                .registerIf(homes, new SetHomeCommand(services(StorageServices.class).getHomeService(), services(ConfigurationServices.class).getServerConfig()))
-                .registerIf(homes, new DelHomeCommand(services(StorageServices.class).getHomeService()))
                 .register(new TpaCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new TpAcceptCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new TpDenyCommand(services(PlayerServices.class).getTeleportService()))
@@ -130,8 +102,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(buildMsgCommand(services(PlayerServices.class).getMessageService()))
                 .register(new ReplyCommand(services(PlayerServices.class).getMessageService(), plugin))
                 .register(new BroadcastCommand())
-                .registerIf(homes, new HomesCommand(services(StorageServices.class).getHomeService()))
-                .registerIf(homes, new HomesGuiCommand(services(StorageServices.class).getHomeService()))
                 .register(new DeathBackCommand(services(PlayerServices.class).getDeathBackService()))
                 .register(new GodCommand(services(PlayerServices.class).getGodService()))
                 .register(new AfeliusReloadCommand(plugin, services(ChatServices.class).getChatConfig()))
@@ -264,14 +234,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         });
 
         // Commands that have no OreoCommand registration — use registerLegacy.
-        if (services(ConfigurationServices.class).getFeatureSettings().homesEnabled()) {
-            var otherHomesCmd = new OtherHomesListCommand(plugin, services(StorageServices.class).getHomeService());
-            services(ConfigurationServices.class).getCommands().registerLegacy("otherhomes", otherHomesCmd, otherHomesCmd);
-
-            // otherhome is an OreoCommand; register() already wires its tab completer.
-            services(ConfigurationServices.class).getCommands().register(new OtherHomeCommand(plugin, services(StorageServices.class).getHomeService()));
-        }
-
         var aliasCmd = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasEditorCommand(services(ProxyMessagingServices.class).getAliasService(), services(InventoriesServices.class).getInvManager());
         services(ConfigurationServices.class).getCommands().registerLegacy("aliaseditor", aliasCmd, aliasCmd);
 
@@ -285,11 +247,8 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         services(ConfigurationServices.class).getCommands().rewireTab("skin",       new SkinCommand());
         services(ConfigurationServices.class).getCommands().rewireTab("clone",      new CloneCommand());
         services(ConfigurationServices.class).getCommands().rewireTab("head",       new HeadCommand());
-        services(ConfigurationServices.class).getCommands().rewireTab("home",       new HomeTabCompleter(services(StorageServices.class).getHomeService()));
-        services(ConfigurationServices.class).getCommands().rewireTab("warp",       new WarpTabCompleter(services(StorageServices.class).getWarpService()));
         services(ConfigurationServices.class).getCommands().rewireTab("enchant",    new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());
         services(ConfigurationServices.class).getCommands().rewireTab("disenchant", new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());
-        if (services(StorageServices.class).getPlayerWarpService() != null) services(ConfigurationServices.class).getCommands().rewireTab("pw", new PlayerWarpTabCompleter(services(StorageServices.class).getPlayerWarpService()));
         services(ConfigurationServices.class).getCommands().rewireTab("mute",   muteCmd);
         services(ConfigurationServices.class).getCommands().rewireTab("unmute", unmuteCmd);
         services(ConfigurationServices.class).getCommands().rewireTab("unban",  new UnbanCommand());
