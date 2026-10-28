@@ -113,6 +113,7 @@ public final class TradeCommand implements TabExecutor {
 
             if (targetId != null && !targetId.equals(p.getUniqueId())) {
                 log("[TRADE] sending REMOTE invite: " + p.getName() + " -> " + targetName + " (" + targetId + ")");
+                service.noteNewTrade(p.getUniqueId(), targetId);
                 broker.sendInvite(p, targetId, targetName);
                 return true;
             } else {

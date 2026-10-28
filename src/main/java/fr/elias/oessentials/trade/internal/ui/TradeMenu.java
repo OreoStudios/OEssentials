@@ -126,6 +126,41 @@ public final class TradeMenu implements InventoryProvider {
         });
     }
 
+
+    private static final org.bukkit.NamespacedKey UI_KEY =
+            java.util.Objects.requireNonNull(org.bukkit.NamespacedKey.fromString("oessentials:trade_ui"));
+
+    /** Marks menu decoration so it can never be read back (or returned) as an offered item. */
+    static ItemStack ui(ItemStack it) {
+        if (it == null) return null;
+        ItemMeta meta = it.getItemMeta();
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(UI_KEY, org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+            it.setItemMeta(meta);
+        }
+        return it;
+    }
+
+    /** Whether {@code it} is trade-menu decoration (border, buttons, heads, "Locked" placeholders). */
+    public static boolean isUiItem(ItemStack it) {
+        if (it == null || !it.hasItemMeta()) return false;
+        return it.getItemMeta().getPersistentDataContainer().has(UI_KEY, org.bukkit.persistence.PersistentDataType.BYTE);
+    }
+
+    /**
+     * The top inventory of {@code p} when it is this trade menu, else {@code null}. Writes used to
+     * go to whatever inventory the player had open: a chest received copies of offered items, and
+     * with no menu open the writes failed with ArrayIndexOutOfBoundsException.
+     */
+    private Inventory openTradeTop(Player p) {
+        if (p == null || !p.isOnline()) return null;
+        SmartInventory mine = (a != null && p.getUniqueId().equals(a.getUniqueId())) ? invA : invB;
+        var open = plugin.getInvManager().getInventory(p);
+        if (open.isEmpty() || open.get() != mine) return null;
+        var view = p.getOpenInventory();
+        return view == null ? null : view.getTopInventory();
+    }
+
     private void registerViewer(Player p) {
         try {
             if (reg != null && p != null) reg.register(p.getUniqueId(), this);
@@ -145,7 +180,7 @@ public final class TradeMenu implements InventoryProvider {
         final int[] editable = isAViewer ? A_AREA_SLOTS : B_AREA_SLOTS;
         markEditable(contents, editable);
 
-        ItemStack border = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack border = ui(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         ClickableItem borderItem = ClickableItem.empty(border);
 
         for (int c = 0; c < 9; c++) contents.set(0, c, borderItem);
@@ -175,13 +210,14 @@ public final class TradeMenu implements InventoryProvider {
             dMeta.setDisplayName(legacy(config.dividerName));
             divider.setItemMeta(dMeta);
         }
+        ui(divider);
 
         ClickableItem dividerItem = ClickableItem.empty(divider);
         contents.set(2, 4, dividerItem);
         contents.set(3, 4, dividerItem);
         contents.set(4, 4, dividerItem);
 
-        contents.set(1, 4, ClickableItem.empty(new ItemStack(Material.BOOK)));
+        contents.set(1, 4, ClickableItem.empty(ui(new ItemStack(Material.BOOK))));
 
         contents.set(5, 2, confirmButton(viewer, false));  // my confirm
         contents.set(5, 4, cancelButton(viewer));          // cancel
@@ -255,7 +291,8 @@ public final class TradeMenu implements InventoryProvider {
             TradeSession sess = service.getSession(sid);
             if (sess == null) return;
 
-            Inventory top = viewer.getOpenInventory().getTopInventory();
+            Inventory top = openTradeTop(viewer);
+            if (top == null) return;
 
             // Paint opponent area from session
             ItemStack[] other = viewerIsA ? sess.viewOfferB() : sess.viewOfferA();
@@ -303,6 +340,7 @@ public final class TradeMenu implements InventoryProvider {
         for (int i = 0; i < slots.length; i++) {
             int invSlot = slots[i];
             ItemStack now = cloneOrNull(safeGet(top, invSlot));
+            if (isUiItem(now)) continue; // e.g. the "Locked" placeholders shown while a trade completes
             ItemStack was = last[i];
             if (!isSame(now, was)) {
                 last[i] = cloneOrNull(now);
@@ -329,11 +367,9 @@ public final class TradeMenu implements InventoryProvider {
                     boolean viewerIsA = (a != null && viewer.getUniqueId().equals(a.getUniqueId()));
                     Player opp = viewerIsA ? b : a;
 
-                    if (opp != null && opp.isOnline()
-                            && opp.getOpenInventory() != null
-                            && opp.getOpenInventory().getTopInventory() != null) {
+                    Inventory oppTop = openTradeTop(opp);
+                    if (oppTop != null) {
                         int[] oppSlots = viewerIsA ? A_AREA_SLOTS : B_AREA_SLOTS;
-                        Inventory oppTop = opp.getOpenInventory().getTopInventory();
                         oppTop.setItem(oppSlots[idx], itemCopy);
                     }
                 });
@@ -350,7 +386,7 @@ public final class TradeMenu implements InventoryProvider {
             meta.setDisplayName(displayName);
             head.setItemMeta(meta);
         } catch (Throwable ignored) {}
-        return head;
+        return ui(head);
     }
 
     private static ItemStack safeGet(Inventory inv, int slot) {
@@ -416,7 +452,7 @@ public final class TradeMenu implements InventoryProvider {
             meta.setDisplayName(legacy(raw));
             it.setItemMeta(meta);
         }
-        return it;
+        return ui(it);
     }
 
     private ClickableItem cancelButton(Player viewer) {
@@ -426,6 +462,7 @@ public final class TradeMenu implements InventoryProvider {
             meta.setDisplayName(legacy(config.cancelText));
             it.setItemMeta(meta);
         }
+        ui(it);
 
         return ClickableItem.of(it, e -> {
             try {
@@ -453,7 +490,7 @@ public final class TradeMenu implements InventoryProvider {
             meta.setDisplayName(legacy(text));
             it.setItemMeta(meta);
         }
-        return it;
+        return ui(it);
     }
 
     public void replaceOffersWithPlaceholdersSafely() {
@@ -466,6 +503,7 @@ public final class TradeMenu implements InventoryProvider {
                 im.setDisplayName(legacy(text));
                 ph.setItemMeta(im);
             }
+            ui(ph);
 
             int[] offerSlotsA = getOfferSlotsAOrEmpty();
             int[] offerSlotsB = getOfferSlotsBOrEmpty();
