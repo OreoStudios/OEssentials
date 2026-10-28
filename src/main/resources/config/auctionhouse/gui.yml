@@ -2,34 +2,34 @@
 # OEssentials - Auction House GUI
 # ===================================
 #
-# Personnalisez l'apparence visuelle de tous les menus /ah.
+# Customise how every /ah menu looks.
 #
-# Slots : position brute dans l'inventaire (0-53 pour 6 rangées).
-#   Rangée 0 = slots 0-8   | Rangée 1 = slots 9-17
-#   Rangée 2 = slots 18-26 | Rangée 3 = slots 27-35
-#   Rangée 4 = slots 36-44 | Rangée 5 = slots 45-53
+# Slots: raw inventory position (0-53 for 6 rows).
+#   Row 0 = slots 0-8   | Row 1 = slots 9-17
+#   Row 2 = slots 18-26 | Row 3 = slots 27-35
+#   Row 4 = slots 36-44 | Row 5 = slots 45-53
 #
-# Utilisez les codes couleur & (ex: &6&l pour or gras).
-# Supports: {page}, {category}, {query}, {count} selon le bouton.
+# Use & colour codes (e.g. &6&l for bold gold).
+# Supports: {page}, {category}, {query}, {count} depending on the button.
 
 # ─────────────────────────────────────
-# Menu principal - Parcourir les ventes
+# Main menu - browse listings
 # ─────────────────────────────────────
 browse:
-  title: "&6&lHôtel des Ventes"
-  title-category: "&6&lHôtel des Ventes &8- &e{category}"
-  title-search: "&6&lRecherche: &f{query}"
-  title-search-category: "&6&lRecherche: &f{query} &8- &e{category}"
+  title: "&6&lAuction House"
+  title-category: "&6&lAuction House &8- &e{category}"
+  title-search: "&6&lSearch: &f{query}"
+  title-search-category: "&6&lSearch: &f{query} &8- &e{category}"
   border: GRAY_STAINED_GLASS_PANE
   buttons:
     prev-page:
       slot: 48
       material: ARROW
-      name: "&e&lPage précédente"
+      name: "&e&lPrevious Page"
     next-page:
       slot: 50
       material: ARROW
-      name: "&e&lPage suivante"
+      name: "&e&lNext Page"
     page-indicator:
       slot: 49
       material: PAPER
@@ -41,19 +41,19 @@ browse:
     categories:
       slot: 46
       material: COMPASS
-      name: "&b&lCatégories"
+      name: "&b&lCategories"
     back-to-all:
       slot: 46
       material: BARRIER
-      name: "&c&lRetour à tout"
+      name: "&c&lBack to All"
     your-listings:
       slot: 52
       material: CHEST
-      name: "&6&lMes annonces"
+      name: "&6&lYour Listings"
     close:
       slot: 53
       material: BARRIER
-      name: "&c&lFermer"
+      name: "&c&lClose"
     no-auctions:
       slot: 22
       material: BARRIER
@@ -64,22 +64,22 @@ browse:
       name: "&c&lNo Results"
 
 # ─────────────────────────────────────
-# Menu des catégories
+# Categories menu
 # ─────────────────────────────────────
 categories:
-  title: "&b&lCatégories"
+  title: "&b&lCategories"
   border: CYAN_STAINED_GLASS_PANE
   buttons:
     back:
       slot: 49
       material: BARRIER
-      name: "&c&lRetour aux ventes"
+      name: "&c&lBack to Browse"
 
 # ─────────────────────────────────────
-# Menu de mise en vente
+# Listing (sell) menu
 # ─────────────────────────────────────
 sell:
-  title: "&6&lChoisir une catégorie"
+  title: "&6&lChoose a Category"
   border: ORANGE_STAINED_GLASS_PANE
   buttons:
     confirm:
@@ -92,24 +92,24 @@ sell:
       name: "&c&l✗ ANNULER"
 
 # ─────────────────────────────────────
-# Menu de gestion des annonces
+# Manage your listings menu
 # ─────────────────────────────────────
 manage:
-  title: "&6&lMes annonces"
+  title: "&6&lYour Listings"
   border: GRAY_STAINED_GLASS_PANE
   buttons:
     prev-page:
       slot: 48
       material: ARROW
-      name: "&e&lPrécédent"
+      name: "&e&lPrevious"
     next-page:
       slot: 50
       material: ARROW
-      name: "&e&lSuivant"
+      name: "&e&lNext"
     expired:
       slot: 46
       material: RED_WOOL
-      name: "&c&lExpirées ({count})"
+      name: "&c&lExpired ({count})"
     sold:
       slot: 52
       material: GREEN_WOOL
@@ -117,7 +117,7 @@ manage:
     back:
       slot: 49
       material: BARRIER
-      name: "&c&lRetour"
+      name: "&c&lBack"
     no-listings:
       slot: 22
       material: BARRIER
@@ -126,10 +126,10 @@ manage:
         - "&7Use &e/ahs <price> &7to list an item!"
 
 # ─────────────────────────────────────
-# Menu de confirmation d'achat
+# Purchase confirmation menu
 # ─────────────────────────────────────
 confirm:
-  title: "&e&lConfirmer l'achat"
+  title: "&e&lConfirm Purchase"
   border: GRAY_STAINED_GLASS_PANE
   buttons:
     confirm:
@@ -146,7 +146,7 @@ confirm:
       name: "&e&lInformations sur l'achat"
 
 # ─────────────────────────────────────
-# Menu des articles vendus
+# Sold items menu
 # ─────────────────────────────────────
 sold:
   title: "&a&lArticles vendus"
@@ -155,43 +155,43 @@ sold:
     prev-page:
       slot: 48
       material: ARROW
-      name: "&e&lPrécédent"
+      name: "&e&lPrevious"
     next-page:
       slot: 50
       material: ARROW
-      name: "&e&lSuivant"
+      name: "&e&lNext"
     back:
       slot: 49
       material: BARRIER
-      name: "&c&lRetour"
+      name: "&c&lBack"
     no-sold:
       slot: 22
       material: BARRIER
       name: "&e&lNo Sold Items Yet"
 
 # ─────────────────────────────────────
-# Menu des annonces expirées
+# Expired listings menu
 # ─────────────────────────────────────
 expired:
-  title: "&c&lAnnonces expirées"
+  title: "&c&lExpired Listings"
   border: RED_STAINED_GLASS_PANE
   buttons:
     prev-page:
       slot: 48
       material: ARROW
-      name: "&e&lPrécédent"
+      name: "&e&lPrevious"
     next-page:
       slot: 50
       material: ARROW
-      name: "&e&lSuivant"
+      name: "&e&lNext"
     back:
       slot: 49
       material: BARRIER
-      name: "&c&lRetour"
+      name: "&c&lBack"
     reclaim-all:
       slot: 46
       material: CHEST
-      name: "&a&lTout récupérer ({count})"
+      name: "&a&lReclaim All ({count})"
     no-expired:
       slot: 22
       material: BARRIER
