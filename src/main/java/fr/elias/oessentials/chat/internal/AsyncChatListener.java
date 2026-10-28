@@ -33,6 +33,12 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class AsyncChatListener implements Listener {
+    /**
+     * Players whose line just answered an auction-house / orders prompt in the legacy chat event.
+     * Paper then fires its chat event for the same line already cancelled but with viewers, which
+     * onChat treats as "another plugin cancelled, still broadcast" - so the answer leaked into chat.
+     */
+    private final java.util.Map<java.util.UUID, Long> answeredPrompt = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final FormatManager formatManager;
     private final CustomConfig chatCfg;
@@ -93,6 +99,7 @@ public final class AsyncChatListener implements Listener {
         if (inventories != null && inventories.consumeChatInput(player, raw)) {
             event.setCancelled(true);
             event.getRecipients().clear();
+            answeredPrompt.put(player.getUniqueId(), System.nanoTime());
         }
     }
 
@@ -116,6 +123,12 @@ public final class AsyncChatListener implements Listener {
         } catch (Throwable ignored) {}
 
         final Player player = event.getPlayer();
+        Long answered = answeredPrompt.remove(player.getUniqueId());
+        if (answered != null && System.nanoTime() - answered < 2_000_000_000L) {
+            event.viewers().clear();
+            event.setCancelled(true);
+            return;
+        }
         var inventories = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class, i -> i);
         if (inventories != null && inventories.consumeChatInput(player,
                 PlainTextComponentSerializer.plainText().serialize(event.message()))) {
