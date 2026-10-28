@@ -48,19 +48,34 @@ class PacketWireIdsTest {
             }
         }
         assertEquals(declared.stream().sorted().toList(), registered,
-                "Every PacketNamespace must be passed to MessagingServices.registerNamespace");
+                "Every PacketNamespace must be passed to MessagingServices.registerNamespace exactly once");
     }
 
-    /** What messaging registers on startup. */
-    @SuppressWarnings("unchecked")
+    /** Every namespace passed to {@code registerNamespace(new ...())} anywhere in the plugin. */
     static List<PacketNamespace> registeredNamespaces() throws Exception {
-        var module = new fr.elias.oessentials.messaging.lifecycle.MessagingModule();
-        var register = module.getClass().getDeclaredMethod("registerNamespaces");
-        register.setAccessible(true);
-        register.invoke(module);
-        Field field = module.getClass().getDeclaredField("namespaces");
-        field.setAccessible(true);
-        return List.copyOf((List<PacketNamespace>) field.get(module));
+        Pattern call = Pattern.compile("registerNamespace\\(new ([\\w.]+)\\(\\)\\)");
+        Pattern pkg = Pattern.compile("^package ([\\w.]+);", Pattern.MULTILINE);
+        var found = new ArrayList<PacketNamespace>();
+        try (Stream<Path> files = Files.walk(SOURCES)) {
+            for (Path file : files.filter(f -> f.toString().endsWith(".java")).toList()) {
+                String source = Files.readString(file);
+                var match = call.matcher(source);
+                while (match.find()) {
+                    found.add((PacketNamespace) Class.forName(resolve(match.group(1), source, pkg))
+                            .getDeclaredConstructor().newInstance());
+                }
+            }
+        }
+        return found;
+    }
+
+    private static String resolve(String name, String source, Pattern pkg) {
+        if (name.contains(".")) return name;
+        var imported = Pattern.compile("^import ([\\w.]+\\." + name + ");", Pattern.MULTILINE).matcher(source);
+        if (imported.find()) return imported.group(1);
+        var p = pkg.matcher(source);
+        p.find();
+        return p.group(1) + "." + name;
     }
 
     static String describe(PacketRegistry registry) throws Exception {

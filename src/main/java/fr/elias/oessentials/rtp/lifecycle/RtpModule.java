@@ -6,6 +6,7 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.rtp.internal.RtpCommand;
 import fr.elias.oessentials.rtp.internal.RtpConfig;
 import fr.elias.oessentials.rtp.internal.RtpPendingService;
@@ -22,6 +23,7 @@ public final class RtpModule extends ManagedModule implements RtpServices {
 
     @Override
     protected void start() {
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.rtp.internal.RtpPacketNamespace());
         initRtp();
         listenForModuleEvents(this);
     }

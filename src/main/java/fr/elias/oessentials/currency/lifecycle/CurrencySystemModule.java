@@ -5,6 +5,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import fr.elias.oessentials.currency.internal.CurrencyConfig;
 import fr.elias.oessentials.currency.internal.CurrencyService;
@@ -28,6 +29,7 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
 
     @Override
     protected void start() {
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.currency.internal.rabbitmq.CurrencyPacketNamespace());
         initCurrencySystem();
         listenForModuleEvents(this);
     }

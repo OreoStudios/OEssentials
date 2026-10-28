@@ -13,6 +13,7 @@ public final class PortalsModule extends ManagedModule implements PortalsService
 
     @Override
     protected void start() {
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
         initPortals();
         listenForModuleEvents(this);
     }

@@ -4,13 +4,15 @@ import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 
-@PluginModule(value = "group-rtp", dependencies = {"messaging::events"}, after = {"portals"}, optional = true)
+@PluginModule(value = "group-rtp", dependencies = {"messaging::events", "messaging::services"}, after = {"portals"}, optional = true)
 public final class GroupRtpModule extends ManagedModule implements GroupRtpServices {
     private fr.elias.oessentials.grouprtp.internal.GroupRtpModule groupRtpModule;
 
     @Override
     protected void start() {
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpPacketNamespace());
         initGroupRtp();
         listenForModuleEvents(this);
     }

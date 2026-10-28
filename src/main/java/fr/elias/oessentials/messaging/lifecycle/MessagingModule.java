@@ -137,12 +137,8 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         registerNamespace(new fr.elias.oessentials.trade.internal.rabbit.namespace.TradePacketNamespace());
         registerNamespace(new fr.elias.oessentials.chat.internal.msg.ChatPacketNamespace());
         registerNamespace(new fr.elias.oessentials.player.internal.rabbit.PlayerPacketNamespace());
-        registerNamespace(new fr.elias.oessentials.rtp.internal.RtpPacketNamespace());
-        registerNamespace(new fr.elias.oessentials.currency.internal.rabbitmq.CurrencyPacketNamespace());
         registerNamespace(new fr.elias.oessentials.inventory.internal.InventoriesPacketNamespace());
-        registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
         registerNamespace(new fr.elias.oessentials.mail.internal.rabbitmq.MailPacketNamespace());
-        registerNamespace(new fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpPacketNamespace());
     }
     @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
