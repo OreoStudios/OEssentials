@@ -1,4 +1,6 @@
-package fr.elias.oessentials.trade.internal;
+package fr.elias.oessentials.messaging.api;
+
+import dev.oreo.modulith.core.ModuleApi;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -7,6 +9,8 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.*;
 import java.util.Base64;
 
+/** Encodes item stacks for packet payloads (trade offers, invsee contents). */
+@ModuleApi("services")
 public final class ItemStacksCodec {
 
     private ItemStacksCodec() {}

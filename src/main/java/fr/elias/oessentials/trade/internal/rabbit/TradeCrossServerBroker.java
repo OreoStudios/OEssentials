@@ -1,7 +1,7 @@
 package fr.elias.oessentials.trade.internal.rabbit;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.trade.internal.ItemStacksCodec;
+import fr.elias.oessentials.messaging.api.ItemStacksCodec;
 import fr.elias.oessentials.trade.internal.TradeIds;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeCancelPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeClosePacket;

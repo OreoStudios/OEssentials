@@ -7,7 +7,7 @@ import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeEditPacket
 import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeOpenRequestPacket;
 import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeStatePacket;
 import fr.elias.oessentials.sync.internal.services.InventoryService;
-import fr.elias.oessentials.trade.internal.ItemStacksCodec;
+import fr.elias.oessentials.messaging.api.ItemStacksCodec;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

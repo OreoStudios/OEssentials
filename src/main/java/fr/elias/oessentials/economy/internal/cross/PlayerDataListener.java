@@ -24,7 +24,7 @@ public class PlayerDataListener implements Listener {
         UUID playerUUID = event.getUniqueId();
         String playerName = event.getName();
 
-        CompletableFuture.supplyAsync(() -> plugin.getRedis().getBalance(playerUUID)).thenAccept(cachedBalance -> {
+        CompletableFuture.supplyAsync(() -> redisCache().getBalance(playerUUID)).thenAccept(cachedBalance -> {
             if (cachedBalance != null) {
                 if (isDebugEnabled()) {
                     plugin.getLogger().info("[OEssentials] Loaded cached balance for " + playerName + ": $" + cachedBalance);
@@ -34,7 +34,7 @@ public class PlayerDataListener implements Listener {
 
             CompletableFuture.supplyAsync(() -> plugin.getDatabase().getOrCreateBalance(playerUUID, playerName))
                     .thenAccept(balance -> {
-                        plugin.getRedis().setBalance(playerUUID, balance);
+                        redisCache().setBalance(playerUUID, balance);
                         if (isDebugEnabled()) {
                             plugin.getLogger().info("[OEssentials] Cached balance for " + playerName + ": $" + balance);
                         }
@@ -44,5 +44,10 @@ public class PlayerDataListener implements Listener {
 
     private boolean isDebugEnabled() {
         return plugin.getServerConfig().isDebugEnabled();
+    }
+
+    private fr.elias.oessentials.redis.api.BalanceCache redisCache() {
+        return plugin.getModuleRegistry().read(fr.elias.oessentials.redis.lifecycle.RedisServices.class,
+                fr.elias.oessentials.redis.lifecycle.RedisServices::getRedis);
     }
 }

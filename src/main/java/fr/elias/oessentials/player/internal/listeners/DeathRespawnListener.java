@@ -1,4 +1,4 @@
-package fr.elias.oessentials.rtp.internal.listeners;
+package fr.elias.oessentials.player.internal.listeners;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.api.ISpawnAPI;

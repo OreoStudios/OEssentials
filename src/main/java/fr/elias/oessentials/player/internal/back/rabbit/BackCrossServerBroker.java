@@ -8,7 +8,7 @@ import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.messaging.api.PacketSubscriber;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.shared.Lang;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,7 +26,7 @@ public class BackCrossServerBroker implements Listener {
     private final OEssentials plugin;
     private final TeleportService teleportService;
     private final PacketBus packetManager;
-    private final ProxyMessenger proxyMessenger;
+    private final ServerConnector proxyMessenger;
     private final String localServer;
 
     private final Map<UUID, BackLocation> pendingBacks = new ConcurrentHashMap<>();
@@ -34,7 +34,7 @@ public class BackCrossServerBroker implements Listener {
     public BackCrossServerBroker(OEssentials plugin,
                                  TeleportService teleportService,
                                  PacketBus packetManager,
-                                 ProxyMessenger proxyMessenger,
+                                 ServerConnector proxyMessenger,
                                  String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
@@ -80,7 +80,7 @@ public class BackCrossServerBroker implements Listener {
                 pkt
         );
 
-        proxyMessenger.sendToServer(player, loc.getServer());
+        proxyMessenger.connect(player, loc.getServer());
 
         Lang.send(player, "teleport.back.cross-server.jumping",
                 "<gray>Teleporting back to your previous location on <aqua>%server%</aqua>…</gray>",

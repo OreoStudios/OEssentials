@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.redis.lifecycle.RedisModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "redis")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "redis", lifecycle = fr.elias.oessentials.redis.lifecycle.RedisModule.class)
 package fr.elias.oessentials.redis;

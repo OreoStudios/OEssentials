@@ -8,7 +8,7 @@ import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeStatePacke
 import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.api.PacketBus;
-import fr.elias.oessentials.trade.internal.ItemStacksCodec;
+import fr.elias.oessentials.messaging.api.ItemStacksCodec;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;

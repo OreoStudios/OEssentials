@@ -57,12 +57,16 @@ class ModuleBoundaryRolloutTest {
             "mute-system",
             "performance-guards",
             "portals",
+            "proxy-messaging",
             "punishment-logger",
+            "redis",
+            "rtp",
             "rules",
             "scoreboard",
             "sharding",
             "storage",
             "tab",
+            "trade",
             "warnings",
             "web-panel"
     );
