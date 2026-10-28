@@ -1,7 +1,7 @@
 package fr.elias.oessentials.modgui.internal.menu;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;

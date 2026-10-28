@@ -8,7 +8,7 @@ import fr.elias.oessentials.modgui.internal.ip.IpAltsMenu;
 import fr.elias.oessentials.notes.internal.notes.NotesChatListener;
 import fr.elias.oessentials.notes.internal.notes.PlayerNotesManager;
 import fr.elias.oessentials.notes.internal.notes.PlayerNotesMenu;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;

@@ -2,7 +2,7 @@
 package fr.elias.oessentials.notes.internal.notes;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;

@@ -2,7 +2,7 @@ package fr.elias.oessentials.commands.internal.commands.core.playercommands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;

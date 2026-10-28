@@ -1,7 +1,7 @@
 package fr.elias.oessentials.commands.internal.near;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.player.internal.services.VanishService;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;

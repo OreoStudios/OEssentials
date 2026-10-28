@@ -1,4 +1,4 @@
-package fr.elias.oessentials.modgui.internal.util;
+package fr.elias.oessentials.platform.ui;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/** Fluent builder for menu items; shared UI infrastructure with no feature state. */
 public final class ItemBuilder {
     private final ItemStack item;
 

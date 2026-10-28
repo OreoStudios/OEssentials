@@ -749,7 +749,7 @@
   "fr.elias.oessentials.modgui.notes.NotesChatListener": "fr.elias.oessentials.notes.internal.notes.NotesChatListener",
   "fr.elias.oessentials.modgui.notes.PlayerNotesManager": "fr.elias.oessentials.notes.internal.notes.PlayerNotesManager",
   "fr.elias.oessentials.modgui.notes.PlayerNotesMenu": "fr.elias.oessentials.notes.internal.notes.PlayerNotesMenu",
-  "fr.elias.oessentials.modgui.util.ItemBuilder": "fr.elias.oessentials.modgui.internal.util.ItemBuilder",
+  "fr.elias.oessentials.modgui.util.ItemBuilder": "fr.elias.oessentials.platform.ui.ItemBuilder",
   "fr.elias.oessentials.modgui.world.WorldTweaksListener": "fr.elias.oessentials.modgui.internal.world.WorldTweaksListener",
   "fr.elias.oessentials.migration.cmi.CMIEconomyImporter": "fr.elias.oessentials.storage.internal.migration.cmi.CMIEconomyImporter",
   "fr.elias.oessentials.migration.cmi.CMIHomeImporter": "fr.elias.oessentials.storage.internal.migration.cmi.CMIHomeImporter",
