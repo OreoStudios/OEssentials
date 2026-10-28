@@ -277,7 +277,7 @@ public final class OEssentials extends JavaPlugin {
 
     public AutoRebootService getAutoRebootService() { return (AutoRebootService) moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getAutoReboot); }
 
-    public CraftActionsConfig getCraftActionsConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCraftActionsConfig); }
+    public CraftActionsConfig getCraftActionsConfig() { return moduleRegistry.read(CustomCraftingServices.class, CustomCraftingServices::getCraftActionsConfig); }
 
     public SellGuiManager getSellGuiManager() { return moduleRegistry.read(InventoriesServices.class, InventoriesServices::getSellGuiManager); }
 

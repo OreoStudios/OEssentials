@@ -8,9 +8,10 @@ import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.config.ConfigService;
 import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.BossBarToggles;
 import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.configuration.internal.config.OeSettingsCommand;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
-import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
@@ -24,7 +25,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private ConfigService configService;
     private AutoRebootService autoRebootService;
     private volatile SafeZoneRelay safeZoneRelay;
-    private CraftActionsConfig craftActionsConfig;
+    private volatile BossBarToggles bossBarToggles;
     private CommandManager commands;
     private boolean economyEnabled;
     private boolean redisEnabled;
@@ -47,7 +48,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFly() { return tempFlyService; }
     @Override public AutoRebootService getAutoReboot() { return autoRebootService; }
     @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
-    @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
+    @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
@@ -98,7 +99,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         this.autoRebootService = new AutoRebootService(plugin, () -> safeZoneRelay);
         this.autoRebootService.start();
 
-        this.craftActionsConfig = new CraftActionsConfig(plugin);
 
         this.commands = new CommandManager(plugin);
 
@@ -118,7 +118,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
             plugin.getLogger().info("[TempFly] Disabled by settings.yml.");
         }
 
-        this.commands.register(new fr.elias.oessentials.commands.internal.commands.core.admins.OeSettingsCommand(plugin));
+        this.commands.register(new OeSettingsCommand(plugin, () -> bossBarToggles));
         plugin.getLogger().info("[Settings] GUI command registered (/oesettings).");
 
         plugin.getLogger().info("[BOOT] storage=" + plugin.getConfig().getString("essentials.storage", "yaml")

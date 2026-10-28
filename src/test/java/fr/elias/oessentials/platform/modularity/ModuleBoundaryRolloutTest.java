@@ -30,6 +30,7 @@ class ModuleBoundaryRolloutTest {
 
     /** Modules whose whole package hierarchy is enforced by the annotation processor. */
     static final Set<String> PROTECTED = Set.of(
+            "configuration",
             "discord-integration",
             "events",
             "help",

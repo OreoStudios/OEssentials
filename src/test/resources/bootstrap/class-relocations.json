@@ -793,7 +793,7 @@
   "fr.elias.oessentials.commands.core.admins.KillCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.KillCommand",
   "fr.elias.oessentials.commands.core.admins.MoveCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.MoveCommand",
   "fr.elias.oessentials.commands.core.admins.NightCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.NightCommand",
-  "fr.elias.oessentials.commands.core.admins.OeSettingsCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.OeSettingsCommand",
+  "fr.elias.oessentials.commands.core.admins.OeSettingsCommand": "fr.elias.oessentials.configuration.internal.config.OeSettingsCommand",
   "fr.elias.oessentials.commands.core.admins.OeTimeCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.OeTimeCommand",
   "fr.elias.oessentials.commands.core.admins.OeWorldCommand": "fr.elias.oessentials.worlds.internal.commands.core.admins.OeWorldCommand",
   "fr.elias.oessentials.commands.core.admins.ReloadAllCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.ReloadAllCommand",

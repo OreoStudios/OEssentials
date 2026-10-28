@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 import dev.oreo.modulith.core.ModuleApi;
 import fr.elias.oessentials.api.ITempFlyAPI;
 import fr.elias.oessentials.configuration.api.AutoReboot;
+import fr.elias.oessentials.configuration.api.BossBarToggles;
 import fr.elias.oessentials.configuration.api.CrossServerFeatures;
 import fr.elias.oessentials.configuration.api.FeatureSettings;
 import fr.elias.oessentials.configuration.api.PerformanceGuardSettings;
 import fr.elias.oessentials.configuration.api.SafeZoneRelay;
 import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.platform.commands.CommandManager;
-import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import java.util.Map;
 
 @ModuleApi("services")
@@ -34,7 +34,9 @@ public interface ConfigurationServices {
     /** Registers how auto-reboot reaches other servers, or {@code null} to remove it. */
     void setSafeZoneRelay(SafeZoneRelay relay);
 
-    CraftActionsConfig getCraftActionsConfig();
+    /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
+    void setBossBarToggles(BossBarToggles toggles);
+
     CommandManager getCommands();
     boolean getEconomyEnabled();
     boolean getRedisEnabled();

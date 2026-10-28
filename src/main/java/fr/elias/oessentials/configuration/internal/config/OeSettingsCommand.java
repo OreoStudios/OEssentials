@@ -1,8 +1,9 @@
-package fr.elias.oessentials.commands.internal.commands.core.admins;
+package fr.elias.oessentials.configuration.internal.config;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.config.OeSettingsMenu;
+import fr.elias.oessentials.configuration.api.BossBarToggles;
+import java.util.function.Supplier;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,9 +12,11 @@ import java.util.List;
 public class OeSettingsCommand implements OreoCommand {
 
     private final OEssentials plugin;
+    private final Supplier<BossBarToggles> bossBars;
 
-    public OeSettingsCommand(OEssentials plugin) {
+    public OeSettingsCommand(OEssentials plugin, Supplier<BossBarToggles> bossBars) {
         this.plugin = plugin;
+        this.bossBars = bossBars;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class OeSettingsCommand implements OreoCommand {
             return true;
         }
 
-        OeSettingsMenu.getInventory(plugin).open(player);
+        OeSettingsMenu.getInventory(plugin, bossBars).open(player);
         return true;
     }
 }

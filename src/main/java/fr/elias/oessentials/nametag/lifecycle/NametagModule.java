@@ -34,6 +34,10 @@ public final class NametagModule extends ManagedModule implements NametagService
     private void initNametag() {
         this.customNameplatesConfig = new fr.elias.oessentials.nametag.internal.CustomNameplatesConfig(plugin);
         this.nametagToggleStore = new fr.elias.oessentials.nametag.internal.NametageToggleStore(plugin);
+        var configuration = services(ConfigurationServices.class);
+        configuration.setBossBarToggles(new fr.elias.oessentials.nametag.internal.BossBarSettingsToggles(
+                customNameplatesConfig, () -> multiBossBarService, plugin.getLogger()));
+        cleanup("bossBarToggles", () -> configuration.setBossBarToggles(null));
         org.bukkit.configuration.file.FileConfiguration npCfg = customNameplatesConfig.raw();
 
         if (npCfg.getBoolean("nametag.enabled", true) && BootstrapSupport.uiModuleAllowed(plugin, "nametag")) {
