@@ -91,7 +91,7 @@ public final class TradeCrossServerBroker {
 
         String targetServer = null;
         try {
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) targetServer = dir.lookupCurrentServer(targetId);
             else if (dbg()) plugin.getLogger().warning("[TRADE] PlayerDirectory null; cannot resolve target server.");
         } catch (Throwable t) {
@@ -145,7 +145,7 @@ public final class TradeCrossServerBroker {
 
     private String findNodeFor(UUID playerId) {
         try {
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             return (dir != null) ? dir.lookupCurrentServer(playerId) : null;
         } catch (Throwable t) {
             if (dbg()) plugin.getLogger().warning("[TRADE] findNodeFor failed: " + t.getMessage());
@@ -283,7 +283,7 @@ public final class TradeCrossServerBroker {
 
         String targetServer = null;
         try {
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) targetServer = dir.lookupCurrentServer(otherId);
         } catch (Throwable t) {
             if (dbg()) plugin.getLogger().warning("[TRADE] lookupCurrentServer error: " + t.getMessage());

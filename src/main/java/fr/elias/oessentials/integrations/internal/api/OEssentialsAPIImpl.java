@@ -28,7 +28,6 @@ import fr.elias.oessentials.maintenance.internal.api.MaintenanceAPIImpl;
 import fr.elias.oessentials.nametag.internal.api.NametagAPIImpl;
 import fr.elias.oessentials.inventory.internal.api.OrdersAPIImpl;
 import fr.elias.oessentials.playervaults.internal.api.PlayerVaultsAPIImpl;
-import fr.elias.oessentials.storage.internal.api.PlayerWarpsAPIImpl;
 import fr.elias.oessentials.playtime.internal.api.PlaytimeAPIImpl;
 import fr.elias.oessentials.portals.internal.api.PortalsAPIImpl;
 import fr.elias.oessentials.punishment.internal.api.PunishmentAPIImpl;
@@ -36,12 +35,10 @@ import fr.elias.oessentials.scoreboard.internal.api.ScoreboardAPIImpl;
 import fr.elias.oessentials.inventory.internal.api.SellGuiAPIImpl;
 import fr.elias.oessentials.shards.internal.api.ShardsAPIImpl;
 import fr.elias.oessentials.shop.internal.api.ShopAPIImpl;
-import fr.elias.oessentials.storage.internal.api.SpawnAPIImpl;
 import fr.elias.oessentials.player.internal.api.TeleportAPIImpl;
 import fr.elias.oessentials.trade.internal.api.TradeAPIImpl;
 import fr.elias.oessentials.player.internal.api.VanishAPIImpl;
 import fr.elias.oessentials.warnings.internal.api.WarningsAPIImpl;
-import fr.elias.oessentials.storage.internal.api.WarpsAPIImpl;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -226,13 +223,13 @@ public class OEssentialsAPIImpl implements OEssentialsAPI {
     @Override public @Nullable IJumpPadsAPI jumpPads() { var s = plugin.getJumpPadsManager(); return s == null ? null : new JumpPadsAPIImpl(s); }
     @Override public @Nullable IJailAPI jail() { var s = plugin.getJailService(); return s == null ? null : new JailAPIImpl(s); }
     @Override public @Nullable IMaintenanceAPI maintenance() { var s = plugin.getMaintenanceService(); return s == null ? null : new MaintenanceAPIImpl(s); }
-    @Override public @Nullable ISpawnAPI spawn() { var s = plugin.getSpawnService(); return s == null ? null : new SpawnAPIImpl(s); }
+    @Override public @Nullable ISpawnAPI spawn() { return plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getSpawnApi); }
     @Override public @Nullable ITeleportAPI teleport() { var s = plugin.getTeleportService(); return s == null ? null : new TeleportAPIImpl(s); }
-    @Override public @Nullable IWarpsAPI warps() { var s = plugin.getWarpService(); return s == null ? null : new WarpsAPIImpl(s); }
+    @Override public @Nullable IWarpsAPI warps() { return plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getWarpsApi); }
     @Override public @Nullable ISellGuiAPI sellGui() { var s = plugin.getSellGuiManager(); return s == null ? null : new SellGuiAPIImpl(s); }
     @Override public @Nullable IPunishmentAPI punishment() { var s = plugin.getPunishmentLogger(); return s == null ? null : new PunishmentAPIImpl(s); }
     @Override public @Nullable IPortalsAPI portals() { var s = plugin.getPortalsManager(); return s == null ? null : new PortalsAPIImpl(s); }
-    @Override public @Nullable IPlayerWarpsAPI playerWarps() { var s = plugin.getPlayerWarpService(); return s == null ? null : new PlayerWarpsAPIImpl(s); }
+    @Override public @Nullable IPlayerWarpsAPI playerWarps() { return plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getPlayerWarpsApi); }
     @Override public @Nullable IPlayerVaultsAPI playerVaults() { var s = plugin.getPlayervaultsService(); return s == null ? null : new PlayerVaultsAPIImpl(s); }
     @Override public @Nullable ICommandToggleAPI commandToggle() { var s = plugin.getCommandToggleService(); return s == null ? null : new CommandToggleAPIImpl(s); }
     @Override public @Nullable IInteractiveCommandsAPI interactiveCommands() { var s = plugin.getIcManager(); return s == null ? null : new InteractiveCommandsAPIImpl(s); }

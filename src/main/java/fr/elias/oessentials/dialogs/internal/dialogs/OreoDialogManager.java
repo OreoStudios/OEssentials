@@ -2,9 +2,9 @@ package fr.elias.oessentials.dialogs.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.chat.internal.channels.ChatChannelManager;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
+import fr.elias.oessentials.storage.api.Homes;
 import fr.elias.oessentials.kits.internal.KitsManager;
-import fr.elias.oessentials.storage.internal.warps.WarpService;
+import fr.elias.oessentials.api.IWarpsAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public final class OreoDialogManager {
     }
 
     /** Open the home list/selection dialog. */
-    public boolean openHomeDialog(Player player, HomeService homes) {
+    public boolean openHomeDialog(Player player, Homes homes) {
         if (!isEnabledFor("homes")) return false;
         try {
             HomeDialogHandler.open(plugin, player, homes);
@@ -49,7 +49,7 @@ public final class OreoDialogManager {
     }
 
     /** Open the warp list dialog. */
-    public boolean openWarpDialog(Player player, WarpService warps) {
+    public boolean openWarpDialog(Player player, IWarpsAPI warps) {
         if (!isEnabledFor("warps")) return false;
         try {
             WarpDialogHandler.open(plugin, player, warps);

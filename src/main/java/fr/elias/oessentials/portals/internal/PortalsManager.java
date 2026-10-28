@@ -296,7 +296,7 @@ public class PortalsManager implements Listener {
             event.setCancelled(true);
             OreScheduler.run(plugin, () -> {
                 if (!input.equalsIgnoreCase("none")) {
-                    fr.elias.oessentials.storage.internal.warps.WarpService ws = plugin.getWarpService();
+                    fr.elias.oessentials.api.IWarpsAPI ws = plugin.getWarpsApi();
                     if (ws != null && ws.getWarp(input) == null) {
                         event.getPlayer().sendMessage(ChatColor.RED + "Warp '" + input + "' does not exist.");
                         return;
@@ -352,7 +352,7 @@ public class PortalsManager implements Listener {
             // ── Resolve warp destination if set ───────────────────────────
             Location resolvedDest = portal.destination;
             if (portal.destWarp != null && !portal.destWarp.isEmpty()) {
-                fr.elias.oessentials.storage.internal.warps.WarpService ws = plugin.getWarpService();
+                fr.elias.oessentials.api.IWarpsAPI ws = plugin.getWarpsApi();
                 Location warpLoc = ws != null ? ws.getWarp(portal.destWarp) : null;
                 if (warpLoc == null) {
                     Lang.send(p, "portals.warp-not-found",

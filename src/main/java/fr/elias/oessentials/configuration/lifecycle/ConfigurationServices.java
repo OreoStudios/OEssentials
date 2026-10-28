@@ -38,6 +38,9 @@ public interface ConfigurationServices {
     /** Registers how players are sent to other servers, or {@code null} to remove it. */
     void setServerConnector(ServerConnector connector);
 
+    /** How players are sent to other servers, or {@code null} before proxy-messaging starts. */
+    ServerConnector getServerConnector();
+
     /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
     void setBossBarToggles(BossBarToggles toggles);
 

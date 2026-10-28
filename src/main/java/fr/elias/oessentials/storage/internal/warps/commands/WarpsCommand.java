@@ -28,7 +28,8 @@ public class WarpsCommand implements OreoCommand {
         if (!(sender instanceof Player p)) return true;
 
         OEssentials plugin = OEssentials.get();
-        if (plugin.getDialogManager() != null && plugin.getDialogManager().openWarpDialog(p, warps)) {
+        var dialogs = plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
+        if (dialogs != null && dialogs.openWarpDialog(p)) {
             return true;
         }
 

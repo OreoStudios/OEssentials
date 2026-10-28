@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.storage.lifecycle.StorageModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "storage")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "storage", lifecycle = fr.elias.oessentials.storage.lifecycle.StorageModule.class)
 package fr.elias.oessentials.storage;

@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-surface-950 text-slate-100 antialiased;
+}
+
+::selection {
+  @apply bg-cyan-300/30 text-white;
+}
+
+@layer base {
+  * {
+    @apply border-slate-200/0;
+  }
+
+  a {
+    @apply no-underline;
+  }
+}
+
+@layer components {
+  .section-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-panel {
+    @apply border border-white/10 bg-white/[0.04] shadow-glow backdrop-blur-xl;
+  }
+
+  .button-primary {
+    @apply inline-flex items-center justify-center rounded-full border border-cyan-300/20 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_50px_rgba(15,195,255,0.2)] transition duration-300 hover:-translate-y-0.5 hover:brightness-110;
+  }
+
+  .button-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-slate-100 transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-cyan-300/[0.06] hover:text-white;
+  }
+
+  .legacy-doc {
+    @apply text-slate-200;
+  }
+
+  .legacy-doc > div > * + * {
+    @apply mt-8;
+  }
+
+  .legacy-doc .hero,
+  .legacy-doc header,
+  .legacy-doc .module-header,
+  .legacy-doc .placeholder-card {
+    @apply rounded-[28px] border border-cyan-300/10 bg-gradient-to-br from-cyan-300/[0.08] via-blue-500/[0.08] to-transparent p-6 shadow-glow sm:p-8;
+  }
+
+  .legacy-doc h1,
+  .legacy-doc .hero h1,
+  .legacy-doc header h1 {
+    @apply text-3xl font-semibold tracking-tight text-white sm:text-4xl;
+  }
+
+  .legacy-doc h2,
+  .legacy-doc .section-title {
+    @apply mt-12 text-2xl font-semibold tracking-tight text-white sm:text-3xl;
+  }
+
+  .legacy-doc h3 {
+    @apply mt-8 text-xl font-semibold text-white;
+  }
+
+  .legacy-doc h4 {
+    @apply mt-6 text-lg font-semibold text-cyan-100;
+  }
+
+  .legacy-doc p,
+  .legacy-doc li {
+    @apply text-[15px] leading-8 text-slate-300;
+  }
+
+  .legacy-doc ul,
+  .legacy-doc ol {
+    @apply ml-5 space-y-3;
+  }
+
+  .legacy-doc strong {
+    @apply font-semibold text-white;
+  }
+
+  .legacy-doc a {
+    @apply text-cyan-200 transition hover:text-white;
+  }
+
+  .legacy-doc .subtitle,
+  .legacy-doc .sub,
+  .legacy-doc .node-sub,
+  .legacy-doc .dl-desc {
+    @apply text-slate-400;
+  }
+
+  .legacy-doc .hero-meta,
+  .legacy-doc .hero-btns,
+  .legacy-doc .legend,
+  .legacy-doc .alias-list,
+  .legacy-doc .arch-row {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .legacy-doc .feature-grid,
+  .legacy-doc .card-grid,
+  .legacy-doc .doc-links,
+  .legacy-doc .module-grid,
+  .legacy-doc .storage-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .legacy-doc .feature-card,
+  .legacy-doc .card,
+  .legacy-doc .card-small,
+  .legacy-doc .storage-card,
+  .legacy-doc .doc-link,
+  .legacy-doc .module-pill,
+  .legacy-doc .arch-node,
+  .legacy-doc .note,
+  .legacy-doc .info-box,
+  .legacy-doc .warn-box,
+  .legacy-doc .toc {
+    @apply rounded-[24px] border border-white/10 bg-white/[0.04] p-5 shadow-glow;
+  }
+
+  .legacy-doc .cmd-card {
+    @apply overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.04] shadow-glow;
+  }
+
+  .legacy-doc .cmd-header {
+    @apply flex flex-wrap items-center gap-2 border-b border-white/10 bg-white/[0.03] px-5 py-4;
+  }
+
+  .legacy-doc .cmd-name {
+    @apply text-lg font-semibold text-cyan-100;
+  }
+
+  .legacy-doc .cmd-body {
+    @apply grid gap-3 px-5 py-4 md:grid-cols-[minmax(0,150px)_1fr];
+  }
+
+  .legacy-doc .lbl {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-slate-400;
+  }
+
+  .legacy-doc .val {
+    @apply text-sm leading-7 text-slate-200;
+  }
+
+  .legacy-doc .steps {
+    @apply space-y-4;
+  }
+
+  .legacy-doc .step {
+    @apply flex gap-4 rounded-[24px] border border-white/10 bg-white/[0.03] p-5;
+  }
+
+  .legacy-doc .step-num {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 font-semibold text-cyan-100;
+  }
+
+  .legacy-doc .step-content {
+    @apply min-w-0;
+  }
+
+  .legacy-doc .tag,
+  .legacy-doc .badge,
+  .legacy-doc .hero-badge,
+  .legacy-doc .meta-chip,
+  .legacy-doc .badge-optional,
+  .legacy-doc .badge-required,
+  .legacy-doc .tag-op,
+  .legacy-doc .tag-true,
+  .legacy-doc .tag-false,
+  .legacy-doc .tag-playeronly,
+  .legacy-doc .tag-console {
+    @apply inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-100;
+  }
+
+  .legacy-doc .badge-required,
+  .legacy-doc .tag-op {
+    @apply border-rose-400/20 bg-rose-400/10 text-rose-200;
+  }
+
+  .legacy-doc .tag-true,
+  .legacy-doc .badge-optional {
+    @apply border-emerald-400/20 bg-emerald-400/10 text-emerald-200;
+  }
+
+  .legacy-doc .tag-playeronly {
+    @apply border-amber-400/20 bg-amber-400/10 text-amber-200;
+  }
+
+  .legacy-doc .tag-console {
+    @apply border-blue-400/20 bg-blue-400/10 text-blue-100;
+  }
+
+  .legacy-doc table {
+    @apply mt-4 block w-full overflow-x-auto rounded-[24px] border border-white/10 bg-white/[0.03] text-left text-sm;
+  }
+
+  .legacy-doc thead,
+  .legacy-doc tbody,
+  .legacy-doc tr {
+    @apply table w-full table-fixed;
+  }
+
+  .legacy-doc th {
+    @apply border-b border-white/10 bg-white/[0.04] px-4 py-3 font-semibold text-slate-100;
+  }
+
+  .legacy-doc td {
+    @apply border-b border-white/10 px-4 py-3 align-top text-slate-300;
+  }
+
+  .legacy-doc tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .legacy-doc pre {
+    @apply overflow-x-auto rounded-[24px] border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-100;
+  }
+
+  .legacy-doc code,
+  .legacy-doc .perm {
+    @apply rounded-lg bg-slate-950/80 px-2 py-1 font-mono text-[0.92em] text-cyan-100;
+  }
+
+  .legacy-doc pre code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+
+  .legacy-doc .toc ul {
+    columns: 2;
+  }
+
+  .legacy-doc .arch-bus {
+    @apply rounded-[20px] border border-dashed border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm font-semibold text-cyan-100;
+  }
+
+  .legacy-doc .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full border border-cyan-300/20 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_50px_rgba(15,195,255,0.2)] transition duration-300 hover:-translate-y-0.5 hover:brightness-110;
+  }
+
+  .legacy-doc .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-slate-100 transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-cyan-300/[0.06] hover:text-white;
+  }
+
+  .legacy-doc .section,
+  .legacy-doc section,
+  .legacy-doc [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  .legacy-doc .hero,
+  .legacy-doc header,
+  .legacy-doc .feature-card,
+  .legacy-doc .card,
+  .legacy-doc .card-small,
+  .legacy-doc .storage-card,
+  .legacy-doc .doc-link,
+  .legacy-doc .cmd-card,
+  .legacy-doc .toc,
+  .legacy-doc .note,
+  .legacy-doc .info-box,
+  .legacy-doc .warn-box,
+  .legacy-doc .module-pill,
+  .legacy-doc .arch-node {
+    @apply transition duration-300 hover:border-cyan-300/20;
+  }
+}
+
+@media (max-width: 768px) {
+  .legacy-doc .cmd-body {
+    grid-template-columns: 1fr;
+  }
+
+  .legacy-doc .feature-grid,
+  .legacy-doc .card-grid,
+  .legacy-doc .doc-links,
+  .legacy-doc .module-grid,
+  .legacy-doc .storage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .legacy-doc .toc ul {
+    columns: 1;
+  }
+}

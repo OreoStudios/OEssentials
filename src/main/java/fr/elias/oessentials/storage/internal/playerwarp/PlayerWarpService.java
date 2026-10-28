@@ -422,7 +422,9 @@ public class PlayerWarpService {
         );
 
         pm.sendPacket(PacketChannels.individual(targetServer), pkt);
-        plugin.getProxyMessenger().sendToServer(player, targetServer);
+        var connector = plugin.getModuleRegistry().read(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class,
+                fr.elias.oessentials.configuration.lifecycle.ConfigurationServices::getServerConnector);
+        if (connector != null) connector.connect(player, targetServer);
 
         return true;
     }

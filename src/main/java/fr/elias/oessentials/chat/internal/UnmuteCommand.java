@@ -104,7 +104,7 @@ public class UnmuteCommand implements OreoCommand, org.bukkit.command.TabComplet
                 }
             }
 
-            var dir = OEssentials.get().getPlayerDirectory();
+            var dir = OEssentials.get().getPlayerLocator();
             if (dir != null) {
                 try {
                     Collection<String> names = dir.suggestOnlineNames(want, 50);

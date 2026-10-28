@@ -51,6 +51,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public AutoRebootService getAutoReboot() { return autoRebootService; }
     @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
     @Override public void setServerConnector(ServerConnector connector) { this.serverConnector = connector; }
+    @Override public ServerConnector getServerConnector() { return serverConnector; }
     @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }

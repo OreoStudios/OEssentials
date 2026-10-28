@@ -14,7 +14,7 @@ import java.util.*;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
-public class PlayerDirectory {
+public class PlayerDirectory implements fr.elias.oessentials.storage.api.PlayerLocator {
     private final MongoCollection<Document> coll;
 
     public PlayerDirectory(MongoClient client, String db, String prefix) {

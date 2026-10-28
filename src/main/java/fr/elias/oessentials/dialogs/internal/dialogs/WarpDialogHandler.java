@@ -1,7 +1,7 @@
 package fr.elias.oessentials.dialogs.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.warps.WarpService;
+import fr.elias.oessentials.api.IWarpsAPI;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -25,7 +25,7 @@ public final class WarpDialogHandler {
 
     private WarpDialogHandler() {}
 
-    public static void open(OEssentials plugin, Player player, WarpService warps) {
+    public static void open(OEssentials plugin, Player player, IWarpsAPI warps) {
         Async.run(() -> {
             Set<String> all = warps.listWarps();
             OreScheduler.runForEntity(plugin, player, () -> {
@@ -47,7 +47,7 @@ public final class WarpDialogHandler {
                     // DC11: fetch a fresh permission check at click-time via warps.canUse() to
                     // avoid acting on a warp that was removed/restricted after this dialog opened.
                     // The warp list itself (accessible) was snapshotted at dialog-open time; if
-                    // WarpService reloads between open and click, the worst outcome is a stale
+                    // IWarpsAPI reloads between open and click, the worst outcome is a stale
                     // button that the underlying /warp command will reject gracefully.
                     String cmd = "warp " + name;
                     buttons.add(ActionButton.builder(Component.text("\u2691 " + name, NamedTextColor.GOLD))
@@ -55,7 +55,7 @@ public final class WarpDialogHandler {
                             .action(DialogAction.customClick(
                                     (view, audience) -> {
                                         if (audience instanceof Player p) {
-                                            // Re-check permission at click time using the live WarpService
+                                            // Re-check permission at click time using the live IWarpsAPI
                                             if (!warps.canUse(p, name)) {
                                                 p.sendMessage("§cYou no longer have access to that warp.");
                                                 return;

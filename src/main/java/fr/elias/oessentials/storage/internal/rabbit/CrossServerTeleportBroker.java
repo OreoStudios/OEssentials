@@ -1,4 +1,4 @@
-package fr.elias.oessentials.player.internal.tp.rabbit.brokers;
+package fr.elias.oessentials.storage.internal.rabbit;
 
 import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.spawn.rabbit.packets.SpawnTeleportRequestPacket;

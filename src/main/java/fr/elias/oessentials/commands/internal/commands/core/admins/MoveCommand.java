@@ -2,7 +2,7 @@ package fr.elias.oessentials.commands.internal.commands.core.admins;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker;
 import org.bukkit.Bukkit;
@@ -52,7 +52,7 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
 
         OEssentials plugin = OEssentials.get();
         String localServer = plugin.getServerConfig().serverName();
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
 
         // 1) try both local
         Player fromLocal = resolveOnlineLocalOnly(fromArg);
@@ -175,8 +175,8 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
             return true;
         }
 
-        // 2) cross-server via PlayerDirectory
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        // 2) cross-server via PlayerLocator
+        PlayerLocator dir = plugin.getPlayerLocator();
         if (dir == null) {
             admin.sendMessage("§cPlayer not found online. §7(Cross-server directory is not available.)");
             return true;
@@ -264,7 +264,7 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
         return null;
     }
 
-    private String safeNameLookup(PlayerDirectory dir, UUID uuid, String fallback) {
+    private String safeNameLookup(PlayerLocator dir, UUID uuid, String fallback) {
         try {
             String n = dir.lookupNameByUuid(uuid);
             return (n == null || n.isBlank()) ? fallback : n;
@@ -297,9 +297,9 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
                 }
             }
 
-            // 2) Network-wide via PlayerDirectory.suggestOnlineNames()
+            // 2) Network-wide via PlayerLocator.suggestOnlineNames()
             OEssentials plugin = OEssentials.get();
-            PlayerDirectory dir = plugin.getPlayerDirectory();
+            PlayerLocator dir = plugin.getPlayerLocator();
             if (dir != null) {
                 try {
                     var names = dir.suggestOnlineNames(want, 50);

@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Server Modules Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #0d2033 0%, #162a40 60%, #1e3654 100%);
+      padding: 72px 48px 56px;
+      text-align: center;
+      border-bottom: 2px solid var(--line);
+    }
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 2.8rem;
+      color: var(--teal);
+      letter-spacing: -1px;
+    }
+    header p { margin: 0; color: var(--muted); font-size: 1.15rem; }
+    .badge {
+      display: inline-block; margin: 4px;
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: .5px;
+      background: rgba(104,217,200,0.15); color: var(--teal);
+      border: 1px solid rgba(104,217,200,0.3);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,20,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px;
+      display: flex; flex-wrap: wrap; gap: 4px;
+    }
+    nav a {
+      display: inline-block; padding: 14px 16px;
+      color: var(--muted); font-size: 0.85rem; font-weight: 600;
+      border-bottom: 2px solid transparent; transition: all .2s;
+    }
+    nav a:hover, nav a.active { color: var(--teal); border-color: var(--teal); text-decoration: none; }
+
+    /* ── LAYOUT ── */
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px 80px; }
+
+    section { padding-top: 72px; }
+    section h2 {
+      font-size: 1.9rem; color: var(--teal);
+      margin: 0 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 14px;
+    }
+    section h3 { font-size: 1.25rem; color: var(--amber); margin: 32px 0 12px; }
+    section h4 { font-size: 1.05rem; color: var(--purple); margin: 24px 0 8px; }
+    p { margin: 0 0 16px; }
+
+    /* ── MODULE HEADER ── */
+    .module-header {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(30,54,84,0.4);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 28px; margin-bottom: 28px;
+    }
+    .module-icon {
+      font-size: 2.5rem;
+      background: rgba(104,217,200,0.1);
+      border-radius: 14px; padding: 12px; min-width: 64px; text-align: center;
+    }
+    .module-header h2 { border: none; padding: 0; margin: 0; font-size: 1.7rem; }
+    .module-header p { margin: 4px 0 0; color: var(--muted); }
+
+    /* ── CARDS ── */
+    .card {
+      background: rgba(22,42,64,0.5);
+      border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 24px 28px; margin-bottom: 20px;
+    }
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .card-small { padding: 18px 22px; }
+
+    /* ── STEPS ── */
+    .steps { counter-reset: step; margin: 0 0 24px; }
+    .step {
+      counter-increment: step;
+      display: flex; gap: 18px; margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .step::before {
+      content: counter(step);
+      min-width: 34px; height: 34px;
+      background: var(--teal); color: #0a1018;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;
+    }
+    .step p { margin: 0; }
+
+    /* ── CODE ── */
+    pre, code {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+    pre {
+      background: var(--code); border: 1px solid var(--line-soft);
+      border-radius: var(--radius-sm); padding: 20px 24px;
+      overflow-x: auto; margin: 0 0 20px; font-size: 0.875rem; line-height: 1.6;
+    }
+    code {
+      background: rgba(13,19,24,0.8); color: var(--teal);
+      padding: 2px 7px; border-radius: 5px; font-size: 0.875em;
+    }
+    pre code { background: none; color: inherit; padding: 0; border-radius: 0; }
+
+    .comment { color: #5a7d8a; }
+    .key     { color: var(--amber); }
+    .val     { color: var(--green); }
+    .cmd     { color: var(--purple); }
+    .placeholder { color: var(--red); }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem;
+    }
+    th {
+      background: rgba(104,217,200,0.12); color: var(--teal);
+      padding: 12px 16px; text-align: left; font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    td {
+      padding: 11px 16px; border-bottom: 1px solid var(--line-soft);
+      vertical-align: top;
+    }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+
+    /* ── ALERTS ── */
+    .alert {
+      border-radius: var(--radius-sm); padding: 16px 20px;
+      margin-bottom: 20px; border-left: 4px solid;
+    }
+    .alert-info   { background: rgba(127,192,255,0.08); border-color: var(--blue); color: var(--blue); }
+    .alert-warn   { background: rgba(247,185,85,0.08);  border-color: var(--amber); color: var(--amber); }
+    .alert-danger { background: rgba(255,140,122,0.08); border-color: var(--red); color: var(--red); }
+    .alert-ok     { background: rgba(143,226,143,0.08); border-color: var(--green); color: var(--green); }
+    .alert strong { color: inherit; }
+
+    /* ── PLAYER EXAMPLES ── */
+    .player-box {
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 18px 22px; margin-bottom: 14px;
+      background: rgba(104,217,200,0.04);
+    }
+    .player-name { font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+    .player-box p { margin: 0; font-size: 0.93rem; }
+    .player-chat {
+      background: rgba(0,0,0,0.3); border-radius: 6px;
+      padding: 4px 10px; margin-top: 8px; font-size: 0.88rem;
+      font-family: monospace; border-left: 3px solid var(--teal);
+    }
+
+    /* ── FAQ ── */
+    details {
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 0; margin-bottom: 10px; overflow: hidden;
+    }
+    summary {
+      padding: 16px 20px; cursor: pointer;
+      font-weight: 600; color: var(--text);
+      list-style: none; background: rgba(22,42,64,0.4);
+    }
+    summary::marker, summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▶ '; color: var(--teal); transition: .2s; }
+    details[open] summary::before { content: '▼ '; }
+    details[open] summary { border-bottom: 1px solid var(--line); }
+    .details-body { padding: 18px 20px; }
+
+    /* ── MODULE NAV ── */
+    .module-nav {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .module-nav a {
+      padding: 8px 18px;
+      border: 1px solid var(--line); border-radius: 24px;
+      color: var(--muted); font-size: 0.85rem; font-weight: 600;
+      transition: all .2s;
+    }
+    .module-nav a:hover {
+      background: rgba(104,217,200,0.12); color: var(--teal);
+      border-color: var(--teal); text-decoration: none;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      border: none; border-top: 2px solid var(--line);
+      margin: 60px 0 0;
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+
+<!-- HEADER -->
+<header>
+  <h1>OreoEssentials — Server Modules</h1>
+  <p>Everything in <code>plugins/OreoEssentials/server/</code> — explained for beginners, step by step</p>
+  <div style="margin-top:16px;">
+    <span class="badge">Maintenance</span>
+    <span class="badge">ClearLag</span>
+    <span class="badge">JumpPads</span>
+    <span class="badge">TempFly</span>
+    <span class="badge">Warnings</span>
+    <span class="badge">ModGUI</span>
+    <span class="badge">Help &amp; Rules</span>
+    <span class="badge">MOTD</span>
+    <span class="badge">CraftActions</span>
+    <span class="badge">Shards</span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#maintenance">Maintenance</a>
+  <a href="#clearlag">ClearLag</a>
+  <a href="#jumpads">JumpPads</a>
+  <a href="#tempfly">TempFly</a>
+  <a href="#warnings">Warnings</a>
+  <a href="#modgui">ModGUI</a>
+  <a href="#help-rules">Help &amp; Rules</a>
+  <a href="#motd">MOTD</a>
+  <a href="#craftactions">CraftActions</a>
+  <a href="#shards">Shards</a>
+  <a href="#permissions">Permissions</a>
+  <a href="#faq">FAQ</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ================================================================ -->
+<!-- OVERVIEW -->
+<!-- ================================================================ -->
+<section id="overview">
+  <h2>What Are Server Modules?</h2>
+  <p>
+    The <strong>server folder</strong> (<code>plugins/OreoEssentials/server/</code>) contains configuration files for
+    eleven distinct server-management features. Each feature has its own YAML file.
+    Together they let you control everything from lag management to custom crafting rewards.
+  </p>
+
+  <div class="module-nav">
+    <a href="#maintenance">🔒 Maintenance</a>
+    <a href="#clearlag">🧹 ClearLag</a>
+    <a href="#jumpads">🚀 JumpPads</a>
+    <a href="#tempfly">✈️ TempFly</a>
+    <a href="#warnings">⚠️ Warnings</a>
+    <a href="#modgui">🛡️ ModGUI</a>
+    <a href="#help-rules">📖 Help &amp; Rules</a>
+    <a href="#motd">📢 MOTD</a>
+    <a href="#craftactions">⚒️ CraftActions</a>
+    <a href="#shards">🌍 Shards</a>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Folder Structure</h3>
+    <pre><code>plugins/
+  OreoEssentials/
+    server/
+      maintenance.yml     ← lock server from new players
+      clearlag.yml        ← auto-remove entities &amp; fight lag
+      jumpads.yml         ← launch-pad blocks
+      tempfly.yml         ← temporary flight by rank
+      warnings.yml        ← player warning system
+      modgui.yml          ← moderation GUI worlds filter
+      help.yml            ← /help command content
+      rules.yml           ← /rules command content
+      motd.yml            ← join message of the day
+      craft-actions.yml   ← rewards when crafting items
+      shards.yml          ← cross-server world sharding</code></pre>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- MAINTENANCE -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="maintenance">
+  <div class="module-header">
+    <div class="module-icon">🔒</div>
+    <div>
+      <h2>Maintenance Mode</h2>
+      <p>Lock the server so only whitelisted players can join, with custom MOTD and optional countdown timer.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    Maintenance mode lets you temporarily <strong>close the server</strong> to regular players while you do updates,
+    fix bugs, or prepare an event. When enabled:
+  </p>
+  <ul>
+    <li>Players not on the whitelist are <strong>blocked from joining</strong> with a custom message</li>
+    <li>The server list shows a custom <strong>maintenance MOTD</strong></li>
+    <li>Optionally, the server list shows as full (hides the join button)</li>
+    <li>A countdown timer can show time until maintenance ends</li>
+  </ul>
+
+  <h3>Quick Start</h3>
+  <div class="steps">
+    <div class="step"><p>Enable maintenance: <code>/maintenance on</code></p></div>
+    <div class="step"><p>Add yourself to the whitelist: <code>/maintenance whitelist add Steve</code></p></div>
+    <div class="step"><p>Set a timer (optional): <code>/maintenance clock set 2h</code></p></div>
+    <div class="step"><p>When done, disable: <code>/maintenance off</code></p></div>
+  </div>
+
+  <h3>Config File: <code>server/maintenance.yml</code></h3>
+  <pre><code><span class="key">maintenance</span>:
+  <span class="key">enabled</span>: <span class="val">false</span>               <span class="comment"># true = maintenance ON, no one can join except whitelist</span>
+
+  <span class="key">motd</span>:
+    <span class="key">line1</span>: <span class="val">"&amp;c&amp;l⚠ MAINTENANCE ⚠"</span>       <span class="comment"># first line of server list description</span>
+    <span class="key">line2</span>: <span class="val">"&amp;7Server is under maintenance"</span> <span class="comment"># second line</span>
+
+  <span class="key">kick-message</span>: <span class="val">"&amp;c&amp;l⚠ MAINTENANCE ⚠\n&amp;7Please try again later."</span>
+  <span class="key">join-denied-message</span>: <span class="val">"&amp;cServer is under maintenance."</span>
+  <span class="comment"># ↑ These messages are shown when a non-whitelisted player tries to connect</span>
+
+  <span class="key">whitelist</span>: []
+  <span class="comment"># Add player UUIDs or names here. These players CAN join during maintenance.</span>
+  <span class="comment"># Example:  whitelist: ["Steve", "Alex"]</span>
+
+  <span class="key">timer</span>:
+    <span class="key">end-time</span>: <span class="val">0</span>                  <span class="comment"># Unix timestamp (ms) when maintenance ends (set via /maintenance clock)</span>
+    <span class="key">show-in-motd</span>: <span class="val">true</span>           <span class="comment"># Show countdown timer in server list MOTD</span>
+    <span class="key">format</span>: <span class="val">"&amp;eTime remaining: &amp;f{TIME}"</span>  <span class="comment"># {TIME} is replaced with e.g. "1h 23m 45s"</span>
+
+  <span class="key">server-list</span>:
+    <span class="key">show-as-full</span>: <span class="val">true</span>           <span class="comment"># Show max players = current players (looks full → hides join)</span>
+    <span class="key">hide-player-count</span>: <span class="val">false</span>      <span class="comment"># Hide the player count entirely</span></code></pre>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th></tr>
+      <tr><td><code>/maintenance on</code></td><td>Enable maintenance mode — non-whitelisted players can't join</td></tr>
+      <tr><td><code>/maintenance off</code></td><td>Disable maintenance — everyone can join again</td></tr>
+      <tr><td><code>/maintenance toggle</code></td><td>Switch on/off</td></tr>
+      <tr><td><code>/maintenance status</code></td><td>See current state, whitelist size, timer info</td></tr>
+      <tr><td><code>/maintenance whitelist add &lt;name&gt;</code></td><td>Add player to whitelist (can join during maintenance)</td></tr>
+      <tr><td><code>/maintenance whitelist remove &lt;name&gt;</code></td><td>Remove from whitelist</td></tr>
+      <tr><td><code>/maintenance whitelist list</code></td><td>View the full whitelist</td></tr>
+      <tr><td><code>/maintenance whitelist clear</code></td><td>Clear the entire whitelist</td></tr>
+      <tr><td><code>/maintenance clock set &lt;time&gt;</code></td><td>Set a countdown timer (e.g. <code>2h30m</code>)</td></tr>
+      <tr><td><code>/maintenance clock add &lt;time&gt;</code></td><td>Add time to existing timer</td></tr>
+      <tr><td><code>/maintenance clock remove &lt;time&gt;</code></td><td>Remove time from timer</td></tr>
+      <tr><td><code>/maintenance clock clear</code></td><td>Delete the timer</td></tr>
+      <tr><td><code>/maintenance motd set line1 &lt;text&gt;</code></td><td>Update MOTD line 1 live</td></tr>
+      <tr><td><code>/maintenance serverlist full &lt;true/false&gt;</code></td><td>Toggle show-as-full</td></tr>
+      <tr><td><code>/maintenance reload</code></td><td>Reload maintenance.yml</td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Admin)</div>
+      <p>Steve is installing a new update. He enables maintenance, adds himself to the whitelist, and sets a 1-hour timer so players know when to come back.</p>
+      <div class="player-chat">/maintenance on<br>/maintenance whitelist add Steve<br>/maintenance clock set 1h</div>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Regular Player)</div>
+      <p>Alex tries to connect but sees: <em>"⚠ MAINTENANCE ⚠ — Please try again later."</em> and in the server list: <em>"Time remaining: 59m 12s"</em>. She'll come back later.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (VIP)</div>
+      <p>Notch was added to the whitelist by Steve. He connects normally and helps test the new update while maintenance is active.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Staff)</div>
+      <p>Herobrine has <code>oreo.maintenance.admin</code> permission and uses <code>/maintenance status</code> to check how many minutes remain, without needing to be on the whitelist (staff bypass).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- CLEARLAG -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="clearlag">
+  <div class="module-header">
+    <div class="module-icon">🧹</div>
+    <div>
+      <h2>ClearLag (OreoLag)</h2>
+      <p>Automatically remove ground items, mobs, and other entities to keep TPS healthy.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    When hundreds of item stacks pile up on the ground, or thousands of mobs accumulate, your server's
+    <strong>TPS (Ticks Per Second)</strong> drops below 20 — causing lag. OreoLag automatically cleans up:
+  </p>
+  <ul>
+    <li><strong>Ground items</strong> — diamonds, wood, dirt that players dropped</li>
+    <li><strong>Mobs</strong> — cows, zombies, etc. (you can whitelist specific types)</li>
+    <li><strong>Other junk</strong> — experience orbs, arrows, primed TNT, falling blocks</li>
+  </ul>
+
+  <h3>Config File: <code>server/clearlag.yml</code></h3>
+  <pre><code><span class="key">enable</span>: <span class="val">true</span>                         <span class="comment"># Master switch — false disables ALL clearlag features</span>
+
+<span class="key">global-broadcasts</span>:
+  <span class="key">enabled</span>: <span class="val">true</span>
+  <span class="key">use-permission-for-broadcasts</span>: <span class="val">false</span>  <span class="comment"># true = only players with the perm see warnings</span>
+  <span class="key">permission</span>: <span class="val">"bukkit.broadcast"</span>
+
+<span class="key">area-filter</span>: []                        <span class="comment"># Entity types NEVER removed (e.g. ["ITEM"] to never clear items)</span>
+
+<span class="key">kill-mobs</span>:                             <span class="comment"># Manual /olagg killmobs command settings</span>
+  <span class="key">enabled</span>: <span class="val">true</span>
+  <span class="key">remove-named</span>: <span class="val">false</span>                  <span class="comment"># false = never kill mobs with custom names (e.g. named pets)</span>
+  <span class="key">mob-filter</span>: []                        <span class="comment"># Entity types to NEVER kill (whitelist): ["VILLAGER","WOLF"]</span>
+
+<span class="key">auto-kill-mobs</span>:                        <span class="comment"># Auto-kill mobs on a timer</span>
+  <span class="key">enabled</span>: <span class="val">false</span>
+  <span class="key">interval</span>: <span class="val">600</span>                         <span class="comment"># Seconds between auto-kills (600 = every 10 minutes)</span>
+  <span class="key">broadcast-removal</span>: <span class="val">true</span>
+  <span class="key">broadcast-message</span>: <span class="val">"&amp;6[OreoLag] &amp;aRemoved +RemoveAmount mobs!"</span>
+  <span class="key">warnings</span>:                             <span class="comment"># Warn players before kill happens</span>
+    - <span class="val">"time:60 msg:&amp;6[OreoLag] &amp;eMobs will be killed in 60s!"</span>
+    - <span class="val">"time:10 msg:&amp;6[OreoLag] &amp;cMobs killed in 10s!"</span>
+
+<span class="key">auto-removal</span>:                          <span class="comment"># Auto-clear ground items and entities</span>
+  <span class="key">enabled</span>: <span class="val">true</span>
+  <span class="key">autoremoval-interval</span>: <span class="val">480</span>             <span class="comment"># Seconds between clears (480 = every 8 minutes)</span>
+  <span class="key">broadcast-removal</span>: <span class="val">true</span>
+  <span class="key">broadcast-message</span>: <span class="val">"&amp;6[OreoLag] &amp;aRemoved +RemoveAmount entities!"</span>
+  <span class="key">flags</span>:
+    <span class="key">item</span>: <span class="val">true</span>                          <span class="comment"># Remove ground items</span>
+    <span class="key">experience-orb</span>: <span class="val">true</span>               <span class="comment"># Remove XP orbs</span>
+    <span class="key">falling-block</span>: <span class="val">true</span>                <span class="comment"># Remove falling sand/gravel</span>
+    <span class="key">primed-tnt</span>: <span class="val">true</span>                   <span class="comment"># Remove lit TNT</span>
+    <span class="key">projectile</span>: <span class="val">false</span>                  <span class="comment"># Remove arrows etc.</span>
+    <span class="key">boat</span>: <span class="val">false</span>                         <span class="comment"># Remove boats</span>
+    <span class="key">minecart</span>: <span class="val">false</span>                     <span class="comment"># Remove minecarts</span>
+    <span class="key">itemframe</span>: <span class="val">false</span>                    <span class="comment"># Remove item frames</span>
+  <span class="key">item-filter</span>: []                       <span class="comment"># Items NEVER removed: ["DIAMOND","NETHERITE_INGOT"]</span>
+  <span class="key">warnings</span>:
+    - <span class="val">"time:60 msg:&amp;6[OreoLag] &amp;eEntities cleared in 60s!"</span>
+    - <span class="val">"time:10 msg:&amp;6[OreoLag] &amp;cClearing in 10s!"</span>
+
+<span class="key">command-remove</span>:                        <span class="comment"># What /olagg clear removes (can be different from auto)</span>
+  <span class="key">enabled</span>: <span class="val">true</span>
+  <span class="key">broadcast-removal</span>: <span class="val">true</span>
+  <span class="comment"># same flags/filter as auto-removal above</span>
+
+<span class="key">tps-meter</span>:                             <span class="comment"># Run commands when TPS is low</span>
+  <span class="key">enabled</span>: <span class="val">false</span>
+  <span class="key">interval</span>: <span class="val">15</span>                          <span class="comment"># Check TPS every 15 seconds</span>
+  <span class="key">tps-trigger</span>: <span class="val">14.0</span>                    <span class="comment"># Run commands when TPS drops BELOW this</span>
+  <span class="key">tps-recover</span>: <span class="val">19.0</span>                    <span class="comment"># Run recover-commands when TPS rises ABOVE this</span>
+  <span class="key">broadcast-enabled</span>: <span class="val">true</span>
+  <span class="key">commands</span>: []                          <span class="comment"># Console commands on low TPS (e.g. ["olagg clear"])</span>
+  <span class="key">recover-commands</span>: []</code></pre>
+
+  <h3>Warning Format</h3>
+  <p>Warnings use a special inline format: <code>time:&lt;seconds&gt; msg:&lt;message&gt;</code></p>
+  <pre><code><span class="key">warnings</span>:
+  - <span class="val">"time:300 msg:&amp;6[OreoLag] &amp;eItems will be cleared in 5 minutes!"</span>
+  - <span class="val">"time:60  msg:&amp;6[OreoLag] &amp;eItems cleared in 60 seconds!"</span>
+  - <span class="val">"time:10  msg:&amp;6[OreoLag] &amp;cClearing in 10s! Pick up your items!"</span></code></pre>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th><th>Permission</th></tr>
+      <tr><td><code>/olagg help</code></td><td>Show command list</td><td>—</td></tr>
+      <tr><td><code>/olagg clear</code></td><td>Manually clear entities now</td><td><code>oreo.lag.clear</code></td></tr>
+      <tr><td><code>/olagg killmobs</code></td><td>Manually kill all mobs now</td><td><code>oreo.lag.killmobs</code></td></tr>
+      <tr><td><code>/olagg reload</code></td><td>Reload clearlag.yml</td><td><code>oreo.lag.reload</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Farmer)</div>
+      <p>Steve has 200 cows in his farm. He added "COW" to <code>auto-kill-mobs.mob-filter</code> so clearlag never kills them.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Builder)</div>
+      <p>Alex is mining. She added "DIAMOND" to <code>item-filter</code> so her diamonds are never auto-cleared.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Admin)</div>
+      <p>Notch has <code>oreo.lag.clear</code>. He sees TPS drop to 12 and runs <code>/olagg clear</code> to instantly remove thousands of items. TPS climbs back to 19.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Player)</div>
+      <p>Herobrine hears "Items cleared in 10s!" and quickly picks up his dropped netherite gear (netherite is in item-filter, so it's safe anyway).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- JUMPPADS -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="jumpads">
+  <div class="module-header">
+    <div class="module-icon">🚀</div>
+    <div>
+      <h2>JumpPads</h2>
+      <p>Turn any block into a launch pad that flings players into the air when they step on it.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    A <strong>Jump Pad</strong> is an invisible trigger attached to any specific block coordinate.
+    When a player walks over that block, they get launched with a configurable velocity — great for
+    parkour, arenas, hubs, or just having fun.
+  </p>
+
+  <div class="alert alert-info">
+    <strong>How it works:</strong> Jump pads detect the block <em>under</em> the player's feet
+    (one block below their position). Stand on top of the block, and you're launched.
+  </div>
+
+  <h3>Creating a Jump Pad</h3>
+  <div class="steps">
+    <div class="step"><p>Stand on (or next to) the block you want to be the jump pad.</p></div>
+    <div class="step"><p>Run: <code>/jumpad create &lt;name&gt; [power] [upward] [useLookDir]</code><br>
+      The pad is placed at the block directly <strong>under your feet</strong>.</p></div>
+    <div class="step"><p>Test it by walking over the block — you should be launched!</p></div>
+    <div class="step"><p>To remove: <code>/jumpad remove &lt;name&gt;</code></p></div>
+  </div>
+
+  <h3>Config File: <code>server/jumpads.yml</code></h3>
+  <p>This file stores the pad data — you don't edit it manually. Use the command to create pads.</p>
+  <pre><code><span class="key">jumpads</span>:
+  <span class="key">launch_1</span>:                    <span class="comment"># pad name (lowercased)</span>
+    <span class="key">name</span>: <span class="val">launch_1</span>
+    <span class="key">world</span>: <span class="val">world</span>               <span class="comment"># Minecraft world name</span>
+    <span class="key">x</span>: <span class="val">100</span>                     <span class="comment"># Block X coordinate</span>
+    <span class="key">y</span>: <span class="val">64</span>                      <span class="comment"># Block Y coordinate</span>
+    <span class="key">z</span>: <span class="val">200</span>                     <span class="comment"># Block Z coordinate</span>
+    <span class="key">power</span>: <span class="val">1.2</span>                 <span class="comment"># Horizontal launch force (higher = farther)</span>
+    <span class="key">upward</span>: <span class="val">1.0</span>                <span class="comment"># Vertical launch force (higher = higher)</span>
+    <span class="key">useLookDir</span>: <span class="val">true</span>           <span class="comment"># true = launches in the direction you're looking</span></code></pre>
+
+  <h3>Understanding Power Values</h3>
+  <div class="card-grid">
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">power</h4>
+      <p>Horizontal speed. <code>1.0</code> is a gentle push. <code>2.5</code> is a strong fling. Use <code>0</code> for a pure vertical jump.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">upward</h4>
+      <p>Vertical speed. <code>0.5</code> is a small hop. <code>1.5</code> is a big leap. <code>2.0</code> sends you very high.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">useLookDir</h4>
+      <p><code>true</code>: launched where you're looking. <code>false</code>: always launched straight up.</p>
+    </div>
+  </div>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th></tr>
+      <tr><td><code>/jumpad</code></td><td>Show help &amp; list all pads</td></tr>
+      <tr><td><code>/jumpad create &lt;name&gt; [power] [upward] [useLookDir]</code></td><td>Create a pad at block under you</td></tr>
+      <tr><td><code>/jumpad remove &lt;name&gt;</code></td><td>Delete a pad</td></tr>
+      <tr><td><code>/jumpad list</code></td><td>List all pads</td></tr>
+      <tr><td><code>/jumpad info &lt;name&gt;</code></td><td>View location &amp; settings of a pad</td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Hub Admin)</div>
+      <p>Steve places a gold block in the hub lobby and creates a jump pad on it:</p>
+      <div class="player-chat">/jumpad create lobby_launch 1.5 2.0 false</div>
+      <p style="margin-top:8px">Now any player stepping on that gold block flies straight up, landing on a platform above.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Parkour Builder)</div>
+      <p>Alex creates a directional pad for her parkour course. Players must be facing the right direction to land correctly:</p>
+      <div class="player-chat">/jumpad create parkour_jump1 2.0 1.2 true</div>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Player)</div>
+      <p>Notch wants to know what's at each pad. He uses:</p>
+      <div class="player-chat">/jumpad info lobby_launch</div>
+      <p style="margin-top:8px">He sees: World: world | XYZ: 100 64 200 | Power: 1.5 | Upward: 2.0</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- TEMPFLY -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="tempfly">
+  <div class="module-header">
+    <div class="module-icon">✈️</div>
+    <div>
+      <h2>TempFly</h2>
+      <p>Grant players temporary flight based on their rank or permissions — it expires automatically.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    TempFly gives players the ability to fly for a <strong>limited time</strong>. When the time runs out,
+    flight is automatically disabled. Different ranks can get different durations. This is perfect for
+    reward systems, donor perks, or event prizes.
+  </p>
+
+  <div class="alert alert-warn">
+    <strong>Note:</strong> TempFly respects game modes — switching to Creative or Spectator cancels the timer.
+    Reminder messages are sent at 60s, 30s, 10s, and 5s remaining.
+  </div>
+
+  <h3>Config File: <code>server/tempfly.yml</code></h3>
+  <pre><code><span class="key">use-permission-groups</span>: <span class="val">true</span>
+<span class="comment"># Check these permissions to decide how long to give</span>
+<span class="key">permission-groups</span>:
+  <span class="key">vip</span>: <span class="val">300</span>            <span class="comment"># "oe.tempfly.vip" → 300 seconds (5 min)</span>
+  <span class="key">premium</span>: <span class="val">600</span>        <span class="comment"># "oe.tempfly.premium" → 600 seconds (10 min)</span>
+  <span class="key">elite</span>: <span class="val">1800</span>         <span class="comment"># "oe.tempfly.elite" → 1800 seconds (30 min)</span>
+
+<span class="key">use-luckperms-groups</span>: <span class="val">true</span>
+<span class="comment"># Or use LuckPerms primary group name directly</span>
+<span class="key">luckperms-groups</span>:
+  <span class="key">default</span>: <span class="val">180</span>        <span class="comment"># "default" group → 180 seconds (3 min)</span>
+  <span class="key">vip</span>: <span class="val">300</span>
+  <span class="key">premium</span>: <span class="val">600</span></code></pre>
+
+  <h3>How Duration Resolution Works</h3>
+  <div class="steps">
+    <div class="step"><p><strong>Permission groups checked first</strong> (if <code>use-permission-groups: true</code>). Plugin checks if the player has <code>oe.tempfly.&lt;group&gt;</code>.</p></div>
+    <div class="step"><p><strong>LuckPerms primary group checked second</strong> (if <code>use-luckperms-groups: true</code>). The player's main LP group name is matched.</p></div>
+    <div class="step"><p>If neither matches, <strong>no duration</strong> — player gets message: "You don't have permission to use temporary fly."</p></div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Special permission:</strong> Players with <code>oe.tempfly.infinite</code> have flight enabled permanently on join.
+  </div>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th></tr>
+      <tr><td><code>/tempfly</code> or <code>/tempfly on</code></td><td>Start temporary flight (uses your rank's duration)</td></tr>
+      <tr><td><code>/tempfly off</code></td><td>Cancel flight early</td></tr>
+      <tr><td><code>/tempfly time</code></td><td>Check how much time remains</td></tr>
+      <tr><td>Alias: <code>/tfly</code></td><td>Same as /tempfly</td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (VIP Rank)</div>
+      <p>Alex has the "vip" LuckPerms group. She types:</p>
+      <div class="player-chat">/tempfly</div>
+      <p style="margin-top:8px">She gets: <em>"Temporary fly enabled for 5m."</em> After 5 minutes, flight is removed and she gets a warning at 60s, 30s, 10s, 5s.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Elite Rank)</div>
+      <p>Notch has the "elite" LuckPerms group — he gets 30 minutes of flight. He uses:</p>
+      <div class="player-chat">/tfly time</div>
+      <p style="margin-top:8px">He sees: <em>"Time remaining: 27m 45s"</em></p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Default)</div>
+      <p>Steve is in the default group (180 seconds = 3 min). He activates fly, builds quickly, then cancels early to save time:</p>
+      <div class="player-chat">/tempfly off</div>
+      <p style="margin-top:8px">Flight cancelled. His session time is gone — he'll need to use /tempfly again to start fresh.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Owner)</div>
+      <p>Herobrine has <code>oe.tempfly.infinite</code>. Every time he joins, flight is enabled automatically with no timer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- WARNINGS -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="warnings">
+  <div class="module-header">
+    <div class="module-icon">⚠️</div>
+    <div>
+      <h2>Warnings System</h2>
+      <p>Warn players for rule violations, with automatic punishment when they hit the limit.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    Staff can give players formal warnings. The system tracks how many warnings each player has and
+    automatically applies a punishment (kick, temp ban, or ban) when the limit is reached.
+    Warnings can expire after a set time. All data is saved to <code>warnings.yml</code>.
+  </p>
+
+  <h3>Config File: <code>server/warnings.yml</code></h3>
+  <pre><code><span class="key">warnings</span>:
+  <span class="key">max-warnings</span>: <span class="val">3</span>          <span class="comment"># Number of warnings before punishment triggers</span>
+
+  <span class="key">max-action</span>: <span class="val">tempban</span>      <span class="comment"># What happens at max warnings:</span>
+  <span class="comment">#   none    = just notify, no punishment</span>
+  <span class="comment">#   kick    = kick from server</span>
+  <span class="comment">#   tempban = temporary ban (uses max-action-duration)</span>
+  <span class="comment">#   ban     = permanent ban</span>
+
+  <span class="key">max-action-duration</span>: <span class="val">7d</span>  <span class="comment"># Duration for tempban: supports d/h/m/s (e.g. "3d12h")</span>
+
+  <span class="key">broadcast-on-warn</span>: <span class="val">false</span> <span class="comment"># Broadcast to all staff when someone is warned</span>
+  <span class="comment"># Requires oreo.warn.see-broadcasts permission to receive the broadcast</span>
+
+  <span class="key">expire-after</span>: <span class="val">""</span>          <span class="comment"># How long until warnings expire (e.g. "30d")</span>
+  <span class="comment"># Leave blank ("") for warnings that never expire</span></code></pre>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th><th>Permission</th></tr>
+      <tr><td><code>/warn &lt;player&gt; &lt;reason...&gt;</code></td><td>Add a warning to a player (online or offline)</td><td><code>oreo.warn</code></td></tr>
+      <tr><td><code>/warnings [player]</code></td><td>View your own warnings (or another player's)</td><td><code>oreo.warnings</code></td></tr>
+      <tr><td><code>/unwarn &lt;player&gt; &lt;warn-id|all&gt;</code></td><td>Remove a specific warning or all warnings</td><td><code>oreo.unwarn</code></td></tr>
+    </table>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Tip:</strong> When using <code>/unwarn</code>, tab-complete the player name first, then
+    tab-complete to see all their active warning IDs (short 8-char codes like <code>a1b2c3d4</code>).
+    Use <code>/unwarn Steve all</code> to clear everything.
+  </div>
+
+  <div class="alert alert-warn">
+    <strong>Viewing others' warnings:</strong> To check another player's warnings, you need
+    <code>oreo.warnings.others</code> permission. Without it, <code>/warnings</code> only shows your own.
+  </div>
+
+  <h3>How It Works Step by Step</h3>
+  <div class="steps">
+    <div class="step"><p>Staff member types <code>/warn Alex Spamming in chat</code></p></div>
+    <div class="step"><p>Alex receives a message: <em>"You have been warned by Notch: Spamming in chat. Total warnings: 1/3"</em></p></div>
+    <div class="step"><p>Staff sees: <em>"Warned Alex: Spamming in chat (1/3 warnings)"</em></p></div>
+    <div class="step"><p>If <code>broadcast-on-warn: true</code>, all staff see the warning in chat</p></div>
+    <div class="step"><p>On the 3rd warning, the punishment fires automatically — in this case, a 7-day tempban</p></div>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Gets Warned)</div>
+      <p>Alex was spamming chat. Notch warns her twice this week.</p>
+      <div class="player-chat">/warn Alex Spamming<br>/warn Alex Advertising another server</div>
+      <p style="margin-top:8px">Alex now has 2/3 warnings. One more and she's tempbanned for 7 days.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Moderator)</div>
+      <p>Notch wants to check Alex's warning history:</p>
+      <div class="player-chat">/warnings Alex</div>
+      <p style="margin-top:8px">He sees both warnings with their IDs, dates, and reasons.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Admin)</div>
+      <p>Steve decides one warning was unfair and removes it:</p>
+      <div class="player-chat">/unwarn Alex a1b2c3d4</div>
+      <p style="margin-top:8px">That specific warning is removed. Alex is back to 1/3.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Bad Player)</div>
+      <p>Herobrine gets his 3rd warning. The system automatically applies the configured action: <em>tempban for 7 days</em>. His warning count is then cleared.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- MODGUI -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="modgui">
+  <div class="module-header">
+    <div class="module-icon">🛡️</div>
+    <div>
+      <h2>ModGUI — Moderation Panel</h2>
+      <p>An in-game GUI that puts all moderation tools in one easy-to-use menu.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    ModGUI provides a visual, clickable GUI panel for staff members. Instead of memorizing dozens of
+    commands, moderators can open one menu and access everything: player inspection, inventory viewing,
+    banning, kicking, freezing, notes, IP lookup, chat moderation, world management, and performance tools.
+  </p>
+
+  <h3>How to Open</h3>
+  <div class="steps">
+    <div class="step"><p>Make sure you have the <code>oreo.modgui.open</code> permission</p></div>
+    <div class="step"><p>Run <code>/modgui</code> — a 6-row GUI opens</p></div>
+    <div class="step"><p>Click items to navigate to sub-menus</p></div>
+  </div>
+
+  <h3>Config File: <code>server/modgui.yml</code></h3>
+  <pre><code><span class="key">worlds</span>: <span class="val">{}</span>
+<span class="comment"># World-specific configurations for ModGUI world management features.</span>
+<span class="comment"># Leave empty to use defaults. Example:</span>
+<span class="comment"># worlds:</span>
+<span class="comment">#   world:</span>
+<span class="comment">#     pvp: true</span>
+<span class="comment">#     mob-spawning: true</span></code></pre>
+
+  <h3>Available Sub-Menus</h3>
+  <div class="card-grid">
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Player Menu</h4>
+      <p>Search for a player by name. Opens their personal actions panel.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Player Actions</h4>
+      <p>Ban, kick, mute, freeze, teleport, view inventory, check IP, add notes.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Inspect Menu</h4>
+      <p>Full player profile: playtime, warnings, ban status, alt accounts, location.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">InvSee</h4>
+      <p>View and optionally modify another player's inventory in real-time.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">EcSee</h4>
+      <p>View another player's ender chest contents.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">IP / Alts Menu</h4>
+      <p>See all accounts that have logged in from the same IP address.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Player Notes</h4>
+      <p>Add/view private staff notes about a player. Notes persist across sessions.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Chat Moderation</h4>
+      <p>Mute chat globally, set slowmode, toggle staff chat mode.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Server Menu</h4>
+      <p>Server-wide controls: broadcast, emergency clear, server info.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">World Actions</h4>
+      <p>Toggle PvP, mob spawning, gamerules per-world, world whitelist.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">TPS Dashboard</h4>
+      <p>Real-time performance panel: TPS graph, entity counts, chunk info.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Perf Tools</h4>
+      <p>Performance utilities: clearlag trigger, chunk analysis, memory info.</p>
+    </div>
+  </div>
+
+  <h3>Freeze Feature</h3>
+  <p>
+    Moderators can freeze a player (from the Player Actions menu or by command). A frozen player
+    cannot move, chat, or interact. This is useful for mid-investigation holds.
+  </p>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Moderator)</div>
+      <p>Notch suspects a player is hacking. He opens <code>/modgui</code>, navigates to Player Menu, searches "Herobrine", then clicks Inspect to see his movement stats and recent activity.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Under Investigation)</div>
+      <p>Herobrine is frozen by Notch. He cannot move. He receives a message: <em>"You have been frozen by a moderator."</em></p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Admin)</div>
+      <p>Steve uses the World Actions menu to quickly toggle PvP off in the mining world without remembering any gamerule commands.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- HELP & RULES -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="help-rules">
+  <div class="module-header">
+    <div class="module-icon">📖</div>
+    <div>
+      <h2>Help &amp; Rules</h2>
+      <p>Configurable <code>/help</code> command with paginated or simple mode, and a <code>/rules</code> command for server rules.</p>
+    </div>
+  </div>
+
+  <h3>Config: <code>server/help.yml</code></h3>
+  <pre><code><span class="key">help</span>:
+  <span class="key">mode</span>: <span class="val">paginated</span>   <span class="comment"># "paginated" (pages with navigation) or "simple" (just print lines)</span>
+
+  <span class="comment"># --- Simple mode only ---</span>
+  <span class="key">simple-text</span>:
+    - <span class="val">"&amp;6=== SERVER HELP ==="</span>
+    - <span class="val">"&amp;e/home &amp;7- Teleport to your home"</span>
+    - <span class="val">"&amp;e/warp &amp;7- List server warps"</span>
+
+  <span class="comment"># --- Paginated mode ---</span>
+  <span class="key">header</span>: <span class="val">"&amp;8&amp;m------&amp;r &amp;6&amp;lServer Help &amp;7(Page {page}/{total}) &amp;8&amp;m------"</span>
+  <span class="key">footer</span>: <span class="val">"&amp;8&amp;m------&amp;r &amp;7Use &amp;e/help &lt;page&gt; &amp;7to navigate &amp;8&amp;m------"</span>
+  <span class="key">entries-per-page</span>: <span class="val">8</span>    <span class="comment"># How many commands show per page</span>
+
+  <span class="key">entries</span>:               <span class="comment"># List of commands to display</span>
+    - <span class="key">command</span>: <span class="val">"&amp;e/home"</span>
+      <span class="key">description</span>: <span class="val">"Teleport to your home"</span>
+      <span class="comment"># no permission = visible to everyone</span>
+
+    - <span class="key">command</span>: <span class="val">"&amp;e/ban"</span>
+      <span class="key">description</span>: <span class="val">"Ban a player (staff only)"</span>
+      <span class="key">permission</span>: <span class="val">"oreo.ban"</span>
+      <span class="comment"># ↑ Only shown to players who have this permission</span></code></pre>
+
+  <div class="alert alert-info">
+    <strong>Permission-gated entries:</strong> If an entry has a <code>permission</code> field, only players with
+    that permission will see it in <code>/help</code>. This lets you show different commands to staff vs players.
+  </div>
+
+  <h3>Config: <code>server/rules.yml</code></h3>
+  <pre><code><span class="key">rules</span>:
+  <span class="key">lines</span>:
+    - <span class="val">"&amp;6=== SERVER RULES ==="</span>
+    - <span class="val">"&amp;e1. &amp;7No hacking or using unfair advantages"</span>
+    - <span class="val">"&amp;e2. &amp;7Be respectful to all players"</span>
+    - <span class="val">"&amp;e3. &amp;7No griefing or stealing"</span>
+    - <span class="val">"&amp;e4. &amp;7No spamming or advertising other servers"</span>
+    - <span class="val">"&amp;e5. &amp;7Follow staff instructions"</span>
+    - <span class="val">"&amp;7Breaking rules may result in a ban."</span></code></pre>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th><th>Permission</th></tr>
+      <tr><td><code>/help [page]</code></td><td>Show help page (default: page 1)</td><td><code>oreo.help</code></td></tr>
+      <tr><td><code>/help reload</code></td><td>Reload help.yml</td><td><code>oreo.help.admin</code></td></tr>
+      <tr><td><code>/rules</code></td><td>Show the server rules</td><td><code>oreo.rules</code></td></tr>
+      <tr><td><code>/rules reload</code></td><td>Reload rules.yml</td><td><code>oreo.rules.admin</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (New Player)</div>
+      <p>Steve just joined and wants to know what commands are available. He types <code>/help</code> and sees page 1 of the help list. He types <code>/help 2</code> for page 2.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Moderator)</div>
+      <p>Notch types <code>/help</code> and sees additional entries in the list — like <code>/ban</code> and <code>/kick</code> — that regular players don't see because they require <code>oreo.ban</code>.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Player)</div>
+      <p>Alex was arguing about a rule with another player. She types <code>/rules</code> to show the official rules in chat, ending the argument.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- MOTD -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="motd">
+  <div class="module-header">
+    <div class="module-icon">📢</div>
+    <div>
+      <h2>MOTD (Message of the Day)</h2>
+      <p>Send players a custom welcome message when they join, with different messages per rank.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    When a player joins the server, they receive a customizable <strong>join message</strong> after a short delay.
+    You can configure:
+  </p>
+  <ul>
+    <li>A <strong>default message</strong> all players see</li>
+    <li>A <strong>first-join message</strong> for brand new players</li>
+    <li><strong>Group-specific messages</strong> for different ranks (VIP, staff, etc.)</li>
+  </ul>
+
+  <h3>Config File: <code>server/motd.yml</code></h3>
+  <pre><code><span class="key">motd</span>:
+  <span class="key">enabled</span>: <span class="val">true</span>
+  <span class="key">delay-ticks</span>: <span class="val">20</span>        <span class="comment"># Ticks before sending (20 ticks = 1 second). Lets the world load first.</span>
+
+  <span class="key">default</span>:               <span class="comment"># Default MOTD for everyone</span>
+    - <span class="val">"&amp;6Welcome back, &amp;e%player%&amp;6!"</span>
+    - <span class="val">"&amp;7There are &amp;a%online% &amp;7players online."</span>
+    - <span class="val">"&amp;7Type &amp;e/help &amp;7for commands."</span>
+
+  <span class="key">first-join</span>:           <span class="comment"># Shown only on the VERY FIRST join ever</span>
+    <span class="key">enabled</span>: <span class="val">true</span>
+    <span class="key">lines</span>:
+      - <span class="val">"&amp;a&amp;lWELCOME TO THE SERVER, &amp;e&amp;l%player%&amp;a&amp;l!"</span>
+      - <span class="val">"&amp;7This is your first time here. Type &amp;e/rules &amp;7to read the server rules."</span>
+      - <span class="val">"&amp;7Need help? Type &amp;e/help &amp;7for all commands."</span>
+
+  <span class="key">groups</span>:               <span class="comment"># Rank-specific overrides — checked top to bottom</span>
+    - <span class="key">permission</span>: <span class="val">"group.admin"</span>
+      <span class="key">lines</span>:
+        - <span class="val">"&amp;c[ADMIN] &amp;7Welcome back, &amp;c%player%&amp;7!"</span>
+        - <span class="val">"&amp;7Staff channel: /staffchat"</span>
+
+    - <span class="key">permission</span>: <span class="val">"group.vip"</span>
+      <span class="key">lines</span>:
+        - <span class="val">"&amp;6[VIP] &amp;7Welcome, &amp;6%player%&amp;7!"</span>
+        - <span class="val">"&amp;7Your VIP perks: /fly, /nick, /kit vip"</span></code></pre>
+
+  <h3>Placeholders</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Placeholder</th><th>Replaced With</th></tr>
+      <tr><td><code>%player%</code></td><td>The joining player's username</td></tr>
+      <tr><td><code>%online%</code></td><td>Number of currently online players</td></tr>
+    </table>
+  </div>
+
+  <div class="alert alert-warn">
+    <strong>Group priority:</strong> Groups are checked <em>top to bottom</em>. The first matching group wins.
+    Put more specific ranks (admin, owner) before general ones (vip, default).
+  </div>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th></tr>
+      <tr><td><code>/motd</code></td><td>Show the MOTD again (your rank's version)</td></tr>
+      <tr><td><code>/motd reload</code></td><td>Reload motd.yml (requires <code>oreo.motd.admin</code>)</td></tr>
+    </table>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (First Join)</div>
+      <p>Steve joins for the first time. He sees:<br>
+      <em>"WELCOME TO THE SERVER, STEVE!"</em><br>
+      <em>"This is your first time here. Type /rules to read the rules."</em></p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (VIP)</div>
+      <p>Alex has the "vip" LuckPerms group, which gives <code>group.vip</code>. She sees the VIP MOTD: <em>"[VIP] Welcome, Alex! Your VIP perks: /fly, /nick, /kit vip"</em></p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Admin)</div>
+      <p>Notch sees the admin MOTD — he's checked first because admin group is listed before VIP in config. He also sees: <em>"Staff channel: /staffchat"</em></p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">👾 Herobrine (Default)</div>
+      <p>Herobrine has no special rank. He sees the default MOTD. After closing his screen he types <code>/motd</code> to read it again.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- CRAFT ACTIONS -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="craftactions">
+  <div class="module-header">
+    <div class="module-icon">⚒️</div>
+    <div>
+      <h2>Craft Actions</h2>
+      <p>Run commands and show messages when specific items are crafted in a crafting table.</p>
+    </div>
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    Craft Actions let you reward players for crafting specific items. When someone crafts a configured item,
+    the server can:
+  </p>
+  <ul>
+    <li>Run <strong>console commands</strong> (give money, effects, broadcast, etc.)</li>
+    <li>Send the player a <strong>custom MiniMessage formatted</strong> message</li>
+  </ul>
+  <p>Works for both vanilla items (like <code>DIAMOND_SWORD</code>) and custom-named recipes from the CustomCraft system.</p>
+
+  <h3>Config File: <code>server/craft-actions.yml</code></h3>
+  <pre><code><span class="key">actions</span>:
+
+  <span class="comment"># --- Vanilla item: use the Material name (all caps) ---</span>
+  <span class="key">DIAMOND_PICKAXE</span>:
+    <span class="key">commands</span>:
+      - <span class="val">"eco give %player% 50"</span>        <span class="comment"># Give $50 via Vault economy</span>
+      - <span class="val">"broadcast &amp;e%player% crafted a Diamond Pickaxe!"</span>
+    <span class="key">message</span>: <span class="val">"&lt;green&gt;You earned &lt;gold&gt;$50&lt;/gold&gt; for crafting this pickaxe!&lt;/green&gt;"</span>
+
+  <span class="key">DIAMOND_SWORD</span>:
+    <span class="key">commands</span>:
+      - <span class="val">"effect give %player% strength 60 1"</span>
+    <span class="key">message</span>: <span class="val">"&lt;aqua&gt;You feel powerful wielding this sword!&lt;/aqua&gt;"</span>
+
+  <span class="comment"># --- Custom recipe: use the recipe name (lowercase) ---</span>
+  <span class="key">my_magic_staff</span>:
+    <span class="key">commands</span>:
+      - <span class="val">"give %player% blaze_rod 1"</span>
+    <span class="key">message</span>: <span class="val">"&lt;yellow&gt;You crafted a magical staff!&lt;/yellow&gt;"</span></code></pre>
+
+  <h3>Available Placeholders</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Placeholder</th><th>Replaced With</th></tr>
+      <tr><td><code>%player%</code></td><td>Crafting player's username</td></tr>
+      <tr><td><code>%player_uuid%</code></td><td>Player's UUID</td></tr>
+      <tr><td><code>%world%</code></td><td>World the player is in</td></tr>
+      <tr><td><code>%item%</code></td><td>Material name of the crafted item</td></tr>
+      <tr><td><code>%amount%</code></td><td>How many were crafted</td></tr>
+    </table>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Commands run as console.</strong> You don't need to prefix with <code>/</code>.
+    Just write the command as you would in console: <code>eco give %player% 100</code>
+  </div>
+
+  <h3>Player Examples</h3>
+  <div class="card-grid">
+    <div class="player-box">
+      <div class="player-name">🧱 Steve (Miner)</div>
+      <p>Steve crafts his first Diamond Pickaxe. He immediately sees:<br>
+      <em style="color:#8fe28f;">"You earned $50 for crafting this pickaxe!"</em><br>
+      And the whole server sees a broadcast that he crafted it.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎀 Alex (Fighter)</div>
+      <p>Alex crafts a Diamond Sword and instantly gets a Strength 1 effect for 60 seconds. The action fired silently — no broadcast, just a personal message.</p>
+    </div>
+    <div class="player-box">
+      <div class="player-name">🎩 Notch (Admin, Reloading)</div>
+      <p>Notch added a new craft action for NETHERITE_SWORD. He runs <code>/oecraft reload</code> to apply the change without restarting the server.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- SHARDS -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="shards">
+  <div class="module-header">
+    <div class="module-icon">🌍</div>
+    <div>
+      <h2>World Sharding</h2>
+      <p>Split a massive world across multiple servers — players seamlessly cross borders without noticing.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-warn">
+    <strong>Advanced Feature:</strong> Sharding requires multiple Minecraft servers connected by BungeeCord/Velocity
+    and a Redis server. This is for large networks (Donut SMP style). If you have one server, you don't need this.
+  </div>
+
+  <h3>What Does It Do?</h3>
+  <p>
+    Imagine a world so large it can't run on one server. Sharding splits the world into a grid of zones,
+    each hosted on its own server. When a player walks from one zone to the next, they're silently
+    transferred to the correct server — the world feels endless and seamless.
+  </p>
+
+  <h3>Config File: <code>server/shards.yml</code></h3>
+  <pre><code><span class="key">sharding</span>:
+  <span class="key">enabled</span>: <span class="val">false</span>             <span class="comment"># Must set to true to activate sharding</span>
+  <span class="key">proxy</span>: <span class="val">VELOCITY</span>          <span class="comment"># VELOCITY or BUNGEECORD</span>
+  <span class="key">transfer-cooldown-ms</span>: <span class="val">3000</span> <span class="comment"># Milliseconds between transfers (prevents exploit loops)</span>
+
+  <span class="key">redis</span>:
+    <span class="key">host</span>: <span class="val">localhost</span>
+    <span class="key">port</span>: <span class="val">6379</span>
+    <span class="key">password</span>: <span class="val">""</span>            <span class="comment"># Leave blank if no auth</span>
+
+  <span class="key">worlds</span>:
+    <span class="key">world</span>:                  <span class="comment"># Minecraft world name</span>
+      <span class="key">enabled</span>: <span class="val">true</span>
+      <span class="key">mode</span>: <span class="val">GRID</span>             <span class="comment"># GRID (rectangular zones) or RADIAL (ring zones)</span>
+      <span class="key">shard-size</span>: <span class="val">10000</span>      <span class="comment"># Size of each zone in blocks</span>
+      <span class="key">transfer-buffer</span>: <span class="val">12</span>    <span class="comment"># Blocks from border that trigger transfer</span>
+      <span class="key">safe-zone</span>: <span class="val">16</span>          <span class="comment"># Block radius around border that prevents combat</span>
+      <span class="key">dimension-servers</span>:
+        <span class="key">overworld</span>: <span class="val">"shard-%shard%"</span>  <span class="comment"># Server name pattern. %shard% = "0-0", "1-0", etc.</span></code></pre>
+
+  <h3>How It Works</h3>
+  <div class="steps">
+    <div class="step"><p><strong>Each server</strong> is started with a system property: <code>-DshardId=shard-0-0</code> (sets which grid cell this server owns)</p></div>
+    <div class="step"><p>Player walks toward the edge of shard-0-0 (within 12 blocks of border)</p></div>
+    <div class="step"><p>Plugin calculates the target shard: <code>shard-1-0</code></p></div>
+    <div class="step"><p>Player state (health, inventory, velocity, potion effects) is saved to Redis with a 5-second TTL</p></div>
+    <div class="step"><p>Player is silently transferred to <code>shard-1-0</code> server via BungeeCord/Velocity</p></div>
+    <div class="step"><p>On the new server, the ShardJoinListener reads the Redis handoff data and restores the player's exact state</p></div>
+  </div>
+
+  <h3>GRID vs RADIAL Mode</h3>
+  <div class="card-grid">
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">GRID Mode</h4>
+      <p>World is divided into a rectangular grid. Shard IDs use X,Z coordinates: <code>shard-0-0</code>, <code>shard-1-0</code>, <code>shard-0-1</code>, etc. Best for square/rectangular worlds.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">RADIAL Mode</h4>
+      <p>World is divided into concentric rings from the center. Shard IDs: <code>shard-ring-0</code>, <code>shard-ring-1</code>, etc. Best for circular/island worlds.</p>
+    </div>
+  </div>
+
+  <h3>Safe Zone</h3>
+  <p>
+    The <code>safe-zone</code> setting creates a combat-free border buffer.
+    Players within <code>safe-zone</code> blocks of a shard boundary cannot be attacked.
+    This prevents players from exploiting border transfers during combat.
+  </p>
+
+  <h3>Commands</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Command</th><th>What It Does</th><th>Permission</th></tr>
+      <tr><td><code>/shard status</code></td><td>Show current shard info and Redis connection status</td><td><code>oreo.shard.admin</code></td></tr>
+      <tr><td><code>/shard create &lt;world&gt;</code></td><td>Create a new world shard configuration</td><td><code>oreo.shard.admin</code></td></tr>
+      <tr><td><code>/shard list</code></td><td>List all configured shard worlds</td><td><code>oreo.shard.admin</code></td></tr>
+      <tr><td><code>/shard transfer &lt;player&gt; &lt;shard&gt;</code></td><td>Manually transfer a player to a shard</td><td><code>oreo.shard.admin</code></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- PERMISSIONS -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="permissions">
+  <h2>All Permissions</h2>
+
+  <h3>Maintenance</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.maintenance.admin</code></td><td>All maintenance commands (enable, disable, whitelist, clock, etc.)</td></tr>
+      <tr><td><code>oreo.maintenance.bypass</code></td><td>Join during maintenance without being on the whitelist</td></tr>
+    </table>
+  </div>
+
+  <h3>ClearLag</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.lag.clear</code></td><td><code>/olagg clear</code> — manually clear entities</td></tr>
+      <tr><td><code>oreo.lag.killmobs</code></td><td><code>/olagg killmobs</code> — manually kill mobs</td></tr>
+      <tr><td><code>oreo.lag.reload</code></td><td><code>/olagg reload</code> — reload clearlag config</td></tr>
+    </table>
+  </div>
+
+  <h3>JumpPads</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.jumpad</code></td><td>Create, remove, and manage jump pads</td></tr>
+    </table>
+  </div>
+
+  <h3>TempFly</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oe.tempfly.use</code></td><td>Use <code>/tempfly</code> command</td></tr>
+      <tr><td><code>oe.tempfly.infinite</code></td><td>Permanent flight (enabled on every join)</td></tr>
+      <tr><td><code>oe.tempfly.&lt;group&gt;</code></td><td>Duration from permission-groups config (e.g. <code>oe.tempfly.vip</code>)</td></tr>
+    </table>
+  </div>
+
+  <h3>Warnings</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.warn</code></td><td>Issue warnings with <code>/warn</code></td></tr>
+      <tr><td><code>oreo.warnings</code></td><td>View own warnings with <code>/warnings</code></td></tr>
+      <tr><td><code>oreo.warnings.others</code></td><td>View another player's warnings</td></tr>
+      <tr><td><code>oreo.unwarn</code></td><td>Remove warnings with <code>/unwarn</code></td></tr>
+      <tr><td><code>oreo.warn.see-broadcasts</code></td><td>Receive warning broadcast messages</td></tr>
+    </table>
+  </div>
+
+  <h3>ModGUI</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.modgui.open</code></td><td>Open <code>/modgui</code> panel</td></tr>
+    </table>
+  </div>
+
+  <h3>Help &amp; Rules</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.help</code></td><td>Use <code>/help</code></td></tr>
+      <tr><td><code>oreo.help.admin</code></td><td><code>/help reload</code></td></tr>
+      <tr><td><code>oreo.rules</code></td><td>Use <code>/rules</code></td></tr>
+      <tr><td><code>oreo.rules.admin</code></td><td><code>/rules reload</code></td></tr>
+    </table>
+  </div>
+
+  <h3>MOTD</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.motd</code></td><td>Receive MOTD on join and use <code>/motd</code></td></tr>
+      <tr><td><code>oreo.motd.admin</code></td><td><code>/motd reload</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Shards</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>What It Allows</th></tr>
+      <tr><td><code>oreo.shard.admin</code></td><td>All <code>/shard</code> commands</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- FAQ -->
+<!-- ================================================================ -->
+<hr class="section-divider" />
+<section id="faq">
+  <h2>Frequently Asked Questions</h2>
+
+  <details>
+    <summary>How do I put the server in maintenance but still let my staff join?</summary>
+    <div class="details-body">
+      <p>Enable maintenance: <code>/maintenance on</code></p>
+      <p>Then add each staff member: <code>/maintenance whitelist add Steve</code></p>
+      <p>Alternatively, if you give staff the <code>oreo.maintenance.bypass</code> permission in LuckPerms,
+      they can join without being on the whitelist at all.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>ClearLag removed my items! How do I protect specific items?</summary>
+    <div class="details-body">
+      <p>In <code>server/clearlag.yml</code>, add items to <code>auto-removal.item-filter</code>:</p>
+      <pre><code>item-filter:
+  - DIAMOND
+  - NETHERITE_INGOT
+  - NETHERITE_SCRAP
+  - ELYTRA</code></pre>
+      <p>These items will never be cleared, even during auto-removal. Reload with <code>/olagg reload</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>ClearLag killed my named pet! How do I protect it?</summary>
+    <div class="details-body">
+      <p>In <code>server/clearlag.yml</code>, set <code>auto-kill-mobs.remove-named: false</code>.
+      This tells ClearLag to never kill mobs that have a custom name (including pets named with a name tag).</p>
+      <p>You can also add specific entity types to <code>mob-filter</code> to <em>never</em> kill them:</p>
+      <pre><code>auto-kill-mobs:
+  mob-filter:
+    - WOLF
+    - CAT
+    - HORSE</code></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can TempFly sessions survive a server restart?</summary>
+    <div class="details-body">
+      <p>No. TempFly sessions are stored in memory only. If the server restarts, all active sessions
+      are lost. Players will need to use <code>/tempfly</code> again when they reconnect.</p>
+      <p>If you need persistent fly time (survives restarts), consider using a permission plugin to
+      grant <code>oe.tempfly.infinite</code> for a limited time using a timed permission plugin.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>A player reached max warnings but nothing happened — why?</summary>
+    <div class="details-body">
+      <p>Check the <code>max-action</code> setting in <code>server/warnings.yml</code>. If it's set to
+      <code>none</code>, the system records the warnings but takes no automated action.
+      Change it to <code>kick</code>, <code>tempban</code>, or <code>ban</code>.</p>
+      <p>Also ensure <code>max-warnings</code> is set to a reasonable number (e.g. <code>3</code>).</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>My /help shows too many entries on one page. How do I change it?</summary>
+    <div class="details-body">
+      <p>In <code>server/help.yml</code>, change <code>entries-per-page</code>:</p>
+      <pre><code>entries-per-page: 5   # Show 5 commands per page instead of 8</code></pre>
+      <p>Then run <code>/help reload</code> to apply the change.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I show different /motd to VIPs vs default players?</summary>
+    <div class="details-body">
+      <p>Yes! Use the <code>groups</code> section in <code>server/motd.yml</code>. Add a group entry for each rank:</p>
+      <pre><code>groups:
+  - permission: "group.vip"
+    lines:
+      - "&6Welcome back, VIP %player%!"
+      - "&7Your exclusive /kit vip is ready!"</code></pre>
+      <p>The first matching group wins, so put higher-priority groups (admin, owner) at the top of the list.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do craft actions interact with custom recipes from /oecraft?</summary>
+    <div class="details-body">
+      <p>Craft actions work for both vanilla and custom recipes.</p>
+      <ul>
+        <li>For vanilla items, use the uppercase Material name as the key: <code>DIAMOND_SWORD</code></li>
+        <li>For custom recipes created with <code>/oecraft</code>, use the recipe name (lowercase): <code>my_special_sword</code></li>
+      </ul>
+      <p>The system automatically detects which type the key is — if <code>Material.valueOf(key)</code> fails,
+      it treats it as a custom recipe name.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>JumpPads aren't making sounds or particles. Why?</summary>
+    <div class="details-body">
+      <p>The sound and particle names must match Minecraft's registry keys (all lowercase with underscores).</p>
+      <p>For sounds, use the Minecraft sound name format:
+      <code>entity_firework_rocket_launch</code>, <code>block_note_block_pling</code></p>
+      <p>For particles, use: <code>cloud</code>, <code>flame</code>, <code>end_rod</code>, <code>fireworks_spark</code></p>
+      <p>You can look up valid names in the Minecraft wiki or by using tab-complete in-game with the <code>/particle</code> command.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Is sharding suitable for a single-server setup?</summary>
+    <div class="details-body">
+      <p>No. Sharding is designed for networks with multiple Minecraft servers behind BungeeCord or Velocity,
+      plus a Redis server for state handoff. If you only have one server, leave <code>sharding.enabled: false</code>
+      and ignore the shards.yml file.</p>
+      <p>Sharding is useful when your world is so large that one server can't handle all the chunks efficiently —
+      typically for creative/exploration servers with very active populations.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do I reload all server module configs at once?</summary>
+    <div class="details-body">
+      <p>Most modules have their own reload subcommand. Currently there's no single "reload all" command for
+      server modules. You need to reload each module individually:</p>
+      <ul>
+        <li><code>/maintenance reload</code></li>
+        <li><code>/olagg reload</code></li>
+        <li><code>/help reload</code></li>
+        <li><code>/rules reload</code></li>
+        <li><code>/motd reload</code></li>
+        <li><code>/oecraft reload</code></li>
+      </ul>
+      <p>Or use the global <code>/oe reload</code> if OreoEssentials supports a full plugin reload.</p>
+    </div>
+  </details>
+</section>
+
+</div> <!-- .wrap -->
+
+<footer style="text-align:center;padding:40px 20px;border-top:1px solid #2e4253;color:#5a7d8a;font-size:0.85rem;">
+  OreoEssentials Server Modules Documentation — <a href="index.html">← Back to Index</a>
+</footer>
+
+</body>
+</html>

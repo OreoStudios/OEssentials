@@ -418,7 +418,7 @@
   "fr.elias.oessentials.modules.tp.completer.TpTabCompleter": "fr.elias.oessentials.player.internal.tp.completer.TpTabCompleter",
   "fr.elias.oessentials.modules.tp.rabbit.PendingTeleportRegistry": "fr.elias.oessentials.player.internal.tp.rabbit.PendingTeleportRegistry",
   "fr.elias.oessentials.modules.tp.service.TeleportService": "fr.elias.oessentials.player.internal.tp.service.TeleportService",
-  "fr.elias.oessentials.modules.tp.rabbit.brokers.CrossServerTeleportBroker": "fr.elias.oessentials.player.internal.tp.rabbit.brokers.CrossServerTeleportBroker",
+  "fr.elias.oessentials.modules.tp.rabbit.brokers.CrossServerTeleportBroker": "fr.elias.oessentials.storage.internal.rabbit.CrossServerTeleportBroker",
   "fr.elias.oessentials.modules.tp.rabbit.brokers.TpaCrossServerBroker": "fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker",
   "fr.elias.oessentials.modules.tp.rabbit.brokers.TpCrossServerBroker": "fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker",
   "fr.elias.oessentials.modules.tp.rabbit.packets.TpaAcceptPacket": "fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaAcceptPacket",

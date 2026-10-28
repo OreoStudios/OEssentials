@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials - Auction House Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16, 22, 29, 0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(247, 185, 85, 0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(104, 217, 200, 0.07), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12,18,23,0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px; padding: 18px;
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--amber-dim), rgba(104,217,200,0.04));
+      box-shadow: var(--shadow);
+    }
+    .brand h1 { margin: 0; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.1; color: var(--amber); }
+    .brand p  { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+
+    .nav-group { margin-top: 18px; }
+    .nav-group h2 { margin: 0 0 8px; color: var(--soft); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+    .nav-group a { display: block; padding: 10px 12px; margin: 4px 0; color: var(--muted); text-decoration: none; border-radius: 10px; border: 1px solid transparent; transition: 0.18s ease; }
+    .nav-group a:hover, .nav-group a.active { color: var(--text); border-color: var(--amber-border); background: var(--amber-dim); }
+
+    /* ── Main content ─────────────────────────────────────── */
+    .content { padding: 34px 36px 80px; }
+
+    .hero {
+      padding: 30px; border-radius: 28px;
+      background: linear-gradient(135deg, rgba(247,185,85,0.10), rgba(104,217,200,0.06)), rgba(16,22,29,0.78);
+      border: 1px solid var(--amber-border);
+      box-shadow: var(--shadow); margin-bottom: 28px;
+    }
+    .hero .eyebrow { display: inline-block; margin-bottom: 14px; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff0cc; background: var(--amber-dim); border: 1px solid var(--amber-border); }
+    .hero h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2rem,4vw,3rem); line-height: 1.05; }
+    .hero p  { max-width: 920px; margin: 16px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
+    .hero-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 24px; }
+    .hero-card { padding: 14px 16px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+    .hero-card strong { display: block; color: var(--amber); margin-bottom: 6px; }
+
+    section { margin-top: 26px; padding: 24px; border-radius: 24px; background: var(--panel); border: 1px solid var(--line-soft); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+    section h2 { margin: 0 0 14px; font-family: Georgia, serif; font-size: 1.65rem; color: var(--text); }
+    section h3 { margin: 22px 0 10px; font-size: 1.04rem; color: var(--amber); }
+
+    p, li { color: var(--muted); line-height: 1.7; }
+    strong { color: var(--text); }
+
+    code { font-family: Consolas,"Courier New",monospace; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; color: #fff0cc; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    th { background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.92rem; }
+    tr:last-child td { border-bottom: 0; }
+
+    .note { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(127,192,255,0.22); background:rgba(127,192,255,0.08); }
+    .warn { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,140,122,0.24); background:rgba(255,140,122,0.08); }
+    .tip  { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(143,226,143,0.24); background:rgba(143,226,143,0.08); }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.82rem; font-family:Consolas,monospace; }
+    .pill.amber  { border-color:var(--amber-border); background:var(--amber-dim); color:var(--amber); }
+    .pill.green  { border-color:rgba(143,226,143,0.30); background:rgba(143,226,143,0.07); color:var(--green); }
+    .pill.red    { border-color:rgba(255,140,122,0.28); background:rgba(255,140,122,0.07); color:var(--red); }
+    .pill.blue   { border-color:rgba(127,192,255,0.28); background:rgba(127,192,255,0.07); color:var(--blue); }
+    .pill.teal   { border-color:rgba(104,217,200,0.28); background:rgba(104,217,200,0.07); color:var(--teal); }
+
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { display:grid; grid-template-columns:44px minmax(0,1fr); gap:14px; align-items:start; padding:16px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .step-index { width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--amber),#ffe0a0); color:#2a1800; font-weight:800; }
+
+    .code-block { position:relative; margin-top:14px; border:1px solid #253646; border-radius:16px; overflow:hidden; background:var(--code); }
+    .copy-btn { position:absolute; top:12px; right:12px; border:0; border-radius:10px; padding:8px 12px; font-weight:700; color:#2a1800; background:linear-gradient(135deg,var(--amber),#ffe0a0); cursor:pointer; }
+    .copy-btn.done { background:linear-gradient(135deg,var(--green),#c5f2c5); color:#0e2010; }
+    pre { margin:0; padding:18px; overflow-x:auto; color:#e8f3fa; font-size:0.92rem; line-height:1.55; font-family:Consolas,"Courier New",monospace; white-space:pre; }
+
+    .flow-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:14px; }
+    .flow-box { padding:10px 14px; border-radius:12px; border:1px solid var(--amber-border); background:var(--amber-dim); font-size:0.88rem; color:var(--text); font-family:Consolas,monospace; }
+    .flow-arrow { color:var(--soft); font-size:1.1rem; }
+
+    .two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+
+    .footer-box { margin-top:26px; padding:18px; border-radius:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center; color:var(--soft); }
+
+    @media (max-width:1080px) {
+      .shell { grid-template-columns:1fr; }
+      .sidebar { position:static; height:auto; border-right:0; border-bottom:1px solid var(--line-soft); }
+      .hero-grid, .two-col { grid-template-columns:1fr; }
+    }
+    @media (max-width:720px) {
+      .content { padding:20px 14px 60px; }
+      .hero, section { padding:18px; }
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>OreoEssentials Auction House</h1>
+      <p>Verified against <code>AuctionHouseModule</code>, <code>AuctionHouseConfig</code>, all GUI &amp; command files, and all 4 config YAMLs.</p>
+    </div>
+    <nav>
+      <div class="nav-group">
+        <h2>Start Here</h2>
+        <a href="#overview">Overview</a>
+        <a href="#config">Config File</a>
+      </div>
+      <div class="nav-group">
+        <h2>Player Guide</h2>
+        <a href="#commands">All Commands</a>
+        <a href="#selling">How to Sell</a>
+        <a href="#buying">How to Buy</a>
+        <a href="#managing">Managing Your Listings</a>
+        <a href="#expired">Expired &amp; Sold Items</a>
+      </div>
+      <div class="nav-group">
+        <h2>GUI System</h2>
+        <a href="#guis">All GUI Screens</a>
+        <a href="#browse-gui">Browse GUI Detail</a>
+        <a href="#search">Search System</a>
+        <a href="#categories">Categories</a>
+      </div>
+      <div class="nav-group">
+        <h2>Economy &amp; Fees</h2>
+        <a href="#fees">Fee System</a>
+        <a href="#currency">Multi-Currency</a>
+        <a href="#limits">Listing Limits</a>
+      </div>
+      <div class="nav-group">
+        <h2>Admin &amp; Backend</h2>
+        <a href="#storage">Storage Backends</a>
+        <a href="#permissions">Permissions</a>
+        <a href="#admin-commands">Admin Commands</a>
+        <a href="#cross-server">Cross-Server Sync</a>
+        <a href="#discord">Discord Webhook</a>
+        <a href="#papi">PlaceholderAPI</a>
+      </div>
+      <div class="nav-group">
+        <h2>Reference</h2>
+        <a href="#messages">messages.yml</a>
+        <a href="#gui-yml">gui.yml</a>
+        <a href="#categories-yml">categories.yml</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ── Content ─────────────────────────────────────────────────── -->
+  <main class="content">
+
+    <!-- Hero -->
+    <div class="hero" id="overview">
+      <div class="eyebrow">Module Documentation</div>
+      <h1>Auction House</h1>
+      <p>
+        A fully-featured player-driven marketplace built into OreoEssentials. Players can list items for sale,
+        browse or search what others have listed, buy instantly, manage their own listings, and reclaim anything
+        that expires. The AH works on a single server or syncs in real time across a whole network via RabbitMQ.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card">
+          <strong>Config files</strong>
+          <code>plugins/OreoEssentials/auctionhouse/</code><br>
+          <span style="color:var(--muted);font-size:.88rem">config.yml · messages.yml · categories.yml · gui.yml</span>
+        </div>
+        <div class="hero-card">
+          <strong>Storage</strong>
+          JSON (default) or MongoDB. Auto-saves every 5 minutes. Cross-server sync via RabbitMQ packets.
+        </div>
+        <div class="hero-card">
+          <strong>Economy</strong>
+          Vault (default) or any custom currency registered with CurrencyService. Per-listing currency choice.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Config File ──────────────────────────────────────────── -->
+    <section id="config">
+      <h2>config.yml — Every Setting Explained</h2>
+      <p>
+        This is the main config file. All other YAML files (messages, categories, gui) live in the same folder.
+        After editing, run <code>/ahadmin reload</code> to apply changes without restarting.
+      </p>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre># plugins/OreoEssentials/auctionhouse/config.yml
+
+enabled: true          # Set to false to completely disable the auction house.
+
+storage:
+  type: auto           # "auto"    → uses MongoDB if connected, otherwise JSON
+                       # "json"    → always use local JSON files
+                       # "mongodb" → always use MongoDB (requires OreoEssentials MongoDB connection)
+  mongodb:
+    collection: oreo_auctions   # Name of the MongoDB collection to store auctions in.
+
+listings:
+  min-price: 1.0                  # Lowest price a player is allowed to set. (default: 1.0)
+  max-price: 1000000000.0         # Highest price a player is allowed to set. (default: 1 billion)
+  max-per-player: 10              # How many active listings one player can have at once.
+  default-duration-hours: 24      # How long a listing lasts if the player doesn't pick a duration.
+  max-duration-hours: 168         # Maximum duration a player can request (168h = 7 days).
+
+fees:
+  listing-percent: 0.0   # % of the item price charged to the seller when they list. 0 = free.
+  listing-flat: 0.0      # Flat fee charged to the seller when they list (on top of percent).
+  tax-percent: 0.0       # % deducted from the seller's earnings when the item is sold. 0 = no tax.
+
+discord:
+  enabled: false
+  webhook-url: ""         # Paste your Discord webhook URL here.
+  bot-name: "OreoAuctions"
+  bot-avatar: ""          # URL to an avatar image for the Discord bot (optional).</pre>
+      </div>
+
+      <h3>How fees work — a concrete example</h3>
+      <p>
+        Suppose <code>listing-percent: 5</code>, <code>listing-flat: 10</code>, and <code>tax-percent: 3</code>.
+        A player lists an item for <strong>$1000</strong>:
+      </p>
+      <div class="steps">
+        <div class="step"><div class="step-index">1</div><div>
+          <strong>Listing fee charged immediately</strong><br>
+          <code>5% of 1000 = $50</code> + <code>$10 flat = $60 total</code> taken from the seller's balance right now.
+        </div></div>
+        <div class="step"><div class="step-index">2</div><div>
+          <strong>Buyer pays $1000</strong> — the full listed price, no extra charge.
+        </div></div>
+        <div class="step"><div class="step-index">3</div><div>
+          <strong>Tax deducted from seller's earnings</strong><br>
+          <code>3% of 1000 = $30</code> → seller receives <strong>$970</strong>.
+        </div></div>
+      </div>
+      <div class="tip"><strong>Tip:</strong> If all fees are 0.0 (default), listing and buying are completely free with no deductions.</div>
+    </section>
+
+    <!-- ── Commands ──────────────────────────────────────────── -->
+    <section id="commands">
+      <h2>All Commands</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>/ah</code></td><td><code>oreo.ah.use</code></td><td>Opens the main browse GUI showing all active listings.</td></tr>
+          <tr><td><code>/ahs [price] [hours]</code></td><td><code>oreo.ah.sell</code></td><td>Sell the item in your main hand. See the Selling section for full details.</td></tr>
+          <tr><td><code>/ahsearch &lt;keyword…&gt;</code></td><td><code>oreo.ah.use</code></td><td>Open the browse GUI pre-filtered to your search. Minimum 2 characters. Searches item name, lore, seller name, and custom item IDs.</td></tr>
+          <tr><td><code>/ahexpired</code></td><td><code>oreo.ah.use</code></td><td>Opens a GUI showing your listings that have expired so you can reclaim the items.</td></tr>
+          <tr><td><code>/ahsold</code></td><td><code>oreo.ah.use</code></td><td>Opens a GUI showing your recently sold items (history).</td></tr>
+          <tr><td><code>/ahadmin</code></td><td><code>oreo.ah.admin</code></td><td>Admin management commands. See the Admin Commands section.</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>Players only:</strong> All commands require a player — they cannot be run from the console.</div>
+    </section>
+
+    <!-- ── Selling ──────────────────────────────────────────── -->
+    <section id="selling">
+      <h2>How to Sell an Item</h2>
+      <p>There are two ways to list an item. Both require the item to be in your main hand.</p>
+
+      <h3>Method 1 — Quick sell with a price argument</h3>
+      <div class="flow-row">
+        <div class="flow-box">Hold item in hand</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">/ahs 500</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">SellGUI opens (pick category)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">ConfirmGUI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Listed!</div>
+      </div>
+      <p>
+        <code>/ahs &lt;price&gt;</code> — sets the price immediately and opens the SellGUI.
+        Uses <strong>Vault</strong> (the server's default economy) as the currency.<br>
+        You can also add a custom duration in hours as a second argument: <code>/ahs 500 48</code> (list for 48 hours instead of the default).
+      </p>
+
+      <h3>Method 2 — GUI sell (currency picker)</h3>
+      <div class="flow-row">
+        <div class="flow-box">Hold item in hand</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">/ahs (no price)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">CurrencyPickerGUI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Type price in chat</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">SellGUI (pick category)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">ConfirmGUI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Listed!</div>
+      </div>
+      <p>
+        Running <code>/ahs</code> with no price argument opens the <strong>CurrencyPickerGUI</strong>.
+        Here the player clicks to pick which currency to sell for (Vault or a custom currency).
+        After picking, the chat waits for the player to type a price. Once typed, the SellGUI opens.
+      </p>
+      <div class="note">
+        <strong>What happens at the SellGUI?</strong> The SellGUI shows the item and price. The player must
+        click a category to assign their listing to (e.g. Weapons, Armor, Tools…). After picking a category,
+        a ConfirmGUI opens as a final confirmation step. Clicking confirm removes the item from your hand,
+        charges the listing fee (if any), and creates the listing.
+      </div>
+
+      <h3>Listing limits enforced at sell time</h3>
+      <ul>
+        <li>Price must be ≥ <code>listings.min-price</code> and ≤ <code>listings.max-price</code>.</li>
+        <li>Player must have fewer than <code>listings.max-per-player</code> active listings.</li>
+        <li>Player must have enough money to cover the listing fee (percent + flat).</li>
+        <li>If any check fails, the player gets an error message and nothing happens.</li>
+      </ul>
+    </section>
+
+    <!-- ── Buying ──────────────────────────────────────────── -->
+    <section id="buying">
+      <h2>How to Buy an Item</h2>
+      <div class="flow-row">
+        <div class="flow-box">/ah</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Browse GUI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Click the item</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">ConfirmGUI</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Confirm purchase</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Item in your inventory</div>
+      </div>
+
+      <p>
+        In the browse GUI, click any listing to open the <strong>ConfirmGUI</strong>. It shows the item, price,
+        seller name, and time remaining. Click the confirm button to purchase. If you click cancel, you're
+        sent back to the browse screen with no charge.
+      </p>
+
+      <h3>What happens behind the scenes when you buy</h3>
+      <div class="steps">
+        <div class="step"><div class="step-index">1</div><div>
+          <strong>Buyer's balance is checked</strong> — must have enough for the full listed price.
+        </div></div>
+        <div class="step"><div class="step-index">2</div><div>
+          <strong>Money is transferred</strong> — buyer pays the full price. The seller receives the price minus
+          the <code>tax-percent</code> (if configured).
+        </div></div>
+        <div class="step"><div class="step-index">3</div><div>
+          <strong>Item is given to buyer</strong> — added to their inventory. If their inventory is completely
+          full, the item is <strong>dropped at their feet</strong> (it is never lost).
+        </div></div>
+        <div class="step"><div class="step-index">4</div><div>
+          <strong>Listing is removed</strong> — the auction moves to SOLD status. The seller is notified if
+          they are online. A cross-server PURCHASE sync packet is broadcast so all servers update immediately.
+        </div></div>
+      </div>
+
+      <div class="note">
+        <strong>Buying your own listing:</strong> In the browse GUI, if you click on a listing that belongs
+        to you, you are sent to the <strong>ManageGUI</strong> instead of the ConfirmGUI (you can't buy from yourself).
+      </div>
+    </section>
+
+    <!-- ── Managing Listings ──────────────────────────────────── -->
+    <section id="managing">
+      <h2>Managing Your Listings</h2>
+      <p>
+        Click <strong>"Your Listings"</strong> in the browse GUI (or click your own listing directly) to open
+        the <strong>ManageGUI</strong>. This shows all your currently active listings.
+      </p>
+      <p>
+        Click any item in the ManageGUI to cancel that listing. Cancelling returns the item directly to your
+        inventory. If your inventory is full, the item is dropped at your feet.
+      </p>
+      <div class="tip">
+        <strong>Listing fee is not refunded on cancel.</strong> The listing fee (if any) was charged when you
+        created the listing and is not returned if you cancel or if the listing expires.
+      </div>
+    </section>
+
+    <!-- ── Expired & Sold ──────────────────────────────────── -->
+    <section id="expired">
+      <h2>Expired &amp; Sold Items</h2>
+
+      <h3>Expired items</h3>
+      <p>
+        Every 60 seconds, the server checks all active listings. Any listing whose expiration time has passed
+        is moved to the <strong>expired</strong> list. If the seller is currently online, they receive a chat
+        notification. Items in the expired list stay there until the player reclaims them.
+      </p>
+      <p>
+        Run <code>/ahexpired</code> to open the <strong>ExpiredGUI</strong>. Click any item in this GUI to
+        reclaim it (it goes back into your inventory or drops at your feet if full). Expired items are not
+        given back automatically — the player must manually reclaim them.
+      </p>
+
+      <h3>Sold history</h3>
+      <p>
+        Run <code>/ahsold</code> to open the <strong>SoldGUI</strong>. This shows items you have successfully
+        sold, including the buyer name, price received, and when the sale happened. This is read-only history.
+      </p>
+
+      <h3>Time display format</h3>
+      <p>
+        Time remaining is shown in the format <code>Xd Xh Xm Xs</code>.
+        Seconds are hidden once the listing is 1+ day away. Examples:
+      </p>
+      <table>
+        <thead><tr><th>Remaining time</th><th>Displayed as</th></tr></thead>
+        <tbody>
+          <tr><td>2 days, 3 hours, 15 minutes</td><td><code>2d 3h 15m</code></td></tr>
+          <tr><td>5 hours, 30 minutes, 45 seconds</td><td><code>5h 30m 45s</code></td></tr>
+          <tr><td>12 minutes, 3 seconds</td><td><code>12m 3s</code></td></tr>
+          <tr><td>Expired or 0</td><td><code>Expired</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── GUI System ──────────────────────────────────────── -->
+    <section id="guis">
+      <h2>All GUI Screens</h2>
+      <p>
+        Every GUI can have its title, button positions, materials, and button names customised via
+        <code>gui.yml</code>. The code reads these at runtime and falls back to hardcoded defaults if a key
+        is missing.
+      </p>
+      <table>
+        <thead><tr><th>GUI</th><th>gui.yml key</th><th>Size</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Browse</strong></td><td><code>browse</code></td><td>6×9 (54 slots)</td><td>Main listing browser with pagination (28 items per page), search, category filter, balance head.</td></tr>
+          <tr><td><strong>Categories</strong></td><td><code>categories</code></td><td>3×9 (27 slots)</td><td>Pick a category to filter the browse GUI.</td></tr>
+          <tr><td><strong>Sell</strong></td><td><code>sell</code></td><td>3×9 (27 slots)</td><td>Shows item + price; player clicks a category slot to assign their listing.</td></tr>
+          <tr><td><strong>Confirm</strong></td><td><code>confirm</code></td><td>3×9 (27 slots)</td><td>Final confirmation before a purchase or listing. Confirm / Cancel buttons.</td></tr>
+          <tr><td><strong>Manage</strong></td><td><code>manage</code></td><td>6×9 (54 slots)</td><td>Your active listings. Click any item to cancel it.</td></tr>
+          <tr><td><strong>Expired</strong></td><td><code>expired</code></td><td>6×9 (54 slots)</td><td>Your expired listings. Click any item to reclaim it.</td></tr>
+          <tr><td><strong>Sold</strong></td><td><code>sold</code></td><td>6×9 (54 slots)</td><td>Your sold item history (read-only).</td></tr>
+          <tr><td><strong>CurrencyPicker</strong></td><td>—</td><td>3×9 (27 slots)</td><td>Pick Vault or a custom currency before listing. Only appears if multi-currency is enabled.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Browse GUI Detail ──────────────────────────────── -->
+    <section id="browse-gui">
+      <h2>Browse GUI — In Detail</h2>
+      <p>
+        The browse GUI is a 6-row (54-slot) SmartInventory with border decoration, pagination, and live
+        updates. Here is a map of what each area does:
+      </p>
+      <table>
+        <thead><tr><th>Area / Slot</th><th>What's there</th></tr></thead>
+        <tbody>
+          <tr><td>Row 0, column 4 (slot 4)</td><td>Your <strong>balance head</strong> — a Player Head showing your current Vault balance and how many active listings you have. Updates every tick.</td></tr>
+          <tr><td>Rows 1–4, inner columns</td><td>Up to <strong>28 auction items</strong> per page. Each item shows its original display name + lore, then appended lines for Seller, Price, Currency (if non-Vault), Time Left, Category, and a custom item badge (ItemsAdder / Nexo / Oraxen).</td></tr>
+          <tr><td>Bottom row (row 5)</td><td>Navigation: Previous Page (slot 48), Page Indicator (slot 49), Next Page (slot 50), Your Listings (slot 52), Close (slot 53).</td></tr>
+          <tr><td>Row 5, slot 45</td><td>Clear Search button (only visible when a search query is active).</td></tr>
+          <tr><td>Row 5, slot 46</td><td>Categories button (when showing all) or Back to All (when filtered by category).</td></tr>
+          <tr><td>Border (row 0, row 5, col 0, col 8)</td><td>Decorative glass panes. Material set via <code>browse.border</code> in gui.yml (default: GRAY_STAINED_GLASS_PANE).</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Live refresh on cross-server events</h3>
+      <p>
+        When any server in the network creates, sells, cancels, or expires a listing, an
+        <code>AuctionSyncPacket</code> is broadcast via RabbitMQ. All servers that receive it
+        update their in-memory auction lists <em>and</em> immediately refresh the GUI for every player
+        currently browsing — so what you see is always up-to-date, even across servers.
+      </p>
+
+      <h3>Item lore appended in the browse GUI</h3>
+      <p>The plugin adds these lines to the bottom of each item's lore when displaying it in the browse GUI:</p>
+      <div class="code-block">
+        <pre>&amp;7Seller: &amp;e{sellerName}
+&amp;7Price: &amp;a{formattedPrice}
+&amp;7Currency: &amp;b{currencyId}   ← only shown if NOT Vault
+&amp;7Time Left: &amp;e{timeRemaining}
+&amp;7Category: &amp;b{categoryDisplayName}
+&amp;d&amp;lItemsAdder Item            ← only if ItemsAdder custom item
+&amp;d&amp;lNexo Item                  ← only if Nexo custom item
+&amp;d&amp;lOraxen Item                ← only if Oraxen custom item
+
+&amp;a&amp;lClick to purchase!         ← if not your listing
+&amp;e&amp;lYOUR LISTING — click to manage  ← if it's your listing</pre>
+      </div>
+    </section>
+
+    <!-- ── Search ──────────────────────────────────────────── -->
+    <section id="search">
+      <h2>Search System</h2>
+      <p>
+        Use <code>/ahsearch &lt;keyword&gt;</code> or click the search button in the browse GUI.
+        Requires at least <strong>2 characters</strong>. The search is <strong>case-insensitive</strong> and
+        checks:
+      </p>
+      <ul>
+        <li><strong>Item type name</strong> — e.g. searching "diamond" matches DIAMOND_SWORD, DIAMOND_PICKAXE, etc.</li>
+        <li><strong>Display name</strong> — the item's custom name in Minecraft (color codes stripped).</li>
+        <li><strong>Lore lines</strong> — any line in the item's description (color codes stripped).</li>
+        <li><strong>Seller name</strong> — e.g. searching "Steve" shows all of Steve's listings.</li>
+        <li><strong>Custom item IDs</strong> — ItemsAdder namespace:id, Nexo item ID, or Oraxen item ID.</li>
+      </ul>
+      <p>
+        You can combine search with a category filter: the browse GUI supports both at the same time.
+        Click the "Clear Search" button (slot 45 in browse) to remove the search query while keeping the
+        category filter active.
+      </p>
+    </section>
+
+    <!-- ── Categories ──────────────────────────────────────── -->
+    <section id="categories">
+      <h2>Categories</h2>
+      <p>
+        Every listing has exactly one category. When a player lists an item, they pick a category in the
+        SellGUI. If an admin wants auto-detection, the code in <code>AuctionCategory.fromItem()</code>
+        follows this priority order:
+      </p>
+
+      <h3>Auto-detection priority (used internally)</h3>
+      <div class="steps">
+        <div class="step"><div class="step-index">1</div><div>
+          <strong>CUSTOM</strong> — if the item has <code>CustomModelData</code>, OR is detected as an
+          ItemsAdder / Nexo / Oraxen item. Custom items always go here first, regardless of their material.
+        </div></div>
+        <div class="step"><div class="step-index">2</div><div>
+          <strong>SPAWNERS</strong> — if material is <code>SPAWNER</code> or any <code>*_SPAWN_EGG</code>.
+        </div></div>
+        <div class="step"><div class="step-index">3</div><div>
+          <strong>WEAPONS</strong> — material name contains SWORD, BOW, CROSSBOW, TRIDENT, or is MACE.
+        </div></div>
+        <div class="step"><div class="step-index">4</div><div>
+          <strong>ARMOR</strong> — material name contains HELMET, CHESTPLATE, LEGGINGS, BOOTS, or is SHIELD.
+        </div></div>
+        <div class="step"><div class="step-index">5</div><div>
+          <strong>TOOLS</strong> — material name contains PICKAXE, AXE, SHOVEL, HOE, or is SHEARS, FISHING_ROD, FLINT_AND_STEEL, BRUSH.
+        </div></div>
+        <div class="step"><div class="step-index">6</div><div>
+          <strong>FOOD</strong> — <code>material.isEdible()</code> returns true.
+        </div></div>
+        <div class="step"><div class="step-index">7</div><div>
+          <strong>POTIONS</strong> — material name contains POTION or is TIPPED_ARROW.
+        </div></div>
+        <div class="step"><div class="step-index">8</div><div>
+          <strong>BLOCKS</strong> — <code>material.isBlock()</code> returns true.
+        </div></div>
+        <div class="step"><div class="step-index">9</div><div>
+          <strong>MISC</strong> — everything else that doesn't match above.
+        </div></div>
+      </div>
+
+      <h3>Category table</h3>
+      <table>
+        <thead><tr><th>Category</th><th>Icon material</th><th>Browse permission</th><th>Default GUI slot (categories.yml)</th></tr></thead>
+        <tbody>
+          <tr><td>ALL</td><td>CHEST</td><td><code>oreo.ah.category.all</code></td><td>— (always shown)</td></tr>
+          <tr><td>BLOCKS</td><td>BRICKS</td><td><code>oreo.ah.category.blocks</code></td><td>10</td></tr>
+          <tr><td>TOOLS</td><td>DIAMOND_PICKAXE</td><td><code>oreo.ah.category.tools</code></td><td>12</td></tr>
+          <tr><td>WEAPONS</td><td>DIAMOND_SWORD</td><td><code>oreo.ah.category.weapons</code></td><td>14</td></tr>
+          <tr><td>ARMOR</td><td>DIAMOND_CHESTPLATE</td><td><code>oreo.ah.category.armor</code></td><td>16</td></tr>
+          <tr><td>FOOD</td><td>COOKED_BEEF</td><td><code>oreo.ah.category.food</code></td><td>28</td></tr>
+          <tr><td>POTIONS</td><td>POTION</td><td><code>oreo.ah.category.potions</code></td><td>30</td></tr>
+          <tr><td>SPAWNERS</td><td>SPAWNER</td><td><code>oreo.ah.category.spawners</code></td><td>32</td></tr>
+          <tr><td>CUSTOM</td><td>NETHER_STAR</td><td><code>oreo.ah.category.custom</code></td><td>34</td></tr>
+          <tr><td>MISC</td><td>PAPER</td><td><code>oreo.ah.category.misc</code></td><td>40</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Disabling categories</h3>
+      <p>
+        In <code>categories.yml</code>, set <code>&lt;categoryname&gt;.enabled: false</code> to hide a
+        category from the category GUI and prevent players from listing items in it.
+      </p>
+
+      <h3>Category browse permissions</h3>
+      <p>
+        A player can view a category if they have <code>oreo.ah.bypass</code>, <code>oreo.ah.category.*</code>,
+        or the specific permission for that category (e.g. <code>oreo.ah.category.weapons</code>).
+        By default, all players have access to all categories.
+      </p>
+    </section>
+
+    <!-- ── Fees ──────────────────────────────────────────────── -->
+    <section id="fees">
+      <h2>Fee System</h2>
+      <p>
+        The AH supports three independent fees. All default to <code>0.0</code> (no fees).
+      </p>
+      <table>
+        <thead><tr><th>Config key</th><th>When charged</th><th>Who pays</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>fees.listing-percent</code></td>
+            <td>At listing creation</td>
+            <td>Seller</td>
+            <td>Percentage of the listed price. E.g. <code>5</code> = 5% of the price deducted from seller's wallet when listing is created.</td>
+          </tr>
+          <tr>
+            <td><code>fees.listing-flat</code></td>
+            <td>At listing creation</td>
+            <td>Seller</td>
+            <td>Flat amount (in default currency). Charged in addition to listing-percent. E.g. <code>100</code> = $100 no matter the price.</td>
+          </tr>
+          <tr>
+            <td><code>fees.tax-percent</code></td>
+            <td>When the item sells</td>
+            <td>Seller (deducted from earnings)</td>
+            <td>Percentage of the sale price kept as tax. E.g. <code>10</code> = seller only receives 90% of the sale price.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warn">
+        <strong>Listing fees are never refunded</strong> — if you cancel your listing or it expires, the listing fee you paid when creating it is <em>not</em> returned.
+      </div>
+    </section>
+
+    <!-- ── Currency ──────────────────────────────────────────── -->
+    <section id="currency">
+      <h2>Multi-Currency Support</h2>
+      <p>
+        Each listing stores a <code>currencyId</code> field. If this field is <code>null</code> (or empty),
+        the listing uses <strong>Vault</strong> — the standard server economy. If it contains a string ID,
+        that ID is passed to OreoEssentials' internal <code>CurrencyService</code> to look up a custom
+        currency (e.g. <code>"gems"</code>, <code>"tokens"</code>).
+      </p>
+      <p>
+        When a player runs <code>/ahs</code> <em>without</em> a price argument, the
+        <strong>CurrencyPickerGUI</strong> appears, letting them choose which currency to price their item in.
+        When they run <code>/ahs 500</code> (with a price), Vault is used directly — no picker shown.
+      </p>
+      <div class="note">
+        <strong>Currency is per-listing, not global.</strong> Two listings by the same player can use different
+        currencies. The browse GUI shows the currency name next to the price if it's not Vault.
+      </div>
+    </section>
+
+    <!-- ── Listing Limits ──────────────────────────────────── -->
+    <section id="limits">
+      <h2>Listing Limits</h2>
+      <table>
+        <thead><tr><th>Limit</th><th>Config key</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>Minimum price</td><td><code>listings.min-price</code></td><td>1.0</td></tr>
+          <tr><td>Maximum price</td><td><code>listings.max-price</code></td><td>1,000,000,000</td></tr>
+          <tr><td>Active listings per player</td><td><code>listings.max-per-player</code></td><td>10</td></tr>
+          <tr><td>Default listing duration</td><td><code>listings.default-duration-hours</code></td><td>24 hours</td></tr>
+          <tr><td>Maximum listing duration</td><td><code>listings.max-duration-hours</code></td><td>168 hours (7 days)</td></tr>
+        </tbody>
+      </table>
+      <div class="tip">
+        Players with <code>oreo.ah.bypass</code> skip all category permission checks, but price and
+        listing-count limits still apply to everyone.
+      </div>
+    </section>
+
+    <!-- ── Storage ──────────────────────────────────────────── -->
+    <section id="storage">
+      <h2>Storage Backends</h2>
+      <p>
+        The AH keeps all active auctions in memory for fast access. Storage backends are used for persistence
+        (saving to disk so data survives restarts).
+      </p>
+      <table>
+        <thead><tr><th>Type</th><th>When used</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>auto</code> (default)</td>
+            <td>On startup</td>
+            <td>Uses MongoDB if OreoEssentials has a live MongoDB connection; otherwise falls back to JSON.</td>
+          </tr>
+          <tr>
+            <td><code>json</code></td>
+            <td>Always</td>
+            <td>Saves to a local JSON file inside <code>plugins/OreoEssentials/auctionhouse/</code>. Simple, requires no database. Auto-saves every <strong>5 minutes</strong> (300 seconds).</td>
+          </tr>
+          <tr>
+            <td><code>mongodb</code></td>
+            <td>Always</td>
+            <td>Uses a MongoDB collection (default name: <code>oreo_auctions</code>). Suitable for large servers or networks. Auto-saves every 5 minutes.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Auto-save &amp; expiry tasks</h3>
+      <ul>
+        <li><strong>Expiry check:</strong> runs every <strong>60 seconds</strong>. Moves listings past their expiration time to the expired list and notifies online sellers.</li>
+        <li><strong>Auto-save:</strong> runs every <strong>300 seconds</strong> (5 minutes). Writes the full in-memory state to whichever backend is active.</li>
+        <li>Both tasks are scheduled using the OreoScheduler (Folia-safe).</li>
+      </ul>
+
+      <h3>Item serialization</h3>
+      <p>
+        Items are serialized to a Base64 string using Bukkit's <code>BukkitObjectOutputStream</code> and
+        stored alongside the auction data. This preserves all enchantments, NBT data, and custom model data
+        exactly. Custom plugin item IDs (ItemsAdder, Nexo, Oraxen) are stored as separate string fields so
+        they can be displayed as badges in the GUI.
+      </p>
+    </section>
+
+    <!-- ── Permissions ──────────────────────────────────────── -->
+    <section id="permissions">
+      <h2>Permissions</h2>
+      <table>
+        <thead><tr><th>Permission</th><th>Default</th><th>What it grants</th></tr></thead>
+        <tbody>
+          <tr><td><code>oreo.ah.use</code></td><td>true (all players)</td><td>Open /ah, /ahexpired, /ahsold, /ahsearch.</td></tr>
+          <tr><td><code>oreo.ah.sell</code></td><td>true (all players)</td><td>Use /ahs to list items.</td></tr>
+          <tr><td><code>oreo.ah.admin</code></td><td>op only</td><td>Use /ahadmin commands (reload, save, clear).</td></tr>
+          <tr><td><code>oreo.ah.bypass</code></td><td>op only</td><td>Bypasses all category view permissions. Can view any category regardless of individual category perms.</td></tr>
+          <tr><td><code>oreo.ah.category.*</code></td><td>true (all players)</td><td>Access to all categories.</td></tr>
+          <tr><td><code>oreo.ah.category.blocks</code></td><td>true</td><td>Access to browse the Blocks category.</td></tr>
+          <tr><td><code>oreo.ah.category.tools</code></td><td>true</td><td>Access to browse the Tools category.</td></tr>
+          <tr><td><code>oreo.ah.category.weapons</code></td><td>true</td><td>Access to browse the Weapons category.</td></tr>
+          <tr><td><code>oreo.ah.category.armor</code></td><td>true</td><td>Access to browse the Armor category.</td></tr>
+          <tr><td><code>oreo.ah.category.food</code></td><td>true</td><td>Access to browse the Food category.</td></tr>
+          <tr><td><code>oreo.ah.category.potions</code></td><td>true</td><td>Access to browse the Potions category.</td></tr>
+          <tr><td><code>oreo.ah.category.spawners</code></td><td>true</td><td>Access to browse the Spawners category.</td></tr>
+          <tr><td><code>oreo.ah.category.custom</code></td><td>true</td><td>Access to browse the Custom Items category.</td></tr>
+          <tr><td><code>oreo.ah.category.misc</code></td><td>true</td><td>Access to browse the Miscellaneous category.</td></tr>
+          <tr><td><code>oreo.ah.category.all</code></td><td>true</td><td>Access to browse the "All Items" combined view.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Admin Commands ──────────────────────────────────── -->
+    <section id="admin-commands">
+      <h2>Admin Commands (<code>/ahadmin</code>)</h2>
+      <p>Requires the <code>oreo.ah.admin</code> permission. Can be used from console or in-game.</p>
+      <table>
+        <thead><tr><th>Sub-command</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>/ahadmin reload</code></td><td>Reloads all 4 config files (config, messages, categories, gui) without a server restart. In-memory auctions are not affected.</td></tr>
+          <tr><td><code>/ahadmin save</code></td><td>Forces an immediate save of all in-memory auctions to the active storage backend.</td></tr>
+          <tr><td><code>/ahadmin clear</code></td><td>Starts a confirmation window. You must run <code>/ahadmin clear confirm</code> within <strong>15 seconds</strong> to proceed. Deletes all active auctions permanently.</td></tr>
+          <tr><td><code>/ahadmin clear confirm</code></td><td>Confirms the clear operation (only valid within 15 seconds of running <code>/ahadmin clear</code>).</td></tr>
+        </tbody>
+      </table>
+      <div class="warn">
+        <strong><code>/ahadmin clear</code> is irreversible.</strong> All active listings are permanently deleted. Items are NOT returned to sellers. Use with extreme caution.
+      </div>
+    </section>
+
+    <!-- ── Cross-Server Sync ──────────────────────────────── -->
+    <section id="cross-server">
+      <h2>Cross-Server Sync (RabbitMQ)</h2>
+      <p>
+        In a network (BungeeCord / Velocity), all servers share the same auction house. Any action on one
+        server is broadcast to all others via a <code>AuctionSyncPacket</code> over RabbitMQ.
+      </p>
+      <table>
+        <thead><tr><th>Action</th><th>Packet contains</th><th>What receiving servers do</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>CREATE</code></td>
+            <td>Full auction data: seller UUID + name, item (Base64), price, times, category, currency, custom IDs</td>
+            <td>Add the new auction to their in-memory list and refresh all open browse GUIs.</td>
+          </tr>
+          <tr>
+            <td><code>PURCHASE</code></td>
+            <td>Auction ID, buyer UUID + name</td>
+            <td>Mark the auction as SOLD, remove from active list, refresh all open browse GUIs. If the seller is online, notify them.</td>
+          </tr>
+          <tr>
+            <td><code>CANCEL</code></td>
+            <td>Auction ID only</td>
+            <td>Remove from active list, refresh browse GUIs.</td>
+          </tr>
+          <tr>
+            <td><code>EXPIRE</code></td>
+            <td>Auction ID only</td>
+            <td>Move to expired list, refresh browse GUIs.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        The originating server ignores sync packets from itself. Packets carry the <code>originServer</code>
+        field so receiving servers can filter them out.
+      </div>
+
+      <h3>GUI live-refresh</h3>
+      <p>
+        When a sync packet arrives, the module calls <code>refreshAllBrowseViewers()</code>. This iterates
+        over every player currently viewing a browse GUI (tracked in a <code>ConcurrentHashMap</code>) and
+        re-opens the GUI for their current page and filter. Players see changes within milliseconds of them
+        happening on any server.
+      </p>
+    </section>
+
+    <!-- ── Discord ──────────────────────────────────────────── -->
+    <section id="discord">
+      <h2>Discord Webhook</h2>
+      <p>
+        The AH can post messages to a Discord channel when items are listed or sold.
+        Configure under the <code>discord:</code> block in <code>config.yml</code>.
+      </p>
+      <table>
+        <thead><tr><th>Config key</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>discord.enabled</code></td><td><code>false</code></td><td>Set to <code>true</code> to activate Discord posting.</td></tr>
+          <tr><td><code>discord.webhook-url</code></td><td><code>""</code></td><td>Your Discord webhook URL. Get it from Server Settings → Integrations → Webhooks in Discord.</td></tr>
+          <tr><td><code>discord.bot-name</code></td><td><code>OreoAuctions</code></td><td>Name the Discord message appears under.</td></tr>
+          <tr><td><code>discord.bot-avatar</code></td><td><code>""</code></td><td>URL to a profile picture for the bot (optional).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── PlaceholderAPI ────────────────────────────────────── -->
+    <section id="papi">
+      <h2>PlaceholderAPI Placeholders</h2>
+      <p>
+        If PlaceholderAPI is installed, the following placeholders are available anywhere PAPI placeholders
+        are supported (scoreboards, tab lists, chat formats, etc.).
+        The identifier is <code>oreoah</code>.
+      </p>
+      <table>
+        <thead><tr><th>Placeholder</th><th>Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>%oreoah_active_listings%</code></td><td>Total number of active listings currently on the auction house (all players combined).</td></tr>
+          <tr><td><code>%oreoah_player_listings%</code></td><td>Number of active listings the viewing player currently has.</td></tr>
+          <tr><td><code>%oreoah_player_sales%</code></td><td>Number of items the viewing player has sold (sold history count).</td></tr>
+          <tr><td><code>%oreoah_player_expired%</code></td><td>Number of expired listings the viewing player has waiting to be reclaimed.</td></tr>
+        </tbody>
+      </table>
+      <p>Returns an empty string if the AH is disabled or the player is null.</p>
+    </section>
+
+    <!-- ── messages.yml ────────────────────────────────────── -->
+    <section id="messages">
+      <h2>messages.yml — All Messages</h2>
+      <p>
+        All player-facing messages live here. They support standard <code>&amp;</code> color codes.
+        Placeholders are in <code>%placeholder%</code> format and are substituted before the message is sent.
+      </p>
+      <table>
+        <thead><tr><th>Key path</th><th>Available placeholders</th><th>When shown</th></tr></thead>
+        <tbody>
+          <tr><td><code>errors.no-permission</code></td><td>—</td><td>Player lacks required permission for the command or GUI.</td></tr>
+          <tr><td><code>errors.no-item-in-hand</code></td><td>—</td><td>Player runs /ahs without holding an item.</td></tr>
+          <tr><td><code>errors.ah-disabled</code></td><td>—</td><td>Module is disabled (<code>enabled: false</code>).</td></tr>
+          <tr><td><code>errors.max-listings</code></td><td><code>%max%</code></td><td>Player already has <code>max-per-player</code> active listings.</td></tr>
+          <tr><td><code>errors.price-too-low</code></td><td><code>%min%</code></td><td>Price entered is below <code>min-price</code>.</td></tr>
+          <tr><td><code>errors.price-too-high</code></td><td><code>%max%</code></td><td>Price entered is above <code>max-price</code>.</td></tr>
+          <tr><td><code>errors.not-enough-money</code></td><td>—</td><td>Player can't afford the listing fee or purchase price.</td></tr>
+          <tr><td><code>listing.created</code></td><td><code>%item%</code>, <code>%price%</code>, <code>%duration%</code></td><td>Shown to seller when listing is successfully created.</td></tr>
+          <tr><td><code>listing.cancelled</code></td><td><code>%item%</code></td><td>Shown to seller when they cancel their listing.</td></tr>
+          <tr><td><code>listing.expired</code></td><td><code>%item%</code></td><td>Shown to the seller (if online) when their listing expires.</td></tr>
+          <tr><td><code>listing.sold</code></td><td><code>%item%</code>, <code>%price%</code>, <code>%buyer%</code></td><td>Shown to seller (if online) when someone buys their item.</td></tr>
+          <tr><td><code>purchase.success</code></td><td><code>%item%</code>, <code>%price%</code>, <code>%seller%</code></td><td>Shown to the buyer after a successful purchase.</td></tr>
+          <tr><td><code>purchase.item-dropped</code></td><td><code>%item%</code></td><td>Shown to buyer if their inventory was full and the item was dropped at their feet.</td></tr>
+          <tr><td><code>purchase.already-sold</code></td><td>—</td><td>Shown if a player tries to buy a listing that was already purchased (race condition protection).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── gui.yml ────────────────────────────────────────────── -->
+    <section id="gui-yml">
+      <h2>gui.yml — Customising the GUIs</h2>
+      <p>
+        Every GUI's title, border material, and button slots/materials/names can be changed here.
+        After editing, run <code>/ahadmin reload</code>.
+      </p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre># plugins/OreoEssentials/auctionhouse/gui.yml  (structure overview)
+
+browse:
+  title: "&amp;6&amp;lAuction House"
+  title-category: "&amp;6&amp;lAuction House &amp;8- &amp;e{category}"   # when browsing a category
+  title-search:   "&amp;6&amp;lSearch: &amp;f{query}"                   # when searching
+  title-search-category: "&amp;6&amp;lSearch: &amp;f{query} &amp;8- &amp;e{category}"
+  border: GRAY_STAINED_GLASS_PANE
+  buttons:
+    prev-page:      { slot: 48, material: ARROW,   name: "&amp;e&amp;lPrevious Page" }
+    page-indicator: { slot: 49, material: PAPER,   name: "&amp;ePage {page}" }
+    next-page:      { slot: 50, material: ARROW,   name: "&amp;e&amp;lNext Page" }
+    your-listings:  { slot: 52, material: CHEST,   name: "&amp;6&amp;lYour Listings" }
+    close:          { slot: 53, material: BARRIER, name: "&amp;c&amp;lClose" }
+    categories:     { slot: 46, material: COMPASS, name: "&amp;b&amp;lCategories" }
+    back-to-all:    { slot: 46, material: BARRIER, name: "&amp;c&amp;lBack to All" }
+    clear-search:   { slot: 45, material: MAP,     name: "&amp;f&amp;lClear Search" }
+    no-auctions:    { slot: 22, material: BARRIER, name: "&amp;c&amp;lNo Auctions Available" }
+    no-results:     { slot: 22, material: BARRIER, name: "&amp;c&amp;lNo Results" }
+
+# Similar structure for: sell, confirm, manage, expired, sold, categories</pre>
+      </div>
+      <p>
+        All <code>slot</code> values are 0-indexed (0–53 for a 6-row GUI, 0–26 for a 3-row GUI).
+        <code>material</code> must be a valid Bukkit <code>Material</code> enum name (all caps).
+        Titles support <code>&amp;</code> color codes.
+      </p>
+    </section>
+
+    <!-- ── categories.yml ────────────────────────────────────── -->
+    <section id="categories-yml">
+      <h2>categories.yml — Enabling/Disabling Categories</h2>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre># plugins/OreoEssentials/auctionhouse/categories.yml
+
+blocks:
+  enabled: true
+  slot: 10       # Slot in the CategoryGUI (27-slot inventory)
+
+tools:
+  enabled: true
+  slot: 12
+
+weapons:
+  enabled: true
+  slot: 14
+
+armor:
+  enabled: true
+  slot: 16
+
+food:
+  enabled: true
+  slot: 28
+
+potions:
+  enabled: true
+  slot: 30
+
+spawners:
+  enabled: true
+  slot: 32
+
+custom:
+  enabled: true
+  slot: 34
+
+misc:
+  enabled: true
+  slot: 40</pre>
+      </div>
+      <p>
+        Set <code>enabled: false</code> for any category you want to hide from players.
+        The <code>slot</code> field controls where the category button appears in the CategoryGUI.
+        The <code>ALL</code> category is always available and not listed here.
+      </p>
+    </section>
+
+    <!-- ── Troubleshooting ──────────────────────────────────── -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <table>
+        <thead><tr><th>Problem</th><th>Likely cause &amp; fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>"/ah" says "auction house is disabled"</td>
+            <td>Check <code>enabled: true</code> in config.yml. Run <code>/ahadmin reload</code> after changing it.</td>
+          </tr>
+          <tr>
+            <td>Player can't list — "max listings" error immediately</td>
+            <td>Their active listing count equals <code>listings.max-per-player</code>. Increase it, or have the player cancel old listings.</td>
+          </tr>
+          <tr>
+            <td>Item appears in the wrong category after listing</td>
+            <td>The player manually picked a category in the SellGUI. Auto-detection only applies internally; the player's choice overrides it.</td>
+          </tr>
+          <tr>
+            <td>Listing fee is charged but player gets an error afterward</td>
+            <td>This shouldn't happen — listing fee is charged only on success. If it does, check for exceptions in the console (item serialization failure, etc.).</td>
+          </tr>
+          <tr>
+            <td>Bought item not in inventory — where did it go?</td>
+            <td>If inventory was full, the item was <strong>dropped at the player's feet</strong>. Check the ground where they were standing. A chat message also tells them this happened.</td>
+          </tr>
+          <tr>
+            <td>Cross-server sync not working</td>
+            <td>RabbitMQ must be connected. Check that <code>AuctionSyncPacket</code> is registered in <code>registerAllPacketsDeterministically()</code> and that <code>subscribeCrossServerEvents()</code> is called in <code>initRabbitMQ()</code>.</td>
+          </tr>
+          <tr>
+            <td>MongoDB: auctions not saving</td>
+            <td>Verify the MongoDB connection is alive and the collection name (<code>storage.mongodb.collection</code>) is correct. Check console for connection errors on startup.</td>
+          </tr>
+          <tr>
+            <td>JSON: data lost on restart</td>
+            <td>Auto-save runs every 5 minutes. If the server crashed unexpectedly, the last 5 minutes of listings may be lost. Run <code>/ahadmin save</code> before planned restarts.</td>
+          </tr>
+          <tr>
+            <td>PAPI placeholders return empty string</td>
+            <td>Ensure PlaceholderAPI is installed and the AH module initialized successfully. Check for errors in the console at startup.</td>
+          </tr>
+          <tr>
+            <td>/ahsearch with one character does nothing</td>
+            <td>This is intentional — at least 2 characters are required to prevent very broad searches.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="footer-box">
+      OreoEssentials Auction House — verified against source code (Paper 1.21, Java 21)
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 2000);
+    });
+  }
+
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('.nav-group a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

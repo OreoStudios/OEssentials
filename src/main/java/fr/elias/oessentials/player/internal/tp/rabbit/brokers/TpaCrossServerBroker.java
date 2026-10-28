@@ -269,7 +269,7 @@ public final class TpaCrossServerBroker implements Listener {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(targetName)) return online;
         }
-        // Intentionally no PlayerDirectory/Mongo lookup here: packet callbacks must never
+        // Intentionally no PlayerLocator/Mongo lookup here: packet callbacks must never
         // block a server/region thread. The packet already carries UUID + last-known name.
         return null;
     }

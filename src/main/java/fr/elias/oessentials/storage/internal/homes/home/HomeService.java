@@ -95,7 +95,7 @@ public class HomeService {
         return (s == null || s.isBlank()) ? localServer : s;
     }
 
-    public static final class StoredHome {
+    public static final class StoredHome implements fr.elias.oessentials.storage.api.HomeLocation {
         private final String world;
         private final double x, y, z;
         private final String server;

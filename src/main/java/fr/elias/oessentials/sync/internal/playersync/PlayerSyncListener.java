@@ -53,11 +53,11 @@ public final class PlayerSyncListener implements Listener {
         final UUID uuid = p.getUniqueId();
         final String name = p.getName();
 
-        // PlayerDirectory uses the synchronous Mongo driver, so never query/write it on a region thread.
+        // PlayerLocator uses the synchronous Mongo driver, so never query/write it on a region thread.
         OreScheduler.runAsync(OEssentials.get(), () -> {
             try {
-                var directory = OEssentials.get().getPlayerDirectory();
-                if (directory != null) directory.saveMapping(name, uuid);
+                var directory = OEssentials.get().getPlayerLocator();
+                if (directory != null) directory.saveMapping(uuid, name);
             } catch (Throwable ignored) {}
         });
 

@@ -3,7 +3,7 @@ package fr.elias.oessentials.player.internal.back.service;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.player.internal.back.BackLocation;
-import fr.elias.oessentials.storage.internal.services.StorageApi;
+import fr.elias.oessentials.storage.api.BackDataStore;
 import org.bukkit.Location;
 
 import java.util.Map;
@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BackService {
     private final Set<UUID> crossServerSwitching = ConcurrentHashMap.newKeySet();
 
-    private final StorageApi storage;
+    private final BackDataStore storage;
     private final Map<UUID, BackLocation> cache = new ConcurrentHashMap<>();
     private final String localServer;
 
-    public BackService(StorageApi storage) {
+    public BackService(BackDataStore storage) {
         this.storage = storage;
         this.localServer = OEssentials.get().getServerConfig().serverName();
     }

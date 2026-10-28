@@ -1,7 +1,7 @@
 package fr.elias.oessentials.player.internal.tp.completer;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -37,7 +37,7 @@ public class TpTabCompleter implements TabCompleter {
             }
         }
 
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
         if (dir != null) {
             try {
                 var names = dir.suggestOnlineNames(want, 50);

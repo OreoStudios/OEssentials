@@ -1,8 +1,8 @@
 package fr.elias.oessentials.dialogs.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarp;
-import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpService;
+import fr.elias.oessentials.storage.api.PlayerWarpView;
+import fr.elias.oessentials.storage.api.PlayerWarps;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -26,9 +26,9 @@ public final class PlayerWarpDialogHandler {
     private PlayerWarpDialogHandler() {}
 
     public static void open(OEssentials plugin, Player player) {
-        PlayerWarpService service;
+        PlayerWarps service;
         try {
-            service = plugin.getPlayerWarpService();
+            service = plugin.getPlayerWarps();
         } catch (Throwable t) {
             // DC5: inform the player and log the error
             player.sendMessage("§cFailed to open warp menu. Please try again.");
@@ -38,7 +38,7 @@ public final class PlayerWarpDialogHandler {
         if (service == null) return;
 
         Async.run(() -> {
-            List<PlayerWarp> all;
+            List<PlayerWarpView> all;
             try {
                 all = new ArrayList<>(service.listAll());
             } catch (Throwable t) {
@@ -48,12 +48,12 @@ public final class PlayerWarpDialogHandler {
                 OEssentials.get().getLogger().warning("[PlayerWarpDialog] Error listing warps: " + t.getMessage());
                 all = List.of();
             }
-            final List<PlayerWarp> warps = all;
+            final List<PlayerWarpView> warps = all;
 
             OreScheduler.runForEntity(plugin, player, () -> {
                 if (!player.isOnline()) return;
 
-                List<PlayerWarp> accessible = warps.stream()
+                List<PlayerWarpView> accessible = warps.stream()
                         .filter(w -> !w.isLocked() || service.canUse(player, w))
                         .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
                         .toList();
@@ -65,7 +65,7 @@ public final class PlayerWarpDialogHandler {
                 }
 
                 List<ActionButton> buttons = new ArrayList<>();
-                for (PlayerWarp w : accessible) {
+                for (PlayerWarpView w : accessible) {
                     String cmd = "pw " + w.getName();
                     String label = w.getDescription() != null && !w.getDescription().isBlank()
                             ? w.getName() + " \u2014 " + w.getDescription()

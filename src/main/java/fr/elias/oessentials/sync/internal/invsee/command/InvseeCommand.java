@@ -205,7 +205,7 @@ public class InvseeCommand implements OreoCommand, TabCompleter {
 
         try {
             var plugin = OEssentials.get();
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) {
                 UUID global = dir.lookupUuidByName(arg);
                 if (global != null) return global;
@@ -235,7 +235,7 @@ public class InvseeCommand implements OreoCommand, TabCompleter {
         }
 
         var plugin = OEssentials.get();
-        var dir = plugin.getPlayerDirectory();
+        var dir = plugin.getPlayerLocator();
         if (dir != null) {
             try {
                 var names = dir.suggestOnlineNames(want, 50);

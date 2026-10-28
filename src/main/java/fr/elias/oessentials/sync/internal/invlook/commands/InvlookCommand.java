@@ -120,7 +120,7 @@ public final class InvlookCommand implements OreoCommand, TabCompleter {
         // 3) Network-wide directory (Mongo / proxy)
         try {
             OEssentials plugin = OEssentials.get();
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) {
                 UUID uuid = dir.lookupUuidByName(input);
                 if (uuid != null) {
@@ -176,7 +176,7 @@ public final class InvlookCommand implements OreoCommand, TabCompleter {
         // Network-wide suggestions
         try {
             OEssentials plugin = OEssentials.get();
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) {
                 Collection<String> names = dir.suggestOnlineNames(input, 50);
                 if (names != null) {

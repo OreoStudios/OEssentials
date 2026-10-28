@@ -1,7 +1,7 @@
 package fr.elias.oessentials.economy.internal.ecocommands.completion;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -52,7 +52,7 @@ public class MoneyTabCompleter implements TabCompleter {
                 }
             }
 
-            PlayerDirectory dir = plugin.getPlayerDirectory(); // adjust getter name if needed
+            PlayerLocator dir = plugin.getPlayerLocator(); // adjust getter name if needed
             if (dir != null) {
                 names.addAll(dir.suggestOnlineNames(prefix, 80));
             }

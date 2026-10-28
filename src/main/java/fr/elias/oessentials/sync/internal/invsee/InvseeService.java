@@ -126,7 +126,7 @@ public final class InvseeService {
 
     private boolean isPlayerKnownOnNetwork(UUID targetId) {
         try {
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir == null) return false;
             String server = dir.lookupCurrentServer(targetId);
             return server != null && !server.isBlank();

@@ -3,7 +3,7 @@ package fr.elias.oessentials.currency.internal.commands;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
  * - resolves player UUID via:
  *   1) local online
  *   2) OfflinePlayerCache (if enabled)
- *   3) PlayerDirectory (Mongo)
+ *   3) PlayerLocator (Mongo)
  *   4) Bukkit.getOfflinePlayer(name) fallback
  */
 public class CurrencyCommand implements OreoCommand {
@@ -394,7 +394,7 @@ public class CurrencyCommand implements OreoCommand {
             } catch (Throwable ignored) {}
 
             try {
-                PlayerDirectory dir = plugin.getPlayerDirectory();
+                PlayerLocator dir = plugin.getPlayerLocator();
                 if (dir != null) {
                     UUID id = dir.lookupUuidByName(nameOrUuid);
                     if (id != null) return id;
@@ -419,7 +419,7 @@ public class CurrencyCommand implements OreoCommand {
 
         try {
             var pm = plugin.getPacketBus();
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (pm == null || !pm.isInitialized() || dir == null) return;
 
             String server = dir.lookupCurrentServer(targetUuid);

@@ -25,7 +25,6 @@ import fr.elias.oessentials.player.internal.back.service.BackService;
 import fr.elias.oessentials.player.internal.listeners.PlayerTrackingListener;
 import fr.elias.oessentials.player.internal.deathback.DeathBackListener;
 import fr.elias.oessentials.player.internal.deathback.DeathBackService;
-import fr.elias.oessentials.storage.internal.homes.TeleportBroker;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.player.internal.services.MessageService;
@@ -40,7 +39,6 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
     private GodService godService;
     // Temporary holder so initCommands can access vanishService
     private transient VanishService _vanishService;
-    private TeleportBroker teleportBroker;
     private TpaCrossServerBroker tpaBroker;
     private TpCrossServerBroker tpBroker;
     private BackBroker backBroker;
@@ -71,12 +69,6 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
         this.tpBroker = new TpCrossServerBroker(plugin, teleportService, event.packets(), plugin.getProxyMessenger(), serverName);
         plugin.getLogger().info("[BROKER] TP cross-server broker ready.");
 
-        final var cs = plugin.getCrossServerFeatures();
-        if (cs.spawn() || cs.warps()) {
-            new fr.elias.oessentials.player.internal.tp.rabbit.brokers.CrossServerTeleportBroker(plugin, services(StorageServices.class).getSpawnService(), services(StorageServices.class).getWarpService(), event.packets(), serverName);
-            plugin.getLogger().info("[BROKER] CrossServerTeleportBroker ready.");
-        }
-
         try {
             com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
             factory.setUri(plugin.getConfig().getString("rabbitmq.uri"));
@@ -98,14 +90,13 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
     @Override public DeathBackService getDeathBackService() { return deathBackService; }
     @Override public GodService getGodService() { return godService; }
     @Override public VanishService getVanishService() { return _vanishService; }
-    @Override public TeleportBroker getTeleportBroker() { return teleportBroker; }
     @Override public TpaCrossServerBroker getTpaBroker() { return tpaBroker; }
     @Override public TpCrossServerBroker getTpBroker() { return tpBroker; }
     @Override public BackBroker getBackBroker() { return backBroker; }
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
 
     private void initCoreServices() {
-        this.backService      = new BackService(services(StorageServices.class).getStorage());
+        this.backService      = new BackService(services(StorageServices.class).getBackDataStore());
         this.messageService   = new MessageService();
         this.teleportService  = new TeleportService(plugin, backService, services(ConfigurationServices.class).getServerConfig());
         this.deathBackService = new DeathBackService();

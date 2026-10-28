@@ -57,7 +57,7 @@ public class MsgCommand implements OreoCommand {
             return true;
         }
 
-        // Try cross-server via PlayerDirectory
+        // Try cross-server via PlayerLocator
         if (sender instanceof Player senderPlayer) {
             tryCrossServer(senderPlayer, targetName, msg);
         } else {
@@ -89,7 +89,7 @@ public class MsgCommand implements OreoCommand {
     }
 
     private void tryCrossServer(Player sender, String targetName, String msg) {
-        var dir = plugin.getPlayerDirectory();
+        var dir = plugin.getPlayerLocator();
         if (dir == null) {
             Lang.send(sender, "msg.not-found", "<red>Player not found.</red>");
             return;

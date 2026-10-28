@@ -47,6 +47,6 @@ public final class DiscordIntegrationModule extends ManagedModule implements Dis
         var linkCmd = new fr.elias.oessentials.discord.internal.discordbot.DiscordLinkCommand(discordLinkManager);
         services(ConfigurationServices.class).getCommands().registerLegacy("discord", linkCmd, linkCmd);
         services(ConfigurationServices.class).getCommands().registerLegacy("oe-discord",
-                new fr.elias.oessentials.discord.internal.discordbot.DiscordRconExtension(services(StorageServices.class).getHomeService(), services(EconomyServices.class).getDatabase()));
+                new fr.elias.oessentials.discord.internal.discordbot.DiscordRconExtension(services(StorageServices.class).getHomes(), services(EconomyServices.class).getDatabase()));
     }
 }

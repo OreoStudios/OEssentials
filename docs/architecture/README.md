@@ -155,6 +155,7 @@ files.
 | 2b. Configuration protected | 7 / 56 | 1,313 | Non-configuration features moved to their owners; `messaging` 366 → 344, `storage` 188 → 173 |
 | 3a. Messaging packet contract | 7 / 56 | 1,241 | `messaging` internals 344 → 44; 228 references now fail only because their module does not declare `messaging` (see below) |
 | 3b. Messaging protected | 8 / 56 | 825 | Dependency direction reversed; cross-server code moved to its owners; no undeclared dependencies left |
+| 4. Storage protected | 9 / 56 | 645 | Commands registered by storage; contracts `PlayerLocator`, `Homes`, `PlayerWarps`, `BackDataStore`, `StorageDialogs` port, public `IWarpsAPI`/`ISpawnAPI`/`IPlayerWarpsAPI` |
 
 The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.

@@ -37,7 +37,8 @@ class ModuleBoundaryRolloutTest {
             "messaging",
             "motd",
             "mute-system",
-            "rules"
+            "rules",
+            "storage"
     );
 
     @Test

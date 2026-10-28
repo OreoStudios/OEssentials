@@ -4,7 +4,7 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.currency.internal.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyBalance;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -101,9 +101,9 @@ public class CurrencyTopCommand implements OreoCommand {
             sender.sendMessage("§7Page " + page + " of " + totalPages);
             sender.sendMessage("§6§l════════════════════════════════");
 
-            PlayerDirectory dir = null;
+            PlayerLocator dir = null;
             try {
-                dir = plugin.getPlayerDirectory();
+                dir = plugin.getPlayerLocator();
             } catch (Throwable ignored) {}
 
             for (int i = start; i < end; i++) {
@@ -129,7 +129,7 @@ public class CurrencyTopCommand implements OreoCommand {
         return true;
     }
 
-    private String resolvePlayerName(PlayerDirectory dir, UUID uuid) {
+    private String resolvePlayerName(PlayerLocator dir, UUID uuid) {
         if (uuid == null) return "Unknown";
 
         if (dir != null) {

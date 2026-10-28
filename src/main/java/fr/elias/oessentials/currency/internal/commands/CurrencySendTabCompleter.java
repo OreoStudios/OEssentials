@@ -35,7 +35,7 @@ public class CurrencySendTabCompleter implements TabCompleter {
                 suggestions.add(p.getName());
             }
 
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (dir != null) {
                 suggestions.addAll(dir.suggestOnlineNames(prefix, 80));
             }

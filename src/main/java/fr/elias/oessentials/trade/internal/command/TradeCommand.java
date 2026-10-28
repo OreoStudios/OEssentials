@@ -100,7 +100,7 @@ public final class TradeCommand implements TabExecutor {
         if (broker != null && msgAvail) {
             UUID targetId = null;
             try {
-                var dir = plugin.getPlayerDirectory();
+                var dir = plugin.getPlayerLocator();
                 if (dir != null) {
                     targetId = dir.lookupUuidByName(targetName);
                     log("[TRADE] PlayerDirectory lookup name=" + targetName + " -> " + targetId);

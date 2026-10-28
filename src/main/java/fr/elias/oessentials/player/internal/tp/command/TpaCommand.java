@@ -107,7 +107,7 @@ public class TpaCommand implements OreoCommand {
             return true;
         }
 
-        final var dir = plugin.getPlayerDirectory();
+        final var dir = plugin.getPlayerLocator();
         if (dir == null) {
             Lang.send(requester, "tpa.not-found.generic",
                     "<red>Player <white>%input%</white> not found online. <gray>(They may be offline or on another proxy cluster.)</gray></red>",
@@ -115,7 +115,7 @@ public class TpaCommand implements OreoCommand {
             return true;
         }
 
-        // PlayerDirectory uses the synchronous Mongo driver. Never perform these lookups
+        // PlayerLocator uses the synchronous Mongo driver. Never perform these lookups
         // on the player's region thread.
         OreScheduler.runAsync(plugin, () -> {
             UUID targetUuid = null;

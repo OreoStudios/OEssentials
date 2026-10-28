@@ -33,4 +33,24 @@ public interface StorageServices {
     void setBalanceImportTarget(BalanceImportTarget target);
 
     fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker();
+
+    /** Released facade type; never created. */
+    fr.elias.oessentials.storage.internal.homes.TeleportBroker getTeleportBroker();
+
+    /** {@code null} without MongoDB storage. */
+    fr.elias.oessentials.storage.api.PlayerLocator getPlayerLocator();
+    fr.elias.oessentials.storage.api.Homes getHomes();
+    /** {@code null} when player warps are disabled. */
+    fr.elias.oessentials.storage.api.PlayerWarps getPlayerWarps();
+    fr.elias.oessentials.storage.api.BackDataStore getBackDataStore();
+    fr.elias.oessentials.api.IWarpsAPI getWarpsApi();
+    fr.elias.oessentials.api.ISpawnAPI getSpawnApi();
+    /** {@code null} when player warps are disabled. */
+    fr.elias.oessentials.api.IPlayerWarpsAPI getPlayerWarpsApi();
+
+    /** Registers the dialogs storage's commands open, or {@code null} to remove them. */
+    void setDialogs(fr.elias.oessentials.storage.api.StorageDialogs dialogs);
+
+    /** The registered dialogs, or {@code null}. */
+    fr.elias.oessentials.storage.api.StorageDialogs getDialogs();
 }

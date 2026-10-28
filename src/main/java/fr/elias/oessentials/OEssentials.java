@@ -438,7 +438,17 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerDirectory); }
 
-    public TeleportBroker getTeleportBroker() { return moduleRegistry.read(PlayerServices.class, PlayerServices::getTeleportBroker); }
+    public fr.elias.oessentials.storage.api.PlayerLocator getPlayerLocator() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerLocator); }
+
+    public fr.elias.oessentials.storage.api.Homes getHomes() { return moduleRegistry.read(StorageServices.class, StorageServices::getHomes); }
+
+    public fr.elias.oessentials.storage.api.PlayerWarps getPlayerWarps() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarps); }
+
+    public fr.elias.oessentials.api.IWarpsAPI getWarpsApi() { return moduleRegistry.read(StorageServices.class, StorageServices::getWarpsApi); }
+
+    public fr.elias.oessentials.api.ISpawnAPI getSpawnApi() { return moduleRegistry.read(StorageServices.class, StorageServices::getSpawnApi); }
+
+    public TeleportBroker getTeleportBroker() { return moduleRegistry.read(StorageServices.class, StorageServices::getTeleportBroker); }
 
     public RedisManager getRedis() { return moduleRegistry.read(RedisServices.class, RedisServices::getRedis); }
     public OfflinePlayerCache getOfflinePlayerCache() { return moduleRegistry.require(EconomyServices.class).getOfflinePlayerCache(); }

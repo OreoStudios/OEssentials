@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "tab", dependencies = {"configuration::services"}, after = {"scoreboard"}, optional = true)
+@PluginModule(value = "tab", dependencies = {"configuration::services", "storage::services"}, after = {"scoreboard"}, optional = true)
 public final class TabModule extends ManagedModule implements TabServices {
     private fr.elias.oessentials.tab.internal.TabListManager tabListManager;
 

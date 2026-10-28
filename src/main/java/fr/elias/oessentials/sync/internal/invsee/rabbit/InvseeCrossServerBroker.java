@@ -112,7 +112,7 @@ public final class InvseeCrossServerBroker {
 
     private String findNodeFor(UUID playerId) {
         try {
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             return (dir != null) ? dir.lookupCurrentServer(playerId) : null;
         } catch (Throwable t) {
             return null;

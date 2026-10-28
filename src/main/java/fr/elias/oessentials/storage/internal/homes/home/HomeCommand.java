@@ -67,7 +67,8 @@ public class HomeCommand implements OreoCommand, TabCompleter {
 
         if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
             OEssentials plugin2 = OEssentials.get();
-            if (plugin2.getDialogManager() != null && plugin2.getDialogManager().openHomeDialog(player, homes)) {
+            var dialogs = plugin2.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
+            if (dialogs != null && dialogs.openHomeDialog(player)) {
                 return true;
             }
             final String lbl = label;

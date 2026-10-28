@@ -1,11 +1,8 @@
 package fr.elias.oessentials.modgui.internal.homes;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService.StoredHome;
-import fr.elias.oessentials.storage.internal.homes.rabbit.packet.OtherHomeTeleportRequestPacket;
-import fr.elias.oessentials.messaging.api.PacketChannel;
-import fr.elias.oessentials.messaging.api.PacketBus;
+import fr.elias.oessentials.storage.api.Homes;
+import fr.elias.oessentials.storage.api.HomeLocation;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -30,11 +27,11 @@ import java.util.*;
 public class AdminHomesGuiProvider implements InventoryProvider {
 
     private final OEssentials plugin;
-    private final HomeService homes;
+    private final Homes homes;
     private final UUID targetUuid;
     private final String targetName;
 
-    public AdminHomesGuiProvider(OEssentials plugin, HomeService homes, UUID targetUuid, String targetName) {
+    public AdminHomesGuiProvider(OEssentials plugin, Homes homes, UUID targetUuid, String targetName) {
         this.plugin = plugin;
         this.homes = homes;
         this.targetUuid = targetUuid;
@@ -44,7 +41,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
     public static void open(Player admin, OEssentials plugin, UUID targetUuid, String targetName) {
         SmartInventory.builder()
                 .id("oreo:modgui:homes:" + targetUuid)
-                .provider(new AdminHomesGuiProvider(plugin, plugin.getHomeService(), targetUuid, targetName))
+                .provider(new AdminHomesGuiProvider(plugin, plugin.getHomes(), targetUuid, targetName))
                 .size(6, 9)
                 .title(Lang.color("&8Homes: &b" + targetName))
                 .manager(plugin.getInvManager())
@@ -64,7 +61,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
     private void draw(Player p, InventoryContents contents) {
         contents.fill(ClickableItem.empty(filler()));
 
-        Map<String, StoredHome> data = safeListHomes();
+        Map<String, ? extends HomeLocation> data = safeListHomes();
         List<String> names = new ArrayList<>(data.keySet());
         names.sort(String.CASE_INSENSITIVE_ORDER);
 
@@ -75,7 +72,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
         Pagination pagination = contents.pagination();
 
         ClickableItem[] items = names.stream().map(name -> {
-            StoredHome sh = data.get(name);
+            HomeLocation sh = data.get(name);
             String server = (sh != null && sh.getServer() != null) ? sh.getServer() : homes.localServer();
             return ClickableItem.of(homeItem(name, server, sh), e -> {
                 switch (e.getClick()) {
@@ -142,12 +139,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
                 });
             } else {
                 OreScheduler.runForEntity(plugin, admin, () -> {
-                    PacketBus pm = plugin.getPacketBus();
-                    if (pm != null && pm.isInitialized()) {
-                        String requestId = UUID.randomUUID().toString();
-                        OtherHomeTeleportRequestPacket pkt = new OtherHomeTeleportRequestPacket(
-                                admin.getUniqueId(), targetUuid, homeName, ts, requestId);
-                        pm.sendPacket(PacketChannel.individual(ts), pkt);
+                    if (homes.requestRemoteHomeTeleport(admin.getUniqueId(), targetUuid, homeName, ts)) {
                         sendToServer(admin, ts);
                         Lang.send(admin, "modgui.homes.sending",
                                 "<yellow>Sending you to <aqua>%server%</aqua>… teleport to <aqua>%name%</aqua>'s <aqua>%home%</aqua> on arrival.</yellow>",
@@ -173,9 +165,9 @@ public class AdminHomesGuiProvider implements InventoryProvider {
                 .open(admin);
     }
 
-    private Map<String, StoredHome> safeListHomes() {
+    private Map<String, ? extends HomeLocation> safeListHomes() {
         try {
-            Map<String, StoredHome> m = homes.listHomes(targetUuid);
+            Map<String, ? extends HomeLocation> m = homes.listHomes(targetUuid);
             return (m == null) ? Collections.emptyMap() : m;
         } catch (Throwable t) {
             return Collections.emptyMap();
@@ -227,7 +219,7 @@ public class AdminHomesGuiProvider implements InventoryProvider {
         return it;
     }
 
-    private ItemStack homeItem(String name, String server, StoredHome sh) {
+    private ItemStack homeItem(String name, String server, HomeLocation sh) {
         ItemStack it = new ItemStack(Material.ENDER_PEARL);
         ItemMeta meta = it.getItemMeta();
         if (meta != null) {
@@ -264,13 +256,13 @@ public class AdminHomesGuiProvider implements InventoryProvider {
 
     private static final class ConfirmDeleteProvider implements InventoryProvider {
         private final OEssentials plugin;
-        private final HomeService homes;
+        private final Homes homes;
         private final UUID targetUuid;
         private final String targetName;
         private final String homeName;
         private final Runnable onDone;
 
-        ConfirmDeleteProvider(OEssentials plugin, HomeService homes, UUID targetUuid,
+        ConfirmDeleteProvider(OEssentials plugin, Homes homes, UUID targetUuid,
                               String targetName, String homeName, Runnable onDone) {
             this.plugin = plugin;
             this.homes = homes;

@@ -1,7 +1,8 @@
 package fr.elias.oessentials.discord.internal.discordbot;
 
 import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
+import fr.elias.oessentials.storage.api.HomeLocation;
+import fr.elias.oessentials.storage.api.Homes;
 import fr.elias.oessentials.sync.internal.services.InventoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 public class DiscordRconExtension implements CommandExecutor {
 
-    private final HomeService           homeService;
+    private final Homes           homeService;
     private final PlayerEconomyDatabase economyDb;
 
-    public DiscordRconExtension(HomeService homeService,
+    public DiscordRconExtension(Homes homeService,
                                 PlayerEconomyDatabase economyDb) {
         this.homeService = homeService;
         this.economyDb   = economyDb;
@@ -77,7 +78,8 @@ public class DiscordRconExtension implements CommandExecutor {
 
     private String handleHomes(UUID uuid) {
         try {
-            Map<String, HomeService.StoredHome> homes = homeService.listHomes(uuid);
+            Map<String, ? extends HomeLocation> listed = homeService.listHomes(uuid);
+            Map<String, HomeLocation> homes = listed == null ? null : new java.util.HashMap<>(listed);
 
             if (homes == null || homes.isEmpty()) {
                 return "OK: (none)";

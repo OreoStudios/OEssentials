@@ -66,7 +66,7 @@ public class ReplyCommand implements OreoCommand {
 
         // Try cross-server
         PacketBus pm = plugin.getPacketBus();
-        var dir = plugin.getPlayerDirectory();
+        var dir = plugin.getPlayerLocator();
         if (pm == null || !pm.isInitialized() || dir == null) {
             Lang.send(p, "reply.offline", "<red>That player is offline.</red>");
             return true;

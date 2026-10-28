@@ -6,7 +6,7 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.currency.internal.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyService;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
+import fr.elias.oessentials.storage.api.Homes;
 import fr.elias.oessentials.playtime.internal.PlaytimeTracker;
 import fr.elias.oessentials.shop.internal.ShopModule;
 import fr.elias.oessentials.shop.internal.models.ShopItem;
@@ -546,7 +546,7 @@ public class WebPanelSyncService implements Listener {
     }
 
     private int homesCount(UUID uuid) {
-        HomeService hs = plugin.getHomeService();
+        Homes hs = plugin.getHomes();
         if (hs == null) return 0;
         try { return hs.listHomes(uuid).size(); } catch (Exception e) { return 0; }
     }

@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials - Chat & Messaging Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --bg-soft: #16202a;
+      --panel: rgba(16, 22, 29, 0.84);
+      --panel-strong: #192531;
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(104, 217, 200, 0.12), transparent 24%),
+        radial-gradient(circle at top left, rgba(247, 185, 85, 0.10), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12, 18, 23, 0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding: 18px;
+      border: 1px solid rgba(104, 217, 200, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(104, 217, 200, 0.08), rgba(247, 185, 85, 0.05));
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+      line-height: 1.1;
+      color: var(--teal);
+    }
+
+    .brand p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .nav-group { margin-top: 18px; }
+
+    .nav-group h2 {
+      margin: 0 0 8px;
+      color: var(--soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-group a {
+      display: block;
+      padding: 10px 12px;
+      margin: 4px 0;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: 0.18s ease;
+    }
+
+    .nav-group a:hover,
+    .nav-group a.active {
+      color: var(--text);
+      border-color: rgba(104, 217, 200, 0.26);
+      background: rgba(104, 217, 200, 0.08);
+    }
+
+    .content { padding: 34px 36px 80px; }
+
+    .hero {
+      padding: 30px;
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(104, 217, 200, 0.12), rgba(247, 185, 85, 0.08)),
+        rgba(16, 22, 29, 0.78);
+      border: 1px solid rgba(104, 217, 200, 0.22);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .hero .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d8f8f3;
+      background: rgba(104, 217, 200, 0.18);
+      border: 1px solid rgba(104, 217, 200, 0.28);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      max-width: 920px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .hero-card {
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .hero-card strong {
+      display: block;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    section {
+      margin-top: 26px;
+      padding: 24px;
+      border-radius: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    section h2 {
+      margin: 0 0 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      color: var(--text);
+    }
+
+    section h3 {
+      margin: 22px 0 10px;
+      font-size: 1.04rem;
+      color: var(--teal);
+    }
+
+    p, li { color: var(--muted); line-height: 1.7; }
+    strong { color: var(--text); }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #d8f8f3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .note, .warn, .tip {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid;
+    }
+
+    .note { background: rgba(127, 192, 255, 0.08); border-color: rgba(127, 192, 255, 0.22); }
+    .warn { background: rgba(255, 140, 122, 0.08); border-color: rgba(255, 140, 122, 0.24); }
+    .tip  { background: rgba(143, 226, 143, 0.08); border-color: rgba(143, 226, 143, 0.24); }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-family: Consolas, monospace;
+    }
+
+    .pill.teal { border-color: rgba(104, 217, 200, 0.3); background: rgba(104, 217, 200, 0.07); color: var(--teal); }
+    .pill.gold  { border-color: rgba(247, 185, 85, 0.3);  background: rgba(247, 185, 85, 0.07);  color: var(--gold); }
+
+    .steps { display: grid; gap: 14px; margin-top: 16px; }
+
+    .step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .step-index {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #a5f3eb);
+      color: #0e2220;
+      font-weight: 800;
+    }
+
+    .code-block {
+      position: relative;
+      margin-top: 14px;
+      border: 1px solid #253646;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--code);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 700;
+      color: #0e2220;
+      background: linear-gradient(135deg, var(--teal), #a5f3eb);
+      cursor: pointer;
+    }
+
+    .copy-btn.done { background: linear-gradient(135deg, var(--green), #c5f2c5); }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      color: #e8f3fa;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .footer-box {
+      margin-top: 26px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      color: var(--soft);
+    }
+
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .flow-box {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(104, 217, 200, 0.2);
+      background: rgba(104, 217, 200, 0.05);
+      font-size: 0.88rem;
+      color: var(--text);
+      font-family: Consolas, monospace;
+    }
+
+    .flow-arrow {
+      color: var(--soft);
+      font-size: 1.1rem;
+    }
+
+    .accent { color: var(--teal); }
+    .muted  { color: var(--soft); }
+
+    @media (max-width: 1080px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line-soft); }
+      .hero-grid, .two-col { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .content { padding: 20px 14px 60px; }
+      .hero, section { padding: 18px; }
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>OreoEssentials Chat Guide</h1>
+      <p>Verified against <code>chat-format.yml</code>, <code>join-quit-messages.yml</code>, <code>death-messages.yml</code>, <code>events.yml</code>, and the Java source.</p>
+    </div>
+
+    <nav>
+      <div class="nav-group">
+        <h2>Start Here</h2>
+        <a href="#overview">Overview &amp; Config Files</a>
+        <a href="#pipeline">Message Pipeline</a>
+        <a href="#placeholders">All Placeholders</a>
+      </div>
+
+      <div class="nav-group">
+        <h2>Simple Chat (No Channels)</h2>
+        <a href="#simple-format">Format Resolution</a>
+        <a href="#colors-perm">Color Permission</a>
+      </div>
+
+      <div class="nav-group">
+        <h2>Channel System</h2>
+        <a href="#channels-overview">Channels Overview</a>
+        <a href="#channel-fields">Channel Fields</a>
+        <a href="#channel-scopes">Scopes</a>
+        <a href="#rank-formats">Per-Rank Formats</a>
+        <a href="#channel-commands">Channel Commands</a>
+      </div>
+
+      <div class="nav-group">
+        <h2>Features</h2>
+        <a href="#hover">Hover Cards</a>
+        <a href="#item-in-chat">[item] in Chat</a>
+        <a href="#discord">Discord Bridge</a>
+        <a href="#cross-server">Cross-Server Sync</a>
+        <a href="#moderation">Moderation</a>
+      </div>
+
+      <div class="nav-group">
+        <h2>Messaging Files</h2>
+        <a href="#join-quit">Join &amp; Quit Messages</a>
+        <a href="#death">Death Messages</a>
+        <a href="#auto-messages">Auto Messages &amp; Oreobot</a>
+        <a href="#events">Event Commands</a>
+      </div>
+
+      <div class="nav-group">
+        <h2>Last Notes</h2>
+        <a href="#legacy-placeholders">Legacy Placeholder Map</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ─── Main content ────────────────────────────────────────────── -->
+  <main class="content">
+    <header class="hero">
+      <span class="eyebrow">Full reference / exact code behavior</span>
+      <h1>Chat &amp; Messaging</h1>
+      <p>
+        This page covers every part of the OreoEssentials chat system: how a message goes from keypress to screen,
+        the full placeholder list, the channel system, hover cards, the <code>[item]</code> feature, Discord bridge,
+        cross-server sync, moderation, and all four messaging YAML files.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card">
+          <strong>Main config file</strong>
+          <code>plugins/OreoEssentials/chat-messaging/chat-format.yml</code> — all chat settings live here.
+        </div>
+        <div class="hero-card">
+          <strong>Two chat modes</strong>
+          Channels off → simple per-group format. Channels on → <code>AsyncChatListenerWithChannels</code> handles everything. Only one listener is active at a time.
+        </div>
+        <div class="hero-card">
+          <strong>MiniMessage everywhere</strong>
+          All formats are parsed by MiniMessage after PAPI runs on the format string. Legacy <code>&amp;</code> codes are auto-converted when <code>minimessage-translate-legacy-amp: true</code>.
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Overview ─────────────────────────────────────────────── -->
+    <section id="overview">
+      <h2>Overview &amp; Config Files</h2>
+      <p>There are four YAML files under <code>plugins/OreoEssentials/chat-messaging/</code>. They cover different concerns.</p>
+
+      <table>
+        <thead>
+          <tr><th>File</th><th>What it controls</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>chat-format.yml</code></td>
+            <td>Chat format per group, channels, hover cards, <code>[item]</code>, Discord bridge, cross-server RabbitMQ</td>
+          </tr>
+          <tr>
+            <td><code>join-quit-messages.yml</code></td>
+            <td>Join and quit messages, auto broadcast messages, and the Oreobot conversation system</td>
+          </tr>
+          <tr>
+            <td><code>death-messages.yml</code></td>
+            <td>All PvP and environmental death message templates</td>
+          </tr>
+          <tr>
+            <td><code>events.yml</code></td>
+            <td>Commands to run automatically when specific server events fire (join, kill, respawn, etc.)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Master switches</h3>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code># settings.yml — the global kill-switch for the whole chat module
+features:
+  chat:
+    enabled: true
+
+# chat-format.yml — secondary toggle inside the file itself
+chat:
+  enabled: true</code></pre>
+      </div>
+      <p>Both must be <code>true</code> for OreoEssentials to intercept any chat event. If <code>features.chat.enabled</code> is false the event is left untouched (other plugins can still handle it).</p>
+    </section>
+
+    <!-- ── Pipeline ─────────────────────────────────────────────── -->
+    <section id="pipeline">
+      <h2>Message Pipeline</h2>
+      <p>This is exactly what happens from the moment a player presses Enter to the moment the message appears on screen.</p>
+
+      <div class="flow-row">
+        <div class="flow-box">Paper AsyncChatEvent (HIGHEST)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Mute / slowmode / staff-chat / global mute checks</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Banned-word censor</div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-arrow" style="margin-left:0">→</span>
+        <div class="flow-box">PlainText extract from Component</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Switch to sync scheduler thread</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">FormatManager.formatMessage() → returns MiniMessage template</div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-arrow" style="margin-left:0">→</span>
+        <div class="flow-box">Build TagResolver (all placeholders)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">MiniMessage.deserialize(template, resolver)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">processItemPlaceholder() if <code>[item]</code> present</div>
+      </div>
+      <div class="flow-row">
+        <span class="flow-arrow" style="margin-left:0">→</span>
+        <div class="flow-box">Attach hover to sender name + mentioned player names</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Broadcast to all online players</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">RabbitMQ sync (JSON component)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">Discord webhook (plain text)</div>
+      </div>
+
+      <div class="note">
+        <strong>Low-priority intercept:</strong> a second handler at <code>EventPriority.LOW</code> with <code>ignoreCancelled=false</code> checks whether the player is waiting for AH / Orders GUI input before the HIGHEST handler runs. If so the message is consumed silently and never reaches the chat pipeline.
+      </div>
+
+      <div class="warn">
+        <strong>Channels mode:</strong> when <code>chat.channels.enabled: true</code> the pipeline above is replaced by <code>AsyncChatListenerWithChannels</code> and <code>ChatChannelHandler</code>. The format lookup, resolver, item placeholder, hover, and sync steps all still run — the difference is the format comes from the channel definition instead of <code>FormatManager</code>, and messages are only sent to players in the same channel who pass the scope check.
+      </div>
+    </section>
+
+    <!-- ── Placeholders ──────────────────────────────────────────── -->
+    <section id="placeholders">
+      <h2>All Placeholders</h2>
+      <p>These MiniMessage tags are injected by the code as a <code>TagResolver</code> before the format string is parsed. They work in both simple mode and channel mode.</p>
+
+      <table>
+        <thead>
+          <tr><th>Placeholder</th><th>Type</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;chat_message&gt;</code></td>
+            <td>parsed / unparsed</td>
+            <td>The player's typed message. Uses <code>Placeholder.parsed()</code> if the player has <code>oreo.chat.colors</code>, otherwise <code>Placeholder.unparsed()</code> (colors stripped).</td>
+          </tr>
+          <tr>
+            <td><code>&lt;lp_prefix&gt;</code></td>
+            <td>Component</td>
+            <td>LuckPerms prefix, deserialized as legacy or MiniMessage automatically. PAPI is run inside the prefix string itself before deserialization.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;lp_suffix&gt;</code></td>
+            <td>Component</td>
+            <td>LuckPerms suffix. Same processing as prefix. <strong>Available in channel mode only</strong> — not injected in simple mode.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;player_name&gt;</code></td>
+            <td>unparsed</td>
+            <td>Raw Bukkit username. Cannot contain MiniMessage tags.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;player_displayname&gt;</code></td>
+            <td>unparsed</td>
+            <td>Display name (may differ from username if set).</td>
+          </tr>
+          <tr><td><code>&lt;server_name&gt;</code></td><td>unparsed</td><td>From <code>config.yml</code> server name setting.</td></tr>
+          <tr><td><code>&lt;player_world&gt;</code></td><td>unparsed</td><td>Bukkit world name the player is in.</td></tr>
+          <tr><td><code>&lt;player_x&gt;</code>, <code>&lt;player_y&gt;</code>, <code>&lt;player_z&gt;</code></td><td>unparsed</td><td>Coordinates formatted to 1 decimal place.</td></tr>
+          <tr><td><code>&lt;player_ping&gt;</code></td><td>unparsed</td><td>Current ping in ms.</td></tr>
+          <tr><td><code>&lt;player_health&gt;</code></td><td>unparsed</td><td>Current health, rounded up to nearest integer.</td></tr>
+          <tr><td><code>&lt;player_max_health&gt;</code></td><td>unparsed</td><td>Max health via attribute API.</td></tr>
+          <tr><td><code>&lt;player_level&gt;</code></td><td>unparsed</td><td>XP level.</td></tr>
+          <tr><td><code>&lt;player_gamemode&gt;</code></td><td>unparsed</td><td>Game mode name (e.g. <code>SURVIVAL</code>).</td></tr>
+          <tr><td><code>&lt;player_uuid&gt;</code></td><td>unparsed</td><td>Player UUID string.</td></tr>
+          <tr><td><code>&lt;lp_primary_group&gt;</code></td><td>unparsed</td><td>LuckPerms primary group name.</td></tr>
+          <tr><td><code>&lt;time_24h&gt;</code></td><td>unparsed</td><td>Server time formatted as <code>HH:mm:ss</code>.</td></tr>
+          <tr><td><code>&lt;date&gt;</code></td><td>unparsed</td><td>Server date formatted as <code>yyyy-MM-dd</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>PlaceholderAPI</h3>
+      <p>PAPI runs on the <em>format string</em> before the MiniMessage parse step (<code>chat.papi.apply-to-format: true</code> by default). You can use any <code>%papi_placeholder%</code> directly in your format. PAPI is <strong>not</strong> applied to the player's message content unless you explicitly set <code>chat.papi.apply-to-message: true</code> — keep that false to prevent injection.</p>
+
+      <div class="tip">
+        <strong>How <code>&lt;lp_prefix&gt;</code> is resolved:</strong> the code reads <code>meta.getPrefix()</code> from LuckPerms, runs PAPI on it, then tries to deserialize it first as a legacy-section string (<code>§</code>), then legacy-ampersand (<code>&amp;</code>), then plain text. This means your LuckPerms prefix can use any of those three formats.
+      </div>
+    </section>
+
+    <!-- ── Simple format ─────────────────────────────────────────── -->
+    <section id="simple-format">
+      <h2>Simple Chat — Format Resolution</h2>
+      <p>When <code>chat.channels.enabled: false</code>, <code>FormatManager</code> picks a format for each message by looking up the player's LuckPerms primary group.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  use-minimessage: true                    # false = legacy-only path (rare)
+  minimessage-translate-legacy-amp: true   # auto-converts &amp;a, &amp;6, etc. in the format
+
+  papi:
+    apply-to-format: true    # run PAPI on the format string (safe)
+    apply-to-message: false  # run PAPI on the player's typed message (risky, keep false)
+
+  # Lookup key = player's LP primary group name.
+  # If the group key is not found, falls back to "default".
+  default: "&lt;lp_prefix&gt;&lt;white&gt;&lt;player_name&gt;&lt;/white&gt; &lt;dark_gray&gt;»&lt;/dark_gray&gt; &lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+  admin:   "&lt;red&gt;&lt;bold&gt;[Admin]&lt;/bold&gt;&lt;/red&gt; &lt;lp_prefix&gt;&lt;gold&gt;&lt;player_name&gt;&lt;/gold&gt; &lt;dark_gray&gt;»&lt;/dark_gray&gt; &lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+  vip:     "&lt;gold&gt;[VIP]&lt;/gold&gt; &lt;lp_prefix&gt;&lt;yellow&gt;&lt;player_name&gt;&lt;/yellow&gt; &lt;dark_gray&gt;»&lt;/dark_gray&gt; &lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"</code></pre>
+      </div>
+
+      <p>The lookup code is literally: <code>cfg.getString("chat." + lpPrimaryGroup)</code>, then <code>cfg.getString("chat.default", ...hardcoded_fallback...)</code>. So any key you add directly under <code>chat:</code> that matches a group name will be used for that group.</p>
+
+      <div class="warn">
+        <strong>Important:</strong> <code>FormatManager.formatMessage()</code> returns a MiniMessage <em>template string</em> — not a fully rendered component. The <code>&lt;chat_message&gt;</code> placeholder is left unreplaced inside it. The actual message content is injected later as a <code>TagResolver</code> when <code>MM.deserialize()</code> is called. This is what prevents MiniMessage injection from user input.
+      </div>
+    </section>
+
+    <!-- ── Color permission ─────────────────────────────────────── -->
+    <section id="colors-perm">
+      <h2>Color Permission</h2>
+      <p>The permission <code>oreo.chat.colors</code> controls whether a player can use formatting tags in their own typed messages.</p>
+
+      <table>
+        <thead>
+          <tr><th>Has <code>oreo.chat.colors</code></th><th>How <code>&lt;chat_message&gt;</code> is injected</th><th>Effect</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Yes</td>
+            <td><code>Placeholder.parsed()</code></td>
+            <td>MiniMessage tags in the message body are rendered. <code>&amp;a</code> codes are also auto-converted first.</td>
+          </tr>
+          <tr>
+            <td>No</td>
+            <td><code>Placeholder.unparsed()</code></td>
+            <td>All tags in the message body are escaped and shown literally. Players cannot color their text.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        Before injecting the player message for color-permitted players, the code calls <code>FormatManager.convertLegacyToMiniMessage()</code> on the message string — this converts <code>&amp;c</code>, <code>&amp;l</code>, hex <code>&amp;#rrggbb</code>, and <code>§x§r§r§g§g§b§b</code> formats to MiniMessage equivalents.
+      </div>
+    </section>
+
+    <!-- ── Channels overview ─────────────────────────────────────── -->
+    <section id="channels-overview">
+      <h2>Channel System — Overview</h2>
+      <p>Enable the channel system with <code>chat.channels.enabled: true</code>. When enabled, every chat message goes through <code>ChatChannelHandler</code> instead of <code>FormatManager</code>. The simple per-group format keys are ignored.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  channels:
+    enabled: true
+    default_channel: "global"         # channel new players land in
+    remember_last_channel: true       # persist player's channel choice across logins
+
+    cross_server:
+      enabled: false                  # true = use MongoDB to persist channel membership across servers
+
+    formatting:
+      enabled: true
+      fallback_format: "&lt;gray&gt;&lt;player_name&gt;&lt;/gray&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+
+    list_order:
+      - "global"
+      - "announcements"
+      - "trade"
+      - "local"
+      - "staff"
+      - "help"</code></pre>
+      </div>
+
+      <p>Channel membership is persisted per-player. Default storage is YAML (<code>plugins/OreoEssentials/channel-data.yml</code>). If <code>cross_server.enabled: true</code> AND a MongoClient is available, membership is stored in MongoDB so players keep their channel when switching servers.</p>
+    </section>
+
+    <!-- ── Channel fields ────────────────────────────────────────── -->
+    <section id="channel-fields">
+      <h2>Channel Fields</h2>
+      <p>Each channel is defined under <code>chat.channels.channel_definitions.&lt;id&gt;</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  channels:
+    channel_definitions:
+
+      global:
+        enabled: true
+        display_name: "&lt;gradient:#FF1493:#00FF7F&gt;Global&lt;/gradient&gt;"
+        description: "&lt;gray&gt;Server-wide chat&lt;/gray&gt;"
+
+        # null = everyone. A permission string = only players with that permission.
+        talk_permission: null
+        view_permission: null
+        join_permission: null   # falls back to talk_permission if null
+
+        scope:
+          type: "ALL"
+          range_blocks: 0
+
+        formatting:
+          enabled: true
+          format: "&lt;gray&gt;[G]&lt;/gray&gt; &lt;lp_prefix&gt;&lt;white&gt;&lt;player_name&gt;&lt;/white&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+
+          rank_formats:
+            default: "&lt;gray&gt;[G]&lt;/gray&gt; &lt;white&gt;&lt;player_name&gt;&lt;/white&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+            vip:     "&lt;gold&gt;[★ G]&lt;/gold&gt; &lt;lp_prefix&gt;&lt;gold&gt;&lt;player_name&gt;&lt;/gold&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;yellow&gt;&lt;chat_message&gt;&lt;/yellow&gt;"
+            admin:   "&lt;red&gt;[⚡ G]&lt;/red&gt; &lt;lp_prefix&gt;&lt;red&gt;&lt;player_name&gt;&lt;/red&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+
+        join_message: "&lt;gray&gt;You are now chatting in &lt;/gray&gt;&lt;gradient:#FF1493:#00FF7F&gt;Global&lt;/gradient&gt;&lt;gray&gt;!&lt;/gray&gt;"
+        discord_webhook: null</code></pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Required</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>enabled</code></td><td>No (default true)</td><td>Disable a channel without deleting its config.</td></tr>
+          <tr><td><code>display_name</code></td><td>No</td><td>MiniMessage string shown in the GUI and messages. Falls back to the channel ID if absent.</td></tr>
+          <tr><td><code>description</code></td><td>No</td><td>Short description shown in the channel GUI.</td></tr>
+          <tr><td><code>talk_permission</code></td><td>No</td><td><code>null</code> = everyone. A permission node = read-only for players without it.</td></tr>
+          <tr><td><code>view_permission</code></td><td>No</td><td>Players without this cannot receive messages from the channel.</td></tr>
+          <tr><td><code>join_permission</code></td><td>No</td><td>Controls who can join (switch into) this channel. Falls back to <code>talk_permission</code> if null.</td></tr>
+          <tr><td><code>scope.type</code></td><td>Yes</td><td>See <a href="#channel-scopes">Scopes</a> below.</td></tr>
+          <tr><td><code>scope.range_blocks</code></td><td>Only for RANGE</td><td>Radius in blocks for RANGE scope.</td></tr>
+          <tr><td><code>formatting.enabled</code></td><td>No (default true)</td><td>If false, the channel uses the global fallback format.</td></tr>
+          <tr><td><code>formatting.format</code></td><td>No</td><td>MiniMessage template. Falls back to <code>channels.formatting.fallback_format</code> if absent.</td></tr>
+          <tr><td><code>formatting.rank_formats</code></td><td>No</td><td>Per LP-group format overrides. See <a href="#rank-formats">Per-Rank Formats</a>.</td></tr>
+          <tr><td><code>join_message</code></td><td>No</td><td>Sent to the player when they switch into this channel. MiniMessage.</td></tr>
+          <tr><td><code>discord_webhook</code></td><td>No</td><td>Per-channel Discord webhook URL. Overrides the global webhook if set.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Scopes ─────────────────────────────────────────────────── -->
+    <section id="channel-scopes">
+      <h2>Channel Scopes</h2>
+      <p>The scope controls which players receive a message. Only players who are both in the channel AND pass the scope check receive it.</p>
+
+      <table>
+        <thead>
+          <tr><th>Scope</th><th>Who hears it</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ALL</code></td>
+            <td>Every player in this channel on this server</td>
+            <td>Standard global channel.</td>
+          </tr>
+          <tr>
+            <td><code>WORLD</code></td>
+            <td>Players in the same Bukkit world</td>
+            <td>Compared with <code>player.getWorld().equals(sender.getWorld())</code>.</td>
+          </tr>
+          <tr>
+            <td><code>RANGE</code></td>
+            <td>Players within <code>range_blocks</code> of the sender, same world</td>
+            <td>Uses Bukkit <code>Location.distance()</code>. Requires <code>scope.range_blocks &gt; 0</code>.</td>
+          </tr>
+          <tr>
+            <td><code>SERVER</code></td>
+            <td>Every player in this channel on this server</td>
+            <td>Same as ALL locally. The name is semantic — intended for cross-server setups where only this server's players should hear it.</td>
+          </tr>
+          <tr>
+            <td><code>SHARD</code></td>
+            <td>Every player in this channel on this server</td>
+            <td>Same local behavior as ALL/SERVER. Intended to be filtered cross-server by shard ID in future expansion.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        Regardless of scope, a recipient must also satisfy <code>view_permission</code> to receive the message. Players who fail the view permission are silently excluded.
+      </div>
+    </section>
+
+    <!-- ── Rank formats ─────────────────────────────────────────── -->
+    <section id="rank-formats">
+      <h2>Per-Rank Formats</h2>
+      <p>The channel handler picks the format for a player in this exact order:</p>
+
+      <div class="flow-row">
+        <div class="flow-box">rank_formats.&lt;lp_primary_group&gt;</div>
+        <span class="flow-arrow">→ not found →</span>
+        <div class="flow-box">rank_formats.default</div>
+        <span class="flow-arrow">→ not found →</span>
+        <div class="flow-box">formatting.format</div>
+        <span class="flow-arrow">→ not found →</span>
+        <div class="flow-box">channels.formatting.fallback_format</div>
+      </div>
+
+      <p style="margin-top:14px">Group names in <code>rank_formats</code> are stored lowercase. The lookup uses the LP primary group string directly, so make sure your rank names match exactly (case is lowercased on the config side).</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>formatting:
+  format: "&lt;gray&gt;[G]&lt;/gray&gt; &lt;white&gt;&lt;player_name&gt;&lt;/white&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+
+  rank_formats:
+    # "default" catches anyone whose group has no explicit entry here
+    default: "&lt;gray&gt;[G]&lt;/gray&gt; &lt;white&gt;&lt;player_name&gt;&lt;/white&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"
+    vip:     "&lt;gold&gt;[★ G]&lt;/gold&gt; &lt;lp_prefix&gt;&lt;gold&gt;&lt;player_name&gt;&lt;/gold&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;yellow&gt;&lt;chat_message&gt;&lt;/yellow&gt;"
+    admin:   "&lt;red&gt;[⚡ G]&lt;/red&gt; &lt;lp_prefix&gt;&lt;red&gt;&lt;player_name&gt;&lt;/red&gt;&lt;dark_gray&gt;: &lt;/dark_gray&gt;&lt;white&gt;&lt;chat_message&gt;&lt;/white&gt;"</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Channel commands ──────────────────────────────────────── -->
+    <section id="channel-commands">
+      <h2>Channel Commands</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Permission</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/channel &lt;id&gt;</code> or <code>/ch &lt;id&gt;</code></td>
+            <td>channel's <code>join_permission</code></td>
+            <td>Switch the player into the specified channel. Sends the channel's <code>join_message</code> if set.</td>
+          </tr>
+          <tr>
+            <td><code>/channels</code></td>
+            <td>none</td>
+            <td>Opens the channel GUI (inventory menu) showing all enabled channels.</td>
+          </tr>
+          <tr>
+            <td><code>/channel announce &lt;id&gt; &lt;message&gt;</code></td>
+            <td><code>oreo.channel.announce</code></td>
+            <td>Sends a message from console to the specified channel.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Hover ─────────────────────────────────────────────────── -->
+    <section id="hover">
+      <h2>Hover Cards</h2>
+      <p>When hover is enabled, the code attaches a hover event to the player's name in the chat component, and also to any online player names that appear in the message body.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  hover:
+    enabled: true
+    lines:
+      - "&lt;gradient:#FFD700:#FFA500&gt;&lt;bold&gt;%player_name%&lt;/bold&gt;&lt;/gradient&gt;"
+      - ""
+      - "&lt;gray&gt;━━━━━━━━━━━━━━━━━━━━&lt;/gray&gt;"
+      - "&lt;gold&gt;Stats&lt;/gold&gt;"
+      - "  &lt;red&gt;❤&lt;/red&gt; Health: &lt;white&gt;%player_health%/%player_max_health%&lt;/white&gt;"
+      - "  &lt;green&gt;✦&lt;/green&gt; Level: &lt;white&gt;%player_level%&lt;/white&gt;"
+      - "  &lt;aqua&gt;⚡&lt;/aqua&gt; Ping: &lt;white&gt;%player_ping%ms&lt;/white&gt;"</code></pre>
+      </div>
+
+      <h3>Hover placeholder support</h3>
+      <p>These <code>%placeholder%</code> tokens are replaced inside hover lines before MiniMessage parses them:</p>
+      <div class="pill-row">
+        <span class="pill">%player_name%</span>
+        <span class="pill">%player_displayname%</span>
+        <span class="pill">%player_uuid%</span>
+        <span class="pill">%player_health%</span>
+        <span class="pill">%player_max_health%</span>
+        <span class="pill">%player_level%</span>
+        <span class="pill">%player_ping%</span>
+        <span class="pill">%player_world%</span>
+        <span class="pill">%player_x%</span>
+        <span class="pill">%player_y%</span>
+        <span class="pill">%player_z%</span>
+        <span class="pill">%player_gamemode%</span>
+        <span class="pill">%luckperms_primary_group%</span>
+      </div>
+      <p>PlaceholderAPI is also run on hover lines first, so any <code>%papi_placeholder%</code> works too.</p>
+
+      <div class="note">
+        <strong>Default lines when none are configured:</strong> the code falls back to two lines — <code>&lt;gold&gt;Player: &lt;white&gt;%player_name%&lt;/white&gt;&lt;/gold&gt;</code> and <code>&lt;gray&gt;Health: &lt;white&gt;%player_health%/%player_max_health%&lt;/white&gt;&lt;/gray&gt;</code>.
+      </div>
+
+      <div class="warn">
+        <strong>Name detection:</strong> the hover attach code scans the rendered Adventure <code>Component</code> tree for children whose plain text matches the player's username. This works reliably for most formats. If a custom format splits the name across several styling components, the hover may only attach to a subset of the name characters.
+      </div>
+    </section>
+
+    <!-- ── Item in chat ──────────────────────────────────────────── -->
+    <section id="item-in-chat">
+      <h2>[item] in Chat</h2>
+      <p>When a player types the configured placeholder (default <code>[item]</code>), it is replaced with a clickable component showing the item in their main hand. The replacement happens <em>after</em> <code>MM.deserialize()</code>, directly on the Adventure <code>Component</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  item-in-chat:
+    enabled: true
+    placeholder: "[item]"                # case-insensitive match
+    empty-hand-text: "&lt;gray&gt;[Air]&lt;/gray&gt;"  # shown when main hand is empty</code></pre>
+      </div>
+
+      <h3>Hover tooltip content</h3>
+      <p>The item component uses <code>item.asHoverEvent()</code> (the native Paper tooltip) as the primary hover source. If that fails, a fallback text hover is built from:</p>
+      <ul>
+        <li>Item display name (custom name → lore → friendly material name).</li>
+        <li>Custom ID from ItemsAdder or Nexo if those plugins are installed.</li>
+        <li>All lore lines.</li>
+        <li>Enchantments formatted as <code>Enchant Name I / II / III</code>.</li>
+        <li>Durability in green / yellow / red depending on fraction remaining.</li>
+        <li>Stack size if greater than 1.</li>
+      </ul>
+
+      <div class="tip">
+        ItemsAdder and Nexo are auto-detected on startup. If either is present, the item name and custom ID are resolved through those hooks first. Standard Bukkit meta is used as a fallback.
+      </div>
+    </section>
+
+    <!-- ── Discord ───────────────────────────────────────────────── -->
+    <section id="discord">
+      <h2>Discord Bridge</h2>
+      <p>The chat module can forward messages to a Discord channel via webhook. Simple mode and channel mode work slightly differently.</p>
+
+      <h3>Simple mode (no channels)</h3>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>chat:
+  discord:
+    enabled: false
+    webhook_url: "https://discord.com/api/webhooks/REPLACE_ME"</code></pre>
+      </div>
+      <p>When enabled, the plain-text render of the Adventure component is sent to the webhook under the player's username. The raw message (pre-format) is used as the webhook content — not the color-coded format string.</p>
+
+      <h3>Channel mode</h3>
+      <p>Each channel can define its own <code>discord_webhook</code>. If a channel has no webhook, it falls back to the global webhook (passed from the main init). The webhook username is set to <code>[serverName] #channelDisplayName</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>channel_definitions:
+  global:
+    discord_webhook: "https://discord.com/api/webhooks/REPLACE_ME"
+
+  staff:
+    discord_webhook: null  # null = use the global webhook or no webhook at all</code></pre>
+      </div>
+
+      <div class="warn">
+        Discord receives the raw typed message (plain text), not the MiniMessage-formatted component. Color tags are not included in the Discord message.
+      </div>
+    </section>
+
+    <!-- ── Cross-server ──────────────────────────────────────────── -->
+    <section id="cross-server">
+      <h2>Cross-Server Sync</h2>
+      <p>Chat messages are synchronized across servers via RabbitMQ. Each message is serialized as Adventure JSON using <code>GsonComponentSerializer</code> and published to a fanout exchange named <code>chat_sync</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code># Bottom of chat-format.yml
+MongoDB_rabbitmq:
+  enabled: false
+  rabbitmq:
+    uri: "amqp://guest:guest@localhost:5672/"</code></pre>
+      </div>
+
+      <p>When enabled, the <code>ChatSyncManager</code> connects to RabbitMQ on startup with automatic recovery (5-second retry interval). Every message published carries the sender UUID, server name, display name, and the JSON component blob. On the receiving end, the component is deserialized and broadcast to local players.</p>
+
+      <h3>Channel messages cross-server</h3>
+      <p>In channel mode, channel messages are published on a separate routing key <code>CHANMSG</code> and include the channel ID. The receiving server only broadcasts the message to players who are currently in that same channel.</p>
+
+      <div class="note">
+        The server filters out its own messages using a random <code>SERVER_ID</code> UUID generated at startup, so players on the originating server never see a message twice.
+      </div>
+    </section>
+
+    <!-- ── Moderation ────────────────────────────────────────────── -->
+    <section id="moderation">
+      <h2>Moderation</h2>
+
+      <h3>Mute command</h3>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Permission</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/mute &lt;player&gt; &lt;duration&gt; [reason]</code></td>
+            <td><code>oreo.mute</code></td>
+            <td>Duration format examples: <code>10m</code>, <code>2h</code>, <code>1d</code>. Muted players are silently dropped — no message is sent to chat.</td>
+          </tr>
+          <tr>
+            <td><code>/unmute &lt;player&gt;</code></td>
+            <td><code>oreo.mute</code></td>
+            <td>Immediately removes the mute.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Global chat mute &amp; slowmode</h3>
+      <p>Via the ModGui (<code>/modgui</code>), staff can:</p>
+      <ul>
+        <li>Mute the entire chat globally — players receive <code>§cChat is currently muted.</code> when they try to send.</li>
+        <li>Enable slowmode — players must wait N seconds between messages. The remaining cooldown is shown in the error.</li>
+        <li>Toggle staff-only chat mode for individual players — messages go to <code>§b[StaffChat]</code> channel visible only to players with <code>oreo.staffchat</code>.</li>
+      </ul>
+
+      <h3>Banned words</h3>
+      <p>Configured in <code>settings.yml</code> under <code>bannedWords</code>. Each match is replaced with asterisks of the same length using a case-insensitive regex. Applied before the format step so the censored text is what gets formatted and synced.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code># settings.yml
+bannedWords:
+  enabled: true
+  words:
+    - "badword"
+    - "anotherbadword"</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Join/Quit ─────────────────────────────────────────────── -->
+    <section id="join-quit">
+      <h2>Join &amp; Quit Messages</h2>
+      <p>Configured in <code>plugins/OreoEssentials/chat-messaging/join-quit-messages.yml</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>Join_messages:
+  enable: true
+  disable_on_backend: true               # suppress on backend servers listed below
+  use_backend_list_as: "blacklist"       # "blacklist" or "whitelist"
+  backend_server_names:
+    - "faction_world"
+
+  look_like_player: true                 # spoof the message as coming from a bot player
+  player_name: "&lt;gradient:#9BE8FF:#00D4FF&gt;Oreobot&lt;/gradient&gt;"
+  join_message_delay: 0                  # ticks to wait before showing join message
+
+  # Default fallback messages using {name} placeholder
+  first_join:  "&lt;gradient:...&gt;Welcome {name} to the server for the first time!&lt;/gradient&gt;"
+  rejoin_message: "&lt;gradient:...&gt;{name} has joined the game.&lt;/gradient&gt;"
+
+  # Per-permission overrides — checked top-to-bottom, first match wins
+  formats:
+    first_join:
+      - permission: "oreo.rank.vip"
+        text: "&lt;gradient:#FFD700:#FFA500&gt;[VIP]&lt;/gradient&gt; &lt;white&gt;{name}&lt;/white&gt; &lt;gray&gt;joined for the first time!&lt;/gray&gt;"
+    rejoin_message:
+      - permission: "oreo.rank.vip"
+        text: "&lt;gradient:#FFD700:#FFA500&gt;[VIP]&lt;/gradient&gt; &lt;white&gt;{name}&lt;/white&gt; &lt;gray&gt;is back!&lt;/gray&gt;"
+
+  sounds:
+    default: "minecraft:entity.player.levelup"
+    volume: 1.0
+    pitch: 1.0
+    formats:
+      - permission: "oreo.rank.vip"
+        sound: "minecraft:ui.toast.challenge_complete"</code></pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>enable</code></td><td>Master toggle for this section.</td></tr>
+          <tr><td><code>disable_on_backend</code></td><td>If true, suppresses messages on servers listed in <code>backend_server_names</code> (or only shows on them if set to whitelist).</td></tr>
+          <tr><td><code>look_like_player</code></td><td>If true, the message is displayed as if sent by the bot player named in <code>player_name</code>.</td></tr>
+          <tr><td><code>join_message_delay</code></td><td>Ticks to delay before sending the join message.</td></tr>
+          <tr><td><code>{name}</code></td><td>The only placeholder in join/quit message text — replaced with the player's name.</td></tr>
+          <tr><td><code>formats</code></td><td>Per-permission override list. Permissions are checked top-to-bottom; first match wins.</td></tr>
+          <tr><td><code>sounds.formats</code></td><td>Per-permission sound override. Same top-to-bottom logic.</td></tr>
+        </tbody>
+      </table>
+
+      <p>The <code>Quit_messages</code> section follows the same structure with <code>message</code> instead of <code>first_join</code> / <code>rejoin_message</code>.</p>
+    </section>
+
+    <!-- ── Death messages ────────────────────────────────────────── -->
+    <section id="death">
+      <h2>Death Messages</h2>
+      <p>Configured in <code>plugins/OreoEssentials/chat-messaging/death-messages.yml</code>. Multiple messages are listed per category — the code picks one at random.</p>
+
+      <h3>Placeholders in death messages</h3>
+      <div class="pill-row">
+        <span class="pill">[playerDisplayName]</span>
+        <span class="pill">[sourceDisplayName]</span>
+        <span class="pill">[item]</span>
+        <span class="pill">[type]</span>
+      </div>
+      <p>Legacy <code>&amp;</code> color codes work in these strings.</p>
+
+      <h3>Category hierarchy</h3>
+      <p>For player-killed-by-player deaths, the code checks in this priority order: <strong>Item</strong> (has a weapon name) → <strong>Projectile</strong> → <strong>Fireball</strong> → <strong>Firework</strong> → <strong>Tnt</strong> → <strong>General</strong>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>Enabled: true
+Prefix: "💀 "
+
+Player:
+  General:
+    - "&amp;2[playerDisplayName] &amp;7was slain by &amp;2[sourceDisplayName]"
+  Item:
+    - "&amp;2[playerDisplayName] &amp;7was cut down by &amp;2[sourceDisplayName] &amp;7using &amp;2[item]"
+  Projectile:
+    - "&amp;2[playerDisplayName] &amp;7was shot by &amp;2[sourceDisplayName] &amp;7with &amp;2[type]"
+  Fireball:
+    - "&amp;2[playerDisplayName] &amp;7was fireballed by &amp;2[sourceDisplayName]"
+  Firework:
+    - "&amp;2[playerDisplayName] &amp;7went out with a bang courtesy of &amp;2[sourceDisplayName]"
+  Tnt:
+    - "&amp;2[playerDisplayName] &amp;7was blown up by &amp;2[sourceDisplayName]"</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Auto messages ─────────────────────────────────────────── -->
+    <section id="auto-messages">
+      <h2>Auto Messages &amp; Oreobot</h2>
+      <p>Both live in <code>join-quit-messages.yml</code>.</p>
+
+      <h3>Automatic messages</h3>
+      <p>Messages sent on a repeating timer, also spoofed as Oreobot if <code>look_like_player: true</code>.</p>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>Automatic_message:
+  enable: true
+  look_like_player: true
+  player_name: "&lt;gradient:#9BE8FF:#00D4FF&gt;Oreobot&lt;/gradient&gt;"
+
+  messages:
+    message1:
+      text: "&lt;gradient:...&gt;Don't forget to check our website for updates!&lt;/gradient&gt;"
+      timer_loop: 50    # fires every 50 seconds (not ticks)
+
+    message2:
+      text: "&lt;gradient:...&gt;Type /help for a list of commands!&lt;/gradient&gt;"
+      timer_loop: 60</code></pre>
+      </div>
+
+      <h3>Oreobot conversations</h3>
+      <p>The bot can respond to keywords in player chat. Each entry has a <code>keyword</code> (single word) and a <code>key_phrase</code> (multi-word). If either matches, one of the listed <code>replies</code> is chosen at random. The <code>{name}</code> placeholder is replaced with the player's name.</p>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>conversations:
+  enabled: true
+  oreobot:
+    custom_call_name: "oreobot"    # players can address the bot by this name
+    self_mention_reply: "&lt;gradient:...&gt;Hello, {name}! How can I assist you today?&lt;/gradient&gt;"
+
+    questions:
+      question1:
+        keyword: "help"
+        key_phrase: "i need help"
+        replies:
+          - "&lt;gradient:...&gt;Sure, {name} — what do you need help with?&lt;/gradient&gt;"</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Events ────────────────────────────────────────────────── -->
+    <section id="events">
+      <h2>Event Commands</h2>
+      <p>Configured in <code>plugins/OreoEssentials/chat-messaging/events.yml</code>. Each event has a list of commands to run automatically when it fires.</p>
+
+      <h3>Command directives</h3>
+      <table>
+        <thead>
+          <tr><th>Directive</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>asConsole! &lt;command&gt;</code></td><td>Run the command as the console (default if no directive prefix is given).</td></tr>
+          <tr><td><code>asPlayer! &lt;command&gt;</code></td><td>Run the command as the player involved in the event.</td></tr>
+          <tr><td><code>delay! &lt;seconds&gt; &lt;command&gt;</code></td><td>Wait N seconds before running the command. Can be combined: <code>delay! 2 asConsole! give ...</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Available events and their variables</h3>
+      <table>
+        <thead>
+          <tr><th>Event key</th><th>When it fires</th><th>Variables</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>firstJoinServer</code></td><td>First time a player ever joins</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>joinServer</code></td><td>Every join (including first)</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>quitServer</code></td><td>Player disconnects</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>playerKillPlayer</code></td><td>A player kills another player</td><td><code>[playerName]</code> (killer), <code>[victim]</code></td></tr>
+          <tr><td><code>playerRespawn</code></td><td>Player respawns after death</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>playerTeleport</code></td><td>Any teleport (same-world or cross-world)</td><td><code>[playerName]</code>, <code>[fromWorld]</code>, <code>[toWorld]</code></td></tr>
+          <tr><td><code>bedEnter</code></td><td>Player enters a bed successfully</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>bedLeave</code></td><td>Player leaves a bed</td><td><code>[playerName]</code></td></tr>
+          <tr><td><code>playerPreWorldChange</code></td><td>Just before a cross-world teleport</td><td><code>[playerName]</code>, <code>[toWorld]</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>events:
+  firstJoinServer:
+    - "asConsole! give [playerName] bread 8"
+    - "asConsole! delay! 2 title [playerName] title {\"text\":\"Welcome!\",\"color\":\"green\"}"
+    - "asPlayer! spawn"
+
+  playerKillPlayer:
+    - "asConsole! eco give [playerName] 25"
+    - "asConsole! broadcast &amp;6[playerName] &amp;7defeated &amp;c[victim]"</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Legacy placeholder map ────────────────────────────────── -->
+    <section id="legacy-placeholders">
+      <h2>Legacy Placeholder Map</h2>
+      <p>The channel mode's <code>normalizePlaceholders()</code> method converts these older tokens to their MiniMessage equivalents before parsing. They work in channel format strings.</p>
+
+      <table>
+        <thead>
+          <tr><th>Legacy token</th><th>Converted to</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{player}</code></td><td><code>&lt;player_name&gt;</code></td></tr>
+          <tr><td><code>{displayname}</code></td><td><code>&lt;player_displayname&gt;</code></td></tr>
+          <tr><td><code>{prefix}</code></td><td><code>&lt;lp_prefix&gt;</code></td></tr>
+          <tr><td><code>{suffix}</code></td><td><code>&lt;lp_suffix&gt;</code></td></tr>
+          <tr><td><code>{message}</code></td><td><code>&lt;chat_message&gt;</code></td></tr>
+          <tr><td><code>%chat_message%</code></td><td><code>&lt;chat_message&gt;</code></td></tr>
+          <tr><td><code>%player_name%</code></td><td><code>&lt;player_name&gt;</code></td></tr>
+          <tr><td><code>%player_displayname%</code></td><td><code>&lt;player_displayname&gt;</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Additionally, <code>FormatManager.convertLegacyToMiniMessage()</code> converts standard <code>&amp;</code> color codes to MiniMessage tags. This runs on the format string in simple mode (when <code>minimessage-translate-legacy-amp: true</code>) and on the player's message when they have <code>oreo.chat.colors</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>&amp;0 → &lt;black&gt;      &amp;1 → &lt;dark_blue&gt;   &amp;2 → &lt;dark_green&gt;
+&amp;3 → &lt;dark_aqua&gt;  &amp;4 → &lt;dark_red&gt;    &amp;5 → &lt;dark_purple&gt;
+&amp;6 → &lt;gold&gt;       &amp;7 → &lt;gray&gt;        &amp;8 → &lt;dark_gray&gt;
+&amp;9 → &lt;blue&gt;       &amp;a → &lt;green&gt;       &amp;b → &lt;aqua&gt;
+&amp;c → &lt;red&gt;        &amp;d → &lt;light_purple&gt; &amp;e → &lt;yellow&gt;
+&amp;f → &lt;white&gt;      &amp;r → &lt;reset&gt;
+&amp;l → &lt;bold&gt;       &amp;o → &lt;italic&gt;      &amp;n → &lt;underlined&gt;
+&amp;m → &lt;strikethrough&gt;  &amp;k → &lt;obfuscated&gt;
+
+# Hex formats also converted:
+&#123;&#35;rrggbb → &lt;#rrggbb&gt;
+&amp;x&amp;r&amp;r&amp;g&amp;g&amp;b&amp;b (§x format) → &lt;#rrggbb&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- ── Troubleshooting ───────────────────────────────────────── -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>What to check</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chat is not intercepted at all</td>
+            <td>Check <code>settings.yml → features.chat.enabled</code> and <code>chat.enabled: true</code> in <code>chat-format.yml</code>.</td>
+          </tr>
+          <tr>
+            <td>Group format not applying</td>
+            <td>The key must be exactly the LP primary group name under <code>chat:</code>, e.g. <code>chat.admin: "..."</code>. Case must match the group name LuckPerms returns.</td>
+          </tr>
+          <tr>
+            <td><code>&lt;lp_suffix&gt;</code> shows nothing</td>
+            <td><code>&lt;lp_suffix&gt;</code> is only injected in channel mode. In simple mode it is not part of the resolver.</td>
+          </tr>
+          <tr>
+            <td>Player can see MiniMessage tags others typed</td>
+            <td>The typing player has <code>oreo.chat.colors</code>. Their message is parsed with <code>Placeholder.parsed()</code> which renders MiniMessage tags.</td>
+          </tr>
+          <tr>
+            <td>PAPI placeholders in format show as <code>%placeholder%</code></td>
+            <td>Verify PlaceholderAPI is installed and <code>chat.papi.apply-to-format: true</code>.</td>
+          </tr>
+          <tr>
+            <td>Channel scope RANGE never includes certain players</td>
+            <td>RANGE uses <code>Location.distance()</code> which throws if worlds differ. Players in a different world are always excluded.</td>
+          </tr>
+          <tr>
+            <td><code>[item]</code> shows the placeholder text instead of item</td>
+            <td>Check <code>chat.item-in-chat.enabled: true</code> and that <code>placeholder</code> matches exactly what the player typed (check is case-insensitive).</td>
+          </tr>
+          <tr>
+            <td>Hover not attaching to the player name</td>
+            <td>Hover works by scanning Adventure component children for text matching the player's name. If the format renders the name across many small style components, the hover may only attach to part of it.</td>
+          </tr>
+          <tr>
+            <td>Cross-server messages appear twice on originating server</td>
+            <td>Should not happen — the server filters its own messages using a random UUID generated on startup. If it does happen, check that <code>ChatSyncManager</code> is only initialized once.</td>
+          </tr>
+          <tr>
+            <td>Channel mode not activating</td>
+            <td><code>chat.channels.enabled</code> must be <code>true</code>. After changing it you must <code>/oer</code> reload — the listener type is chosen once at startup (or reload).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer-box">
+        After changing <code>chat-format.yml</code>, reload with <code>/oer</code> or <code>/oereload</code>.<br />
+        For join/quit/death/events files a full reload is also needed — they are not hot-swapped independently.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll(".code-block").forEach(block => {
+    const btn = block.querySelector(".copy-btn");
+    const pre = block.querySelector("pre");
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        const old = btn.textContent;
+        btn.textContent = "Copied";
+        btn.classList.add("done");
+        setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 1400);
+      } catch {
+        btn.textContent = "Copy failed";
+        setTimeout(() => { btn.textContent = "Copy"; }, 1400);
+      }
+    });
+  });
+
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-group a");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(l => l.classList.remove("active"));
+      const cur = document.querySelector(`.nav-group a[href="#${entry.target.id}"]`);
+      if (cur) cur.classList.add("active");
+    });
+  }, { rootMargin: "-22% 0px -65% 0px", threshold: 0.01 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Holograms Module Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      background: linear-gradient(135deg, #0d2033 0%, #162a40 60%, #1e3654 100%);
+      padding: 72px 48px 56px;
+      text-align: center;
+      border-bottom: 2px solid var(--line);
+    }
+    header h1 { margin: 0 0 12px; font-size: 2.8rem; color: var(--teal); letter-spacing: -1px; }
+    header p { margin: 0; color: var(--muted); font-size: 1.15rem; }
+    .badge {
+      display: inline-block; margin: 4px;
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: .5px;
+      background: rgba(104,217,200,0.15); color: var(--teal);
+      border: 1px solid rgba(104,217,200,0.3);
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,20,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px;
+      display: flex; flex-wrap: wrap; gap: 4px;
+    }
+    nav a {
+      display: inline-block; padding: 14px 16px;
+      color: var(--muted); font-size: 0.85rem; font-weight: 600;
+      border-bottom: 2px solid transparent; transition: all .2s;
+    }
+    nav a:hover, nav a.active { color: var(--teal); border-color: var(--teal); text-decoration: none; }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px 80px; }
+    section { padding-top: 72px; }
+    section h2 { font-size: 1.9rem; color: var(--teal); margin: 0 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+    section h3 { font-size: 1.25rem; color: var(--amber); margin: 32px 0 12px; }
+    section h4 { font-size: 1.05rem; color: var(--purple); margin: 24px 0 8px; }
+    p { margin: 0 0 16px; }
+
+    .module-header {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(30,54,84,0.4);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 28px; margin-bottom: 28px;
+    }
+    .module-icon { font-size: 2.5rem; background: rgba(104,217,200,0.1); border-radius: 14px; padding: 12px; min-width: 64px; text-align: center; }
+    .module-header h2 { border: none; padding: 0; margin: 0; font-size: 1.7rem; }
+    .module-header p { margin: 4px 0 0; color: var(--muted); }
+
+    .card { background: rgba(22,42,64,0.5); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 20px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card-small { padding: 18px 22px; }
+
+    .steps { counter-reset: step; margin: 0 0 24px; }
+    .step { counter-increment: step; display: flex; gap: 18px; margin-bottom: 16px; align-items: flex-start; }
+    .step::before { content: counter(step); min-width: 34px; height: 34px; background: var(--teal); color: #0a1018; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px; }
+    .step p { margin: 0; }
+
+    pre, code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+    pre { background: var(--code); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); padding: 20px 24px; overflow-x: auto; margin: 0 0 20px; font-size: 0.875rem; line-height: 1.6; }
+    code { background: rgba(13,19,24,0.8); color: var(--teal); padding: 2px 7px; border-radius: 5px; font-size: 0.875em; }
+    pre code { background: none; color: inherit; padding: 0; border-radius: 0; }
+
+    .comment { color: #5a7d8a; }
+    .key     { color: var(--amber); }
+    .val     { color: var(--green); }
+    .cmd     { color: var(--purple); }
+    .perm    { color: var(--red); }
+
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: rgba(104,217,200,0.12); color: var(--teal); padding: 12px 16px; text-align: left; font-weight: 700; border-bottom: 2px solid var(--line); }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+
+    .alert { border-radius: var(--radius-sm); padding: 16px 20px; margin-bottom: 20px; border-left: 4px solid; }
+    .alert-info   { background: rgba(127,192,255,0.08); border-color: var(--blue); color: var(--blue); }
+    .alert-warn   { background: rgba(247,185,85,0.08);  border-color: var(--amber); color: var(--amber); }
+    .alert-danger { background: rgba(255,140,122,0.08); border-color: var(--red); color: var(--red); }
+    .alert-ok     { background: rgba(143,226,143,0.08); border-color: var(--green); color: var(--green); }
+    .alert strong { color: inherit; }
+
+    .player-box { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 18px 22px; margin-bottom: 14px; background: rgba(104,217,200,0.04); }
+    .player-name { font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+    .player-box p { margin: 0; font-size: 0.93rem; }
+    .player-chat { background: rgba(0,0,0,0.3); border-radius: 6px; padding: 4px 10px; margin-top: 8px; font-size: 0.88rem; font-family: monospace; border-left: 3px solid var(--teal); }
+
+    details { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0; margin-bottom: 10px; overflow: hidden; }
+    summary { padding: 14px 20px; cursor: pointer; font-weight: 600; color: var(--amber); list-style: none; background: rgba(22,42,64,0.4); user-select: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▶ '; font-size: 0.75em; opacity: 0.7; }
+    details[open] summary::before { content: '▼ '; }
+    details[open] { border-color: var(--amber); }
+    .faq-body { padding: 14px 20px 18px; font-size: 0.95rem; color: var(--muted); }
+    .faq-body p { margin: 0 0 10px; }
+    .faq-body p:last-child { margin: 0; }
+
+    .cmd-block {
+      background: rgba(22,42,64,0.6);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--teal);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .cmd-sig { font-family: monospace; font-size: 1rem; color: var(--teal); margin: 0 0 6px; font-weight: 700; }
+    .cmd-desc { color: var(--muted); font-size: 0.93rem; margin: 0 0 6px; }
+    .cmd-perm { font-size: 0.82rem; }
+    .cmd-perm span { background: rgba(255,140,122,0.12); color: var(--red); padding: 2px 8px; border-radius: 4px; font-family: monospace; border: 1px solid rgba(255,140,122,0.2); }
+    .cmd-type-only { font-size: 0.82rem; color: var(--purple); margin-top: 4px; }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+
+<header>
+  <h1>✨ Holograms Module</h1>
+  <p>Create floating text, item, and block displays anywhere in your world</p>
+  <br>
+  <span class="badge">Paper 1.21+</span>
+  <span class="badge">Display entities (NMS)</span>
+  <span class="badge">FancyNPCs integration</span>
+  <span class="badge">Flat-file YAML storage</span>
+</header>
+
+<nav id="nav">
+  <a href="#overview">Overview</a>
+  <a href="#quickstart">Quick Start</a>
+  <a href="#config">config.yml</a>
+  <a href="#types">Hologram Types</a>
+  <a href="#commands-hologram">/hologram</a>
+  <a href="#commands-manage">/oholograms</a>
+  <a href="#permissions">Permissions</a>
+  <a href="#storage">Storage</a>
+  <a href="#visibility">Visibility</a>
+  <a href="#formatting">Text Formatting</a>
+  <a href="#npc">NPC Link</a>
+  <a href="#examples">Examples</a>
+  <a href="#faq">FAQ</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ════════════════════════ OVERVIEW ════════════════════════ -->
+<section id="overview">
+  <div class="module-header">
+    <div class="module-icon">✨</div>
+    <div>
+      <h2>Overview</h2>
+      <p>Floating holograms using Minecraft 1.21+ Display entities — no packets, no armorstands</p>
+    </div>
+  </div>
+
+  <p>
+    The Holograms module is an embedded port of the
+    <strong>FancyHolograms</strong> library, fully integrated into OreoEssentials.
+    It uses Minecraft's native <strong>Display entities</strong> (text, item, block)
+    introduced in 1.19.4, meaning holograms are real server-side entities — no client-side
+    packet tricks required.
+  </p>
+
+  <div class="card-grid">
+    <div class="card card-small">
+      <h3 style="margin-top:0">✅ Features</h3>
+      <ul style="margin:0;padding-left:20px;color:var(--muted)">
+        <li>Text, Item, and Block display holograms</li>
+        <li>Multi-line text with MiniMessage + legacy colors</li>
+        <li>Full transform control: position, rotation, scale, billboard, translation</li>
+        <li>Background color, text shadow, see-through</li>
+        <li>Custom visibility: all / permission-required / manual</li>
+        <li>Per-hologram visibility distance</li>
+        <li>Link holograms to FancyNPCs</li>
+        <li>Bedrock player support (via Floodgate)</li>
+        <li>Auto-save + save-on-change + manual save</li>
+        <li>Import from DecentHolograms</li>
+      </ul>
+    </div>
+    <div class="card card-small">
+      <h3 style="margin-top:0">📁 Files</h3>
+      <ul style="margin:0;padding-left:20px;color:var(--muted)">
+        <li><code>plugins/OreoEssentials/OHolograms/config.yml</code> — plugin settings</li>
+        <li><code>plugins/OreoEssentials/OHolograms/holograms.yml</code> — all saved holograms</li>
+        <li><code>plugins/OreoEssentials/OHolograms/logs/</code> — daily log files</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Server requirement:</strong> Paper 1.21 or newer. Spigot works but is not recommended. Display entities are available since Minecraft 1.19.4 — do NOT use this module on older versions.
+  </div>
+</section>
+
+<!-- ════════════════════════ QUICK START ════════════════════════ -->
+<section id="quickstart">
+  <h2>Quick Start</h2>
+
+  <div class="steps">
+    <div class="step"><p>Start the server once to generate <code>plugins/OreoEssentials/OHolograms/config.yml</code>. Default settings work out of the box.</p></div>
+    <div class="step"><p>Give your admin account the <code>oholograms.admin</code> permission (or use <code>oreo.*</code>).</p></div>
+    <div class="step"><p>Stand where you want the hologram and run <code>/hologram create text myHolo</code>. A text hologram appears at your feet.</p></div>
+    <div class="step"><p>Edit the text: <code>/hologram edit myHolo setLine 1 Hello World!</code></p></div>
+    <div class="step"><p>Add more lines: <code>/hologram edit myHolo addLine &amp;6Welcome to the server!</code></p></div>
+    <div class="step"><p>Done! Holograms are saved automatically. Use <code>/hologram list</code> to see all holograms.</p></div>
+  </div>
+</section>
+
+<!-- ════════════════════════ CONFIG ════════════════════════ -->
+<section id="config">
+  <h2>config.yml — Full Reference</h2>
+  <p>Located at <code>plugins/OreoEssentials/OHolograms/config.yml</code>.</p>
+
+  <pre><span class="comment"># ──────────────────────────────────────────────────────────
+#  OHolograms Configuration (embedded in OreoEssentials)
+#  File: plugins/OreoEssentials/OHolograms/config.yml
+# ──────────────────────────────────────────────────────────</span>
+
+<span class="comment"># Config version — DO NOT change this</span>
+<span class="key">config_version</span>: <span class="val">1</span>
+
+<span class="comment"># ── Saving ───────────────────────────────────────────────</span>
+<span class="key">saving</span>:
+  <span class="key">autosave</span>:
+    <span class="comment"># Whether to periodically save all holograms to disk automatically</span>
+    <span class="key">enabled</span>: <span class="val">true</span>
+    <span class="comment"># How often to autosave, in MINUTES (default: every 15 minutes)</span>
+    <span class="key">interval</span>: <span class="val">15</span>
+
+  <span class="comment"># If true, holograms are also saved immediately every time they are edited.
+  # Recommended: keep this true to avoid losing changes on crash.</span>
+  <span class="key">save_on_changed</span>: <span class="val">true</span>
+
+<span class="comment"># ── Logging ──────────────────────────────────────────────</span>
+<span class="key">logging</span>:
+  <span class="comment"># Log verbosity: DEBUG, INFO, WARN, ERROR</span>
+  <span class="key">log_level</span>: <span class="val">INFO</span>
+
+  <span class="comment"># Log a message every time a world is loaded and its holograms spawn.
+  # Disable if you dynamically load/unload worlds frequently.</span>
+  <span class="key">log_on_world_load</span>: <span class="val">true</span>
+
+  <span class="comment"># Show a console message when a newer plugin version is available</span>
+  <span class="key">version_notifications</span>: <span class="val">true</span>
+
+<span class="comment"># ── Visibility ───────────────────────────────────────────</span>
+<span class="comment"># Default distance (in blocks) at which a hologram becomes visible.
+# Players farther away than this will not see it.
+# Can be overridden per hologram with /hologram edit &lt;holo&gt; visibilityDistance</span>
+<span class="key">visibility_distance</span>: <span class="val">20</span>
+
+<span class="comment"># How often (in TICKS) to check and update which players can see each hologram.
+# Lower = more responsive but slightly more CPU. Default 20 ticks = 1 second.</span>
+<span class="key">update_visibility_interval</span>: <span class="val">20</span>
+
+<span class="comment"># ── Commands ─────────────────────────────────────────────</span>
+<span class="comment"># Set to false to disable /hologram and /oholograms entirely
+# (useful if using the API only)</span>
+<span class="key">register_commands</span>: <span class="val">true</span></pre>
+
+  <h3>Performance Tips</h3>
+  <div class="card-grid">
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Low Player Count (1–50)</h4>
+      <p style="margin:0;color:var(--muted)">Keep defaults. <code>visibility_distance: 20</code> and <code>update_visibility_interval: 20</code> are fine.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">High Player Count (50+)</h4>
+      <p style="margin:0;color:var(--muted)">Increase <code>update_visibility_interval</code> to <code>40</code> or <code>60</code> to reduce the per-tick cost of showing/hiding holograms.</p>
+    </div>
+    <div class="card card-small">
+      <h4 style="margin-top:0;color:var(--teal)">Many Holograms (100+)</h4>
+      <p style="margin:0;color:var(--muted)">Set <code>visibility_distance</code> to a smaller value (e.g. <code>15</code>) so players outside the radius don't get entity packets for distant holograms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ TYPES ════════════════════════ -->
+<section id="types">
+  <h2>Hologram Types</h2>
+  <p>There are three hologram types. Choose the type when creating with <code>/hologram create &lt;type&gt; &lt;name&gt;</code>.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>Type</th>
+        <th>What it shows</th>
+        <th>Exclusive edit options</th>
+        <th>Notes</th>
+      </tr>
+      <tr>
+        <td><code>text</code></td>
+        <td>Floating multi-line text (TextDisplay entity)</td>
+        <td><code>addLine</code>, <code>setLine</code>, <code>removeLine</code>, <code>insertBefore</code>, <code>insertAfter</code>, <code>background</code>, <code>textShadow</code>, <code>textAlignment</code>, <code>seeThrough</code>, <code>updateTextInterval</code></td>
+        <td>Supports MiniMessage + legacy color codes. Most commonly used type.</td>
+      </tr>
+      <tr>
+        <td><code>item</code></td>
+        <td>A floating spinning item (ItemDisplay entity)</td>
+        <td><code>item &lt;material&gt;</code> — changes what item is displayed</td>
+        <td>Billboard defaults to FIXED. Great for shop or loot displays.</td>
+      </tr>
+      <tr>
+        <td><code>block</code></td>
+        <td>A floating block (BlockDisplay entity)</td>
+        <td><code>block &lt;material&gt;</code> — changes what block is displayed</td>
+        <td>Billboard defaults to FIXED. Good for floating decorations.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>All types share common edit options:</strong> <code>position</code>, <code>moveTo</code>, <code>rotate</code>, <code>rotatePitch</code>, <code>billboard</code>, <code>scale</code>, <code>translate</code>, <code>visibilityDistance</code>, <code>visibility</code>, <code>shadowRadius</code>, <code>shadowStrength</code>, <code>brightness</code>
+  </div>
+</section>
+
+<!-- ════════════════════════ /hologram COMMANDS ════════════════════════ -->
+<section id="commands-hologram">
+  <h2>/hologram — Complete Command Reference</h2>
+  <p>
+    Also accessible as <code>/holograms</code>, <code>/holo</code>, <code>/fholo</code>, and <code>/ohologram</code>.
+    All subcommands require the base permission <code>oholograms.admin</code> — subcommand permissions are additional fine-grained checks.
+  </p>
+
+  <h3>Informational Commands</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram help</div>
+    <div class="cmd-desc">Shows all available commands and their syntax in chat.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram list [page]</div>
+    <div class="cmd-desc">Lists all persistent holograms with their coordinates. Click a hologram name to teleport to it. Shows 10 per page.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.list</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram nearby &lt;range&gt;</div>
+    <div class="cmd-desc">Shows all holograms within <code>&lt;range&gt;</code> blocks of your position, sorted by distance. Click any result to teleport to it.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.nearby</span></div>
+    <div class="cmd-type-only">⚠ Player-only command (cannot be used from console)</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram info &lt;name&gt;</div>
+    <div class="cmd-desc">Shows detailed information about a hologram: location, type, visibility, scale, billboard, and all current text lines.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span> (uses parent permission only)</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram teleport &lt;name&gt;</div>
+    <div class="cmd-desc">Teleports you to the hologram's location.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+    <div class="cmd-type-only">⚠ Player-only command</div>
+  </div>
+
+  <h3>Creating &amp; Removing</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram create &lt;text|item|block&gt; &lt;name&gt;</div>
+    <div class="cmd-desc">Creates a new hologram of the specified type at your current position. The name cannot contain dots. Item and Block holograms default to FIXED billboard.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.create</span></div>
+    <div class="cmd-type-only">⚠ Player-only command</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram remove &lt;name&gt;</div>
+    <div class="cmd-desc">Permanently deletes the hologram. This is irreversible — the hologram is removed from both memory and the save file.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.remove</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram copy &lt;existing-name&gt; &lt;new-name&gt;</div>
+    <div class="cmd-desc">Creates an exact copy of an existing hologram at your current position. The NPC link is not copied (cleared on the new hologram). The copy is saved to disk immediately.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.copy</span></div>
+    <div class="cmd-type-only">⚠ Player-only command</div>
+  </div>
+
+  <h3>Position &amp; Transform</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; position</div>
+    <div class="cmd-sig">/hologram edit &lt;name&gt; moveHere</div>
+    <div class="cmd-desc">Moves the hologram to your exact current position (keeps its current yaw/pitch).</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.move_here</span></div>
+    <div class="cmd-type-only">⚠ Player-only command · Cannot be used if hologram is linked to an NPC</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; moveTo &lt;x&gt; &lt;y&gt; &lt;z&gt; [yaw] [pitch]</div>
+    <div class="cmd-desc">
+      Moves the hologram to specific coordinates. Supports relative notation:
+      <ul style="margin:8px 0 0;color:var(--muted)">
+        <li><code>~</code> — relative to hologram's current position (e.g. <code>~1</code> = 1 block further)</li>
+        <li><code>~~</code> — relative to your player position (e.g. <code>~~</code> = exactly where you stand)</li>
+        <li>Plain numbers — absolute world coordinates</li>
+      </ul>
+    </div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.move_to</span></div>
+    <div class="cmd-type-only">⚠ Player-only command</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; center</div>
+    <div class="cmd-desc">Centers the hologram on the block it is currently standing on (snaps X and Z to block center, keeps Y).</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.move_here</span></div>
+    <div class="cmd-type-only">⚠ Player-only command</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; rotate &lt;degrees&gt;</div>
+    <div class="cmd-desc">Rotates the hologram around its vertical axis (yaw) by the given degrees. Positive = clockwise.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; rotatePitch &lt;degrees&gt;</div>
+    <div class="cmd-desc">Rotates the hologram on its pitch (up/down tilt) axis.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; scale &lt;factor&gt;</div>
+    <div class="cmd-desc">
+      Scales the hologram uniformly. <code>1.0</code> = default size, <code>2.0</code> = double size, <code>0.5</code> = half size.<br>
+      You can also scale axes independently: <code>/hologram edit &lt;name&gt; scale &lt;x&gt; &lt;y&gt; &lt;z&gt;</code>
+    </div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.scale</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; translate &lt;x&gt; &lt;y&gt; &lt;z&gt;</div>
+    <div class="cmd-desc">Applies a local-space translation offset to the hologram (shifts it relative to its own orientation). Useful for fine-tuning position without changing the entity's base coordinates.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; billboard &lt;center|fixed|horizontal|vertical&gt;</div>
+    <div class="cmd-desc">
+      Sets how the hologram faces players:
+      <ul style="margin:8px 0 0;color:var(--muted)">
+        <li><code>center</code> — always faces the player (default for text)</li>
+        <li><code>fixed</code> — never rotates (default for item/block)</li>
+        <li><code>horizontal</code> — only rotates left/right, never tilts</li>
+        <li><code>vertical</code> — only tilts up/down, never rotates left/right</li>
+      </ul>
+    </div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; shadowRadius &lt;value&gt;</div>
+    <div class="cmd-desc">Sets the radius of the drop shadow under the hologram. Default is <code>0</code> (no shadow). Try <code>0.5</code> to <code>2.0</code> for a visible shadow.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; shadowStrength &lt;value&gt;</div>
+    <div class="cmd-desc">Sets the darkness/opacity of the drop shadow. Default is <code>1.0</code>. Higher = darker shadow.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; brightness &lt;block|sky&gt; &lt;0-15&gt;</div>
+    <div class="cmd-desc">
+      Overrides the ambient light of the hologram regardless of surrounding block/sky light:
+      <ul style="margin:8px 0 0;color:var(--muted)">
+        <li><code>block 15</code> — maximum block-light brightness (looks like it's lit by a torch at full intensity)</li>
+        <li><code>sky 15</code> — maximum sky-light brightness (looks like it's in full daylight)</li>
+      </ul>
+      Set both to 15 to make a hologram always fully bright even in a dark cave.
+    </div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <h3>Visibility Controls</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; visibility &lt;ALL|PERMISSION_REQUIRED|MANUAL&gt;</div>
+    <div class="cmd-desc">
+      Controls who can see this hologram:
+      <ul style="margin:8px 0 0;color:var(--muted)">
+        <li><code>ALL</code> — everyone within range sees it (default)</li>
+        <li><code>PERMISSION_REQUIRED</code> — only players with <code>OHolograms.viewhologram.&lt;name&gt;</code> can see it</li>
+        <li><code>MANUAL</code> — only players added via the API (for developer use)</li>
+      </ul>
+    </div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.visibility</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; visibilityDistance &lt;blocks&gt;</div>
+    <div class="cmd-desc">Overrides the default visibility distance for this specific hologram. Players farther than this many blocks will not see it. Use <code>-1</code> to reset to the config default.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <h3>Text-Only Commands</h3>
+  <p style="color:var(--muted)">These commands only work on <code>text</code> type holograms.</p>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; addLine &lt;text ...&gt;</div>
+    <div class="cmd-desc">Appends a new line of text at the <em>bottom</em> of the hologram. Supports MiniMessage tags and legacy <code>&amp;</code> color codes.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.line.add</span></div>
+    <div class="cmd-type-only">💡 Text is required — will show error if omitted</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; setLine &lt;line-number&gt; &lt;text ...&gt;</div>
+    <div class="cmd-desc">Replaces the text on line <code>&lt;line-number&gt;</code> (1-based). If line number exceeds the current line count, acts like <code>addLine</code>.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.line.set</span></div>
+    <div class="cmd-type-only">💡 Text is required — will show error if omitted</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; removeLine &lt;line-number&gt;</div>
+    <div class="cmd-desc">Removes line <code>&lt;line-number&gt;</code> (1-based). All lines below shift up by one.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.line.remove</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; insertBefore &lt;line-number&gt; &lt;text ...&gt;</div>
+    <div class="cmd-desc">Inserts a new line of text <em>before</em> line <code>&lt;line-number&gt;</code>. Existing lines shift down.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.insert_before</span></div>
+    <div class="cmd-type-only">💡 Text is required — shows error if omitted</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; insertAfter &lt;line-number&gt; &lt;text ...&gt;</div>
+    <div class="cmd-desc">Inserts a new line of text <em>after</em> line <code>&lt;line-number&gt;</code>. Existing lines below shift down.</div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.insert_after</span></div>
+    <div class="cmd-type-only">💡 Text is required — shows error if omitted</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; background &lt;color&gt;</div>
+    <div class="cmd-desc">
+      Sets the background color of the text panel:
+      <ul style="margin:8px 0 0;color:var(--muted)">
+        <li>Named color: <code>red</code>, <code>blue</code>, <code>dark_green</code>, etc. (uses Adventure named colors)</li>
+        <li>Hex RGB: <code>#ff0000</code> (solid red)</li>
+        <li>Hex ARGB: <code>#80ff0000</code> (semi-transparent red, alpha=0x80)</li>
+        <li><code>transparent</code> — fully transparent background</li>
+        <li><code>reset</code> or <code>default</code> — remove custom background</li>
+      </ul>
+    </div>
+    <div class="cmd-perm">Permission: <span>OHolograms.hologram.edit.background</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; textShadow &lt;true|false&gt;</div>
+    <div class="cmd-desc">Enables or disables the text drop shadow. Default is <code>false</code>.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; textAlignment &lt;CENTER|LEFT|RIGHT&gt;</div>
+    <div class="cmd-desc">Sets how multi-line text is aligned within the hologram's text panel. Default is <code>CENTER</code>.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; seeThrough &lt;true|false&gt;</div>
+    <div class="cmd-desc">If <code>true</code>, players can read the hologram text through walls. Default is <code>false</code>.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; updateTextInterval &lt;seconds&gt;</div>
+    <div class="cmd-desc">Sets how often the hologram text is refreshed for all viewers (useful for PlaceholderAPI placeholders that change over time). Use <code>-1</code> to disable periodic refresh (default).</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <h3>Item-Only Commands</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; item &lt;MATERIAL&gt;</div>
+    <div class="cmd-desc">Changes the displayed item to a different Minecraft material. Example: <code>/hologram edit myItem item DIAMOND</code></div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <h3>Block-Only Commands</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; block &lt;MATERIAL&gt;</div>
+    <div class="cmd-desc">Changes the displayed block to a different Minecraft block material. Example: <code>/hologram edit myBlock block DIAMOND_BLOCK</code></div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <h3>NPC Integration (requires FancyNPCs)</h3>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; linkWithNpc &lt;npc-name&gt;</div>
+    <div class="cmd-desc">Attaches the hologram above the specified FancyNPC. The hologram will follow the NPC and scale with it. The NPC's display name is automatically cleared.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/hologram edit &lt;name&gt; unlinkWithNpc</div>
+    <div class="cmd-desc">Detaches the hologram from its linked NPC. The hologram stays at its current position.</div>
+    <div class="cmd-perm">Permission: <span>oholograms.admin</span></div>
+  </div>
+</section>
+
+<!-- ════════════════════════ /oholograms COMMANDS ════════════════════════ -->
+<section id="commands-manage">
+  <h2>/oholograms — Management Commands</h2>
+  <p>These commands manage the plugin itself rather than individual holograms.</p>
+  <p>Base permission: <code>oholograms.admin</code></p>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/oholograms save</div>
+    <div class="cmd-desc">Immediately saves all holograms to <code>holograms.yml</code>. Use this before a planned restart if you've made changes and don't want to wait for autosave.</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/oholograms reload</div>
+    <div class="cmd-desc">Reloads <code>config.yml</code> and all holograms from disk. Existing holograms are unloaded (hidden) and reloaded fresh. Use after editing the YAML files manually.</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/oholograms version</div>
+    <div class="cmd-desc">Shows the current plugin version and checks if a newer version is available.</div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-sig">/oholograms convert &lt;type&gt; &lt;targets&gt; [args...]</div>
+    <div class="cmd-desc">Imports holograms from another plugin. Currently supports <strong>DecentHolograms</strong>. <code>&lt;targets&gt;</code> is a regex pattern matching hologram names to import, or <code>*</code> for all.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════ PERMISSIONS ════════════════════════ -->
+<section id="permissions">
+  <h2>Permissions — Complete List</h2>
+
+  <div class="alert alert-warn">
+    <strong>Important:</strong> Permissions are case-sensitive. <code>OHolograms.hologram.create</code> is different from <code>oholograms.hologram.create</code>. Use the exact strings listed here.
+  </div>
+
+  <h3>Parent Permission</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>Default</th><th>Description</th></tr>
+      <tr>
+        <td><code>oholograms.admin</code></td>
+        <td>Operators (op)</td>
+        <td>Master permission. Required to use any <code>/hologram</code> or <code>/oholograms</code> command. All subcommand permissions are checked IN ADDITION to this.</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Hologram Management</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>Command(s)</th><th>Description</th></tr>
+      <tr><td><code>OHolograms.hologram.create</code></td><td><code>/hologram create</code></td><td>Create new holograms</td></tr>
+      <tr><td><code>OHolograms.hologram.remove</code></td><td><code>/hologram remove</code></td><td>Delete holograms permanently</td></tr>
+      <tr><td><code>OHolograms.hologram.copy</code></td><td><code>/hologram copy</code></td><td>Duplicate an existing hologram</td></tr>
+      <tr><td><code>OHolograms.hologram.list</code></td><td><code>/hologram list</code></td><td>See the list of all holograms</td></tr>
+      <tr><td><code>OHolograms.hologram.nearby</code></td><td><code>/hologram nearby</code></td><td>Find holograms within a radius</td></tr>
+    </table>
+  </div>
+
+  <h3>Edit Permissions</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>Command(s)</th><th>Description</th></tr>
+      <tr><td><code>OHolograms.hologram.edit.move_here</code></td><td><code>position</code>, <code>moveHere</code>, <code>center</code></td><td>Move hologram to current position / center on block</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.move_to</code></td><td><code>moveTo</code></td><td>Move hologram to specific coordinates</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.scale</code></td><td><code>scale</code></td><td>Change hologram scale</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.background</code></td><td><code>background</code></td><td>Change text background color</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.visibility</code></td><td><code>visibility</code></td><td>Change who can see the hologram</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.line.add</code></td><td><code>addLine</code></td><td>Append a line to text holograms</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.line.remove</code></td><td><code>removeLine</code></td><td>Remove a line from text holograms</td></tr>
+      <tr><td><code>OHolograms.hologram.line.set</code></td><td><code>setLine</code></td><td>Edit a specific line (also used internally by <code>addLine</code>)</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.insert_before</code></td><td><code>insertBefore</code></td><td>Insert line before another line</td></tr>
+      <tr><td><code>OHolograms.hologram.edit.insert_after</code></td><td><code>insertAfter</code></td><td>Insert line after another line</td></tr>
+    </table>
+  </div>
+
+  <h3>Viewer Permission</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Permission</th><th>Description</th></tr>
+      <tr>
+        <td><code>OHolograms.viewhologram.&lt;name&gt;</code></td>
+        <td>Allows a player to see a specific hologram when its visibility is set to <code>PERMISSION_REQUIRED</code>. Replace <code>&lt;name&gt;</code> with the exact hologram name (case-sensitive).</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>LuckPerms Setup Example</h3>
+  <pre><span class="comment"># Give all admins full hologram control</span>
+<span class="cmd">/lp group admin permission set oholograms.admin true</span>
+
+<span class="comment"># Give a specific group permission to see a VIP-only hologram</span>
+<span class="cmd">/lp group vip permission set OHolograms.viewhologram.vip_rewards true</span>
+
+<span class="comment"># Give all players permission to see a specific hologram</span>
+<span class="cmd">/lp group default permission set OHolograms.viewhologram.spawn_info true</span></pre>
+
+  <div class="alert alert-warn">
+    <strong>Note on inconsistency:</strong> <code>setLine</code> uses <code>OHolograms.hologram.line.set</code> (without the <code>edit.</code> prefix), while most other edit commands use <code>OHolograms.hologram.edit.*</code>. This is intentional in the source code — granting <code>OHolograms.hologram.edit.*</code> does NOT automatically grant setLine. Grant both if needed.
+  </div>
+</section>
+
+<!-- ════════════════════════ STORAGE ════════════════════════ -->
+<section id="storage">
+  <h2>Storage — How Holograms Are Saved</h2>
+
+  <p>
+    All holograms are stored in a single YAML file:
+    <code>plugins/OreoEssentials/OHolograms/holograms.yml</code>.
+    You can edit this file manually, but always run <code>/oholograms reload</code> after doing so.
+  </p>
+
+  <h3>File Format</h3>
+  <pre><span class="key">version</span>: <span class="val">2</span>  <span class="comment"># DO NOT CHANGE</span>
+
+<span class="key">holograms</span>:
+  <span class="key">my_hologram</span>:                      <span class="comment"># Hologram name (lowercase)</span>
+    <span class="key">type</span>: <span class="val">TEXT</span>                       <span class="comment"># TEXT / ITEM / BLOCK</span>
+    <span class="key">location</span>:
+      <span class="key">world</span>: <span class="val">world</span>
+      <span class="key">x</span>: <span class="val">100.5</span>
+      <span class="key">y</span>: <span class="val">64.0</span>
+      <span class="key">z</span>: <span class="val">200.5</span>
+      <span class="key">yaw</span>: <span class="val">0.0</span>
+      <span class="key">pitch</span>: <span class="val">0.0</span>
+    <span class="key">visibility</span>: <span class="val">ALL</span>                 <span class="comment"># ALL / PERMISSION_REQUIRED / MANUAL</span>
+    <span class="key">visibility_distance</span>: <span class="val">-1</span>          <span class="comment"># -1 = use config default</span>
+    <span class="key">persistent</span>: <span class="val">true</span>
+    <span class="key">text</span>:                            <span class="comment"># List of text lines (TEXT type only)</span>
+      - <span class="val">"&lt;gold&gt;&lt;b&gt;Welcome!&lt;/b&gt;&lt;/gold&gt;"</span>
+      - <span class="val">"&lt;gray&gt;Enjoy your stay!&lt;/gray&gt;"</span>
+    <span class="key">text_shadow</span>: <span class="val">false</span>
+    <span class="key">see_through</span>: <span class="val">false</span>
+    <span class="key">text_alignment</span>: <span class="val">center</span>
+    <span class="key">update_text_interval</span>: <span class="val">-1</span>          <span class="comment"># -1 = no auto-refresh</span>
+    <span class="key">background</span>: <span class="val">null</span>                  <span class="comment"># null = default, "transparent", "#RRGGBB", named color</span>
+    <span class="key">scale_x</span>: <span class="val">1.0</span>
+    <span class="key">scale_y</span>: <span class="val">1.0</span>
+    <span class="key">scale_z</span>: <span class="val">1.0</span>
+    <span class="key">shadow_radius</span>: <span class="val">0.0</span>
+    <span class="key">shadow_strength</span>: <span class="val">1.0</span>
+    <span class="key">billboard</span>: <span class="val">null</span>                   <span class="comment"># null = CENTER, or fixed/vertical/horizontal</span></pre>
+
+  <h3>When Are Holograms Saved?</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Trigger</th><th>What happens</th></tr>
+      <tr><td>Any edit command (if <code>save_on_changed: true</code>)</td><td>That hologram is queued for an async write</td></tr>
+      <tr><td>Autosave interval (default every 15 min)</td><td>All persistent holograms are saved in bulk</td></tr>
+      <tr><td><code>/oholograms save</code></td><td>Immediate bulk save of all holograms</td></tr>
+      <tr><td>Server shutdown (<code>onDisable</code>)</td><td>Bulk save, then executors drain gracefully</td></tr>
+    </table>
+  </div>
+
+  <div class="alert alert-ok">
+    <strong>Save is always async.</strong> The file write happens on a dedicated single-threaded background executor so it never blocks the main server thread. All saves are serialized through this executor — no data races.
+  </div>
+</section>
+
+<!-- ════════════════════════ VISIBILITY ════════════════════════ -->
+<section id="visibility">
+  <h2>Visibility System</h2>
+
+  <p>Each hologram has a <strong>visibility mode</strong> that controls who can see it, and a <strong>visibility distance</strong> that controls how far away it is visible.</p>
+
+  <h3>Visibility Modes</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Mode</th><th>Who sees it</th><th>Use case</th></tr>
+      <tr>
+        <td><code>ALL</code></td>
+        <td>Every player within the visibility distance</td>
+        <td>Default — public holograms like spawn signs, rules boards</td>
+      </tr>
+      <tr>
+        <td><code>PERMISSION_REQUIRED</code></td>
+        <td>Only players with <code>OHolograms.viewhologram.&lt;name&gt;</code></td>
+        <td>VIP-only signs, donor perks, staff notices</td>
+      </tr>
+      <tr>
+        <td><code>MANUAL</code></td>
+        <td>Only players added via <code>Visibility.ManualVisibility.addDistantViewer()</code> API</td>
+        <td>Programmatic control via plugins/scripts</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>Visibility Distance</h3>
+  <p>
+    The visibility distance determines how close a player must be to see the hologram.
+    The server checks this every <code>update_visibility_interval</code> ticks (default: every second).
+  </p>
+  <ul style="color:var(--muted)">
+    <li>Global default: set in <code>config.yml</code> as <code>visibility_distance</code> (default: 20 blocks)</li>
+    <li>Per-hologram override: <code>/hologram edit &lt;name&gt; visibilityDistance &lt;blocks&gt;</code></li>
+    <li>Use <code>-1</code> to reset a hologram back to the global default</li>
+  </ul>
+</section>
+
+<!-- ════════════════════════ FORMATTING ════════════════════════ -->
+<section id="formatting">
+  <h2>Text Formatting</h2>
+  <p>Text holograms support two formatting systems simultaneously.</p>
+
+  <h3>MiniMessage (Recommended)</h3>
+  <p>The modern Minecraft text format using XML-like tags. Examples:</p>
+  <pre><span class="comment"># Bold gold title</span>
+/hologram edit myHolo setLine 1 <span class="val">&lt;gold&gt;&lt;b&gt;Welcome to the Server!&lt;/b&gt;&lt;/gold&gt;</span>
+
+<span class="comment"># Gradient text</span>
+/hologram edit myHolo addLine <span class="val">&lt;gradient:red:blue&gt;Colorful Line&lt;/gradient&gt;</span>
+
+<span class="comment"># Rainbow text</span>
+/hologram edit myHolo addLine <span class="val">&lt;rainbow&gt;Rainbow Text!&lt;/rainbow&gt;</span>
+
+<span class="comment"># Hover tooltip (for players who see the hologram)</span>
+/hologram edit myHolo addLine <span class="val">&lt;hover:show_text:'secret!'&gt;Hover me!&lt;/hover&gt;</span>
+
+<span class="comment"># Clickable link</span>
+/hologram edit myHolo addLine <span class="val">&lt;click:open_url:'https://example.com'&gt;Visit us!&lt;/click&gt;</span></pre>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Tag</th><th>Effect</th></tr>
+      <tr><td><code>&lt;red&gt;</code>, <code>&lt;blue&gt;</code>, <code>&lt;gold&gt;</code>, etc.</td><td>Named colors</td></tr>
+      <tr><td><code>&lt;#ff0000&gt;</code></td><td>Hex color</td></tr>
+      <tr><td><code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;u&gt;</code>, <code>&lt;st&gt;</code></td><td>Bold, italic, underline, strikethrough</td></tr>
+      <tr><td><code>&lt;gradient:color1:color2&gt;</code></td><td>Gradient across text</td></tr>
+      <tr><td><code>&lt;rainbow&gt;</code></td><td>Cyclic rainbow colors</td></tr>
+      <tr><td><code>&lt;reset&gt;</code></td><td>Resets all formatting</td></tr>
+    </table>
+  </div>
+
+  <h3>Legacy Color Codes</h3>
+  <p>The old <code>&amp;</code>-style codes still work too:</p>
+  <pre>/hologram edit myHolo setLine 1 <span class="val">&amp;6&amp;lGold Bold Title</span>
+/hologram edit myHolo addLine <span class="val">&amp;aGreen text &amp;r normal text</span></pre>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Code</th><th>Color</th><th>Code</th><th>Color</th></tr>
+      <tr><td><code>&amp;0</code></td><td>Black</td><td><code>&amp;8</code></td><td>Dark Gray</td></tr>
+      <tr><td><code>&amp;1</code></td><td>Dark Blue</td><td><code>&amp;9</code></td><td>Blue</td></tr>
+      <tr><td><code>&amp;2</code></td><td>Dark Green</td><td><code>&amp;a</code></td><td>Green</td></tr>
+      <tr><td><code>&amp;3</code></td><td>Dark Aqua</td><td><code>&amp;b</code></td><td>Aqua</td></tr>
+      <tr><td><code>&amp;4</code></td><td>Dark Red</td><td><code>&amp;c</code></td><td>Red</td></tr>
+      <tr><td><code>&amp;5</code></td><td>Dark Purple</td><td><code>&amp;d</code></td><td>Pink</td></tr>
+      <tr><td><code>&amp;6</code></td><td>Gold</td><td><code>&amp;e</code></td><td>Yellow</td></tr>
+      <tr><td><code>&amp;7</code></td><td>Gray</td><td><code>&amp;f</code></td><td>White</td></tr>
+      <tr><td colspan="2"><code>&amp;l</code> Bold</td><td colspan="2"><code>&amp;o</code> Italic</td></tr>
+      <tr><td colspan="2"><code>&amp;n</code> Underline</td><td colspan="2"><code>&amp;r</code> Reset</td></tr>
+    </table>
+  </div>
+
+  <h3>Empty Lines / Spacing</h3>
+  <p>To add a blank line between text lines, use a single space as the text:</p>
+  <pre>/hologram edit myHolo addLine <span class="val"> </span></pre>
+</section>
+
+<!-- ════════════════════════ NPC ════════════════════════ -->
+<section id="npc">
+  <h2>FancyNPCs Integration</h2>
+  <p>
+    If you have the <strong>FancyNPCs</strong> plugin installed, holograms can be linked to NPCs.
+    The hologram will float above the NPC, follow its position, and scale with the NPC's scale setting.
+  </p>
+
+  <h3>How to Link</h3>
+  <div class="steps">
+    <div class="step"><p>Create a hologram at any position: <code>/hologram create text myNpcHolo</code></p></div>
+    <div class="step"><p>Link it to your NPC: <code>/hologram edit myNpcHolo linkWithNpc &lt;npc-name&gt;</code></p></div>
+    <div class="step"><p>The hologram moves to just above the NPC's head and follows it everywhere.</p></div>
+    <div class="step"><p>To detach: <code>/hologram edit myNpcHolo unlinkWithNpc</code></p></div>
+  </div>
+
+  <div class="alert alert-warn">
+    <strong>NPC display name is cleared</strong> when you link a hologram. The hologram <em>becomes</em> the NPC's name tag. Unlink the hologram to restore normal name tag behavior.
+  </div>
+
+  <div class="alert alert-info">
+    <strong>Position/moveHere is blocked</strong> while a hologram is linked to an NPC — it would immediately snap back anyway. Unlink first, then reposition.
+  </div>
+</section>
+
+<!-- ════════════════════════ EXAMPLES ════════════════════════ -->
+<section id="examples">
+  <h2>Player Examples</h2>
+
+  <h3>Example 1 — Spawn Welcome Sign</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Steve</div>
+    <p>Creates a welcome hologram at spawn.</p>
+    <div class="player-chat">/hologram create text spawn_welcome</div>
+    <div class="player-chat">/hologram edit spawn_welcome setLine 1 &lt;gold&gt;&lt;b&gt;★ Welcome to CraftServer ★&lt;/b&gt;&lt;/gold&gt;</div>
+    <div class="player-chat">/hologram edit spawn_welcome addLine &lt;gray&gt;Type /help to get started</div>
+    <div class="player-chat">/hologram edit spawn_welcome addLine &lt;yellow&gt;Have fun!</div>
+    <div class="player-chat">/hologram edit spawn_welcome scale 1.5</div>
+  </div>
+
+  <h3>Example 2 — Shop Price Display</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Steve</div>
+    <p>Places a floating diamond above a chest shop with price info.</p>
+    <div class="player-chat">/hologram create item shop_diamond</div>
+    <div class="player-chat">/hologram edit shop_diamond item DIAMOND</div>
+    <div class="player-chat">/hologram edit shop_diamond scale 1.2</div>
+  </div>
+
+  <h3>Example 3 — VIP-Only Hologram</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Steve</div>
+    <p>Creates a VIP lounge sign only VIP players can see.</p>
+    <div class="player-chat">/hologram create text vip_sign</div>
+    <div class="player-chat">/hologram edit vip_sign setLine 1 &lt;light_purple&gt;&lt;b&gt;✦ VIP Lounge ✦&lt;/b&gt;&lt;/light_purple&gt;</div>
+    <div class="player-chat">/hologram edit vip_sign visibility PERMISSION_REQUIRED</div>
+    <div class="player-chat"><span style="color:var(--muted)"># Then in LuckPerms:</span></div>
+    <div class="player-chat">/lp group vip permission set OHolograms.viewhologram.vip_sign true</div>
+  </div>
+
+  <h3>Example 4 — Floating Block Decoration</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Alex</div>
+    <p>Floats an emerald block above a trading post.</p>
+    <div class="player-chat">/hologram create block trade_block</div>
+    <div class="player-chat">/hologram edit trade_block block EMERALD_BLOCK</div>
+    <div class="player-chat">/hologram edit trade_block scale 0.5</div>
+    <div class="player-chat">/hologram edit trade_block rotate 45</div>
+  </div>
+
+  <h3>Example 5 — Move a Hologram Precisely</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Alex</div>
+    <p>Moves an existing hologram to exact coordinates, then fine-tunes it.</p>
+    <div class="player-chat"><span style="color:var(--muted)"># Move to exact world coordinates:</span></div>
+    <div class="player-chat">/hologram edit my_sign moveTo 100.5 65 200.5</div>
+    <div class="player-chat"><span style="color:var(--muted)"># Move 1 block above where it is now (relative to hologram):</span></div>
+    <div class="player-chat">/hologram edit my_sign moveTo ~ ~1 ~</div>
+    <div class="player-chat"><span style="color:var(--muted)"># Move to exactly where I'm standing (relative to player):</span></div>
+    <div class="player-chat">/hologram edit my_sign moveTo ~~ ~~ ~~</div>
+  </div>
+
+  <h3>Example 6 — Import from DecentHolograms</h3>
+  <div class="player-box">
+    <div class="player-name">Admin Steve</div>
+    <p>Migrating from another hologram plugin.</p>
+    <div class="player-chat"><span style="color:var(--muted)"># Import all holograms from DecentHolograms:</span></div>
+    <div class="player-chat">/oholograms convert DecentHolograms *</div>
+    <div class="player-chat"><span style="color:var(--muted)"># Import only holograms matching "shop_*":</span></div>
+    <div class="player-chat">/oholograms convert DecentHolograms shop_.*</div>
+  </div>
+</section>
+
+<!-- ════════════════════════ FAQ ════════════════════════ -->
+<section id="faq">
+  <h2>FAQ</h2>
+
+  <details>
+    <summary>My hologram disappeared after a restart!</summary>
+    <div class="faq-body">
+      <p>Make sure <code>save_on_changed: true</code> is set, or run <code>/oholograms save</code> after creating/editing holograms. Also check that the world the hologram was in loaded before holograms were initialized.</p>
+      <p>If you copied a hologram, verify it was saved — previous versions had a bug where the original was saved instead of the copy. This is now fixed.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Holograms don't show up when I join.</summary>
+    <div class="faq-body">
+      <p>Holograms are only shown to players who are within the visibility distance. Make sure you are within <code>visibility_distance</code> blocks of the hologram. Also verify the hologram's visibility is not set to <code>PERMISSION_REQUIRED</code> without you having the permission.</p>
+      <p>On 1.21.4+, the plugin uses <code>PlayerLoadedListener</code> which waits for the client to finish loading before sending display entities. If you're using a non-Paper software, this may be skipped.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I use PlaceholderAPI (PAPI) in hologram text?</summary>
+    <div class="faq-body">
+      <p>Yes — as long as the OHolograms module has a PAPI parser hook (which FancyHolograms supports). Set <code>updateTextInterval</code> to the number of seconds between refreshes so the placeholder values stay current. Example: <code>/hologram edit myHolo updateTextInterval 5</code> refreshes every 5 seconds.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I have more than one hologram with the same name?</summary>
+    <div class="faq-body">
+      <p>No. Hologram names are unique and case-insensitive (stored lowercase). The <code>create</code> and <code>copy</code> commands will refuse if a hologram with that name already exists.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Why does my hologram look tiny/huge?</summary>
+    <div class="faq-body">
+      <p>Check the scale: <code>/hologram info myHolo</code>. If the scale is very small or large, reset it: <code>/hologram edit myHolo scale 1.0</code>. If the hologram is linked to an NPC, the NPC's scale is applied automatically.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I put a hologram inside a block?</summary>
+    <div class="faq-body">
+      <p>Yes — use exact coordinates with <code>/hologram edit &lt;name&gt; moveTo &lt;x&gt; &lt;y&gt; &lt;z&gt;</code> to place it anywhere, including inside blocks. Enable <code>seeThrough</code> so players can see the text through the block: <code>/hologram edit &lt;name&gt; seeThrough true</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>The background behind the text is ugly/too dark. How do I remove it?</summary>
+    <div class="faq-body">
+      <p>Run <code>/hologram edit &lt;name&gt; background transparent</code> to make it fully transparent (no background at all). Or use <code>/hologram edit &lt;name&gt; background reset</code> to restore the Minecraft default dark panel.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How do I make a hologram only one color with no background?</summary>
+    <div class="faq-body">
+      <p>Set the background to transparent and use MiniMessage for the text color:</p>
+      <p><code>/hologram edit myHolo background transparent</code></p>
+      <p><code>/hologram edit myHolo setLine 1 &lt;gold&gt;&lt;b&gt;My Text&lt;/b&gt;&lt;/gold&gt;</code></p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I use /hologram from the console?</summary>
+    <div class="faq-body">
+      <p>Some commands work from console: <code>remove</code>, <code>list</code>, and <code>/oholograms</code> subcommands. Commands that require a player location — <code>create</code>, <code>copy</code>, <code>moveHere</code>, <code>nearby</code>, <code>teleport</code>, <code>moveTo</code> — require a player and will show an error from console.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>The hologram doesn't update after I edit it.</summary>
+    <div class="faq-body">
+      <p>After any edit, the hologram is queued for update on the next server tick. It should refresh within 1 second for players in range. If it's still not updating, run <code>/oholograms reload</code> to force a full reload from disk.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Can I change the hologram update rate for text intervals?</summary>
+    <div class="faq-body">
+      <p>Yes. Use <code>/hologram edit &lt;name&gt; updateTextInterval &lt;seconds&gt;</code>. This sets how often the text is re-evaluated and sent to players. Use <code>-1</code> to disable auto-refresh (default). This is useful if your text contains PAPI placeholders that change over time.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>I can't see the hologram even though I'm right next to it.</summary>
+    <div class="faq-body">
+      <p>Check: (1) the hologram's visibility setting — run <code>/hologram info &lt;name&gt;</code>. (2) Your visibility distance — the default is 20 blocks. (3) Whether the hologram's world is the same world you're in. (4) On Bedrock (Floodgate), holograms may be disabled if <code>fflag_disable_holograms_for_bedrock_players</code> is enabled.</p>
+    </div>
+  </details>
+</section>
+
+</div><!-- .wrap -->
+
+<script>
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function onScroll() {
+    const scrollY = window.scrollY + 120;
+    let active = sections[0];
+    for (const s of sections) { if (s.offsetTop <= scrollY) active = s; }
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active.id));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>

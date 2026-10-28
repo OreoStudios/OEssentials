@@ -53,6 +53,7 @@ flowchart TD
     dialogs["dialogs"]
     dialogs -->|services| configuration
     dialogs --> player_services
+    dialogs -->|services| storage
     discord_integration["discord-integration"]
     discord_integration -->|services| configuration
     discord_integration -->|services| economy
@@ -95,6 +96,7 @@ flowchart TD
     integrations -->|services| kits
     integrations -->|services| messaging
     integrations --> nametag
+    integrations -->|services| storage
     inventories["inventories"]
     inventories -->|services| command_toggle
     inventories -->|services| configuration
@@ -133,6 +135,7 @@ flowchart TD
     mod_gui --> inventories
     mod_gui -->|events| messaging
     mod_gui -->|services| messaging
+    mod_gui -->|services| storage
     motd["motd"]
     motd -->|services| configuration
     motd --> punishment_logger
@@ -197,14 +200,17 @@ flowchart TD
     tab["tab"]
     tab -->|services| configuration
     tab --> scoreboard
+    tab -->|services| storage
     trade["trade"]
     trade -->|services| configuration
     trade -->|events| messaging
     trade -->|services| messaging
     trade --> notes
+    trade -->|services| storage
     warnings["warnings"]
     warnings --> ignore
     web_panel["web-panel"]
     web_panel -->|services| afk
     web_panel -->|services| configuration
     web_panel --> playtime
+    web_panel -->|services| storage

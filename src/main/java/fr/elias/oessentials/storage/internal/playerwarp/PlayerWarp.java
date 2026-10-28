@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class PlayerWarp {
+public class PlayerWarp implements fr.elias.oessentials.storage.api.PlayerWarpView {
 
     private final String id;
     private UUID owner;

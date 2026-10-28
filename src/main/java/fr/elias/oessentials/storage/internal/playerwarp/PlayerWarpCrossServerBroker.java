@@ -6,7 +6,7 @@ import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,14 +23,14 @@ public final class PlayerWarpCrossServerBroker implements Listener {
     private final OEssentials plugin;
     private final PlayerWarpService playerWarpService;
     private final PacketBus packetManager;
-    private final ProxyMessenger proxyMessenger;
+    private final ServerConnector proxyMessenger;
     private final String localServerName;
     private final Map<UUID, PendingWarp> pending = new ConcurrentHashMap<>();
 
     public PlayerWarpCrossServerBroker(OEssentials plugin,
                                        PlayerWarpService playerWarpService,
                                        PacketBus packetManager,
-                                       ProxyMessenger proxyMessenger,
+                                       ServerConnector proxyMessenger,
                                        String localServerName) {
         this.plugin = plugin;
         this.playerWarpService = playerWarpService;

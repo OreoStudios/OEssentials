@@ -250,7 +250,7 @@ public class MoneyCommand implements CommandExecutor, OreoCommand {
 
         try {
             var pm = plugin.getPacketBus();
-            var dir = plugin.getPlayerDirectory();
+            var dir = plugin.getPlayerLocator();
             if (pm == null || !pm.isInitialized() || dir == null) return;
 
             String server = dir.lookupCurrentServer(targetUuid);

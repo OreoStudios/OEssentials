@@ -1,7 +1,7 @@
 package fr.elias.oessentials.rtp.internal.listeners;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.spawn.SpawnService;
+import fr.elias.oessentials.api.ISpawnAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -45,7 +45,7 @@ public final class DeathRespawnListener implements Listener {
             case NORMAL:
                 return; // vanilla
             case GLOBAL_SPAWN: {
-                SpawnService spawn = plugin.getSpawnService();
+                ISpawnAPI spawn = plugin.getSpawnApi();
                 if (spawn != null) target = spawn.getGlobalSpawn();
                 break;
             }

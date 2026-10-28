@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Events &amp; Death Messages Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS","Segoe UI",sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(104,217,200,0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(247,185,85,0.07), transparent 22%),
+        linear-gradient(180deg,#0d1318 0%,#121a22 100%);
+      min-height: 100vh;
+    }
+    .shell { display:grid; grid-template-columns:300px minmax(0,1fr); min-height:100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position:sticky; top:0; align-self:start;
+      height:100vh; overflow-y:auto;
+      padding:28px 20px 30px;
+      background:rgba(12,18,23,0.92);
+      border-right:1px solid var(--line-soft);
+      backdrop-filter:blur(12px);
+    }
+    .brand { margin-bottom:22px; padding:18px; border:1px solid rgba(104,217,200,0.28); border-radius:var(--radius); background:linear-gradient(180deg,rgba(104,217,200,0.12),rgba(247,185,85,0.04)); box-shadow:var(--shadow); }
+    .brand h1 { margin:0; font-family:Georgia,serif; font-size:1.25rem; line-height:1.1; color:var(--teal); }
+    .brand p  { margin:10px 0 0; color:var(--muted); font-size:.88rem; line-height:1.5; }
+    .nav-group { margin-top:18px; }
+    .nav-group h2 { margin:0 0 8px; color:var(--soft); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em; }
+    .nav-group a { display:block; padding:10px 12px; margin:4px 0; color:var(--muted); text-decoration:none; border-radius:10px; border:1px solid transparent; transition:.18s ease; font-size:.9rem; }
+    .nav-group a:hover { color:var(--text); border-color:rgba(104,217,200,0.28); background:rgba(104,217,200,0.08); }
+
+    /* ── Content ── */
+    .content { padding:34px 36px 80px; }
+
+    .hero { padding:30px; border-radius:28px; background:linear-gradient(135deg,rgba(104,217,200,0.12),rgba(247,185,85,0.06)),rgba(16,22,29,0.78); border:1px solid rgba(104,217,200,0.28); box-shadow:var(--shadow); margin-bottom:28px; }
+    .hero .eyebrow { display:inline-block; margin-bottom:14px; padding:6px 10px; border-radius:999px; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:#e0fff8; background:rgba(104,217,200,0.12); border:1px solid rgba(104,217,200,0.28); }
+    .hero h1 { margin:0; font-family:Georgia,serif; font-size:clamp(2rem,4vw,3rem); line-height:1.05; }
+    .hero p  { max-width:920px; margin:16px 0 0; color:var(--muted); font-size:1rem; line-height:1.7; }
+    .hero-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:24px; }
+    .hero-card { padding:14px 16px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); }
+    .hero-card strong { display:block; color:var(--teal); margin-bottom:6px; }
+
+    section { margin-top:26px; padding:28px; border-radius:24px; background:var(--panel); border:1px solid var(--line-soft); box-shadow:var(--shadow); backdrop-filter:blur(8px); }
+    section h2 { margin:0 0 18px; font-family:Georgia,serif; font-size:1.65rem; color:var(--text); }
+    section h3 { margin:28px 0 12px; font-size:1.08rem; color:var(--teal); border-bottom:1px solid var(--line-soft); padding-bottom:6px; }
+    section h4 { margin:20px 0 8px; font-size:.97rem; color:var(--amber); }
+
+    p, li { color:var(--muted); line-height:1.75; }
+    strong { color:var(--text); }
+    ul, ol { padding-left:1.4em; }
+    li { margin-bottom:6px; }
+
+    code { font-family:Consolas,"Courier New",monospace; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:6px; color:#fff0cc; font-size:.9em; }
+    pre  { font-family:Consolas,"Courier New",monospace; background:var(--code); border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px 20px; margin:14px 0; overflow-x:auto; font-size:.88rem; line-height:1.65; }
+
+    .y-comment { color:#607d8b; }
+    .y-key     { color:#80cbc4; }
+    .y-str     { color:#a5d6a7; }
+    .y-section { color:var(--teal); font-weight:700; }
+    .y-bool    { color:#ef9a9a; }
+    .y-num     { color:#ffcc80; }
+
+    table { width:100%; border-collapse:collapse; margin-top:16px; overflow:hidden; border-radius:14px; border:1px solid var(--line); }
+    th, td { text-align:left; padding:13px 15px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+    th { background:rgba(255,255,255,0.04); color:var(--text); font-size:.92rem; font-weight:700; }
+    tr:last-child td { border-bottom:0; }
+    tr:hover td { background:rgba(255,255,255,0.015); }
+
+    .note { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(127,192,255,0.22); background:rgba(127,192,255,0.07); }
+    .warn { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(255,140,122,0.24); background:rgba(255,140,122,0.07); }
+    .tip  { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(143,226,143,0.24); background:rgba(143,226,143,0.07); }
+    .info { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(104,217,200,0.24); background:rgba(104,217,200,0.06); }
+    .note strong { color:var(--blue); }
+    .warn strong { color:var(--red); }
+    .tip  strong { color:var(--green); }
+    .info strong { color:var(--teal); }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-size:.82rem; font-family:Consolas,monospace; gap:6px; }
+    .pill.purple { border-color:rgba(196,168,247,0.28); background:rgba(196,168,247,0.07); color:var(--purple); }
+    .pill.green  { border-color:rgba(143,226,143,0.30); background:rgba(143,226,143,0.07); color:var(--green); }
+    .pill.red    { border-color:rgba(255,140,122,0.28); background:rgba(255,140,122,0.07); color:var(--red); }
+    .pill.blue   { border-color:rgba(127,192,255,0.28); background:rgba(127,192,255,0.07); color:var(--blue); }
+    .pill.amber  { border-color:var(--amber-border); background:var(--amber-dim); color:var(--amber); }
+    .pill.teal   { border-color:rgba(104,217,200,0.28); background:rgba(104,217,200,0.07); color:var(--teal); }
+
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { display:grid; grid-template-columns:48px minmax(0,1fr); gap:16px; align-items:start; padding:18px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .step-index { width:48px; height:48px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--teal),#a0fff0); color:#0a2020; font-weight:800; font-size:1.1rem; flex-shrink:0; }
+    .step-body h4 { margin:0 0 6px; color:var(--text); font-size:1rem; }
+    .step-body p  { margin:0; color:var(--muted); }
+
+    .flow { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:16px 0; }
+    .flow-box { padding:10px 14px; border-radius:12px; border:1px solid rgba(104,217,200,0.25); background:rgba(104,217,200,0.07); color:var(--teal); font-size:.88rem; font-family:Consolas,monospace; }
+    .flow-arrow { color:var(--soft); font-size:1.1rem; }
+
+    .event-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-top:16px; }
+    .event-card { padding:14px 16px; border-radius:14px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07); }
+    .event-card .ename { font-family:Consolas,monospace; color:var(--teal); font-size:.9rem; font-weight:700; margin-bottom:6px; }
+    .event-card .edesc { color:var(--muted); font-size:.85rem; line-height:1.55; }
+    .event-card .evars { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+    .event-card .evar { padding:2px 7px; border-radius:999px; font-size:.75rem; font-family:Consolas,monospace; background:rgba(247,185,85,0.1); border:1px solid rgba(247,185,85,0.22); color:var(--amber); }
+
+    .death-chain { display:grid; gap:10px; margin-top:14px; counter-reset:dc; }
+    .dc-row { display:grid; grid-template-columns:34px 1fr; gap:12px; align-items:start; padding:14px; border-radius:12px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); }
+    .dc-num { width:34px; height:34px; display:grid; place-items:center; border-radius:50%; font-weight:800; font-size:.88rem; flex-shrink:0; }
+    .dc-num.p1 { background:rgba(255,140,122,0.2); color:var(--red); }
+    .dc-num.p2 { background:rgba(255,140,122,0.14); color:var(--red); }
+    .dc-num.p3 { background:rgba(255,140,122,0.08); color:var(--red); }
+    .dc-num.p4 { background:rgba(196,168,247,0.18); color:var(--purple); }
+    .dc-num.p5 { background:rgba(127,192,255,0.16); color:var(--blue); }
+    .dc-num.p6 { background:rgba(143,226,143,0.14); color:var(--green); }
+    .dc-body strong { color:var(--text); display:block; margin-bottom:3px; }
+    .dc-body p { margin:0; color:var(--muted); font-size:.88rem; }
+
+    .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:.76rem; font-weight:700; margin-left:6px; vertical-align:middle; }
+    .badge.console { background:rgba(127,192,255,0.14); color:var(--blue); }
+    .badge.player  { background:rgba(143,226,143,0.14); color:var(--green); }
+    .badge.delay   { background:var(--amber-dim); color:var(--amber); }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>OreoEssentials</h1>
+      <p>Events &amp; Death Messages — complete reference</p>
+    </div>
+
+    <nav>
+      <div class="nav-group">
+        <h2>Getting Started</h2>
+        <a href="#what-is">What is the Events module?</a>
+        <a href="#quickstart">Quick-start (4 steps)</a>
+        <a href="#files">Config files</a>
+      </div>
+      <div class="nav-group">
+        <h2>Command Syntax</h2>
+        <a href="#syntax">Directives explained</a>
+        <a href="#variables">All variables</a>
+        <a href="#examples">Practical examples</a>
+      </div>
+      <div class="nav-group">
+        <h2>All 22 Event Types</h2>
+        <a href="#events-join">Join &amp; Quit</a>
+        <a href="#events-combat">Combat &amp; PvP</a>
+        <a href="#events-world">World &amp; Travel</a>
+        <a href="#events-activity">Activity &amp; Misc</a>
+      </div>
+      <div class="nav-group">
+        <h2>Death Messages</h2>
+        <a href="#death-overview">How it works</a>
+        <a href="#death-priority">Priority chain</a>
+        <a href="#death-sections">Config sections</a>
+        <a href="#death-variables">Death variables</a>
+        <a href="#death-mythic">MythicMobs support</a>
+        <a href="#death-crossserver">Cross-server broadcast</a>
+      </div>
+      <div class="nav-group">
+        <h2>Reference</h2>
+        <a href="#oevents-cmd">Command /oevents</a>
+        <a href="#pvp-system">PvP tracking</a>
+        <a href="#folia">Folia compatibility</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <main class="content">
+
+    <!-- Hero -->
+    <div class="hero">
+      <span class="eyebrow">Module — Events &amp; Death Messages</span>
+      <h1>Events &amp; Death&nbsp;Messages</h1>
+      <p>
+        Run any console or player command automatically when a Minecraft event fires — first join, kill, world change, PvP start, advancement, and 16 more.
+        A separate, fully customisable death-message system replaces vanilla kill messages with rich, context-aware text that supports players, mobs, MythicMobs, and every environmental cause.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card"><strong>22 event types</strong>From first join to elytra glide — hooks for everything.</div>
+        <div class="hero-card"><strong>3 directives</strong><code>asConsole!</code>, <code>asPlayer!</code>, <code>delay!</code> — run any command any way.</div>
+        <div class="hero-card"><strong>Death messages</strong>Full priority chain: Player → MythicMobs → Mob → Environment.</div>
+      </div>
+    </div>
+
+    <!-- ─── WHAT IS ─── -->
+    <section id="what-is">
+      <h2>What is the Events module?</h2>
+      <p>
+        The Events module is a <strong>command hook system</strong>. You list any number of server or player commands under each event type in <code>events.yml</code>. Whenever that event fires in-game, OreoEssentials automatically executes those commands — no scripting, no extra plugins needed.
+      </p>
+      <p>
+        Think of it like this: instead of writing a custom plugin every time you want to <em>"give a player bread when they first join"</em> or <em>"broadcast a message when someone kills another player"</em>, you just add one line to a YAML file.
+      </p>
+      <p>
+        Alongside event hooks, the module also <strong>replaces vanilla death messages</strong> with richly customisable text stored in <code>death-messages.yml</code>. These support colour codes, PlaceholderAPI, multiple random variations, per-mob overrides, and full MythicMobs integration.
+      </p>
+
+      <div class="info">
+        <strong>Both features together.</strong> The Events module handles all 22 event types <em>and</em> the death message system in the same place. Reloading with <code>/oevents reload</code> refreshes both files at once.
+      </div>
+
+      <h3>What can I do with it?</h3>
+      <ul>
+        <li>Give starter items to first-time players automatically</li>
+        <li>Add a custom welcome title/subtitle on join</li>
+        <li>Award money or points when a player kills another player</li>
+        <li>Notify a world channel when a player changes worlds</li>
+        <li>Run a LuckPerms command to add a group on first join</li>
+        <li>Announce when PvP combat begins and ends</li>
+        <li>Send a delayed message after respawn ("You have 30 seconds of protection…")</li>
+        <li>Show a completely custom, randomised death message for every cause of death</li>
+        <li>Display unique death messages for specific MythicMobs bosses</li>
+        <li>Broadcast death messages to all servers via RabbitMQ</li>
+      </ul>
+    </section>
+
+    <!-- ─── QUICK-START ─── -->
+    <section id="quickstart">
+      <h2>Quick-start (4 steps)</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Find your events.yml</h4>
+            <p>The file is at <code>plugins/OreoEssentials/chat-messaging/events.yml</code>. Open it in any text editor. Every event type is already there, with example commands commented in.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Add a command to an event</h4>
+            <p>Find the event you want (e.g. <code>firstJoinServer:</code>) and add a line using the correct directive. The most common is <code>asConsole! &lt;command&gt;</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Use variables where needed</h4>
+            <p>Replace player names or dynamic values with variables like <code>[playerName]</code>, <code>[victim]</code>, <code>[level]</code>, etc. They are replaced automatically at runtime.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">4</div>
+          <div class="step-body">
+            <h4>Reload and test</h4>
+            <p>Run <code>/oevents reload</code> in-game or from console. Trigger the event (e.g. join with a new account) and verify the commands fired.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>Tip:</strong> You do not need to restart the server. <code>/oevents reload</code> re-reads both <code>events.yml</code> and <code>death-messages.yml</code> live.
+      </div>
+    </section>
+
+    <!-- ─── FILES ─── -->
+    <section id="files">
+      <h2>Config files</h2>
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>plugins/OreoEssentials/chat-messaging/events.yml</code></td>
+            <td>Maps each of the 22 event types to a list of commands to execute.</td>
+          </tr>
+          <tr>
+            <td><code>plugins/OreoEssentials/chat-messaging/death-messages.yml</code></td>
+            <td>All death message templates, organised by kill type. Replaces vanilla death messages.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Both files are created automatically with defaults on first startup if they do not exist.</p>
+    </section>
+
+    <!-- ─── SYNTAX ─── -->
+    <section id="syntax">
+      <h2>Command directives explained</h2>
+      <p>
+        Every line you add under an event is a <strong>command entry</strong>. It starts with an optional <strong>directive</strong> that tells OreoEssentials how and when to run the command.
+      </p>
+
+      <h3>The three directives</h3>
+      <table>
+        <thead><tr><th>Directive</th><th>What it does</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>asConsole!</code> <span class="badge console">default</span></td>
+            <td>Runs the command as the server console. Works for any command, including operator-only ones. This is the default — if you omit a directive, it behaves like <code>asConsole!</code>.</td>
+            <td><code>asConsole! give [playerName] bread 8</code></td>
+          </tr>
+          <tr>
+            <td><code>asPlayer!</code> <span class="badge player">player cmd</span></td>
+            <td>Runs the command as the player who triggered the event. Useful for commands that check the sender's permissions or need the player's context. The player must still be online.</td>
+            <td><code>asPlayer! home set spawn</code></td>
+          </tr>
+          <tr>
+            <td><code>delay! &lt;seconds&gt;</code> <span class="badge delay">timed</span></td>
+            <td>
+              Waits the given number of seconds before running the command. Can be combined with <code>asConsole!</code> or <code>asPlayer!</code> by prefixing the delay before or after them.<br>
+              <strong>Note:</strong> the delay value is in whole seconds (not ticks). Internally converted to ticks (×20).
+            </td>
+            <td><code>asConsole! delay! 5 tell [playerName] Hello!</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Combining directives</h3>
+      <p>You can stack <code>asConsole!</code> or <code>asPlayer!</code> with <code>delay!</code> on the same line. The parser strips directives from the command string before executing. The order within the line does not matter — all three are detected independently.</p>
+
+      <pre><code><span class="y-comment"># Run as console after 3 seconds</span>
+<span class="y-str">"asConsole! delay! 3 broadcast &a[playerName] has been here for 3 seconds"</span>
+
+<span class="y-comment"># Run as the player immediately</span>
+<span class="y-str">"asPlayer! sethome default"</span>
+
+<span class="y-comment"># No directive = same as asConsole!</span>
+<span class="y-str">"tell [playerName] &aWelcome to the server!"</span></code></pre>
+
+      <div class="warn">
+        <strong>Warning:</strong> When using <code>asPlayer!</code> with a delay, the player must still be online when the delay expires. If they disconnected, the command is silently skipped.
+      </div>
+
+      <h3>General structure of events.yml</h3>
+      <pre><code><span class="y-comment"># plugins/OreoEssentials/chat-messaging/events.yml</span>
+
+<span class="y-section">events:</span>
+
+  <span class="y-key">firstJoinServer:</span>
+    <span class="y-str">- "asConsole! tell [playerName] &aWelcome to the server!"</span>
+    <span class="y-str">- "asConsole! give [playerName] bread 8"</span>
+    <span class="y-str">- "asConsole! delay! 2 title [playerName] title {\"text\":\"Welcome!\",\"color\":\"green\"}"</span>
+
+  <span class="y-key">joinServer:</span>
+    <span class="y-str">- "asConsole! broadcast &a[playerName] &7joined the server."</span>
+
+  <span class="y-key">playerKillPlayer:</span>
+    <span class="y-str">- "asConsole! broadcast &6[playerName] &7defeated &c[victim]"</span>
+    <span class="y-comment">  # Give money with Vault/CMI/EssentialsX:</span>
+    <span class="y-str">  # - "asConsole! eco give [playerName] 25"</span>
+
+  <span class="y-key">advancementDone:</span>       <span class="y-comment"># empty list = do nothing</span>
+    []</code></pre>
+    </section>
+
+    <!-- ─── VARIABLES ─── -->
+    <section id="variables">
+      <h2>All variables</h2>
+      <p>Variables are tokens in your command strings that OreoEssentials replaces with real values at the moment the event fires. They are <strong>case-sensitive</strong> and must be written exactly as shown.</p>
+
+      <table>
+        <thead><tr><th>Variable</th><th>Value</th><th>Available on</th></tr></thead>
+        <tbody>
+          <tr><td><code>[playerName]</code></td><td>The name of the player who triggered the event (actor).</td><td>All events</td></tr>
+          <tr><td><code>[victim]</code></td><td>The name of the player who was killed.</td><td><code>playerKillPlayer</code></td></tr>
+          <tr><td><code>[opponent]</code></td><td>The name of the other player in a PvP engagement.</td><td><code>pvpstart</code>, <code>pvpstop</code></td></tr>
+          <tr><td><code>[fromWorld]</code></td><td>The name of the world the player is leaving.</td><td><code>playerTeleport</code></td></tr>
+          <tr><td><code>[toWorld]</code></td><td>The name of the world the player is entering.</td><td><code>playerTeleport</code>, <code>playerPreWorldChange</code>, <code>playerWorldChange</code></td></tr>
+          <tr><td><code>[newGameMode]</code></td><td>The new gamemode name in ALL_CAPS (e.g. <code>SURVIVAL</code>, <code>CREATIVE</code>).</td><td><code>playerGameModeChange</code></td></tr>
+          <tr><td><code>[reason]</code></td><td>The kick reason text.</td><td><code>playerKick</code></td></tr>
+          <tr><td><code>[level]</code></td><td>The new XP level number the player just reached.</td><td><code>playerLevelChange</code></td></tr>
+          <tr><td><code>[advancement]</code></td><td>The full advancement key in <code>namespace:path</code> format (e.g. <code>minecraft:story/mine_stone</code>).</td><td><code>advancementDone</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>No variable?</strong> If you reference a variable that is not available for a given event (e.g. <code>[victim]</code> on a <code>joinServer</code> event), it will remain in the command string as-is — make sure you only use variables listed as available for that event.
+      </div>
+    </section>
+
+    <!-- ─── EXAMPLES ─── -->
+    <section id="examples">
+      <h2>Practical examples</h2>
+
+      <h3>Starter kit on first join</h3>
+      <pre><code><span class="y-key">firstJoinServer:</span>
+  <span class="y-str">- "asConsole! give [playerName] bread 8"</span>
+  <span class="y-str">- "asConsole! give [playerName] wooden_sword 1"</span>
+  <span class="y-str">- "asConsole! give [playerName] torch 16"</span>
+  <span class="y-str">- "asConsole! delay! 3 title [playerName] title {\"text\":\"Welcome!\",\"color\":\"gold\"}"</span>
+  <span class="y-comment">  # Add to 'newbie' rank in LuckPerms:</span>
+  <span class="y-str">  # - "asConsole! lp user [playerName] parent add newbie"</span></code></pre>
+
+      <h3>Kill reward + announcement</h3>
+      <pre><code><span class="y-key">playerKillPlayer:</span>
+  <span class="y-str">- "asConsole! broadcast &6&#9876; &e[playerName] &7slayed &c[victim]&7!"</span>
+  <span class="y-comment">  # Give Vault money to the killer:</span>
+  <span class="y-str">  # - "asConsole! eco give [playerName] 100"</span>
+  <span class="y-comment">  # Increment a score in PlayerStats (example):</span>
+  <span class="y-str">  # - "asConsole! playerstats add [playerName] kills 1"</span></code></pre>
+
+      <h3>World change announcement</h3>
+      <pre><code><span class="y-key">playerWorldChange:</span>
+  <span class="y-str">- "asConsole! broadcast &b[playerName] &7entered world &f[toWorld]"</span></code></pre>
+
+      <h3>PvP start/stop notifications</h3>
+      <pre><code><span class="y-key">pvpstart:</span>
+  <span class="y-str">- "asConsole! tell [playerName] &cPvP started vs &f[opponent]&c!"</span>
+
+<span class="y-key">pvpstop:</span>
+  <span class="y-str">- "asConsole! tell [playerName] &7PvP ended vs &f[opponent]&7."</span></code></pre>
+
+      <h3>Advancement reward</h3>
+      <pre><code><span class="y-key">advancementDone:</span>
+  <span class="y-str">- "asConsole! tell [playerName] &aYou earned: &f[advancement]"</span>
+  <span class="y-str">- "asConsole! eco give [playerName] 50"</span></code></pre>
+
+      <h3>Delayed respawn message</h3>
+      <pre><code><span class="y-key">playerRespawn:</span>
+  <span class="y-str">- "asConsole! delay! 5 tell [playerName] &7You have &a30 seconds &7of spawn protection!"</span></code></pre>
+    </section>
+
+    <!-- ─── EVENTS: JOIN/QUIT ─── -->
+    <section id="events-join">
+      <h2>Event types — Join &amp; Quit</h2>
+      <div class="event-grid">
+        <div class="event-card">
+          <div class="ename">firstJoinServer</div>
+          <div class="edesc">Fires the very first time a player ever joins the server. Uses Bukkit's <code>hasPlayedBefore()</code> check. Fires before <code>joinServer</code> on the same join. Each UUID is only processed once per server session even if the check is called twice.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">joinServer</div>
+          <div class="edesc">Fires on every join, including first join. If you want something to happen on ALL joins, put it here. If you only want it on the very first join, use <code>firstJoinServer</code> instead.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">quitServer</div>
+          <div class="edesc">Fires when a player disconnects from the server for any reason (client disconnect, kick, server shutdown). <code>asPlayer!</code> commands will not fire reliably here since the player is leaving.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerKick</div>
+          <div class="edesc">Fires when a player is kicked by an admin or a plugin. The kick reason is provided as <code>[reason]</code>. Fires at MONITOR priority so the kick is already confirmed.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[reason]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerBan</div>
+          <div class="edesc">Fires on <code>AsyncPlayerPreLoginEvent</code> when the result is <code>KICK_BANNED</code>. This means it fires even for offline join attempts (the player doesn't need to be fully online). Only <code>asConsole!</code> commands work here — the player object may not exist.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── EVENTS: COMBAT ─── -->
+    <section id="events-combat">
+      <h2>Event types — Combat &amp; PvP</h2>
+      <div class="event-grid">
+        <div class="event-card">
+          <div class="ename">playerKillPlayer</div>
+          <div class="edesc">Fires when a player kills another player. <code>[playerName]</code> is the killer, <code>[victim]</code> is the player who died. Also triggers the death message system to build a player-vs-player message.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[victim]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerRespawn</div>
+          <div class="edesc">Fires after a player has respawned following death. The player is already at their respawn location when commands run. Great for respawn-protection timers or welcome-back messages.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">pvpstart</div>
+          <div class="edesc">Fires when two players engage in PvP for the first time (or after the 15-second cooldown since their last hit). Both players receive the event — <code>[playerName]</code> is each player, <code>[opponent]</code> is the other one.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[opponent]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">pvpstop</div>
+          <div class="edesc">Fires approximately 15 seconds after the last hit between a specific pair of players, if no new hit occurred. Both players receive the event. The 15-second window resets on every hit. See <a href="#pvp-system">PvP tracking</a> for full details.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[opponent]</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── EVENTS: WORLD ─── -->
+    <section id="events-world">
+      <h2>Event types — World &amp; Travel</h2>
+      <div class="event-grid">
+        <div class="event-card">
+          <div class="ename">playerTeleport</div>
+          <div class="edesc">Fires on ANY teleport — same-world warps, cross-world teleports, /tp commands, etc. Provides both <code>[fromWorld]</code> and <code>[toWorld]</code>. For cross-world teleports, <code>playerPreWorldChange</code> and <code>playerWorldChange</code> also fire.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[fromWorld]</span><span class="evar">[toWorld]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerPreWorldChange</div>
+          <div class="edesc">Fires right before a cross-world teleport completes (pre-change). The player has not yet arrived in the new world. Good for "loading" messages. Only fires when the source and destination worlds differ.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[toWorld]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerWorldChange</div>
+          <div class="edesc">Fires after a player has arrived in the new world. Runs one tick after the teleport to ensure the player is in the destination world. Only fires on cross-world teleports.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[toWorld]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerGameModeChange</div>
+          <div class="edesc">Fires when any plugin or admin changes a player's gamemode. <code>[newGameMode]</code> contains the destination gamemode in uppercase (SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR).</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[newGameMode]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">voidFall</div>
+          <div class="edesc">Fires when a player's Y coordinate drops below 0 (detected via <code>PlayerMoveEvent</code>). Useful for warnings before the void kills them. Note: fires repeatedly while falling through void, not just once.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── EVENTS: ACTIVITY ─── -->
+    <section id="events-activity">
+      <h2>Event types — Activity &amp; Misc</h2>
+      <div class="event-grid">
+        <div class="event-card">
+          <div class="ename">bedEnter</div>
+          <div class="edesc">Fires after a player successfully enters a bed (sleep). Only fires when the bed-enter is not cancelled by other plugins.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">bedLeave</div>
+          <div class="edesc">Fires when a player leaves a bed (after sleeping through the night or being woken up). Fires on <code>PlayerBedLeaveEvent</code>.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">playerLevelChange</div>
+          <div class="edesc">Fires whenever a player's XP level changes. <code>[level]</code> is the new level. Fires on both level-ups and level-downs (e.g. from dying with <code>keepInventory false</code>).</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[level]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">advancementDone</div>
+          <div class="edesc">Fires when a player completes any advancement (recipes, challenges, milestones). <code>[advancement]</code> is the full namespaced key e.g. <code>minecraft:story/mine_stone</code>. The default config has this as an empty list — add commands to activate it.</div>
+          <div class="evars"><span class="evar">[playerName]</span><span class="evar">[advancement]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">elytraStartGlide</div>
+          <div class="edesc">Fires when a player activates elytra gliding (opens wings). Detected via <code>EntityToggleGlideEvent</code> with <code>isGliding() = true</code>.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">elytraEndGlide</div>
+          <div class="edesc">Fires when a player stops gliding (lands, hits water, closes wings). Detected via <code>EntityToggleGlideEvent</code> with <code>isGliding() = false</code>.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">swapHandItems</div>
+          <div class="edesc">Fires whenever a player presses the swap-hands key (default: <kbd>F</kbd>) to move their offhand item to mainhand or vice versa.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+        <div class="event-card">
+          <div class="ename">sneakingSwapHandItems</div>
+          <div class="edesc">Fires when a player swaps hands <strong>while sneaking</strong>. This fires in addition to <code>swapHandItems</code> — both events run when the player is sneaking and swaps. Use this for sneak-specific actions.</div>
+          <div class="evars"><span class="evar">[playerName]</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── DEATH MESSAGES OVERVIEW ─── -->
+    <section id="death-overview">
+      <h2>Death messages — How it works</h2>
+      <p>
+        When a player dies, OreoEssentials intercepts the <code>PlayerDeathEvent</code> at <code>MONITOR</code> priority and calls <code>DeathMessageService.buildMessage()</code>. This method analyses the kill to determine the exact cause, then picks a random message from the appropriate section of <code>death-messages.yml</code>.
+      </p>
+      <p>
+        The resulting message replaces the vanilla death message (via <code>event.setDeathMessage()</code>). If cross-server messaging is enabled, the message is also serialised into a <code>DeathMessagePacket</code> and broadcast to all other servers via RabbitMQ so the whole network sees it.
+      </p>
+
+      <div class="info">
+        <strong>Disabling death messages:</strong> Set <code>Enabled: false</code> at the top of <code>death-messages.yml</code>. The system returns <code>null</code> and vanilla death messages are restored. You can also toggle it live without a full reload.
+      </div>
+
+      <h3>The prefix</h3>
+      <p>Every death message is prefixed with the value of <code>Prefix:</code> in <code>death-messages.yml</code>. The default is <code>💀 </code>. Set it to <code>""</code> to have no prefix.</p>
+
+      <h3>Random variation</h3>
+      <p>
+        Each section (e.g. <code>Player.Item</code>, <code>Mob.creeper.General</code>) can contain multiple lines. OreoEssentials picks one at random every time a death message is needed. Add more lines to increase variety — each line has an equal probability of being selected.
+      </p>
+
+      <h3>Colour codes</h3>
+      <p>Use legacy <code>&amp;X</code> colour codes inside message strings. They are automatically converted to <code>§X</code> Minecraft format. Full colour code reference: <code>&amp;0</code>–<code>&amp;9</code>, <code>&amp;a</code>–<code>&amp;f</code> for colours; <code>&amp;l</code> bold, <code>&amp;o</code> italic, <code>&amp;r</code> reset.</p>
+
+      <h3>PlaceholderAPI support</h3>
+      <p>
+        Any <code>%placeholder%</code> syntax inside death message strings is processed through PlaceholderAPI (if installed) before the message is sent. This lets you include things like <code>%vault_eco_balance%</code> or custom stats in a death message.
+      </p>
+    </section>
+
+    <!-- ─── DEATH PRIORITY ─── -->
+    <section id="death-priority">
+      <h2>Death message priority chain</h2>
+      <p>
+        The service checks causes in a strict order. The <strong>first match</strong> wins — it stops looking once it finds a non-empty list. Understanding this order is essential when you want to customise specific kills.
+      </p>
+
+      <div class="death-chain">
+        <div class="dc-row">
+          <div class="dc-num p1">1</div>
+          <div class="dc-body">
+            <strong>Player.Item — killed by a player holding a named/typed item</strong>
+            <p>Checked first when the killer is a player AND they have something in their main hand. Uses the <code>Player.Item</code> section. Variables: <code>[sourceDisplayName]</code> (killer), <code>[item]</code> (item name).</p>
+          </div>
+        </div>
+        <div class="dc-row">
+          <div class="dc-num p2">2</div>
+          <div class="dc-body">
+            <strong>Player.Projectile — killed by a player's projectile</strong>
+            <p>Used when the damage source is a projectile (arrow, trident, fireball…) shot by a player. Uses <code>Player.Projectile</code>. Variables: <code>[sourceDisplayName]</code>, <code>[type]</code> (projectile type). Specific sub-keys: <code>Player.Fireball</code>, <code>Player.Firework</code>, <code>Player.Tnt</code>.</p>
+          </div>
+        </div>
+        <div class="dc-row">
+          <div class="dc-num p3">3</div>
+          <div class="dc-body">
+            <strong>Player.General — generic player kill</strong>
+            <p>Fallback when the killer is a player but no item or projectile context was found. Uses <code>Player.General</code>. Variable: <code>[sourceDisplayName]</code>.</p>
+          </div>
+        </div>
+        <div class="dc-row">
+          <div class="dc-num p4">4</div>
+          <div class="dc-body">
+            <strong>Mythic.&lt;InternalId&gt; — MythicMobs boss kill</strong>
+            <p>Only checked when MythicMobs is installed. Uses the mob's internal ID as the YAML key. Supports both <code>.Item</code> and <code>.General</code> sub-keys. Variables: <code>[mobMythicId]</code>, <code>[mobMythicName]</code>, <code>[item]</code>. See <a href="#death-mythic">MythicMobs section</a>.</p>
+          </div>
+        </div>
+        <div class="dc-row">
+          <div class="dc-num p5">5</div>
+          <div class="dc-body">
+            <strong>Mob.&lt;entity_type&gt; — vanilla mob kill</strong>
+            <p>Uses the Bukkit entity type in lowercase (e.g. <code>Mob.creeper</code>, <code>Mob.skeleton</code>). Supports both <code>.Item</code> and <code>.General</code> sub-keys. Variable: <code>[sourceDisplayName]</code> (the mob's display name). Falls back to <code>Mob.primed_tnt.General</code> if the specific mob has no entry.</p>
+          </div>
+        </div>
+        <div class="dc-row">
+          <div class="dc-num p6">6</div>
+          <div class="dc-body">
+            <strong>Custom.&lt;cause&gt; — environmental / non-entity death</strong>
+            <p>Used when no entity killer was found. The Bukkit <code>DamageCause</code> is mapped to a YAML path (see table below). Falls back to <code>"[playerDisplayName] died"</code> if nothing matched.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── DEATH SECTIONS ─── -->
+    <section id="death-sections">
+      <h2>death-messages.yml — all sections</h2>
+
+      <h3>Top-level fields</h3>
+      <table>
+        <thead><tr><th>Key</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>Enabled</code></td><td><code>true</code></td><td>Master toggle. Set <code>false</code> to disable all custom death messages.</td></tr>
+          <tr><td><code>Prefix</code></td><td><code>"💀 "</code></td><td>Prepended to every death message string.</td></tr>
+          <tr><td><code>PlayerHover</code></td><td><code>[""]</code></td><td>Reserved for future hover text. Currently not rendered.</td></tr>
+          <tr><td><code>KillerHover</code></td><td><code>[""]</code></td><td>Reserved for future hover text. Currently not rendered.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Player section (player kills player)</h3>
+      <pre><code><span class="y-section">Player:</span>
+  <span class="y-key">General:</span>          <span class="y-comment"># Fallback — killer + victim, no item/projectile info</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was slain by &amp;2[sourceDisplayName]"</span>
+  <span class="y-key">Item:</span>             <span class="y-comment"># Killer was holding an item</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was cut down by &amp;2[sourceDisplayName] &amp;7using &amp;2[item]"</span>
+  <span class="y-key">Projectile:</span>       <span class="y-comment"># Killed by player's arrow/trident</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was shot by &amp;2[sourceDisplayName] &amp;7with &amp;2[type]"</span>
+  <span class="y-key">Fireball:</span>         <span class="y-comment"># Player's fireball (ghast fireball owned by player)</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was fireballed by &amp;2[sourceDisplayName]"</span>
+  <span class="y-key">Firework:</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7went out with a bang courtesy of &amp;2[sourceDisplayName]"</span>
+  <span class="y-key">Tnt:</span>
+    <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was blown up by &amp;2[sourceDisplayName]"</span></code></pre>
+
+      <h3>Mob section (vanilla mob kills player)</h3>
+      <p>Keys are lowercase Bukkit <code>EntityType</code> names. Each mob supports <code>General:</code> and optionally <code>Item:</code> (for mobs that can hold weapons, like skeletons).</p>
+      <pre><code><span class="y-section">Mob:</span>
+  <span class="y-key">creeper:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was blown up by &amp;2[sourceDisplayName]"</span>
+  <span class="y-key">skeleton:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was shot down by &amp;2[sourceDisplayName]"</span>
+    <span class="y-key">Item:</span>             <span class="y-comment"># skeleton holding a sword (rare but possible)</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7fell to &amp;2[sourceDisplayName] &amp;7wielding &amp;2[item]"</span>
+  <span class="y-comment">  # ... add any mob type you want:</span>
+  <span class="y-key">warden:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7succumbed to the heavy footsteps of &amp;2[sourceDisplayName]"</span></code></pre>
+      <p>Pre-configured mobs: creeper, skeleton, stray, husk, zombie, drowned, spider, cave_spider, enderman, witch, blaze, ghast, magma_cube, slime, guardian, elder_guardian, shulker, wither_skeleton, piglin, piglin_brute, hoglin, zoglin, phantom, pillager, vindicator, ravager, vex, warden, ender_dragon, wither.</p>
+
+      <h3>Custom section (environmental deaths)</h3>
+      <p>The service maps Bukkit <code>DamageCause</code> to YAML paths automatically:</p>
+      <table>
+        <thead><tr><th>Bukkit DamageCause</th><th>YAML path</th></tr></thead>
+        <tbody>
+          <tr><td><code>LAVA</code></td><td><code>Custom.Block.Lava.General</code></td></tr>
+          <tr><td><code>FIRE</code> / <code>FIRE_TICK</code></td><td><code>Custom.Fire.General</code></td></tr>
+          <tr><td><code>LIGHTNING</code></td><td><code>Custom.Lightning.General</code></td></tr>
+          <tr><td><code>SUFFOCATION</code></td><td><code>Custom.Suffocation.General</code></td></tr>
+          <tr><td><code>DROWNING</code></td><td><code>Custom.Drowning.General</code></td></tr>
+          <tr><td><code>STARVATION</code></td><td><code>Custom.Starvation.General</code></td></tr>
+          <tr><td><code>VOID</code></td><td><code>Custom.Void.General</code></td></tr>
+          <tr><td><code>FREEZE</code></td><td><code>Custom.Freeze.General</code></td></tr>
+          <tr><td><code>FALL</code></td><td><code>Custom.Fall.General</code> → <code>Custom.Fall.Low.General</code></td></tr>
+          <tr><td><code>ENTITY_EXPLOSION</code> / <code>BLOCK_EXPLOSION</code></td><td><code>Custom.Block_explosion.General</code></td></tr>
+          <tr><td><code>WITHER</code></td><td><code>Custom.Wither.General</code></td></tr>
+          <tr><td><code>DRAGON_BREATH</code></td><td><code>Custom.EndCrystal.General</code></td></tr>
+        </tbody>
+      </table>
+      <p>Also available but not auto-mapped (kept for parity / future use): <code>Custom.Suicide</code>, <code>Custom.Fly_into_wall</code>, <code>FallingBlocks.Anvil</code>, <code>FallingBlocks.Pointed_dripstone</code>, <code>Block.Cactus</code>, <code>Block.Magma_block</code>, <code>Block.Sweet_berry_bush</code>.</p>
+
+      <h3>Adding a new environmental message</h3>
+      <p>Add the path directly under <code>Custom:</code> and list your messages:</p>
+      <pre><code><span class="y-section">Custom:</span>
+  <span class="y-key">Drowning:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7forgot how to breathe"</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7drowned in the deep"</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7ran out of bubbles"</span></code></pre>
+    </section>
+
+    <!-- ─── DEATH VARIABLES ─── -->
+    <section id="death-variables">
+      <h2>Death message variables</h2>
+      <p>These variables are available <em>inside death-messages.yml strings only</em>. They are different from the event variables above.</p>
+      <table>
+        <thead><tr><th>Variable</th><th>Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>[playerDisplayName]</code></td><td>The display name of the player who died (may include rank colour prefix from other plugins).</td><td>Always available.</td></tr>
+          <tr><td><code>[playerName]</code></td><td>The raw (no colours) name of the dead player.</td><td>Always available.</td></tr>
+          <tr><td><code>[killerName]</code></td><td>The plain name of the player killer.</td><td>Empty string if killer is not a player.</td></tr>
+          <tr><td><code>[sourceDisplayName]</code></td><td>The display name of whatever killed the player — player display name, MythicMobs boss display name, or prettified mob type name.</td><td>Always available; prettified from entity type if not a player/mythic.</td></tr>
+          <tr><td><code>[type]</code></td><td>The type of projectile used (e.g. <code>arrow</code>, <code>trident</code>). Prettified from Bukkit's projectile type name.</td><td>Only meaningful in projectile deaths.</td></tr>
+          <tr><td><code>[item]</code></td><td>The prettified name of the item used in the kill (e.g. <code>Diamond Sword</code>). Derived from the killer's main-hand item type.</td><td>Empty string if no item or no killer.</td></tr>
+          <tr><td><code>[mobMythicId]</code></td><td>The MythicMobs internal mob ID (e.g. <code>AncientOverlord</code>).</td><td>Only set when MythicMobs is installed and the killer is a mythic mob.</td></tr>
+          <tr><td><code>[mobMythicName]</code></td><td>The MythicMobs display name of the boss.</td><td>Only set when MythicMobs is installed and the killer is a mythic mob.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─── MYTHICMOBS ─── -->
+    <section id="death-mythic">
+      <h2>MythicMobs integration</h2>
+      <p>
+        OreoEssentials detects MythicMobs automatically at runtime using <strong>reflection</strong>. You do not need to configure anything — if MythicMobs is installed, the integration activates. If it is not installed, that code path is never reached.
+      </p>
+      <p>
+        When a player is killed by a MythicMobs entity, the service resolves:
+      </p>
+      <ul>
+        <li>The mob's <strong>internal ID</strong> (e.g. <code>AncientOverlord</code>) → used as the YAML key</li>
+        <li>The mob's <strong>display name</strong> (e.g. <code>Ancient Overlord</code>) → used as <code>[mobMythicName]</code></li>
+      </ul>
+      <p>Both old (<code>io.lumine.xikage</code>) and new (<code>io.lumine.mythic</code>) MythicMobs API packages are supported via separate reflection paths.</p>
+
+      <h3>Adding MythicMobs death messages</h3>
+      <p>Use the mob's exact internal ID as the key under the <code>Mythic:</code> section:</p>
+      <pre><code><span class="y-section">Mythic:</span>
+  <span class="y-key">AncientOverlord:</span>          <span class="y-comment"># exact internal MythicMobs mob ID</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was obliterated by &amp;5[mobMythicName]"</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7fell before the might of &amp;5[mobMythicId]"</span>
+    <span class="y-key">Item:</span>                     <span class="y-comment"># when the boss holds a weapon</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was felled by &amp;5[mobMythicName] &amp;7wielding &amp;2[item]"</span>
+
+  <span class="y-key">FrostGiant:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was crushed by &amp;b[mobMythicName]"</span></code></pre>
+
+      <div class="tip">
+        <strong>How to find the internal ID:</strong> In MythicMobs, each mob has an ID defined in its config file (e.g. <code>AncientOverlord.yml</code> → ID is <code>AncientOverlord</code>). This is case-sensitive. It is the same ID you use in <code>/mm mobs spawn AncientOverlord</code>.
+      </div>
+
+      <div class="note">
+        <strong>Priority note:</strong> Mythic messages take priority 4 in the chain — higher than vanilla mobs (5) but lower than player kills (1–3). If a MythicMobs boss is killed by a player's projectile, the Player.Projectile message wins, not the Mythic one.
+      </div>
+    </section>
+
+    <!-- ─── CROSS-SERVER BROADCAST ─── -->
+    <section id="death-crossserver">
+      <h2>Cross-server death message broadcast</h2>
+      <p>
+        When RabbitMQ cross-server messaging is enabled, every death message is packaged into a <code>DeathMessagePacket</code> and broadcast to all other servers on the network via the <code>GLOBAL</code> channel.
+      </p>
+      <p>The packet carries:</p>
+      <ul>
+        <li>The dead player's UUID and name</li>
+        <li>The fully-formatted death message string (already coloured)</li>
+        <li>The originating server name</li>
+      </ul>
+      <p>Receiving servers unpack the packet and display the message to players there, so the entire network sees the death announcement simultaneously.</p>
+
+      <div class="info">
+        <strong>No extra config needed.</strong> Cross-server death messages use the same RabbitMQ setup as the rest of OreoEssentials. If <code>PacketManager</code> is initialised and the message is non-empty, the broadcast fires automatically.
+      </div>
+    </section>
+
+    <!-- ─── /oevents CMD ─── -->
+    <section id="oevents-cmd">
+      <h2>Command: /oevents</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/oevents reload</code></td>
+            <td><code>oreo.events</code></td>
+            <td>Reloads both <code>events.yml</code> and <code>death-messages.yml</code> from disk. No restart needed. Tab-completion suggests <code>reload</code>.</td>
+          </tr>
+          <tr>
+            <td><code>/oevents</code> (no args)</td>
+            <td><code>oreo.events</code></td>
+            <td>Behaves the same as <code>/oevents reload</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>Permission:</strong> Only players (or console) with <code>oreo.events</code> can use <code>/oevents</code>. By default this should be given to administrators only.
+      </div>
+    </section>
+
+    <!-- ─── PVP SYSTEM ─── -->
+    <section id="pvp-system">
+      <h2>PvP tracking system</h2>
+      <p>
+        The <code>pvpstart</code> and <code>pvpstop</code> events use a lightweight internal tracking system. Understanding how it works helps you use these events effectively.
+      </p>
+
+      <h3>How pvpstart fires</h3>
+      <p>Every time a player damages another player (direct hit or via projectile), the engine checks whether the pair is already "in combat". If <strong>not</strong>, it:</p>
+      <ol>
+        <li>Records the pair in an internal map (<code>UUID → opponent UUID</code>)</li>
+        <li>Fires <code>pvpstart</code> for <strong>both</strong> players with each other's name as <code>[opponent]</code></li>
+        <li>Schedules a 15-second stop check</li>
+      </ol>
+      <p>If the pair <strong>is</strong> already in combat (the map entry exists), no new <code>pvpstart</code> fires — they are already engaged.</p>
+
+      <h3>How pvpstop fires</h3>
+      <p>Every hit reschedules a 15-second timer. When that timer expires <em>without any new hit between the same pair</em>:</p>
+      <ol>
+        <li>The pair is removed from the map</li>
+        <li><code>pvpstop</code> fires for both players (if still online)</li>
+      </ol>
+      <p>If either player killed the other, <code>pvpstop</code> does not fire — the pair is no longer tracked.</p>
+
+      <div class="warn">
+        <strong>Important:</strong> PvP events fire for <em>both</em> players involved. Your <code>pvpstart</code> command list will execute twice — once with <code>[playerName]</code> = attacker and once with <code>[playerName]</code> = victim. Design your commands accordingly (e.g. using <code>tell [playerName]</code> is fine; using <code>broadcast</code> would duplicate the message).
+      </div>
+    </section>
+
+    <!-- ─── FOLIA ─── -->
+    <section id="folia">
+      <h2>Folia compatibility</h2>
+      <p>
+        All command dispatch in the Events module goes through <code>OreScheduler</code>, OreoEssentials's Folia-aware scheduler wrapper. This means:
+      </p>
+      <ul>
+        <li><code>asConsole!</code> commands run on the <strong>global tick thread</strong> (required by Folia for <code>Bukkit.dispatchCommand()</code>)</li>
+        <li><code>asPlayer!</code> commands run on the <strong>player's region thread</strong> (required by Folia for <code>Player.performCommand()</code>)</li>
+        <li><code>delay!</code> commands use the appropriate thread type — <code>OreScheduler.runLaterForEntity()</code> for player commands, <code>OreScheduler.runLater()</code> for console commands</li>
+      </ul>
+      <p>
+        On Paper (non-Folia), this adds at most a 1-tick delay for synchronisation but is otherwise transparent. No extra configuration is needed.
+      </p>
+    </section>
+
+    <!-- ─── FAQ ─── -->
+    <section id="faq">
+      <h2>Frequently asked questions</h2>
+
+      <h3>My command isn't running — what's wrong?</h3>
+      <p>Check these things in order:</p>
+      <ol>
+        <li>Is the event name spelled correctly and indented properly in the YAML? (YAML is indentation-sensitive.)</li>
+        <li>Did you run <code>/oevents reload</code> after editing the file?</li>
+        <li>Is the variable you used available for that event? (e.g. <code>[victim]</code> only exists on <code>playerKillPlayer</code>)</li>
+        <li>If using <code>asPlayer!</code>, is the player still online when the command fires?</li>
+        <li>Check server console for YAML parse errors — a syntax error in one section can break the whole file.</li>
+      </ol>
+
+      <h3>Can I run multiple commands for the same event?</h3>
+      <p>Yes. Each event type takes a YAML list. Just add more lines:</p>
+      <pre><code><span class="y-key">joinServer:</span>
+  <span class="y-str">- "asConsole! broadcast &a[playerName] joined!"</span>
+  <span class="y-str">- "asConsole! tell [playerName] &7Welcome back."</span>
+  <span class="y-str">- "asConsole! delay! 10 tell [playerName] &7Type /help to start."</span></code></pre>
+
+      <h3>Can I disable an event without deleting it?</h3>
+      <p>Yes — set it to an empty list: <code>eventName: []</code>. Or comment out lines with <code>#</code>. An empty list means the event fires but does nothing.</p>
+
+      <h3>My death messages are still vanilla — why?</h3>
+      <p>Check that <code>Enabled: true</code> is set at the top of <code>death-messages.yml</code>. Then run <code>/oevents reload</code>. Also check the console for YAML parse errors in the death messages file.</p>
+
+      <h3>How do I add a death message for a mob that isn't listed?</h3>
+      <p>Add a new key under <code>Mob:</code> using the lowercase Bukkit <code>EntityType</code> name. For example, for a Bogged (new 1.21 mob):</p>
+      <pre><code><span class="y-section">Mob:</span>
+  <span class="y-key">bogged:</span>
+    <span class="y-key">General:</span>
+      <span class="y-str">- "&amp;2[playerDisplayName] &amp;7was pierced by a bogged arrow"</span></code></pre>
+
+      <h3>Can I use PlaceholderAPI in event commands?</h3>
+      <p>Event commands are dispatched as raw Minecraft commands — OreoEssentials does not pre-process them through PAPI. However, you can call PAPI-aware commands (like CMI or EssentialsX commands that support PAPI internally) and they will resolve placeholders themselves. In death messages, PAPI <em>is</em> processed by OreoEssentials before sending.</p>
+
+      <h3>The pvpstart fires twice for a broadcast — is that a bug?</h3>
+      <p>No, it is by design. See the <a href="#pvp-system">PvP tracking section</a>. Both players receive the event. Use <code>tell [playerName]</code> (private message to each player) instead of <code>broadcast</code> to avoid duplicate global announcements.</p>
+
+      <h3>Does firstJoinServer fire if a player joins, gets banned, then comes back?</h3>
+      <p><code>firstJoinServer</code> relies on Bukkit's <code>player.hasPlayedBefore()</code>. Once a player has joined once, this returns <code>true</code> on all future joins — even if they were banned in between. So <code>firstJoinServer</code> only ever fires on the very first join for each UUID.</p>
+
+      <h3>Can I add MythicMobs boss messages without MythicMobs installed?</h3>
+      <p>Yes. You can add entries under <code>Mythic:</code> at any time. They will simply never be reached unless MythicMobs is installed and a mythic mob kills a player. There is no error or warning if the section exists but is never used.</p>
+
+      <h3>Are death messages shown cross-server?</h3>
+      <p>Yes, if RabbitMQ cross-server messaging is configured. The <code>DeathMessagePacket</code> is broadcast to all servers on the <code>GLOBAL</code> channel so all players on all servers see the death announcement. See <a href="#death-crossserver">Cross-server broadcast</a>.</p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

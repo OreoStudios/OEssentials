@@ -3,7 +3,7 @@ package fr.elias.oessentials.tab.internal;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.api.FeatureSettings;
 import fr.elias.oessentials.nametag.internal.NametageCondition;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -33,7 +33,7 @@ public class TabListManager {
 
     private final OEssentials plugin;
     private final FeatureSettings settings;
-    private final PlayerDirectory playerDirectory;
+    private final PlayerLocator playerDirectory;
 
     private CustomTablistLayout customLayout;
     private boolean useCustomLayout;
@@ -94,7 +94,7 @@ public class TabListManager {
     public TabListManager(OEssentials plugin) {
         this.plugin = plugin;
         this.settings = plugin.getFeatureSettings();
-        this.playerDirectory = plugin.getPlayerDirectory();
+        this.playerDirectory = plugin.getPlayerLocator();
 
         load();
 

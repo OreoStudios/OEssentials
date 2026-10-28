@@ -1,7 +1,7 @@
 package fr.elias.oessentials.dialogs.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
+import fr.elias.oessentials.storage.api.Homes;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -25,7 +25,7 @@ public final class HomeDialogHandler {
 
     private HomeDialogHandler() {}
 
-    public static void open(OEssentials plugin, Player player, HomeService homes) {
+    public static void open(OEssentials plugin, Player player, Homes homes) {
         Async.run(() -> {
             Set<String> names = homes.allHomeNames(player.getUniqueId());
             OreScheduler.runForEntity(plugin, player, () -> {

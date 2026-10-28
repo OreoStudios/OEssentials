@@ -3,7 +3,7 @@ package fr.elias.oessentials.currency.internal.commands;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -253,9 +253,9 @@ public class CurrencySendCommand implements OreoCommand {
                 }
             } catch (Throwable ignored) {}
 
-            PlayerDirectory dir;
+            PlayerLocator dir;
             try {
-                dir = plugin.getPlayerDirectory();
+                dir = plugin.getPlayerLocator();
             } catch (Throwable t) {
                 dir = null;
             }

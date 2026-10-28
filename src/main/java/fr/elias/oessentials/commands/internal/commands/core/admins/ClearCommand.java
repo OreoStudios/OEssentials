@@ -2,7 +2,7 @@ package fr.elias.oessentials.commands.internal.commands.core.admins;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.sync.internal.services.InventoryService;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
@@ -26,7 +26,7 @@ public class ClearCommand implements OreoCommand {
     public boolean execute(CommandSender sender, String label, String[] args) {
 
         OEssentials plugin = OEssentials.get();
-        PlayerDirectory directory = plugin.getPlayerDirectory();
+        PlayerLocator directory = plugin.getPlayerLocator();
 
         InventoryService invService = Bukkit.getServicesManager()
                 .load(InventoryService.class);
