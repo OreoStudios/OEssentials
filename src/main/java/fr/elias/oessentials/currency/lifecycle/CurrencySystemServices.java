@@ -7,6 +7,7 @@ import fr.elias.oessentials.currency.internal.CurrencyService;
 @ModuleApi("services")
 public interface CurrencySystemServices {
     CurrencyService getCurrencyService();
+    fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion getCurrencyPlaceholders();
     CurrencyConfig getCurrencyConfig();
 
     /** The public API of one currency, or {@code null} when it does not exist. */

@@ -386,9 +386,9 @@ public class CurrencyCommand implements OreoCommand {
             if (local != null) return local.getUniqueId();
 
             try {
-                var cache = plugin.getOfflinePlayerCache();
+                var cache = plugin.getModuleRegistry().read(fr.elias.oessentials.economy.lifecycle.EconomyServices.class, e -> e);
                 if (cache != null) {
-                    UUID cached = cache.getId(nameOrUuid);
+                    UUID cached = cache.offlinePlayerId(nameOrUuid);
                     if (cached != null) return cached;
                 }
             } catch (Throwable ignored) {}

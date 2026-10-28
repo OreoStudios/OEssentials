@@ -2,7 +2,6 @@ package fr.elias.oessentials.player.internal.tp.completer;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.storage.api.PlayerLocator;
-import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.TabCompleter;
@@ -51,10 +50,10 @@ public class TpTabCompleter implements TabCompleter {
             } catch (Throwable ignored) {}
         }
 
-        OfflinePlayerCache cache = plugin.getOfflinePlayerCache();
+        var cache = plugin.getModuleRegistry().read(fr.elias.oessentials.economy.lifecycle.EconomyServices.class, e -> e);
         if (cache != null) {
             try {
-                for (String name : cache.getNames()) {
+                for (String name : cache.offlinePlayerNames()) {
                     if (name != null && name.toLowerCase(Locale.ROOT).startsWith(want)) {
                         out.add(name);
                     }

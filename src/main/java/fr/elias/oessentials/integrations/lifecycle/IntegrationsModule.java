@@ -23,12 +23,10 @@ import org.bukkit.entity.Player;
 public final class IntegrationsModule extends ManagedModule implements IntegrationsServices {
     private Metrics metrics;
     private PlaceholderAPIHook placeholderHook;
-    private CurrencyPlaceholderExpansion currencyPlaceholders;
 
     @Override
     protected void start() {
         cleanup("placeholderHook", () -> { if (placeholderHook != null) placeholderHook.unregister(); });
-        cleanup("currencyPlaceholders", () -> { if (currencyPlaceholders != null) currencyPlaceholders.unregister(); });
         cleanup("metrics", () -> { if (metrics != null) metrics.shutdown(); });
         initializeBStats();
         warnMissingDependencies();
@@ -39,7 +37,6 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
 
     @Override public Metrics getMetrics() { return metrics; }
     @Override public PlaceholderAPIHook getPlaceholderHook() { return placeholderHook; }
-    @Override public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return currencyPlaceholders; }
 
     // -------------------------------------------------------------------------
     // bStats
@@ -71,7 +68,7 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
                 return anyCross ? "Enabled" : "Disabled";
             }));
             metrics.addCustomChart(new SimplePie("redis_enabled", () -> services(ConfigurationServices.class).getRedisEnabled() ? "Enabled" : "Disabled"));
-            metrics.addCustomChart(new SingleLineChart("total_kits", () -> services(KitsServices.class).getKitsManager() == null ? 0 : services(KitsServices.class).getKitsManager().getKits().size()));
+            metrics.addCustomChart(new SingleLineChart("total_kits", () -> services(KitsServices.class).kitCount()));
             metrics.addCustomChart(new SingleLineChart("custom_recipes", () -> services(CustomCraftingServices.class).customRecipeCount()));
             plugin.getLogger().info("[bStats] Metrics initialized. View at: https://bstats.org/plugin/bukkit/" + pluginId);
         } catch (Exception e) {
@@ -153,13 +150,6 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
                 } catch (Exception e) {
                     plugin.getLogger().severe("[FAIL] Error during PlaceholderAPI registration: " + e.getMessage());
                     e.printStackTrace();
-                }
-                if (services(CurrencySystemServices.class).getCurrencyService() != null) {
-                    try {
-                        this.currencyPlaceholders = new CurrencyPlaceholderExpansion(plugin);
-                        if (this.currencyPlaceholders.register()) { plugin.getLogger().info("[OK] PlaceholderAPI currency expansion registered!"); }
-                        else { plugin.getLogger().warning("[FAIL] Failed to register PlaceholderAPI currency expansion!"); }
-                    } catch (Throwable t) { plugin.getLogger().warning("[Currency] PlaceholderAPI expansion failed: " + t.getMessage()); }
                 }
             }, 60L);
         } catch (Throwable t) {

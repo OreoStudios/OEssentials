@@ -510,7 +510,7 @@ public final class OEssentials extends JavaPlugin {
 
     public Economy getVaultEconomy() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getVaultEconomy); }
 
-    public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return moduleRegistry.read(IntegrationsServices.class, IntegrationsServices::getCurrencyPlaceholders); }
+    public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return moduleRegistry.read(CurrencySystemServices.class, CurrencySystemServices::getCurrencyPlaceholders); }
 
     public String getServerNameSafe() {
         try {

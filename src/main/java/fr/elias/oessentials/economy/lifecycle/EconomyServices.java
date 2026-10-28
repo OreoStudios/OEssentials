@@ -20,4 +20,22 @@ public interface EconomyServices {
         var svc = eco.api();
         return svc == null ? null : new fr.elias.oessentials.economy.internal.api.EconomyAPIImpl(svc);
     }
+
+    /** Names of players seen on the network, for tab completion (empty while the cache is off). */
+    default java.util.List<String> offlinePlayerNames() {
+        var cache = getOfflinePlayerCache();
+        return cache == null ? java.util.List.of() : cache.getNames();
+    }
+
+    /** The UUID of a player seen on the network, or {@code null}. */
+    default java.util.UUID offlinePlayerId(String name) {
+        var cache = getOfflinePlayerCache();
+        return cache == null ? null : cache.getId(name);
+    }
+
+    /** Balance in the economy database (0 when the economy has no database). */
+    default double storedBalance(java.util.UUID playerId) {
+        var db = getDatabase();
+        return db == null ? 0.0 : db.getBalance(playerId);
+    }
 }

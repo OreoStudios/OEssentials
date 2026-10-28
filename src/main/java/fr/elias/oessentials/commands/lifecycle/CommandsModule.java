@@ -9,7 +9,6 @@ import fr.elias.oessentials.commands.internal.commands.OeCommand;
 import fr.elias.oessentials.commands.internal.commands.completion.ClearTabCompleter;
 import fr.elias.oessentials.commands.internal.commands.completion.KickTabCompleter;
 import fr.elias.oessentials.commands.internal.commands.core.admins.ClearCommand;
-import fr.elias.oessentials.commands.internal.commands.core.admins.CloneCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.DisenchantCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.EnchantCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.FlyCommand;
@@ -50,7 +49,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new EnchantCommand())
                 .register(new DisenchantCommand())
                 .register(new OeCommand())
-                .register(new CloneCommand())
                 .register(new HeadCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.TrashCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.WorkbenchCommand())
@@ -124,7 +122,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
 
 
         // Tab-completer overrides for remaining OreoCommands.
-        services(ConfigurationServices.class).getCommands().rewireTab("clone",      new CloneCommand());
         services(ConfigurationServices.class).getCommands().rewireTab("head",       new HeadCommand());
         services(ConfigurationServices.class).getCommands().rewireTab("enchant",    new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());
         services(ConfigurationServices.class).getCommands().rewireTab("disenchant", new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());

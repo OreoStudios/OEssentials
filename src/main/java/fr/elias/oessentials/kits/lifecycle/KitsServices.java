@@ -11,4 +11,9 @@ public interface KitsServices {
         var s = getKitsManager();
         return s == null ? null : new fr.elias.oessentials.kits.internal.api.KitsAPIImpl(s);
     }
+
+    default int kitCount() {
+        var manager = getKitsManager();
+        return manager == null ? 0 : manager.getKits().size();
+    }
 }

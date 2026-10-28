@@ -52,6 +52,7 @@ class ModuleBoundaryRolloutTest {
             "integrations",
             "jails",
             "jump-pads",
+            "kits",
             "mail",
             "maintenance",
             "messaging",

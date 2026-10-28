@@ -9,5 +9,4 @@ import org.bstats.bukkit.Metrics;
 public interface IntegrationsServices {
     Metrics getMetrics();
     PlaceholderAPIHook getPlaceholderHook();
-    CurrencyPlaceholderExpansion getCurrencyPlaceholders();
 }

@@ -24,6 +24,7 @@ import org.bukkit.Bukkit;
 
 @PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"})
 public final class CurrencySystemModule extends ManagedModule implements CurrencySystemServices {
+    private volatile fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion currencyPlaceholders;
     private CurrencyService currencyService;
     private CurrencyConfig currencyConfig;
 
@@ -33,9 +34,11 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
         initCurrencySystem();
         listenForModuleEvents(this);
         registerCommands();
+        registerCurrencyPlaceholders();
     }
 
     @Override public CurrencyService getCurrencyService() { return currencyService; }
+    @Override public fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return currencyPlaceholders; }
     @Override public CurrencyConfig getCurrencyConfig() { return currencyConfig; }
 
     // -------------------------------------------------------------------------
@@ -85,5 +88,25 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
     private void registerCommands() {
         var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
         commands.register(new fr.elias.oessentials.currency.internal.commands.CurrencyAdminCommand(plugin));
+    }
+
+    /** %oreocurrency_...% placeholders (registered by integrations until 7.1.6, with the same delay). */
+    private void registerCurrencyPlaceholders() {
+        if (currencyService == null || plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) return;
+        fr.elias.oessentials.platform.scheduling.OreScheduler.runLater(plugin, () -> {
+            if (!isActive()) return;
+            try {
+                var expansion = new fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion(plugin);
+                if (expansion.register()) {
+                    this.currencyPlaceholders = expansion;
+                    plugin.getLogger().info("[OK] PlaceholderAPI currency expansion registered!");
+                } else {
+                    plugin.getLogger().warning("[FAIL] Failed to register PlaceholderAPI currency expansion!");
+                }
+            } catch (Throwable t) {
+                plugin.getLogger().warning("[Currency] PlaceholderAPI expansion failed: " + t.getMessage());
+            }
+        }, 60L);
+        cleanup("currencyPlaceholders", () -> { if (currencyPlaceholders != null) currencyPlaceholders.unregister(); });
     }
 }

@@ -1,6 +1,5 @@
 package fr.elias.oessentials.discord.internal.discordbot;
 
-import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
 import fr.elias.oessentials.storage.api.HomeLocation;
 import fr.elias.oessentials.storage.api.Homes;
 import fr.elias.oessentials.sync.internal.services.InventoryService;
@@ -19,10 +18,10 @@ import java.util.stream.Collectors;
 public class DiscordRconExtension implements CommandExecutor {
 
     private final Homes           homeService;
-    private final PlayerEconomyDatabase economyDb;
+    private final java.util.function.ToDoubleFunction<UUID> economyDb;
 
     public DiscordRconExtension(Homes homeService,
-                                PlayerEconomyDatabase economyDb) {
+                                java.util.function.ToDoubleFunction<UUID> economyDb) {
         this.homeService = homeService;
         this.economyDb   = economyDb;
     }
@@ -66,7 +65,7 @@ public class DiscordRconExtension implements CommandExecutor {
             return "OK: N/A";
         }
         try {
-            double balance   = economyDb.getBalance(uuid);
+            double balance   = economyDb.applyAsDouble(uuid);
             String formatted = NumberFormat.getNumberInstance(Locale.US).format(balance);
             return "OK: " + formatted;
         } catch (Exception e) {

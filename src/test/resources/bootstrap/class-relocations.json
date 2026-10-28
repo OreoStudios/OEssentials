@@ -780,7 +780,7 @@
   "fr.elias.oessentials.commands.completion.EnchantTabCompleter": "fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter",
   "fr.elias.oessentials.commands.completion.KickTabCompleter": "fr.elias.oessentials.commands.internal.commands.completion.KickTabCompleter",
   "fr.elias.oessentials.commands.core.admins.ClearCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.ClearCommand",
-  "fr.elias.oessentials.commands.core.admins.CloneCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.CloneCommand",
+  "fr.elias.oessentials.commands.core.admins.CloneCommand": "fr.elias.oessentials.skins.internal.skin.CloneCommand",
   "fr.elias.oessentials.commands.core.admins.DayCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.DayCommand",
   "fr.elias.oessentials.commands.core.admins.DisenchantCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.DisenchantCommand",
   "fr.elias.oessentials.commands.core.admins.EnchantCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.EnchantCommand",

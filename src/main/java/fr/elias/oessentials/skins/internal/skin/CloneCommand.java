@@ -1,4 +1,4 @@
-package fr.elias.oessentials.commands.internal.commands.core.admins;
+package fr.elias.oessentials.skins.internal.skin;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import fr.elias.oessentials.OEssentials;
