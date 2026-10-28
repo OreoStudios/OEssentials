@@ -96,24 +96,21 @@ public class PlayerDirectory implements fr.elias.oessentials.storage.api.PlayerL
         );
     }
 
-    public void clearCurrentServer(UUID uuid) {
-        if (uuid == null) return;
-        Document d = coll.find(eq("uuid", uuid.toString()))
-                .projection(new Document("currentServer", 1))
-                .first();
-        if (d == null) return;
-
-        String cur = d.getString("currentServer");
-        if (cur == null || cur.isBlank()) {
-            coll.updateOne(eq("uuid", uuid.toString()), set("updatedAt", Instant.now().toString()));
-        } else {
-            coll.updateOne(eq("uuid", uuid.toString()),
-                    combine(
-                            set("lastServer", cur),
-                            unset("currentServer"),
-                            set("updatedAt", Instant.now().toString())
-                    ));
-        }
+    /**
+     * Marks the player offline, but only while {@code server} is still recorded as their server.
+     *
+     * <p>On a proxy switch the new server's join is often stored before the old server's quit;
+     * clearing unconditionally then erased the new server and made the online player unreachable
+     * (e.g. cross-server /msg answered "Player not found").</p>
+     */
+    public void clearCurrentServer(UUID uuid, String server) {
+        if (uuid == null || server == null) return;
+        coll.updateOne(and(eq("uuid", uuid.toString()), eq("currentServer", server)),
+                combine(
+                        set("lastServer", server),
+                        unset("currentServer"),
+                        set("updatedAt", Instant.now().toString())
+                ));
     }
 
     public String getCurrentOrLastServer(UUID uuid) {
