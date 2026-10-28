@@ -165,10 +165,13 @@ public final class OrdersConfig {
 
     private void saveDefault(String name) {
         File target = new File(folder, name);
-        if (target.exists()) return;
-        try (InputStream in = getClass().getResourceAsStream("/orders/" + name)) {
+        if (target.exists() && target.length() > 0) return;
+        // Bundled under /data/orders/ (settings.yml at its root, written to config/settings.yml).
+        String resource = "/data/orders/" + name.replaceFirst("^config/", "");
+        try (InputStream in = getClass().getResourceAsStream(resource)) {
             if (in != null) {
-                Files.copy(in, target.toPath());
+                target.getParentFile().mkdirs();
+                Files.copy(in, target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
             // If no bundled resource for this name, silently skip (e.g. custom language code)
         } catch (Exception ignored) {}
