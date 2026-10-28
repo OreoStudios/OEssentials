@@ -39,19 +39,25 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
     }
 
     private void subscribeCrossServerSync() {
+        // Subscribe whenever the feature exists and check readiness per packet: orders load their
+        // active orders asynchronously, so enabled() is still false here with MongoDB storage and a
+        // subscription gated on it was never made (other servers' orders never appeared). Packets
+        // received before loading finishes are covered by that load, which reads the database.
         var messaging = services(MessagingServices.class);
-        if (auctionHouse != null && auctionHouse.enabled()) {
+        if (auctionHouse != null) {
             messaging.subscribe(
                     fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq.AuctionSyncPacket.class,
                     (channel, pkt) -> {
+                        if (!auctionHouse.enabled()) return;
                         try { auctionHouse.applyIncomingSync(pkt); }
                         catch (Throwable t) { plugin.getLogger().warning("[AH] Failed to handle AuctionSyncPacket: " + t.getMessage()); }
                     });
         }
-        if (ordersModule != null && ordersModule.enabled()) {
+        if (ordersModule != null) {
             messaging.subscribe(
                     fr.elias.oessentials.inventory.internal.orders.rabbitmq.OrderSyncPacket.class,
                     (channel, pkt) -> {
+                        if (!ordersModule.enabled()) return;
                         try { ordersModule.getEventBus().onReceive(pkt); }
                         catch (Throwable t) { plugin.getLogger().warning("[Orders] Failed to handle OrderSyncPacket: " + t.getMessage()); }
                     });
