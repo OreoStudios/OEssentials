@@ -243,7 +243,7 @@ public final class OEssentials extends JavaPlugin {
 
     public ShopModule getShopModule() { return moduleRegistry.read(ShopServices.class, ShopServices::getShopModule); }
 
-    public fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier getDiscordMod() { return moduleRegistry.read(DiscordIntegrationServices.class, DiscordIntegrationServices::getDiscordMod); }
+    public fr.elias.oessentials.discord.internal.DiscordModerationNotifier getDiscordMod() { return moduleRegistry.read(DiscordIntegrationServices.class, DiscordIntegrationServices::getDiscordMod); }
 
     public TpCrossServerBroker getTpBroker() { return moduleRegistry.read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getTpBroker); }
 

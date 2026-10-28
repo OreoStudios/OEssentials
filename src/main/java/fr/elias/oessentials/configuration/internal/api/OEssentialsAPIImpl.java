@@ -1,4 +1,4 @@
-package fr.elias.oessentials.integrations.internal.api;
+package fr.elias.oessentials.configuration.internal.api;
 
 
 import fr.elias.oessentials.OEssentials;
@@ -48,7 +48,6 @@ import fr.elias.oessentials.api.IVanishAPI;
 import fr.elias.oessentials.api.IWarningsAPI;
 import fr.elias.oessentials.api.IWarpsAPI;
 import fr.elias.oessentials.api.OEssentialsAPI;
-import fr.elias.oessentials.currency.internal.Currency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,12 +84,14 @@ public class OEssentialsAPIImpl implements OEssentialsAPI {
 
     @Override
     public @Nullable ICurrencyAPI currency(@NotNull String currencyId) {
-        return plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, s -> s.getCurrencyApi(currencyId));
+        var currencies = publicApi(fr.elias.oessentials.configuration.api.CurrencyApis.class);
+        return currencies == null ? null : currencies.currency(currencyId);
     }
 
     @Override
     public @NotNull List<ICurrencyAPI> currencies() {
-        List<ICurrencyAPI> list = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencyApis);
+        var currencies = publicApi(fr.elias.oessentials.configuration.api.CurrencyApis.class);
+        List<ICurrencyAPI> list = currencies == null ? null : currencies.currencies();
         return list == null ? List.of() : list;
     }
 

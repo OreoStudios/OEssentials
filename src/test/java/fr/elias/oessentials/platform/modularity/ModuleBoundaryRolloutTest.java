@@ -47,6 +47,7 @@ class ModuleBoundaryRolloutTest {
             "help",
             "holograms",
             "ignore",
+            "integrations",
             "jails",
             "jump-pads",
             "mail",

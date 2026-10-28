@@ -8,7 +8,7 @@ import fr.elias.oessentials.storage.lifecycle.StorageServices;
 
 @PluginModule(value = "discord-integration", dependencies = {"configuration::services", "economy::services", "storage::services"}, after = {"mute-system"}, optional = true)
 public final class DiscordIntegrationModule extends ManagedModule implements DiscordIntegrationServices {
-    private fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier discordMod;
+    private fr.elias.oessentials.discord.internal.DiscordModerationNotifier discordMod;
     private fr.elias.oessentials.discord.internal.discordbot.DiscordLinkManager discordLinkManager;
 
     @Override
@@ -17,12 +17,12 @@ public final class DiscordIntegrationModule extends ManagedModule implements Dis
         registerReloadStep(10, "discord", this::reloadDiscord);
     }
 
-    @Override public fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier getDiscordMod() { return discordMod; }
+    @Override public fr.elias.oessentials.discord.internal.DiscordModerationNotifier getDiscordMod() { return discordMod; }
     @Override public fr.elias.oessentials.discord.internal.discordbot.DiscordLinkManager getDiscordLinkManager() { return discordLinkManager; }
 
     private void initDiscordIntegration() {
         if (services(ConfigurationServices.class).getFeatureSettings().discordModerationEnabled()) {
-            this.discordMod = new fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier(plugin);
+            this.discordMod = new fr.elias.oessentials.discord.internal.DiscordModerationNotifier(plugin);
             plugin.getLogger().info("[DiscordMod] Discord moderation integration enabled.");
         } else {
             this.discordMod = null;

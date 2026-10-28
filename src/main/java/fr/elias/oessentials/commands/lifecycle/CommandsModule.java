@@ -26,7 +26,7 @@ import fr.elias.oessentials.commands.internal.furnace.FurnaceCommand;
 import fr.elias.oessentials.commands.internal.near.NearCommand;
 import fr.elias.oessentials.commands.internal.ping.PingCommand;
 
-@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "performance-guards::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, after = {"custom-worlds"})
+@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "performance-guards::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, uses = {"discord-integration::services"}, after = {"custom-worlds"})
 public final class CommandsModule extends ManagedModule implements CommandsServices {
     private fr.elias.oessentials.commands.internal.ic.ICManager icManager;
 

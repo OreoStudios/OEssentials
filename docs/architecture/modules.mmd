@@ -9,6 +9,7 @@ flowchart TD
     boss_bar --> rtp
     chat["chat"]
     chat -->|services| configuration
+    chat -.->|uses services| discord_integration
     chat -->|services| mute_system
     chat --> shop
     chat -->|services| storage
@@ -27,6 +28,7 @@ flowchart TD
     commands -->|services| command_toggle
     commands -->|services| configuration
     commands --> custom_worlds
+    commands -.->|uses services| discord_integration
     commands -->|services| ender_chest
     commands -->|services| ignore
     commands -->|services| inventories
@@ -115,6 +117,7 @@ flowchart TD
     jails["jails"]
     jails --> commands
     jails -->|services| configuration
+    jails -.->|uses services| discord_integration
     jails -->|services| storage
     jump_pads["jump-pads"]
     jump_pads -->|services| configuration
@@ -177,6 +180,7 @@ flowchart TD
     proxy_messaging --> kits
     punishment_logger["punishment-logger"]
     punishment_logger -->|services| configuration
+    punishment_logger -.->|uses services| discord_integration
     punishment_logger --> warnings
     redis["redis"]
     redis -->|services| configuration

@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 
-@PluginModule(value = "jails", dependencies = {"configuration::services", "storage::services"}, after = {"commands"})
+@PluginModule(value = "jails", dependencies = {"configuration::services", "storage::services"}, uses = {"discord-integration::services"}, after = {"commands"})
 public final class JailsModule extends ManagedModule implements JailsServices {
     private fr.elias.oessentials.jails.internal.jail.JailService jailService;
 

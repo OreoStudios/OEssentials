@@ -2,7 +2,6 @@ package fr.elias.oessentials.chat.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier;
 import fr.elias.oessentials.chat.internal.chatservices.MuteService;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
@@ -66,7 +65,7 @@ public class UnmuteCommand implements OreoCommand, org.bukkit.command.TabComplet
         }
 
         // Discord notification
-        DiscordModerationNotifier mod = OEssentials.get().getDiscordMod();
+        fr.elias.oessentials.discord.api.ModerationNotifier mod = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
         if (mod != null && mod.isEnabled()) {
             mod.notifyUnmute(target.getName(), target.getUniqueId(), sender.getName());
         }

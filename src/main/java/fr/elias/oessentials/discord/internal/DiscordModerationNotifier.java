@@ -1,4 +1,4 @@
-package fr.elias.oessentials.integrations.internal.integration;
+package fr.elias.oessentials.discord.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.chat.internal.CustomConfig;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DiscordModerationNotifier {
+public class DiscordModerationNotifier implements fr.elias.oessentials.discord.api.ModerationNotifier {
 
     public enum EventType { KICK, BAN, UNBAN, MUTE, UNMUTE, JAIL, UNJAIL }
 

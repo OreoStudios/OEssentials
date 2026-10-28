@@ -3,7 +3,7 @@ package fr.elias.oessentials.punishment.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 
-@PluginModule(value = "punishment-logger", dependencies = {"configuration::services"}, after = {"warnings"})
+@PluginModule(value = "punishment-logger", dependencies = {"configuration::services"}, uses = {"discord-integration::services"}, after = {"warnings"})
 public final class PunishmentLoggerModule extends ManagedModule implements PunishmentLoggerServices {
     private fr.elias.oessentials.punishment.internal.PunishmentLogger punishmentLogger;
 

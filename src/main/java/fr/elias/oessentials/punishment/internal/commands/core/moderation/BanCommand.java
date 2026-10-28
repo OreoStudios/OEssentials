@@ -2,7 +2,6 @@ package fr.elias.oessentials.punishment.internal.commands.core.moderation;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -97,7 +96,7 @@ public class BanCommand implements OreoCommand {
                     Map.of("player", target.getName(), "reason", reason));
         }
 
-        DiscordModerationNotifier mod = OEssentials.get().getDiscordMod();
+        fr.elias.oessentials.discord.api.ModerationNotifier mod = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
         if (mod != null && mod.isEnabled()) {
             Long expiresAt = (expires == null) ? null : expires.getTime();
             mod.notifyBan(target.getName(), target.getUniqueId(), reason, sender.getName(), expiresAt);

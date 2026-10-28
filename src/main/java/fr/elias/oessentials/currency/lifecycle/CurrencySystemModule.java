@@ -57,12 +57,10 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
                 plugin.getLogger().info("[Currency] Using JSON storage");
             }
             this.currencyService = new CurrencyService(plugin, currencyStorage, currencyConfig);
-            Bukkit.getServicesManager().register(
-                    fr.elias.oessentials.api.OEssentialsAPI.class,
-                    new fr.elias.oessentials.integrations.internal.api.OEssentialsAPIImpl(plugin),
-                    plugin,
-                    org.bukkit.plugin.ServicePriority.Normal);
-            plugin.getLogger().info("[Currency] Registered OEssentialsAPI via ServicesManager");
+            providePublicApi(fr.elias.oessentials.configuration.api.CurrencyApis.class, () -> new fr.elias.oessentials.configuration.api.CurrencyApis() {
+                @Override public fr.elias.oessentials.api.ICurrencyAPI currency(String currencyId) { return getCurrencyApi(currencyId); }
+                @Override public java.util.List<fr.elias.oessentials.api.ICurrencyAPI> currencies() { return getCurrencyApis(); }
+            });
             services(ConfigurationServices.class).getCommands().register(new CurrencyCommand(plugin)).register(new CurrencyBalanceCommand(plugin)).register(new CurrencySendCommand(plugin)).register(new CurrencyTopCommand(plugin));
             services(ConfigurationServices.class).getCommands().rewireTab("currency",        new CurrencyCommandTabCompleter(plugin));
             services(ConfigurationServices.class).getCommands().rewireTab("currencybalance", new CurrencyBalanceTabCompleter(plugin));

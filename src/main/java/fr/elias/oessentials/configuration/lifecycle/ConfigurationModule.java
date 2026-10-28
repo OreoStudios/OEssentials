@@ -46,6 +46,11 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         initConfig();
         publicApis.provide(fr.elias.oessentials.api.ITempFlyAPI.class, this::getTempFly);
         publicApis.provide(fr.elias.oessentials.api.IAutoRebootAPI.class, this::getAutoReboot);
+        // The public OEssentials API; each module provides its part through PublicApis.
+        var api = new fr.elias.oessentials.configuration.internal.api.OEssentialsAPIImpl(plugin);
+        org.bukkit.Bukkit.getServicesManager().register(fr.elias.oessentials.api.OEssentialsAPI.class, api, plugin, org.bukkit.plugin.ServicePriority.Normal);
+        cleanup("oessentialsApi", () -> org.bukkit.Bukkit.getServicesManager().unregister(fr.elias.oessentials.api.OEssentialsAPI.class, api));
+        plugin.getLogger().info("[API] Registered OEssentialsAPI via ServicesManager");
     }
 
     @Override public SettingsConfig getFeatureSettings() { return settingsConfig; }
