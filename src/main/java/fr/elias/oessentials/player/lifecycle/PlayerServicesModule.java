@@ -76,7 +76,7 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
 
         try {
             com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-            factory.setUri(plugin.getConfig().getString("rabbitmq.uri"));
+            factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(plugin.getConfig().getString("rabbitmq.uri")));
             com.rabbitmq.client.Connection rabbitConn = factory.newConnection();
             this.backBroker = new BackBroker(plugin, backService, rabbitConn);
             this.backBroker.start();

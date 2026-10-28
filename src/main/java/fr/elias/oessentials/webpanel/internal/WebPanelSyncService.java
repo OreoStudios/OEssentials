@@ -148,7 +148,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
                 // Subscribe to action messages (SELL / DELETE) sent from the web panel
                 rabbitPublisher.startActionConsumer(this::handlePanelAction);
             } catch (Exception e) {
-                plugin.getLogger().warning("[WebPanel] RabbitMQ connect failed — falling back to HTTP: " + e.getMessage());
+                plugin.getLogger().warning("[WebPanel] RabbitMQ connect failed — falling back to HTTP: " + fr.elias.oessentials.shared.Throwables.describe(e));
                 rabbitPublisher = null;
             }
         }

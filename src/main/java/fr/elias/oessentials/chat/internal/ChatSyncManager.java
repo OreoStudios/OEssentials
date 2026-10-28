@@ -52,7 +52,7 @@ public class ChatSyncManager {
 
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setUri(rabbitUri);
+            factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(rabbitUri));
             factory.setAutomaticRecoveryEnabled(true);
             factory.setNetworkRecoveryInterval(5000);
 
@@ -63,7 +63,7 @@ public class ChatSyncManager {
             Bukkit.getLogger().info("[ChatSync] Connected to RabbitMQ successfully. Server ID: " + SERVER_ID);
         } catch (Exception e) {
             this.enabled = false;
-            Bukkit.getLogger().severe("[ChatSync] Init failed: " + e.getMessage());
+            Bukkit.getLogger().severe("[ChatSync] Init failed: " + fr.elias.oessentials.shared.Throwables.describe(e));
             e.printStackTrace();
             safeClose();
         }

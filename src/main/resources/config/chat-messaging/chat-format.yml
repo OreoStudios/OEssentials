@@ -270,4 +270,4 @@ chat:
 MongoDB_rabbitmq:
   enabled: false
   rabbitmq:
-    uri: "amqp://guest:guest@localhost:5672/"
+    uri: "amqp://guest:guest@localhost:5672"
