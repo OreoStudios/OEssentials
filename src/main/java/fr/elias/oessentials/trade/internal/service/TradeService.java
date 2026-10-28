@@ -111,6 +111,43 @@ public final class TradeService implements Listener {
         return menuRegistry;
     }
 
+
+    // ------------------------------------------------------------------------------------------
+    // Session ids are derived from the two players, so every trade between the same pair reuses
+    // one id. Packets of an ended session that arrive late (including this server's own echoes)
+    // must not revive it: they used to re-create the session, re-open both menus in a loop and
+    // record menu decoration as offered items.
+    // ------------------------------------------------------------------------------------------
+    private static final long ENDED_SESSION_MEMORY_MS = 15_000L;
+    private final Map<UUID, Long> endedSessions = new ConcurrentHashMap<>();
+
+    private void markEnded(UUID sid) {
+        if (sid != null) endedSessions.put(sid, System.currentTimeMillis());
+    }
+
+    private boolean recentlyEnded(UUID sid) {
+        Long at = sid == null ? null : endedSessions.get(sid);
+        if (at == null) return false;
+        if (System.currentTimeMillis() - at > ENDED_SESSION_MEMORY_MS) {
+            endedSessions.remove(sid, at);
+            return false;
+        }
+        return true;
+    }
+
+    /** A new invite between these players: their next session may start right away. */
+    public void noteNewTrade(UUID a, UUID b) {
+        if (a != null && b != null) endedSessions.remove(TradeIds.computeTradeId(a, b));
+    }
+
+    /** Both traders are on this server, so nothing needs to go over the network. */
+    private static boolean isLocalSession(TradeSession s) {
+        if (s == null) return false;
+        Player a = Bukkit.getPlayer(s.getAId());
+        Player b = Bukkit.getPlayer(s.getBId());
+        return a != null && a.isOnline() && b != null && b.isOnline();
+    }
+
     public void sendInvite(Player requester, Player target) {
         log("[TRADE] sendInvite requester=" + safe(requester) + " -> target=" + safe(target));
         if (requester == null || target == null || !target.isOnline()) {
@@ -119,6 +156,7 @@ public final class TradeService implements Listener {
             return;
         }
 
+        noteNewTrade(requester.getUniqueId(), target.getUniqueId());
         invites.put(target.getUniqueId(), new Invite(requester.getUniqueId(), requester.getName()));
         log("[TRADE] invite stored receiver=" + target.getUniqueId() + " -> " + invites.get(target.getUniqueId()));
 
@@ -205,6 +243,7 @@ public final class TradeService implements Listener {
             return;
         }
 
+        noteNewTrade(fromId, receiver.getUniqueId());
         invites.put(receiver.getUniqueId(), new Invite(fromId, fromName));
         receiver.sendMessage("§e" + (fromName == null ? "Someone" : fromName)
                 + " §7wants to trade §8(cross-server)§7. Type §b/trade "
@@ -221,6 +260,7 @@ public final class TradeService implements Listener {
             return;
         }
 
+        noteNewTrade(fromId, receiverId);
         invites.put(receiverId, new Invite(fromId, fromName));
         Player receiver = Bukkit.getPlayer(receiverId);
         if (receiver != null && receiver.isOnline()) {
@@ -256,6 +296,10 @@ public final class TradeService implements Listener {
                 + " A=" + aName + "/" + aId + " B=" + bName + "/" + bId);
 
         TradeSession existing = sessionsById.get(sid);
+        if (existing == null && recentlyEnded(sid)) {
+            log("[TRADE] ignoring start of a session that just ended sid=" + sid);
+            return;
+        }
         if (existing != null) {
             if (existing.isClosingOrClosed() || existing.isClosed()) {
                 log("[TRADE] session already closing/closed, aborting open sid=" + sid);
@@ -515,7 +559,7 @@ public final class TradeService implements Listener {
         OreScheduler.run(plugin, () -> {
             try {
                 var broker = plugin.getTradeBroker();
-                if (broker != null && plugin.isMessagingAvailable()) {
+                if (broker != null && plugin.isMessagingAvailable() && !isLocalSession(s)) {
                     ItemStack[] itemsForA = getItemsForA(s);
                     ItemStack[] itemsForB = getItemsForB(s);
 
@@ -695,15 +739,18 @@ public final class TradeService implements Listener {
 
     private void cleanupSession(TradeSession s) {
         UUID sid = s.getId();
+        markEnded(sid);
+        boolean local = isLocalSession(s);
         sessionsById.remove(sid);
         clearGrantDedupFor(sid, s.getAId(), s.getBId());
         playerToSession.entrySet().removeIf(e -> sid.equals(e.getValue()));
-        publishClose(sid);
+        if (!local) publishClose(sid);
     }
 
     private void cleanupSessionSilent(TradeSession s) {
         if (s == null) return;
         UUID sid = s.getId();
+        markEnded(sid);
         clearGrantDedupFor(sid, s.getAId(), s.getBId());
 
         try { sessionsById.remove(sid); } catch (Throwable ignored) {}
@@ -741,10 +788,12 @@ public final class TradeService implements Listener {
         log("[TRADE] cancelSession sid=" + sid + " hadSession=" + (s != null) + " reason=" + reason);
         if (s == null) return;
         playerToSession.entrySet().removeIf(e -> sid.equals(e.getValue()));
+        markEnded(sid);
+        boolean local = isLocalSession(s);
         s.closeLocalViewers();
         try {
             var broker = plugin.getTradeBroker();
-            if (broker != null && plugin.isMessagingAvailable()) {
+            if (!local && broker != null && plugin.isMessagingAvailable()) {
                 broker.cancel(sid, reason != null ? reason : "cancelled");
             }
         } catch (Throwable ignored) {}
@@ -766,6 +815,13 @@ public final class TradeService implements Listener {
         if (p == null) return;
 
         TradeSession s = getSession(p.getSessionId());
+        if (s == null && recentlyEnded(p.getSessionId())) {
+            log("[TRADE] dropping late state of ended session " + p.getSessionId());
+            return;
+        }
+        if (s != null && isLocalSession(s)) {
+            return; // our own echo: a local session is already the source of truth
+        }
         if (s == null) {
             enqueueState(p);
             log("[TRADE] applyRemoteState: queued until session exists " + p.getSessionId());
@@ -956,6 +1012,7 @@ public final class TradeService implements Listener {
     public void removeSession(UUID sid) {
         if (sid == null) return;
         TradeSession s = sessionsById.remove(sid);
+        markEnded(sid);
         playerToSession.entrySet().removeIf(e -> sid.equals(e.getValue()));
         if (s != null) {
             try { if (menuRegistry != null) menuRegistry.unregister(s.getAId()); } catch (Throwable ignored) {}
@@ -970,6 +1027,7 @@ public final class TradeService implements Listener {
         if (s == null || s.isClosingOrClosed() || s.isClosed() || s.isUiLocked() || s.isCompleted()) {
             return;
         }
+        if (isLocalSession(s)) return;
 
         Player a = Bukkit.getPlayer(s.getAId());
         Player b = Bukkit.getPlayer(s.getBId());
@@ -997,39 +1055,11 @@ public final class TradeService implements Listener {
     }
 
     private boolean isNotDecorativeGuiItem(ItemStack item) {
-        if (item == null) return false;
-
-        Material type = item.getType();
-        if (type == null || type.isAir()) return false;
-
-        String matName = type.name();
-
-        if (matName.contains("GLASS") || matName.contains("PANE")) {
-            return false;
-        }
-
-        switch (type) {
-            case BARRIER:
-            case BEDROCK:
-            case STRUCTURE_VOID:
-            case LIGHT:
-                return false;
-            default:
-                break;
-        }
-
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-            String name = org.bukkit.ChatColor.stripColor(item.getItemMeta().getDisplayName())
-                    .toLowerCase(java.util.Locale.ROOT);
-
-            if (name.contains("filler") || name.contains("border") || name.contains("trade ui")
-                    || name.contains("locked") || name.contains("interface") || name.contains("menu")) {
-                return false;
-            }
-        }
-
-        return true;
+        if (item == null || item.getType().isAir()) return false;
+        // Trade-menu decoration is marked; real glass, barriers etc. are tradeable items.
+        return !fr.elias.oessentials.trade.internal.ui.TradeMenu.isUiItem(item);
     }
+
 
     private void publishClose(UUID sid) {
         try {
