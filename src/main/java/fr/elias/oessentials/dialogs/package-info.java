@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.dialogs.lifecycle.DialogsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "dialogs")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "dialogs", lifecycle = fr.elias.oessentials.dialogs.lifecycle.DialogsModule.class)
 package fr.elias.oessentials.dialogs;

@@ -204,13 +204,12 @@ public class TpaCommand implements OreoCommand {
     private void queueLocalRequest(Player requester, Player target) {
         teleportService.request(requester, target);
         OEssentials plugin = OEssentials.get();
-        if (plugin.getDialogManager() != null) {
-            OreScheduler.runForEntity(plugin, target, () -> {
-                if (target.isOnline() && plugin.getDialogManager() != null) {
-                    plugin.getDialogManager().sendTpaRequestDialog(target, requester, false);
-                }
-            });
-        }
+        OreScheduler.runForEntity(plugin, target, () -> {
+            if (target.isOnline()) {
+                fr.elias.oessentials.platform.ui.Dialogs.show(plugin, "tpa", "TPA dialog",
+                        () -> fr.elias.oessentials.player.internal.tp.TpaDialogHandler.sendRequest(plugin, target, requester, false));
+            }
+        });
     }
 
     private Player resolveOnline(String input) {

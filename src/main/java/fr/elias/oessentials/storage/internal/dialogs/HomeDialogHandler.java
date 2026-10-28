@@ -1,4 +1,4 @@
-package fr.elias.oessentials.dialogs.internal.dialogs;
+package fr.elias.oessentials.storage.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.storage.api.Homes;

@@ -1,8 +1,8 @@
-package fr.elias.oessentials.dialogs.internal.dialogs;
+package fr.elias.oessentials.chat.internal.channels;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.kits.internal.Kit;
-import fr.elias.oessentials.kits.internal.KitsManager;
+import fr.elias.oessentials.chat.internal.channels.ChatChannel;
+import fr.elias.oessentials.chat.internal.channels.ChatChannelManager;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
@@ -17,35 +17,44 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class KitsDialogHandler {
+public final class ChannelsDialogHandler {
 
-    private KitsDialogHandler() {}
+    private ChannelsDialogHandler() {}
 
-    public static void open(OEssentials plugin, KitsManager manager, Player player) {
+    public static void open(OEssentials plugin, Player player, ChatChannelManager channelManager) {
         OreScheduler.runForEntity(plugin, player, () -> {
             if (!player.isOnline()) return;
 
-            Map<String, Kit> kits = manager.getKits();
-            if (kits == null || kits.isEmpty()) {
-                player.sendMessage(Component.text("No kits are available.", NamedTextColor.YELLOW));
+            List<ChatChannel> accessible = channelManager.getAllChannels().stream()
+                    .filter(ChatChannel::isEnabled)
+                    .filter(c -> c.canJoin(player))
+                    .toList();
+
+            if (accessible.isEmpty()) {
+                player.sendMessage(Component.text("No channels available.", NamedTextColor.YELLOW));
                 return;
             }
 
-            List<ActionButton> buttons = new ArrayList<>();
-            for (Map.Entry<String, Kit> entry : kits.entrySet()) {
-                String id = entry.getKey();
-                Kit kit = entry.getValue();
-                String label = (kit.getDisplayName() != null && !kit.getDisplayName().isBlank())
-                        ? kit.getDisplayName() : id;
-                String cmd = "kit " + id;
-                String cooldownText = kit.getCooldownSeconds() > 0
-                        ? formatCooldown(kit.getCooldownSeconds()) : "No cooldown";
+            ChatChannel current = channelManager.getPlayerChannel(player);
 
-                buttons.add(ActionButton.builder(Component.text("\uD83C\uDF81 " + label, NamedTextColor.GREEN))
-                        .tooltip(Component.text("ID: " + id + " | Cooldown: " + cooldownText, NamedTextColor.GRAY))
+            List<ActionButton> buttons = new ArrayList<>();
+            for (ChatChannel ch : accessible) {
+                String id = ch.getId();
+                String displayName = ch.getDisplayName();
+                boolean isCurrent = current != null && current.getId().equals(id);
+                String cmd = "oechannel " + id;
+
+                String descLine = (ch.getDescription() != null && !ch.getDescription().isBlank())
+                        ? ch.getDescription() : "Switch to this channel";
+                String tooltipText = (isCurrent ? "[Current] " : "") + descLine;
+
+                NamedTextColor color = isCurrent ? NamedTextColor.YELLOW : NamedTextColor.WHITE;
+                String label = (isCurrent ? "\u2605 " : "\u2606 ") + displayName;
+
+                buttons.add(ActionButton.builder(Component.text(label, color))
+                        .tooltip(Component.text(tooltipText, NamedTextColor.GRAY))
                         .action(DialogAction.customClick(
                                 (view, audience) -> {
                                     if (audience instanceof Player p) p.performCommand(cmd);
@@ -66,22 +75,15 @@ public final class KitsDialogHandler {
             ));
 
             Dialog dialog = Dialog.create(b -> b.empty()
-                    .base(DialogBase.builder(Component.text("Kits", NamedTextColor.GREEN))
+                    .base(DialogBase.builder(Component.text("Chat Channels", NamedTextColor.LIGHT_PURPLE))
                             .canCloseWithEscape(true)
                             .body(List.of(DialogBody.plainMessage(
-                                    Component.text("Click a kit to claim it.", NamedTextColor.GRAY))))
+                                    Component.text("Click a channel to switch to it.", NamedTextColor.GRAY))))
                             .build())
                     .type(DialogType.multiAction(buttons).build())
             );
 
             player.showDialog(dialog);
         });
-    }
-
-    private static String formatCooldown(long seconds) {
-        if (seconds < 60) return seconds + "s";
-        if (seconds < 3600) return (seconds / 60) + "m";
-        if (seconds < 86400) return (seconds / 3600) + "h";
-        return (seconds / 86400) + "d";
     }
 }

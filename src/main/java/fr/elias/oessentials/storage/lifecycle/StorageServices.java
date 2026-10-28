@@ -48,9 +48,4 @@ public interface StorageServices {
     /** {@code null} when player warps are disabled. */
     fr.elias.oessentials.api.IPlayerWarpsAPI getPlayerWarpsApi();
 
-    /** Registers the dialogs storage's commands open, or {@code null} to remove them. */
-    void setDialogs(fr.elias.oessentials.storage.api.StorageDialogs dialogs);
-
-    /** The registered dialogs, or {@code null}. */
-    fr.elias.oessentials.storage.api.StorageDialogs getDialogs();
 }

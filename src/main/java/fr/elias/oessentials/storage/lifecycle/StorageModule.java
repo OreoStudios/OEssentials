@@ -53,7 +53,6 @@ public final class StorageModule extends ManagedModule implements StorageService
     private fr.elias.oessentials.api.IWarpsAPI warpsApi;
     private fr.elias.oessentials.api.ISpawnAPI spawnApi;
     private fr.elias.oessentials.api.IPlayerWarpsAPI playerWarpsApi;
-    private volatile fr.elias.oessentials.storage.api.StorageDialogs dialogs;
 
     @Override
     protected void start() {
@@ -124,8 +123,6 @@ public final class StorageModule extends ManagedModule implements StorageService
     @Override public fr.elias.oessentials.api.IWarpsAPI getWarpsApi() { return warpsApi; }
     @Override public fr.elias.oessentials.api.ISpawnAPI getSpawnApi() { return spawnApi; }
     @Override public fr.elias.oessentials.api.IPlayerWarpsAPI getPlayerWarpsApi() { return playerWarpsApi; }
-    @Override public void setDialogs(fr.elias.oessentials.storage.api.StorageDialogs dialogs) { this.dialogs = dialogs; }
-    @Override public fr.elias.oessentials.storage.api.StorageDialogs getDialogs() { return dialogs; }
 
     private void publishContracts() {
         var messaging = services(MessagingServices.class);

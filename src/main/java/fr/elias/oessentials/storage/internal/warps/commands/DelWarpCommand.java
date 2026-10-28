@@ -37,8 +37,7 @@ public class DelWarpCommand implements OreoCommand {
         // Show confirm dialog for player senders (not console)
         boolean isConfirmed = args.length >= 2 && args[1].equals("--confirmed");
         if (!isConfirmed && sender instanceof Player p) {
-            var dm = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
-            if (dm != null && dm.confirmDelWarp(p, name)) {
+            if (fr.elias.oessentials.storage.internal.dialogs.StorageDialogs.confirmDelWarp(p, name)) {
                 return true;
             }
         }

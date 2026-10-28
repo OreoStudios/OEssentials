@@ -38,8 +38,7 @@ public class HomesGuiCommand implements OreoCommand {
         if (!(sender instanceof Player p)) return true;
 
         OEssentials plugin = OEssentials.get();
-        var dialogs = plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
-        if (dialogs != null && dialogs.openHomeDialog(p)) {
+        if (fr.elias.oessentials.storage.internal.dialogs.StorageDialogs.openHomes(p)) {
             return true;
         }
 

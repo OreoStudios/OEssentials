@@ -1,7 +1,8 @@
-package fr.elias.oessentials.dialogs.internal.dialogs;
+package fr.elias.oessentials.storage.internal.dialogs;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.api.IWarpsAPI;
+import fr.elias.oessentials.storage.api.PlayerWarpView;
+import fr.elias.oessentials.storage.api.PlayerWarps;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -18,50 +19,64 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class WarpDialogHandler {
+public final class PlayerWarpDialogHandler {
 
-    private WarpDialogHandler() {}
+    private PlayerWarpDialogHandler() {}
 
-    public static void open(OEssentials plugin, Player player, IWarpsAPI warps) {
+    public static void open(OEssentials plugin, Player player) {
+        PlayerWarps service;
+        try {
+            service = plugin.getPlayerWarps();
+        } catch (Throwable t) {
+            // DC5: inform the player and log the error
+            player.sendMessage("§cFailed to open warp menu. Please try again.");
+            OEssentials.get().getLogger().warning("[PlayerWarpDialog] Error getting service: " + t.getMessage());
+            return;
+        }
+        if (service == null) return;
+
         Async.run(() -> {
-            Set<String> all = warps.listWarps();
+            List<PlayerWarpView> all;
+            try {
+                all = new ArrayList<>(service.listAll());
+            } catch (Throwable t) {
+                // DC5: inform the player and log the error
+                OreScheduler.runForEntity(plugin, player, () ->
+                        player.sendMessage("§cFailed to open warp menu. Please try again."));
+                OEssentials.get().getLogger().warning("[PlayerWarpDialog] Error listing warps: " + t.getMessage());
+                all = List.of();
+            }
+            final List<PlayerWarpView> warps = all;
+
             OreScheduler.runForEntity(plugin, player, () -> {
                 if (!player.isOnline()) return;
 
-                List<String> accessible = all == null ? List.of() :
-                        all.stream()
-                                .sorted(String.CASE_INSENSITIVE_ORDER)
-                                .filter(name -> warps.canUse(player, name))
-                                .toList();
+                List<PlayerWarpView> accessible = warps.stream()
+                        .filter(w -> !w.isLocked() || service.canUse(player, w))
+                        .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
+                        .toList();
 
                 if (accessible.isEmpty()) {
-                    Lang.send(player, "warp.no-warps", "<yellow>No warps available.</yellow>");
+                    Lang.send(player, "playerwarp.no-warps",
+                            "<yellow>No player warps available.</yellow>");
                     return;
                 }
 
                 List<ActionButton> buttons = new ArrayList<>();
-                for (String name : accessible) {
-                    // DC11: fetch a fresh permission check at click-time via warps.canUse() to
-                    // avoid acting on a warp that was removed/restricted after this dialog opened.
-                    // The warp list itself (accessible) was snapshotted at dialog-open time; if
-                    // IWarpsAPI reloads between open and click, the worst outcome is a stale
-                    // button that the underlying /warp command will reject gracefully.
-                    String cmd = "warp " + name;
-                    buttons.add(ActionButton.builder(Component.text("\u2691 " + name, NamedTextColor.GOLD))
-                            .tooltip(Component.text("Teleport to warp: " + name, NamedTextColor.GRAY))
+                for (PlayerWarpView w : accessible) {
+                    String cmd = "pw " + w.getName();
+                    String label = w.getDescription() != null && !w.getDescription().isBlank()
+                            ? w.getName() + " \u2014 " + w.getDescription()
+                            : w.getName();
+                    String tooltip = "Teleport to " + w.getName();
+                    buttons.add(ActionButton.builder(
+                                    Component.text("\u2726 " + label, NamedTextColor.LIGHT_PURPLE))
+                            .tooltip(Component.text(tooltip, NamedTextColor.GRAY))
                             .action(DialogAction.customClick(
                                     (view, audience) -> {
-                                        if (audience instanceof Player p) {
-                                            // Re-check permission at click time using the live IWarpsAPI
-                                            if (!warps.canUse(p, name)) {
-                                                p.sendMessage("§cYou no longer have access to that warp.");
-                                                return;
-                                            }
-                                            p.performCommand(cmd);
-                                        }
+                                        if (audience instanceof Player p) p.performCommand(cmd);
                                     },
                                     ClickCallback.Options.builder()
                                             .uses(1)
@@ -80,7 +95,7 @@ public final class WarpDialogHandler {
                 ));
 
                 Dialog dialog = Dialog.create(builder -> builder.empty()
-                        .base(DialogBase.builder(Component.text("Server Warps", NamedTextColor.DARK_AQUA))
+                        .base(DialogBase.builder(Component.text("Player Warps", NamedTextColor.LIGHT_PURPLE))
                                 .canCloseWithEscape(true)
                                 .body(List.of(
                                         DialogBody.plainMessage(

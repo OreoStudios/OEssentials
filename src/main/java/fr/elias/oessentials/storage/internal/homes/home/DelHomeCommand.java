@@ -63,8 +63,7 @@ public class DelHomeCommand implements OreoCommand {
         // If dialog confirm is enabled and this isn't already the confirmed execution, show dialog
         boolean isConfirmed = args.length >= 2 && args[1].equals("--confirmed");
         if (!isConfirmed) {
-            var dm = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
-            if (dm != null && dm.confirmDelHome(p, rawName)) {
+            if (fr.elias.oessentials.storage.internal.dialogs.StorageDialogs.confirmDelHome(p, rawName)) {
                 return true;
             }
         }

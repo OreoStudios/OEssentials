@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.commandcontrol.lifecycle.CommandControlModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "command-control")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "command-control", lifecycle = fr.elias.oessentials.commandcontrol.lifecycle.CommandControlModule.class)
 package fr.elias.oessentials.commandcontrol;

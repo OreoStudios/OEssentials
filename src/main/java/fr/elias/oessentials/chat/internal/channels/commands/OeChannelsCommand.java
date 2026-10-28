@@ -56,7 +56,8 @@ public class OeChannelsCommand implements OreoCommand {
             return true;
         }
 
-        if (plugin.getDialogManager() != null && plugin.getDialogManager().openChannelsDialog(player, channelManager)) {
+        if (fr.elias.oessentials.platform.ui.Dialogs.show(plugin, "channels", "Channels dialog",
+                () -> fr.elias.oessentials.chat.internal.channels.ChannelsDialogHandler.open(plugin, player, channelManager))) {
             return true;
         }
         ChannelsGUI.getInventory(plugin, channelManager).open(player);

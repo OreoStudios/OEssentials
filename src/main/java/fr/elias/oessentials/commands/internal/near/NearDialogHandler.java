@@ -1,4 +1,4 @@
-package fr.elias.oessentials.dialogs.internal.dialogs;
+package fr.elias.oessentials.commands.internal.near;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;

@@ -1,4 +1,4 @@
-package fr.elias.oessentials.dialogs.internal.dialogs;
+package fr.elias.oessentials.player.internal.tp;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;

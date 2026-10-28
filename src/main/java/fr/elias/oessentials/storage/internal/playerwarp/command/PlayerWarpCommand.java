@@ -240,8 +240,7 @@ public class PlayerWarpCommand implements OreoCommand {
                     return true;
                 }
                 if (!pwConfirmed) {
-                    var dm = plugin.getModuleRegistry().read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getDialogs);
-                    if (dm != null && dm.confirmPlayerWarpRemove(actor, name)) {
+                    if (fr.elias.oessentials.storage.internal.dialogs.StorageDialogs.confirmPlayerWarpRemove(actor, name)) {
                         return true;
                     }
                 }
