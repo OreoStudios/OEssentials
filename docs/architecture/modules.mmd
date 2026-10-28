@@ -16,6 +16,7 @@ flowchart TD
     clear_lag -->|services| configuration
     clear_lag --> mobs
     command_control["command-control"]
+    command_control -->|services| configuration
     command_control --> economy
     command_toggle["command-toggle"]
     command_toggle -->|services| configuration

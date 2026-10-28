@@ -14,6 +14,7 @@ public final class DiscordIntegrationModule extends ManagedModule implements Dis
     @Override
     protected void start() {
         initDiscordIntegration();
+        registerReloadStep(10, "discord", this::reloadDiscord);
     }
 
     @Override public fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier getDiscordMod() { return discordMod; }
@@ -48,5 +49,13 @@ public final class DiscordIntegrationModule extends ManagedModule implements Dis
         services(ConfigurationServices.class).getCommands().registerLegacy("discord", linkCmd, linkCmd);
         services(ConfigurationServices.class).getCommands().registerLegacy("oe-discord",
                 new fr.elias.oessentials.discord.internal.discordbot.DiscordRconExtension(services(StorageServices.class).getHomes(), services(EconomyServices.class).getDatabase()));
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadDiscord(org.bukkit.command.CommandSender sender) {
+        // The Discord moderation notifier has no reload hook.
+        fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.discord-skip",
+                "<yellow>• Skipped discord integration (no reload hook)</yellow>");
+        return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
     }
 }

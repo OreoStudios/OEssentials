@@ -23,6 +23,7 @@ public final class NametagModule extends ManagedModule implements NametagService
         cleanup("multiBossBarService", () -> { if (multiBossBarService != null) multiBossBarService.shutdown(); });
         initNametag();
         providePublicApi(fr.elias.oessentials.api.INametagAPI.class, this::getNametagApi);
+        registerReloadStep(15, "nametags", this::reloadNametags);
     }
 
     @Override public PlayerNametagManager getNametagManager() { return nametagManager; }
@@ -135,6 +136,26 @@ public final class NametagModule extends ManagedModule implements NametagService
             multiBossBarService.reload(npCfg);
         } else {
             multiBossBarService = new fr.elias.oessentials.nametag.internal.MultiBossBarService(plugin, npCfg);
+        }
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadNametags(org.bukkit.command.CommandSender sender) {
+        try {
+            if (plugin.getNametagManager() != null) {
+                reloadCustomNameplates();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.nametags",
+                        "<green>✔ Reloaded <white>nametags</white> <gray>(config + live refresh)</gray></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.nametags-skip",
+                    "<yellow>• Skipped nametags (service unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.nametags-fail",
+                    "<red>✘ Failed reloading nametags: <gray>%error%</gray></red>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
         }
     }
 }

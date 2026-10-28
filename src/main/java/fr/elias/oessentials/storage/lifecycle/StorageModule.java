@@ -73,6 +73,7 @@ public final class StorageModule extends ManagedModule implements StorageService
         providePublicApi(fr.elias.oessentials.api.ISpawnAPI.class, this::getSpawnApi);
         providePublicApi(fr.elias.oessentials.api.IWarpsAPI.class, this::getWarpsApi);
         providePublicApi(fr.elias.oessentials.api.IPlayerWarpsAPI.class, this::getPlayerWarpsApi);
+        registerReloadStep(13, "playerwarps", this::reloadPlayerwarps);
     }
 
     /** Cross-server homes and player warps, once RabbitMQ is connected. */
@@ -292,5 +293,20 @@ public final class StorageModule extends ManagedModule implements StorageService
         java.io.File f = new java.io.File(plugin.getDataFolder(), "data/playerwarps/config.yml");
         if (!f.exists()) plugin.saveResource("data/playerwarps/config.yml", false);
         this.playerWarpsConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(f);
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadPlayerwarps(org.bukkit.command.CommandSender sender) {
+        try {
+            reloadPlayerWarpsConfig();
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.playerwarps",
+                    "<green>✔ Reloaded <white>playerwarps/config.yml</white></green>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.playerwarps-fail",
+                    "<red>✘ Failed reloading playerwarps config: <gray>%error%</gray></red>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
+        }
     }
 }

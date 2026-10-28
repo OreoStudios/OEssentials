@@ -3,12 +3,10 @@ package fr.elias.oessentials.commands.internal.commands.core.admins;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.tab.internal.TabListManager;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -83,262 +81,14 @@ public final class ReloadAllCommand implements OreoCommand {
             skip++;
         }
 
-        // 3) Chat (chat-format.yml + channels, swaps listener if channels toggled)
-        try {
-            plugin.reloadChat();
-            Lang.send(sender, "admin.reload.chat",
-                    "<green>✔ Reloaded <white>chat-format.yml</white> <gray>(channels=" + (plugin.getChannelManager() != null && plugin.getChannelManager().isEnabled()) + ")</gray></green>");
-            ok++;
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.chat-skip",
-                    "<yellow>• Skipped chat: <gray>%error%</gray></yellow>",
-                    Map.of("error", t.getMessage()));
-            skip++;
+        // 3-15) Module files: each module registers its own reload step.
+        var steps = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getReloadSteps);
+        if (steps != null) {
+            int[] counts = steps.runAll(sender);
+            ok += counts[0];
+            skip += counts[1];
         }
 
-        // 4) Tab list
-        try {
-            TabListManager tab = plugin.getTabListManager();
-            if (tab != null) {
-                tab.reload();
-                Lang.send(sender, "admin.reload.tab",
-                        "<green>✔ Reloaded <white>tab.yml</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.tab-skip",
-                        "<yellow>• Skipped tab.yml (manager unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.tab-skip",
-                    "<yellow>• Skipped tab.yml: <gray>%error%</gray></yellow>",
-                    Map.of("error", t.getMessage()));
-            skip++;
-        }
-
-        // 5) Kits
-        try {
-            Object km = plugin.getKitsManager();
-            if (km != null) {
-                if (!callNoArgs(km, "reload") && !callNoArgs(km, "load")) {
-                    throw new IllegalStateException("no reload/load available");
-                }
-                Lang.send(sender, "admin.reload.kits",
-                        "<green>✔ Reloaded <white>kits.yml</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.kits-skip",
-                        "<yellow>• Skipped kits.yml (manager unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.kits-skip",
-                    "<yellow>• Skipped kits.yml: <gray>%error%</gray></yellow>",
-                    Map.of("error", t.getMessage()));
-            skip++;
-        }
-
-        // 6) RTP
-        try {
-            var rtpCfg = plugin.getRtpConfig();
-            if (rtpCfg != null) {
-                rtpCfg.reload();
-                Lang.send(sender, "admin.reload.rtp",
-                        "<green>✔ Reloaded <white>rtp.yml</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.rtp-skip",
-                        "<yellow>• Skipped rtp.yml (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.rtp-skip",
-                    "<yellow>• Skipped rtp.yml: <gray>%error%</gray></yellow>",
-                    Map.of("error", t.getMessage()));
-            skip++;
-        }
-
-        // 7) EnderChest
-        try {
-            var ecService = plugin.getEnderChestService();
-            if (ecService != null && (callNoArgs(ecService, "reload") || callNoArgs(ecService, "refresh"))) {
-                Lang.send(sender, "admin.reload.enderchest",
-                        "<green>✔ Reloaded <white>enderchest.yml</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.enderchest-skip",
-                        "<yellow>• Skipped enderchest.yml (no reload hook)</yellow>");
-                skip++;
-            }
-        } catch (Throwable ignored) {
-            Lang.send(sender, "admin.reload.enderchest-skip",
-                    "<yellow>• Skipped enderchest.yml (no reload hook)</yellow>");
-            skip++;
-        }
-
-        // 8) BossBar
-        try {
-            var bb = plugin.getBossBarService();
-            if (bb != null) {
-                bb.reload();
-                Lang.send(sender, "admin.reload.bossbar",
-                        "<green>✔ Reloaded <white>bossbar</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.bossbar-skip",
-                        "<yellow>• Skipped bossbar (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.bossbar-fail",
-                    "<red>✘ Failed reloading bossbar: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
-
-        // 9) Scoreboard
-        try {
-            if (plugin.getScoreboardService() != null) {
-                plugin.getScoreboardService().reload();
-                Lang.send(sender, "admin.reload.scoreboard",
-                        "<green>✔ Reloaded <white>scoreboard</white> <gray>(config + live refresh)</gray></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.scoreboard-skip",
-                        "<yellow>• Skipped scoreboard (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.scoreboard-fail",
-                    "<red>✘ Failed reloading scoreboard: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
-
-        // 10) Discord integration
-        try {
-            var dm = plugin.getDiscordMod();
-            if (dm != null && callNoArgs(dm, "reload")) {
-                Lang.send(sender, "admin.reload.discord",
-                        "<green>✔ Reloaded <white>discord integration</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.discord-skip",
-                        "<yellow>• Skipped discord integration (no reload hook)</yellow>");
-                skip++;
-            }
-        } catch (Throwable ignored) {
-            Lang.send(sender, "admin.reload.discord-skip",
-                    "<yellow>• Skipped discord integration (no reload hook)</yellow>");
-            skip++;
-        }
-
-        // 11) Health bars
-        try {
-            var core = OEssentials.get();
-
-            fr.elias.ultimateChristmas.UltimateChristmas xmasHook = null;
-            try {
-                org.bukkit.plugin.Plugin maybe = core.getServer().getPluginManager().getPlugin("UltimateChristmas");
-                if (maybe instanceof fr.elias.ultimateChristmas.UltimateChristmas uc && maybe.isEnabled()) {
-                    xmasHook = uc;
-                }
-            } catch (Throwable ignored) {}
-
-            var hbl = new fr.elias.oessentials.mobs.internal.HealthBarListener(core, xmasHook);
-
-            if (hbl.isEnabled()) {
-                Bukkit.getPluginManager().registerEvents(hbl, core);
-
-                var f = OEssentials.class.getDeclaredField("healthBarListener");
-                f.setAccessible(true);
-                f.set(core, hbl);
-
-                Lang.send(sender, "admin.reload.healthbars",
-                        "<green>✔ Reloaded <white>mob health bars</white></green>");
-            } else {
-                Lang.send(sender, "admin.reload.healthbars-disabled",
-                        "<yellow>• Mob health bars disabled by config</yellow>");
-
-                var f = OEssentials.class.getDeclaredField("healthBarListener");
-                f.setAccessible(true);
-                f.set(core, null);
-            }
-
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.healthbars-skip",
-                    "<yellow>• Skipped mob health bars: <gray>%error%</gray></yellow>",
-                    Map.of("error", t.getMessage()));
-        }
-
-        // 12) PlayerVaults
-        try {
-            var pv = plugin.getPlayervaultsService();
-            if (pv != null) {
-                pv.reload();
-                Lang.send(sender, "admin.reload.playervaults",
-                        "<green>✔ Reloaded <white>playervaults</white> <gray>(%storage%)</gray></green>",
-                        Map.of("storage", pvStorageName(pv)));
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.playervaults-skip",
-                        "<yellow>• Skipped playervaults (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.playervaults-fail",
-                    "<red>✘ Failed reloading playervaults: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
-        // 13) PlayerWarps config
-        try {
-            plugin.reloadPlayerWarpsConfig();
-            Lang.send(sender, "admin.reload.playerwarps",
-                    "<green>✔ Reloaded <white>playerwarps/config.yml</white></green>");
-            ok++;
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.playerwarps-fail",
-                    "<red>✘ Failed reloading playerwarps config: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
-
-        // 14) Daily Rewards config
-        try {
-            var dc = plugin.getDailyConfig();
-            var rc = plugin.getDailyRewardsConfig();
-            if (dc != null && rc != null) {
-                dc.load();
-                rc.load();
-                Lang.send(sender, "admin.reload.dailyrewards",
-                        "<green>✔ Reloaded <white>dailyrewards/dailyrewards.yml</white></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.dailyrewards-skip",
-                        "<yellow>• Skipped dailyrewards (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.dailyrewards-fail",
-                    "<red>✘ Failed reloading dailyrewards: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
-
-        // 15) Nametags (custom-nameplates)
-        try {
-            var nametagMgr = plugin.getNametagManager();
-            if (nametagMgr != null) {
-                plugin.reloadCustomNameplates();
-                Lang.send(sender, "admin.reload.nametags",
-                        "<green>✔ Reloaded <white>nametags</white> <gray>(config + live refresh)</gray></green>");
-                ok++;
-            } else {
-                Lang.send(sender, "admin.reload.nametags-skip",
-                        "<yellow>• Skipped nametags (service unavailable)</yellow>");
-                skip++;
-            }
-        } catch (Throwable t) {
-            Lang.send(sender, "admin.reload.nametags-fail",
-                    "<red>✘ Failed reloading nametags: <gray>%error%</gray></red>",
-                    Map.of("error", t.getMessage()));
-        }
         try {
             for (var p : Bukkit.getOnlinePlayers()) {
                 try {
@@ -358,31 +108,5 @@ public final class ReloadAllCommand implements OreoCommand {
                 "<dark_gray>(Some modules don't support hot reload yet; a server restart may be required.)</dark_gray>");
 
         return true;
-    }
-
-    private static boolean callNoArgs(Object target, String method) {
-        try {
-            Method m = target.getClass().getMethod(method);
-            m.setAccessible(true);
-            m.invoke(target);
-            return true;
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    private static String pvStorageName(fr.elias.oessentials.playervaults.internal.PlayerVaultsService svc) {
-        try {
-            var f = svc.getClass().getDeclaredField("storage");
-            f.setAccessible(true);
-            Object st = f.get(svc);
-            if (st == null) return "disabled";
-            String n = st.getClass().getSimpleName().toLowerCase();
-            if (n.contains("mongo")) return "mongodb";
-            if (n.contains("yaml"))  return "yaml";
-            return n;
-        } catch (Throwable ignored) {
-            return "ok";
-        }
     }
 }

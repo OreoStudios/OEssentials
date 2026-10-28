@@ -16,6 +16,7 @@ public final class DailyModule extends ManagedModule implements DailyServices {
         cleanup("dailyStore", () -> { if (dailyStore != null) dailyStore.close(); });
         initDaily();
         providePublicApi(fr.elias.oessentials.api.IDailyAPI.class, this::getDailyApi);
+        registerReloadStep(14, "daily", this::reloadDaily);
     }
 
     @Override public fr.elias.oessentials.daily.internal.DailyConfig getDailyConfig() { return dailyConfig; }
@@ -33,5 +34,28 @@ public final class DailyModule extends ManagedModule implements DailyServices {
         var dailyCmd = new fr.elias.oessentials.daily.internal.DailyCommand(plugin, dailyConfig, dailyService, dailyRewardsConfig);
         services(ConfigurationServices.class).getCommands().registerLegacy("daily", dailyCmd, dailyCmd);
         plugin.getLogger().info("[Daily] Rewards system initialized with " + (dailyConfig.mongo.enabled ? "MongoDB" : "file-based") + " storage.");
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadDaily(org.bukkit.command.CommandSender sender) {
+        try {
+            var dc = plugin.getDailyConfig();
+            var rc = plugin.getDailyRewardsConfig();
+            if (dc != null && rc != null) {
+                dc.load();
+                rc.load();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.dailyrewards",
+                        "<green>✔ Reloaded <white>dailyrewards/dailyrewards.yml</white></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.dailyrewards-skip",
+                    "<yellow>• Skipped dailyrewards (service unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.dailyrewards-fail",
+                    "<red>✘ Failed reloading dailyrewards: <gray>%error%</gray></red>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
+        }
     }
 }

@@ -16,6 +16,7 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
         initEnderChest();
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IEnderChestAPI.class, this::getEnderChestApi);
+        registerReloadStep(7, "enderchest", this::reloadEnderchest);
     }
 
     @Override public fr.elias.oessentials.enderchest.internal.EnderChestConfig getEcConfig() { return ecConfig; }
@@ -48,5 +49,13 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
         commands.register(new fr.elias.oessentials.enderchest.internal.EcCommand(ecService, services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "enderchest", true)))
                 .register(new fr.elias.oessentials.enderchest.internal.EcSeeCommand());
         commands.rewireTab("ecsee", new fr.elias.oessentials.enderchest.internal.EcSeeCommand());
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadEnderchest(org.bukkit.command.CommandSender sender) {
+        // EnderChestService has no reload hook.
+        fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.enderchest-skip",
+                "<yellow>• Skipped enderchest.yml (no reload hook)</yellow>");
+        return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
     }
 }

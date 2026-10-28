@@ -26,6 +26,7 @@ public final class RtpModule extends ManagedModule implements RtpServices {
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.rtp.internal.RtpPacketNamespace());
         initRtp();
         listenForModuleEvents(this);
+        registerReloadStep(6, "rtp", this::reloadRtp);
     }
 
     @Override public RtpPendingService getRtpPendingService() { return rtpPendingService; }
@@ -62,4 +63,24 @@ public final class RtpModule extends ManagedModule implements RtpServices {
         plugin.getLogger().info("[RTP] Cross-server RTP bridge ready.");
     }
 
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadRtp(org.bukkit.command.CommandSender sender) {
+        try {
+            var target = rtpConfig;
+            if (target != null) {
+                target.reload();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.rtp",
+                        "<green>✔ Reloaded <white>rtp.yml</white></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.rtp-skip",
+                    "<yellow>• Skipped rtp.yml (service unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.rtp-skip",
+                    "<yellow>• Skipped rtp.yml: <gray>%error%</gray></yellow>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        }
+    }
 }

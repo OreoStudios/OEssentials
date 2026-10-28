@@ -31,6 +31,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         initChat();
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IChatAPI.class, this::getChatApi);
+        registerReloadStep(3, "chat", this::reloadChat);
     }
 
     @Override public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return channelManager; }
@@ -205,5 +206,20 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         commands.rewireTab("mute", muteCmd);
         commands.rewireTab("unmute", unmuteCmd);
         commands.rewireTab("nick", nickCmd);
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadChat(org.bukkit.command.CommandSender sender) {
+        try {
+            plugin.reloadChat();
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.chat",
+                    "<green>✔ Reloaded <white>chat-format.yml</white> <gray>(channels=" + (channelManager != null && channelManager.isEnabled()) + ")</gray></green>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.chat-skip",
+                    "<yellow>• Skipped chat: <gray>%error%</gray></yellow>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        }
     }
 }

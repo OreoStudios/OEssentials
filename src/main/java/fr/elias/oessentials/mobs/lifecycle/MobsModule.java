@@ -14,6 +14,7 @@ public final class MobsModule extends ManagedModule implements MobsServices {
     @Override
     protected void start() {
         initMobs();
+        registerReloadStep(11, "healthbars", this::reloadHealthbars);
     }
 
     @Override public fr.elias.oessentials.mobs.internal.HealthBarListener getHealthBarListener() { return healthBarListener; }
@@ -56,5 +57,35 @@ public final class MobsModule extends ManagedModule implements MobsServices {
 
         final fr.elias.oessentials.mobs.internal.SpawnMobCommand spawnCmd = new fr.elias.oessentials.mobs.internal.SpawnMobCommand();
         services(ConfigurationServices.class).getCommands().registerLegacy("spawnmob", spawnCmd);
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadHealthbars(org.bukkit.command.CommandSender sender) {
+        // Replaces this module's listener; the old reload stacked a new one and reported "skipped".
+        try {
+            fr.elias.ultimateChristmas.UltimateChristmas xmasHook = null;
+            try {
+                var maybe = plugin.getServer().getPluginManager().getPlugin("UltimateChristmas");
+                if (maybe instanceof fr.elias.ultimateChristmas.UltimateChristmas uc && maybe.isEnabled()) xmasHook = uc;
+            } catch (Throwable ignored) {}
+            if (healthBarListener != null) org.bukkit.event.HandlerList.unregisterAll(healthBarListener);
+            var hbl = new fr.elias.oessentials.mobs.internal.HealthBarListener(plugin, xmasHook);
+            if (hbl.isEnabled()) {
+                plugin.getServer().getPluginManager().registerEvents(hbl, plugin);
+                this.healthBarListener = hbl;
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.healthbars",
+                        "<green>✔ Reloaded <white>mob health bars</white></green>");
+            } else {
+                this.healthBarListener = null;
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.healthbars-disabled",
+                        "<yellow>• Mob health bars disabled by config</yellow>");
+            }
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.healthbars-skip",
+                    "<yellow>• Skipped mob health bars: <gray>%error%</gray></yellow>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+        }
+        // Never counted towards the summary, as before.
+        return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
     }
 }

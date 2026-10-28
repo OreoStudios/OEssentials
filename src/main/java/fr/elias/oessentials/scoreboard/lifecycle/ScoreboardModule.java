@@ -17,6 +17,7 @@ public final class ScoreboardModule extends ManagedModule implements ScoreboardS
         cleanup("scoreboardService", () -> { if (scoreboardService != null) scoreboardService.stop(); });
         initScoreboard();
         providePublicApi(fr.elias.oessentials.api.IScoreboardAPI.class, this::getScoreboardApi);
+        registerReloadStep(9, "scoreboard", this::reloadScoreboard);
     }
 
     @Override public ScoreboardService getScoreboardService() { return scoreboardService; }
@@ -32,6 +33,27 @@ public final class ScoreboardModule extends ManagedModule implements ScoreboardS
             BootstrapSupport.unregisterCommandHard(plugin, "scoreboard");
             BootstrapSupport.unregisterCommandHard(plugin, "sb");
             plugin.getLogger().info("[Scoreboard] Disabled via settings.yml");
+        }
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadScoreboard(org.bukkit.command.CommandSender sender) {
+        try {
+            var target = plugin.getScoreboardService();
+            if (target != null) {
+                target.reload();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.scoreboard",
+                        "<green>✔ Reloaded <white>scoreboard</white> <gray>(config + live refresh)</gray></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.scoreboard-skip",
+                    "<yellow>• Skipped scoreboard (service unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.scoreboard-fail",
+                    "<red>✘ Failed reloading scoreboard: <gray>%error%</gray></red>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
         }
     }
 }

@@ -79,6 +79,13 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final void publishEvent(Object event) { context.events().publish(event); }
 
+    /** Adds a step to /oereload until the module stops; lower {@code order} runs first. */
+    protected final void registerReloadStep(int order, String name, fr.elias.oessentials.configuration.api.ReloadSteps.Step step) {
+        var steps = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getReloadSteps();
+        steps.register(order, name, step);
+        context.lifecycle().onClose(() -> steps.unregister(name));
+    }
+
     /** Publishes this module's part of the public OEssentials API until the module stops. */
     protected final <T> void providePublicApi(Class<T> api, java.util.function.Supplier<? extends T> provider) {
         var apis = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPublicApis();
