@@ -31,8 +31,10 @@ class ModuleBoundaryRolloutTest {
     /** Modules whose whole package hierarchy is enforced by the annotation processor. */
     static final Set<String> PROTECTED = Set.of(
             "configuration",
+            "custom-worlds",
             "discord-integration",
             "events",
+            "group-rtp",
             "help",
             "messaging",
             "motd",
