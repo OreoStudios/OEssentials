@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.invlook.listeners;
+package fr.elias.oessentials.messaging.internal.invlook.listeners;
 
 import fr.elias.oessentials.OEssentials;
 import org.bukkit.entity.Player;

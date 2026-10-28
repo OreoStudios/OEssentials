@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.invlook.commands;
+package fr.elias.oessentials.messaging.internal.invlook.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;

@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.invlook.manager;
+package fr.elias.oessentials.messaging.internal.invlook.manager;
 
 import java.util.Set;
 import java.util.UUID;

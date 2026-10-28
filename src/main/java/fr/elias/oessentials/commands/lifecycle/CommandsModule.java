@@ -62,7 +62,6 @@ import fr.elias.oessentials.storage.internal.homes.home.DelHomeCommand;
 import fr.elias.oessentials.storage.internal.homes.home.HomeCommand;
 import fr.elias.oessentials.storage.internal.homes.home.HomesGuiCommand;
 import fr.elias.oessentials.storage.internal.homes.home.SetHomeCommand;
-import fr.elias.oessentials.configuration.internal.invlook.commands.InvlookCommand;
 import fr.elias.oessentials.messaging.internal.invsee.command.InvseeCommand;
 import fr.elias.oessentials.commands.internal.near.NearCommand;
 import fr.elias.oessentials.chat.internal.nick.NickCommand;
@@ -175,7 +174,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new fr.elias.oessentials.punishment.internal.HistoryCommand(services(PunishmentLoggerServices.class).getPunishmentLogger()))
                 .register(new KillCommand())
                 .register(new InvseeCommand())
-                .register(new InvlookCommand())
                 .register(new CookCommand())
                 .register(new BalanceCommand(plugin))
                 .register(new BalTopCommand(plugin))
@@ -253,7 +251,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         services(ConfigurationServices.class).getCommands().rewireTab("tpa",  tpaCompleter);
         services(ConfigurationServices.class).getCommands().rewireTab("move", tpaCompleter);
         services(ConfigurationServices.class).getCommands().rewireTab("tp",   new TpTabCompleter(plugin));
-        services(ConfigurationServices.class).getCommands().rewireTab("invlook", new InvlookCommand());
 
         services(ConfigurationServices.class).getCommands().rewireTab("balance", (sender, cmd, alias, args) -> {
             if (args.length == 1 && sender.hasPermission("oreo.balance.others")) {

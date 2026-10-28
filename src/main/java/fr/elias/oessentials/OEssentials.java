@@ -81,7 +81,7 @@ import fr.elias.oessentials.player.internal.deathback.DeathBackService;
 import fr.elias.oessentials.economy.internal.EconomyBootstrap;
 import fr.elias.oessentials.storage.internal.homes.TeleportBroker;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
-import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
+import fr.elias.oessentials.messaging.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.messaging.internal.invsee.InvseeService;
 import fr.elias.oessentials.nametag.internal.PlayerNametagManager;
 import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpDirectory;
@@ -402,7 +402,7 @@ public final class OEssentials extends JavaPlugin {
 
     public PlayerWarpDirectory getPlayerWarpDirectory() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarpDirectory); }
 
-    public InvlookManager getInvlookManager() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getInvlookManager); }
+    public InvlookManager getInvlookManager() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getInvlookManager); }
 
     public TeleportService getTeleportService() { return moduleRegistry.read(PlayerServices.class, PlayerServices::getTeleportService); }
 

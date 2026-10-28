@@ -1,6 +1,9 @@
 package fr.elias.oessentials.messaging.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.messaging.internal.invlook.commands.InvlookCommand;
+import fr.elias.oessentials.messaging.internal.invlook.listeners.InvlookListener;
+import fr.elias.oessentials.messaging.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.afk.lifecycle.AfkServices;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -73,6 +76,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     private volatile RabbitMQSender connectingSender;
     private fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker homeTpBroker;
     private Map<UUID, BackLocation> pendingBackTeleports = new ConcurrentHashMap<>();
+    private final InvlookManager invlookManager = new InvlookManager();
 
     @Override
     protected void start() {
@@ -81,6 +85,8 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         cleanup("packetManager", () -> { if (packetManager != null) packetManager.close(); });
         cleanup("networkCountReceiver", () -> { if (networkCountReceiver != null) networkCountReceiver.stop(); });
         cleanup("pending-back", pendingBackTeleports::clear);
+        cleanup("invlookManager", invlookManager::clear);
+        initInvlook();
         initRabbitMQ();
     }
 
@@ -90,11 +96,20 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     @Override public TpaCrossServerBroker getTpaBroker() { return tpaBroker; }
     @Override public ModBridge getModBridge() { return modBridge; }
     @Override public InvseeService getInvseeService() { return invseeService; }
+    @Override public InvlookManager getInvlookManager() { return invlookManager; }
     @Override public InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
     @Override public TradeCrossServerBroker getTradeBroker() { return tradeBroker; }
     @Override public PacketManager getPacketManager() { return packetManager; }
     @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
+
+    /** Read-only /invsee; registered whether or not RabbitMQ connects, and checks for the invsee service per use. */
+    private void initInvlook() {
+        plugin.getServer().getPluginManager().registerEvents(new InvlookListener(plugin), plugin);
+        var commands = services(ConfigurationServices.class).getCommands();
+        commands.register(new InvlookCommand());
+        commands.rewireTab("invlook", new InvlookCommand());
+    }
 
     private void initRabbitMQ() {
         final boolean invSyncEnabled = services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "invsee", true);

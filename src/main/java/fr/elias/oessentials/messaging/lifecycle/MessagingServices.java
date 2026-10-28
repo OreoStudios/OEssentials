@@ -21,6 +21,7 @@ public interface MessagingServices {
     TpaCrossServerBroker getTpaBroker();
     ModBridge getModBridge();
     InvseeService getInvseeService();
+    fr.elias.oessentials.messaging.internal.invlook.manager.InvlookManager getInvlookManager();
     InvseeCrossServerBroker getInvseeBroker();
     TradeCrossServerBroker getTradeBroker();
     PacketManager getPacketManager();

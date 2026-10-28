@@ -9,7 +9,6 @@ import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
-import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
 import java.util.Map;
 
 @ModuleApi("services")
@@ -33,6 +32,5 @@ public interface ConfigurationServices {
     boolean getEconomyEnabled();
     boolean getRedisEnabled();
     boolean getRabbitEnabled();
-    InvlookManager getInvlookManager();
     Gson getGson();
 }

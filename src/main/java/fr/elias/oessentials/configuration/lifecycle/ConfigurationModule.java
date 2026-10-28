@@ -10,8 +10,6 @@ import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
-import fr.elias.oessentials.configuration.internal.invlook.listeners.InvlookListener;
-import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
@@ -29,7 +27,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private boolean economyEnabled;
     private boolean redisEnabled;
     private boolean rabbitEnabled;
-    private InvlookManager invlookManager;
     private volatile CrossServerSettings crossServerSettings;
     private Gson gson = new Gson();
 
@@ -38,7 +35,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         cleanup("commands", () -> { if (commands != null) commands.shutdown(); });
         cleanup("autoRebootService", () -> { if (autoRebootService != null) autoRebootService.stop(); });
         cleanup("tempFlyService", () -> { if (tempFlyService != null) tempFlyService.shutdown(); });
-        cleanup("invlookManager", () -> { if (invlookManager != null) invlookManager.clear(); });
         initConfig();
     }
 
@@ -54,7 +50,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
     @Override public boolean getRabbitEnabled() { return rabbitEnabled; }
-    @Override public InvlookManager getInvlookManager() { return invlookManager; }
     @Override public Gson getGson() { return gson; }
 
     @Override
@@ -95,7 +90,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         this.economyEnabled   = settingsConfig.economyEnabled();
         this.redisEnabled     = plugin.getConfig().getBoolean("redis.enabled", false);
         this.rabbitEnabled    = plugin.getConfig().getBoolean("rabbitmq.enabled", false);
-        this.invlookManager   = new InvlookManager();
 
         plugin.getLogger().info("[Economy] " + (economyEnabled ? "Enabled" : "Disabled") + " via settings.yml");
 
@@ -105,8 +99,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         this.craftActionsConfig = new CraftActionsConfig(plugin);
 
         this.commands = new CommandManager(plugin);
-
-        plugin.getServer().getPluginManager().registerEvents(new InvlookListener(plugin), plugin);
 
         Lang.init(plugin);
 
