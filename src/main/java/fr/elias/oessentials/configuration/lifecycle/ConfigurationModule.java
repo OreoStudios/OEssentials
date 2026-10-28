@@ -13,7 +13,6 @@ import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import fr.elias.oessentials.configuration.internal.invlook.listeners.InvlookListener;
 import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
-import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
 import java.util.Map;
@@ -27,7 +26,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private AutoRebootService autoRebootService;
     private CraftActionsConfig craftActionsConfig;
     private CommandManager commands;
-    private KillallLogger killallLogger;
     private boolean economyEnabled;
     private boolean redisEnabled;
     private boolean rabbitEnabled;
@@ -53,7 +51,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public AutoRebootService getAutoRebootService() { return autoRebootService; }
     @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
     @Override public CommandManager getCommands() { return commands; }
-    @Override public KillallLogger getKillallLogger() { return killallLogger; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
     @Override public boolean getRabbitEnabled() { return rabbitEnabled; }
@@ -99,7 +96,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         this.redisEnabled     = plugin.getConfig().getBoolean("redis.enabled", false);
         this.rabbitEnabled    = plugin.getConfig().getBoolean("rabbitmq.enabled", false);
         this.invlookManager   = new InvlookManager();
-        this.killallLogger    = new KillallLogger(plugin);
 
         plugin.getLogger().info("[Economy] " + (economyEnabled ? "Enabled" : "Disabled") + " via settings.yml");
 

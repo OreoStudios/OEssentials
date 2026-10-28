@@ -1,7 +1,6 @@
-package fr.elias.oessentials.commands.internal.commands.core.admins;
+package fr.elias.oessentials.mobs.internal.killall;
 
 
-import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

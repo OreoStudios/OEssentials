@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.logging;
+package fr.elias.oessentials.mobs.internal.killall;
 
 import fr.elias.oessentials.OEssentials;
 

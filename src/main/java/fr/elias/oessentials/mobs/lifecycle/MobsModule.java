@@ -3,8 +3,9 @@ package fr.elias.oessentials.mobs.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
-import fr.elias.oessentials.commands.internal.commands.core.admins.KillallLogViewCommand;
-import fr.elias.oessentials.commands.internal.commands.core.admins.KillallRecorderCommand;
+import fr.elias.oessentials.mobs.internal.killall.KillallLogViewCommand;
+import fr.elias.oessentials.mobs.internal.killall.KillallLogger;
+import fr.elias.oessentials.mobs.internal.killall.KillallRecorderCommand;
 
 @PluginModule(value = "mobs", dependencies = {"configuration::services"}, after = {"discord-integration"}, optional = true)
 public final class MobsModule extends ManagedModule implements MobsServices {
@@ -48,9 +49,10 @@ public final class MobsModule extends ManagedModule implements MobsServices {
             plugin.getLogger().warning("[MOBS] Unexpected failure: " + t.getMessage());
         }
 
-        var killExec = new KillallRecorderCommand(plugin, services(ConfigurationServices.class).getKillallLogger());
+        var killallLogger = new KillallLogger(plugin);
+        var killExec = new KillallRecorderCommand(plugin, killallLogger);
         services(ConfigurationServices.class).getCommands().registerLegacy("killallr", killExec, killExec);
-        services(ConfigurationServices.class).getCommands().registerLegacy("killallrlog", new KillallLogViewCommand(services(ConfigurationServices.class).getKillallLogger()));
+        services(ConfigurationServices.class).getCommands().registerLegacy("killallrlog", new KillallLogViewCommand(killallLogger));
 
         final fr.elias.oessentials.mobs.internal.SpawnMobCommand spawnCmd = new fr.elias.oessentials.mobs.internal.SpawnMobCommand();
         services(ConfigurationServices.class).getCommands().registerLegacy("spawnmob", spawnCmd);

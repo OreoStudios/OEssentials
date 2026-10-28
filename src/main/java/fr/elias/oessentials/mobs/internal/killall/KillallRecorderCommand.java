@@ -1,7 +1,6 @@
-package fr.elias.oessentials.commands.internal.commands.core.admins;
+package fr.elias.oessentials.mobs.internal.killall;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Location;
 import org.bukkit.World;
