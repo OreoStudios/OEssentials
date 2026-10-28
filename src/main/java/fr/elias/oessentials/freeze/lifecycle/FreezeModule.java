@@ -19,6 +19,7 @@ public final class FreezeModule extends ManagedModule implements FreezeServices 
     @Override
     protected void start() {
         initFreeze();
+        providePublicApi(fr.elias.oessentials.api.IFreezeAPI.class, this::getFreezeApi);
     }
 
     @Override public FreezeManager getFreezeManager() { return freezeManager; }

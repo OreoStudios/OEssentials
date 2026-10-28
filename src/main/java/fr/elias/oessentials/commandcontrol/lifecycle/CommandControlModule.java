@@ -4,13 +4,14 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "command-control", after = {"economy"})
+@PluginModule(value = "command-control", dependencies = {"configuration::services"}, after = {"economy"})
 public final class CommandControlModule extends ManagedModule implements CommandControlServices {
     private fr.elias.oessentials.commandcontrol.internal.CommandControlService commandControlService;
 
     @Override
     protected void start() {
         initCommandControl();
+        providePublicApi(fr.elias.oessentials.api.ICommandControlAPI.class, this::getCommandControlApi);
     }
 
     @Override public fr.elias.oessentials.commandcontrol.internal.CommandControlService getCommandControlService() { return commandControlService; }

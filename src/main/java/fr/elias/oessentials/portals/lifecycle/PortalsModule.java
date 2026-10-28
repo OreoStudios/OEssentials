@@ -16,6 +16,7 @@ public final class PortalsModule extends ManagedModule implements PortalsService
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
         initPortals();
         listenForModuleEvents(this);
+        providePublicApi(fr.elias.oessentials.api.IPortalsAPI.class, this::getPortalsApi);
     }
 
     @Override public fr.elias.oessentials.portals.internal.PortalsManager getPortals() { return portals; }

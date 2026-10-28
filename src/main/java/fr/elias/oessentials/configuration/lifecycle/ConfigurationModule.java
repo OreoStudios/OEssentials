@@ -27,6 +27,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private AutoRebootService autoRebootService;
     private volatile SafeZoneRelay safeZoneRelay;
     private volatile ServerConnector serverConnector;
+    private final fr.elias.oessentials.configuration.internal.config.PublicApiRegistry publicApis = new fr.elias.oessentials.configuration.internal.config.PublicApiRegistry();
     private volatile BossBarToggles bossBarToggles;
     private CommandManager commands;
     private boolean economyEnabled;
@@ -41,6 +42,8 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         cleanup("autoRebootService", () -> { if (autoRebootService != null) autoRebootService.stop(); });
         cleanup("tempFlyService", () -> { if (tempFlyService != null) tempFlyService.shutdown(); });
         initConfig();
+        publicApis.provide(fr.elias.oessentials.api.ITempFlyAPI.class, this::getTempFly);
+        publicApis.provide(fr.elias.oessentials.api.IAutoRebootAPI.class, this::getAutoReboot);
     }
 
     @Override public SettingsConfig getFeatureSettings() { return settingsConfig; }
@@ -52,6 +55,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
     @Override public void setServerConnector(ServerConnector connector) { this.serverConnector = connector; }
     @Override public ServerConnector getServerConnector() { return serverConnector; }
+    @Override public fr.elias.oessentials.configuration.api.PublicApis getPublicApis() { return publicApis; }
     @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }

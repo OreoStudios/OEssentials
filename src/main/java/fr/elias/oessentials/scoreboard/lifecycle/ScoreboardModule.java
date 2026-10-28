@@ -16,6 +16,7 @@ public final class ScoreboardModule extends ManagedModule implements ScoreboardS
     protected void start() {
         cleanup("scoreboardService", () -> { if (scoreboardService != null) scoreboardService.stop(); });
         initScoreboard();
+        providePublicApi(fr.elias.oessentials.api.IScoreboardAPI.class, this::getScoreboardApi);
     }
 
     @Override public ScoreboardService getScoreboardService() { return scoreboardService; }

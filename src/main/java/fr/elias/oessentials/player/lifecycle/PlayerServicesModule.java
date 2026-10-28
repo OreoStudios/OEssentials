@@ -58,6 +58,10 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
                 (channel, pkt) -> _vanishService.handleRemoteState(pkt.getPlayerId(), pkt.isVanished(), pkt.getSourceServer()));
         listenForModuleEvents(this);
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.ITeleportAPI.class, this::getTeleportApi);
+        providePublicApi(fr.elias.oessentials.api.IBackAPI.class, this::getBackApi);
+        providePublicApi(fr.elias.oessentials.api.IDeathBackAPI.class, this::getDeathBackApi);
+        providePublicApi(fr.elias.oessentials.api.IVanishAPI.class, this::getVanishApi);
     }
 
     /** Cross-server /tpa, /tp and /back, once RabbitMQ is connected. */

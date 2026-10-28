@@ -11,6 +11,7 @@ public final class JumpPadsModule extends ManagedModule implements JumpPadsServi
     @Override
     protected void start() {
         initJumpPads();
+        providePublicApi(fr.elias.oessentials.api.IJumpPadsAPI.class, this::getJumpPadsApi);
     }
 
     @Override public fr.elias.oessentials.jumppads.internal.jumpads.JumpPadsManager getJumpPads() { return jumpPads; }

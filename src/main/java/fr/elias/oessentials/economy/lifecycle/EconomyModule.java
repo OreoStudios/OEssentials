@@ -50,6 +50,7 @@ public final class EconomyModule extends ManagedModule implements EconomyService
         messaging.subscribe(PlayerQuitPacket.class, new PlayerQuitPacketHandler(plugin));
         initEconomy();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IEconomyAPI.class, this::getEconomyApi);
     }
 
     @Override public EconomyBootstrap getEcoBootstrap() { return ecoBootstrap; }

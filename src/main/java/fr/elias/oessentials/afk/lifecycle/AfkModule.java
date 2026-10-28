@@ -23,6 +23,7 @@ public final class AfkModule extends ManagedModule implements AfkServices {
         initAfk();
         listenForModuleEvents(this);
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IAfkAPI.class, this::getAfkApi);
     }
 
     @ModuleListener

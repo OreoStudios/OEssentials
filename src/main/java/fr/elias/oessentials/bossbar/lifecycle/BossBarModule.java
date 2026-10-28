@@ -15,6 +15,7 @@ public final class BossBarModule extends ManagedModule implements BossBarService
     protected void start() {
         cleanup("bossBarService", () -> { if (bossBarService != null) bossBarService.stop(); });
         initBossBar();
+        providePublicApi(fr.elias.oessentials.api.IBossBarAPI.class, this::getBossBarApi);
     }
 
     @Override public fr.elias.oessentials.bossbar.internal.BossBarService getBossBarService() { return bossBarService; }

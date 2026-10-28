@@ -13,6 +13,7 @@ public final class PlaytimeModule extends ManagedModule implements PlaytimeServi
     protected void start() {
         cleanup("playtimeTracker", () -> { if (playtimeTracker != null) playtimeTracker.shutdown(); });
         initPlaytime();
+        providePublicApi(fr.elias.oessentials.api.IPlaytimeAPI.class, this::getPlaytimeApi);
     }
 
     @Override public fr.elias.oessentials.playtime.internal.PlaytimeRewardsService getPlaytimeRewards() { return playtimeRewards; }

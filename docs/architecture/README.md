@@ -157,6 +157,7 @@ files.
 | 3b. Messaging protected | 8 / 56 | 825 | Dependency direction reversed; cross-server code moved to its owners; no undeclared dependencies left |
 | 4. Storage protected | 9 / 56 | 645 | Commands registered by storage; contracts `PlayerLocator`, `Homes`, `PlayerWarps`, `BackDataStore`, `StorageDialogs` port, public `IWarpsAPI`/`ISpawnAPI`/`IPlayerWarpsAPI` |
 | 5. Commands moved to their owners | 11 / 56 | 562 | 16 modules register their own commands; `group-rtp` and `custom-worlds` protected |
+| 6. Public API published by its owners | 11 / 56 | 442 | Each module provides its `fr.elias.oessentials.api` object through `PublicApis`; integrations no longer builds them |
 
 The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.

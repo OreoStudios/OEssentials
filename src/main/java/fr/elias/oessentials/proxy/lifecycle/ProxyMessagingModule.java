@@ -15,6 +15,7 @@ public final class ProxyMessagingModule extends ManagedModule implements ProxyMe
         cleanup("aliasService", () -> { if (aliasService != null) aliasService.shutdown(); });
         initProxyMessaging();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IAliasesAPI.class, this::getAliasesApi);
     }
 
     @Override public ProxyMessenger getProxyMessenger() { return proxyMessenger; }

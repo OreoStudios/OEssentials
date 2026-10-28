@@ -13,6 +13,7 @@ public final class HologramsModule extends ManagedModule implements HologramsSer
     protected void start() {
         cleanup("embeddedOHolograms", () -> { if (embeddedOHolograms != null) embeddedOHolograms.shutdown(); });
         initHolograms();
+        providePublicApi(fr.elias.oessentials.api.IHologramsAPI.class, this::getHologramsApi);
     }
 
     @Override public fr.elias.oessentials.holograms.internal.OHolograms getEmbeddedOHolograms() { return embeddedOHolograms; }

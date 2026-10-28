@@ -11,6 +11,7 @@ public final class WarningsModule extends ManagedModule implements WarningsServi
     protected void start() {
         initWarnings();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IWarningsAPI.class, this::getWarningsApi);
     }
 
     @Override public fr.elias.oessentials.warnings.internal.WarnService getWarnService() { return warnService; }

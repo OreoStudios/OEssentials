@@ -13,6 +13,7 @@ public final class KitsModule extends ManagedModule implements KitsServices {
     protected void start() {
         cleanup("kitsManager", () -> { if (kitsManager != null) kitsManager.saveData(); });
         initKits();
+        providePublicApi(fr.elias.oessentials.api.IKitsAPI.class, this::getKitsApi);
     }
 
     @Override public fr.elias.oessentials.kits.internal.KitsManager getKitsManager() { return kitsManager; }

@@ -8,4 +8,10 @@ import fr.elias.oessentials.crafting.internal.customcraft.CustomCraftingService;
 public interface CustomCraftingServices {
     CustomCraftingService getCustomCraftingService();
     CraftActionsConfig getCraftActionsConfig();
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.ICustomCraftAPI getCustomCraftApi() {
+        var s = getCustomCraftingService();
+        return s == null ? null : new fr.elias.oessentials.crafting.internal.api.CustomCraftAPIImpl(s);
+    }
 }

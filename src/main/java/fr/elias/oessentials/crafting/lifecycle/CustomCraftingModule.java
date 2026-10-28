@@ -15,6 +15,7 @@ public final class CustomCraftingModule extends ManagedModule implements CustomC
     @Override
     protected void start() {
         initCustomCrafting();
+        providePublicApi(fr.elias.oessentials.api.ICustomCraftAPI.class, this::getCustomCraftApi);
     }
 
     @Override public CustomCraftingService getCustomCraftingService() { return customCraftingService; }

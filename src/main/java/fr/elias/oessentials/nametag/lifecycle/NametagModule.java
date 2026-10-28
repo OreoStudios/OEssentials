@@ -22,6 +22,7 @@ public final class NametagModule extends ManagedModule implements NametagService
         cleanup("actionBarService", () -> { if (actionBarService != null) actionBarService.shutdown(); });
         cleanup("multiBossBarService", () -> { if (multiBossBarService != null) multiBossBarService.shutdown(); });
         initNametag();
+        providePublicApi(fr.elias.oessentials.api.INametagAPI.class, this::getNametagApi);
     }
 
     @Override public PlayerNametagManager getNametagManager() { return nametagManager; }

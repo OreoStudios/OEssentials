@@ -12,6 +12,7 @@ public final class ShopModule extends ManagedModule implements ShopServices {
     protected void start() {
         cleanup("shopModule", () -> { if (shopModule != null) shopModule.shutdown(); });
         initShop();
+        providePublicApi(fr.elias.oessentials.api.IShopAPI.class, this::getShopApi);
     }
 
     @Override public fr.elias.oessentials.shop.internal.ShopModule getShopModule() { return shopModule; }

@@ -30,6 +30,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         cleanup("channelManager", () -> { if (channelManager != null) channelManager.savePlayerData(); });
         initChat();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IChatAPI.class, this::getChatApi);
     }
 
     @Override public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return channelManager; }

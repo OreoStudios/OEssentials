@@ -16,6 +16,7 @@ public final class CommandToggleModule extends ManagedModule implements CommandT
     protected void start() {
         initCommandToggle();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.ICommandToggleAPI.class, this::getCommandToggleApi);
     }
 
     @Override public CommandToggleConfig getCommandToggleConfig() { return commandToggleConfig; }

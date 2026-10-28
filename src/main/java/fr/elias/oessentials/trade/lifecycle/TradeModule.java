@@ -27,6 +27,7 @@ public final class TradeModule extends ManagedModule implements TradeServices {
         initTrade();
         initCrossServerPackets();
         listenForModuleEvents(this);
+        providePublicApi(fr.elias.oessentials.api.ITradeAPI.class, this::getTradeApi);
     }
 
     private void initCrossServerPackets() {

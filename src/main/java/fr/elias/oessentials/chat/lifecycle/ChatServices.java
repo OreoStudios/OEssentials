@@ -17,4 +17,10 @@ public interface ChatServices {
     org.bukkit.configuration.file.FileConfiguration getJoinQuitCfg();
     fr.elias.oessentials.chat.internal.oreobot.ConversationListener getActiveConversationListener();
     void reloadChat();
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.IChatAPI getChatApi() {
+        var s = getChatSyncManager();
+        return s == null ? null : new fr.elias.oessentials.chat.internal.api.ChatAPIImpl(s);
+    }
 }

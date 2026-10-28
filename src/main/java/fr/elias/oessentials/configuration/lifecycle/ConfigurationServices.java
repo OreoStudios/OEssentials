@@ -41,6 +41,9 @@ public interface ConfigurationServices {
     /** How players are sent to other servers, or {@code null} before proxy-messaging starts. */
     ServerConnector getServerConnector();
 
+    /** Modules' parts of the public OEssentials API. */
+    fr.elias.oessentials.configuration.api.PublicApis getPublicApis();
+
     /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
     void setBossBarToggles(BossBarToggles toggles);
 

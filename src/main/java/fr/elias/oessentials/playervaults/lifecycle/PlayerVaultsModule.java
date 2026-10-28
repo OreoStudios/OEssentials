@@ -13,6 +13,7 @@ public final class PlayerVaultsModule extends ManagedModule implements PlayerVau
         cleanup("playervaultsService", () -> { if (playervaultsService != null) playervaultsService.stop(); });
         initPlayerVaults();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IPlayerVaultsAPI.class, this::getPlayerVaultsApi);
     }
 
     @Override public fr.elias.oessentials.playervaults.internal.PlayerVaultsConfig getPlayerVaultsConfig() { return playerVaultsConfig; }

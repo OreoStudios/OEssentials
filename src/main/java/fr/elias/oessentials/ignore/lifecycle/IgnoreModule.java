@@ -11,6 +11,7 @@ public final class IgnoreModule extends ManagedModule implements IgnoreServices 
     protected void start() {
         initIgnore();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IIgnoreAPI.class, this::getIgnoreApi);
     }
 
     @Override public fr.elias.oessentials.ignore.internal.IgnoreService getIgnoreService() { return ignoreService; }

@@ -15,6 +15,7 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
     protected void start() {
         initEnderChest();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IEnderChestAPI.class, this::getEnderChestApi);
     }
 
     @Override public fr.elias.oessentials.enderchest.internal.EnderChestConfig getEcConfig() { return ecConfig; }

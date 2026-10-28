@@ -33,6 +33,9 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
         initInventoryManagers();
         subscribeCrossServerSync();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.ISellGuiAPI.class, this::getSellGuiApi);
+        providePublicApi(fr.elias.oessentials.api.IOrdersAPI.class, this::getOrdersApi);
+        providePublicApi(fr.elias.oessentials.api.IAuctionHouseAPI.class, this::getAuctionHouseApi);
     }
 
     private void subscribeCrossServerSync() {

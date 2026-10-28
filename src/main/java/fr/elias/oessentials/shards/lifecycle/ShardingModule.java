@@ -12,6 +12,7 @@ public final class ShardingModule extends ManagedModule implements ShardingServi
     protected void start() {
         cleanup("shardsModule", () -> { if (shardsModule != null) shardsModule.disable(); });
         initSharding();
+        providePublicApi(fr.elias.oessentials.api.IShardsAPI.class, this::getShardsApi);
     }
 
     @Override public fr.elias.oessentials.shards.internal.OreoShardsModule getShardsModule() { return shardsModule; }

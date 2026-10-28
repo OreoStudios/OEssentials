@@ -11,4 +11,24 @@ public interface InventoriesServices {
     fr.elias.oessentials.inventory.internal.orders.OrdersModule getOrdersModule();
     InventoryManager getInvManager();
     SellGuiManager getSellGuiManager();
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.ISellGuiAPI getSellGuiApi() {
+        var s = getSellGuiManager();
+        return s == null ? null : new fr.elias.oessentials.inventory.internal.api.SellGuiAPIImpl(s);
+    }
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.IOrdersAPI getOrdersApi() {
+        var module = getOrdersModule();
+        if (module == null) return null;
+        var svc = module.getService();
+        return svc == null ? null : new fr.elias.oessentials.inventory.internal.api.OrdersAPIImpl(svc);
+    }
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.IAuctionHouseAPI getAuctionHouseApi() {
+        var module = getAuctionHouse();
+        return module == null ? null : new fr.elias.oessentials.inventory.internal.api.AuctionHouseAPIImpl(module);
+    }
 }

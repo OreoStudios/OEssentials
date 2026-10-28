@@ -79,6 +79,13 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final void publishEvent(Object event) { context.events().publish(event); }
 
+    /** Publishes this module's part of the public OEssentials API until the module stops. */
+    protected final <T> void providePublicApi(Class<T> api, java.util.function.Supplier<? extends T> provider) {
+        var apis = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPublicApis();
+        apis.provide(api, provider);
+        context.lifecycle().onClose(() -> apis.withdraw(api));
+    }
+
     protected final void cleanup(String resource, Cleanup action) {
         context.lifecycle().onClose(() -> {
             try {

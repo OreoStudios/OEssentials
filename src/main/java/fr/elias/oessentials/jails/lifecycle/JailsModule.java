@@ -13,6 +13,7 @@ public final class JailsModule extends ManagedModule implements JailsServices {
     protected void start() {
         cleanup("jailService", () -> { if (jailService != null) jailService.disable(); });
         initJails();
+        providePublicApi(fr.elias.oessentials.api.IJailAPI.class, this::getJailApi);
     }
 
     @Override public fr.elias.oessentials.jails.internal.jail.JailService getJailService() { return jailService; }

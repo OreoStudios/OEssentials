@@ -11,6 +11,7 @@ public final class PunishmentLoggerModule extends ManagedModule implements Punis
     protected void start() {
         initPunishmentLogger();
         registerCommands();
+        providePublicApi(fr.elias.oessentials.api.IPunishmentAPI.class, this::getPunishmentApi);
     }
 
     @Override public fr.elias.oessentials.punishment.internal.PunishmentLogger getPunishmentLogger() { return punishmentLogger; }

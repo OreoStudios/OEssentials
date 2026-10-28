@@ -23,6 +23,7 @@ public final class MailModule extends ManagedModule implements MailServices {
                 catch (Throwable t) { plugin.getLogger().warning("[Mail] Failed to handle MailDeliveryPacket: " + t.getMessage()); }
             });
         }
+        providePublicApi(fr.elias.oessentials.api.IMailAPI.class, this::getMailApi);
     }
 
     @Override public fr.elias.oessentials.mail.internal.MailService getMailService() { return mailService; }

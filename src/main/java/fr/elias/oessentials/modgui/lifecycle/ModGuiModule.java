@@ -16,6 +16,7 @@ public final class ModGuiModule extends ManagedModule implements ModGuiServices 
                 .registerNamespace(new fr.elias.oessentials.modgui.internal.cross.rabbit.CrossInvPacketNamespace());
         initModGui();
         listenForModuleEvents(this);
+        providePublicApi(fr.elias.oessentials.api.ICrossServerAPI.class, this::getCrossServerApi);
     }
 
     /** Cross-server kick, freeze, vanish and other moderation actions. */

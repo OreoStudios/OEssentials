@@ -33,6 +33,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
     @Override
     protected void start() {
         initCommands();
+        providePublicApi(fr.elias.oessentials.api.IInteractiveCommandsAPI.class, this::getInteractiveCommandsApi);
     }
 
     @Override public fr.elias.oessentials.commands.internal.ic.ICManager getIcManager() { return icManager; }

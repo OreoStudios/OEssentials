@@ -15,6 +15,7 @@ public final class DailyModule extends ManagedModule implements DailyServices {
     protected void start() {
         cleanup("dailyStore", () -> { if (dailyStore != null) dailyStore.close(); });
         initDaily();
+        providePublicApi(fr.elias.oessentials.api.IDailyAPI.class, this::getDailyApi);
     }
 
     @Override public fr.elias.oessentials.daily.internal.DailyConfig getDailyConfig() { return dailyConfig; }
