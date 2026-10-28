@@ -57,6 +57,8 @@ class ModuleBoundaryRolloutTest {
             "motd",
             "mute-system",
             "performance-guards",
+            "player-vaults",
+            "playtime",
             "portals",
             "proxy-messaging",
             "punishment-logger",

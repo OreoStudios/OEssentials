@@ -163,6 +163,7 @@ files.
 | 9. Small providers, MinecraftModulith 0.5.3 | 35 / 56 | 275 | Proxy via `ServerConnector`, redis `BalanceCache`, item codec in messaging API, service-level contracts; mod-gui `uses` ender-chest/freeze |
 | 10. Codec, respawn, proxy and redis leftovers | 39 / 56 | 266 | `ItemStacksCodec` in the messaging API; respawn listener in player-services |
 | 11. Moderation notifier, public API home | 40 / 56 | 245 | Discord `ModerationNotifier` (reached with `uses`); OEssentialsAPI assembled and registered by configuration |
+| 12. Placeholders answered by their modules | 42 / 56 | 214 | `Placeholders` registry; kits, playtime, vault and balance placeholders moved to their owners |
 
 The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.

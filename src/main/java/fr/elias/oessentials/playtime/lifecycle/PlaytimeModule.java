@@ -14,6 +14,7 @@ public final class PlaytimeModule extends ManagedModule implements PlaytimeServi
         cleanup("playtimeTracker", () -> { if (playtimeTracker != null) playtimeTracker.shutdown(); });
         initPlaytime();
         providePublicApi(fr.elias.oessentials.api.IPlaytimeAPI.class, this::getPlaytimeApi);
+        registerPlaceholders(new fr.elias.oessentials.playtime.internal.PlaytimePlaceholders(plugin));
     }
 
     @Override public fr.elias.oessentials.playtime.internal.PlaytimeRewardsService getPlaytimeRewards() { return playtimeRewards; }

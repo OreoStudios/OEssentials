@@ -51,6 +51,7 @@ public final class EconomyModule extends ManagedModule implements EconomyService
         initEconomy();
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IEconomyAPI.class, this::getEconomyApi);
+        registerPlaceholders(new fr.elias.oessentials.economy.internal.EconomyPlaceholders(plugin));
     }
 
     @Override public EconomyBootstrap getEcoBootstrap() { return ecoBootstrap; }

@@ -79,6 +79,14 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final void publishEvent(Object event) { context.events().publish(event); }
 
+    /** Answers %oreo_...% placeholders for this module until it stops. */
+    protected final void registerPlaceholders(fr.elias.oessentials.configuration.api.Placeholders.Resolver resolver) {
+        var placeholders = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPlaceholders();
+        String owner = context.moduleId();
+        placeholders.register(owner, resolver);
+        context.lifecycle().onClose(() -> placeholders.unregister(owner));
+    }
+
     /** Declares that this module reloads {@code fileName} (e.g. when the web panel pushes it). */
     protected final void registerConfigFile(String fileName, Runnable reload) {
         var files = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getConfigFiles();

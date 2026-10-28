@@ -50,6 +50,9 @@ public interface ConfigurationServices {
     /** Which module reloads which configuration file. */
     fr.elias.oessentials.configuration.api.ConfigFiles getConfigFiles();
 
+    /** %oreo_...% placeholders contributed by modules. */
+    fr.elias.oessentials.configuration.api.Placeholders getPlaceholders();
+
     /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
     void setBossBarToggles(BossBarToggles toggles);
 

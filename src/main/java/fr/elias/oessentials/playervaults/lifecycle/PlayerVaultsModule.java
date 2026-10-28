@@ -16,6 +16,7 @@ public final class PlayerVaultsModule extends ManagedModule implements PlayerVau
         providePublicApi(fr.elias.oessentials.api.IPlayerVaultsAPI.class, this::getPlayerVaultsApi);
         registerReloadStep(12, "playervaults", this::reloadPlayervaults);
         registerConfigFile("playervaults.yml", () -> playervaultsService.reload());
+        registerPlaceholders(new fr.elias.oessentials.playervaults.internal.VaultPlaceholders(plugin));
     }
 
     @Override public fr.elias.oessentials.playervaults.internal.PlayerVaultsConfig getPlayerVaultsConfig() { return playerVaultsConfig; }

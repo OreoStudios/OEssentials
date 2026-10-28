@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.playervaults.lifecycle.PlayerVaultsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "player-vaults")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "player-vaults", lifecycle = fr.elias.oessentials.playervaults.lifecycle.PlayerVaultsModule.class)
 package fr.elias.oessentials.playervaults;

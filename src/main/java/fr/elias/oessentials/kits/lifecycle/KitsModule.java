@@ -15,6 +15,7 @@ public final class KitsModule extends ManagedModule implements KitsServices {
         initKits();
         providePublicApi(fr.elias.oessentials.api.IKitsAPI.class, this::getKitsApi);
         registerReloadStep(5, "kits", this::reloadKits);
+        registerPlaceholders(new fr.elias.oessentials.kits.internal.KitsPlaceholders(plugin));
     }
 
     @Override public fr.elias.oessentials.kits.internal.KitsManager getKitsManager() { return kitsManager; }
