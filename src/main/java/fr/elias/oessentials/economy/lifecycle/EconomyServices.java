@@ -11,7 +11,13 @@ public interface EconomyServices {
     EconomyBootstrap getEcoBootstrap();
     PlayerEconomyDatabase getDatabase();
     OfflinePlayerCache getOfflinePlayerCache();
-    Economy getVaultEconomy();
+    /** Vault's economy provider, or {@code null}; untyped because Vault is optional. */
+    Object vaultEconomyProvider();
+
+    /** Vault's economy, or {@code null}. Only call when Vault is installed. */
+    default Economy getVaultEconomy() {
+        return (Economy) vaultEconomyProvider();
+    }
 
     /** The public OEssentials API for this module, or {@code null} while it is not available. */
     default fr.elias.oessentials.api.IEconomyAPI getEconomyApi() {

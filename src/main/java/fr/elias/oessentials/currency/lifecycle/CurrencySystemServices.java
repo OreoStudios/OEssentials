@@ -7,7 +7,13 @@ import fr.elias.oessentials.currency.internal.CurrencyService;
 @ModuleApi("services")
 public interface CurrencySystemServices {
     CurrencyService getCurrencyService();
-    fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion getCurrencyPlaceholders();
+    /** The registered %oreocurrency_...% expansion, or {@code null}; untyped because PlaceholderAPI is optional. */
+    Object currencyPlaceholderExpansion();
+
+    /** Only call when PlaceholderAPI is installed. */
+    default fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion getCurrencyPlaceholders() {
+        return (fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion) currencyPlaceholderExpansion();
+    }
     CurrencyConfig getCurrencyConfig();
 
     /** The public API of one currency, or {@code null} when it does not exist. */
