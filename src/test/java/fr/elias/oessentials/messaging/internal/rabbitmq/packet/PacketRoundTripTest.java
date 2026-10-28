@@ -2,7 +2,7 @@ package fr.elias.oessentials.messaging.internal.rabbitmq.packet;
 
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaAcceptPacket;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket;
+import fr.elias.oessentials.messaging.api.SendRemoteMessagePacket;
 import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
 import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 import fr.elias.oessentials.messaging.api.Packet;

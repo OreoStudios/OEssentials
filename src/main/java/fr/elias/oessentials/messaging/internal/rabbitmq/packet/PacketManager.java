@@ -113,6 +113,11 @@ public class PacketManager implements IncomingPacketListener, PacketBus {
 
     @Override
     public void onReceive(PacketChannel channel, byte[] content) {
+        // Modules stop after messaging now; once the plugin is disabling, no handler may run
+        // against a module that has already released its resources.
+        if (!plugin.isEnabled()) {
+            return;
+        }
         if (channel == null) {
             warn("[PM/RECV] channel is null (contentBytes=" + (content == null ? -1 : content.length) + ")");
             return;
@@ -159,6 +164,7 @@ public class PacketManager implements IncomingPacketListener, PacketBus {
         // subscriber code directly there. Move the dispatch onto the server scheduler first;
         // entity-specific subscribers must still hop to the relevant entity scheduler.
         OreScheduler.run(plugin, () -> {
+            if (!plugin.isEnabled()) return;
             try {
                 queue.dispatch(channel, packet);
             } catch (Throwable t) {

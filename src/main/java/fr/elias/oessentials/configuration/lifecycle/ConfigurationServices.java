@@ -9,6 +9,7 @@ import fr.elias.oessentials.configuration.api.CrossServerFeatures;
 import fr.elias.oessentials.configuration.api.FeatureSettings;
 import fr.elias.oessentials.configuration.api.PerformanceGuardSettings;
 import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.platform.commands.CommandManager;
 import java.util.Map;
@@ -33,6 +34,9 @@ public interface ConfigurationServices {
 
     /** Registers how auto-reboot reaches other servers, or {@code null} to remove it. */
     void setSafeZoneRelay(SafeZoneRelay relay);
+
+    /** Registers how players are sent to other servers, or {@code null} to remove it. */
+    void setServerConnector(ServerConnector connector);
 
     /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
     void setBossBarToggles(BossBarToggles toggles);

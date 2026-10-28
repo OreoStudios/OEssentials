@@ -228,7 +228,7 @@ public class MoneyCommand implements CommandExecutor, OreoCommand {
                 if (pm != null && pm.isInitialized()) {
                     pm.sendPacket(
                             fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL,
-                            new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(null, finalPlayerMsg)
+                            new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(null, finalPlayerMsg)
                     );
                 }
             } catch (Throwable t) {
@@ -258,7 +258,7 @@ public class MoneyCommand implements CommandExecutor, OreoCommand {
 
             pm.sendPacket(
                     fr.elias.oessentials.messaging.api.PacketChannel.individual(server),
-                    new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, message)
+                    new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(targetUuid, message)
             );
 
             if (plugin.getConfig().getBoolean("debug", false)) {

@@ -9,7 +9,7 @@ import fr.elias.oessentials.chat.internal.api.ChatAPIImpl;
 import fr.elias.oessentials.clearlag.internal.api.ClearLagAPIImpl;
 import fr.elias.oessentials.commandcontrol.internal.api.CommandControlAPIImpl;
 import fr.elias.oessentials.commandtoggle.internal.api.CommandToggleAPIImpl;
-import fr.elias.oessentials.messaging.internal.api.CrossServerAPIImpl;
+import fr.elias.oessentials.modgui.internal.cross.CrossServerAPIImpl;
 import fr.elias.oessentials.currency.internal.api.CurrencyAPIImpl;
 import fr.elias.oessentials.crafting.internal.api.CustomCraftAPIImpl;
 import fr.elias.oessentials.daily.internal.api.DailyAPIImpl;

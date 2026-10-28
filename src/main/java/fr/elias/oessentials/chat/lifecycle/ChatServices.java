@@ -15,6 +15,6 @@ public interface ChatServices {
     org.bukkit.event.Listener getActiveJoinMessagesListener();
     org.bukkit.event.Listener getActiveQuitMessagesListener();
     org.bukkit.configuration.file.FileConfiguration getJoinQuitCfg();
-    fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener getActiveConversationListener();
+    fr.elias.oessentials.chat.internal.oreobot.ConversationListener getActiveConversationListener();
     void reloadChat();
 }

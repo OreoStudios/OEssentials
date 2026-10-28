@@ -10,10 +10,16 @@ import fr.elias.oessentials.economy.internal.persistence.database.MongoDBManager
 import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
 import fr.elias.oessentials.storage.api.BalanceImportTarget;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
+import fr.elias.oessentials.economy.internal.cross.rabbit.PlayerJoinPacket;
+import fr.elias.oessentials.economy.internal.cross.rabbit.PlayerJoinPacketHandler;
+import fr.elias.oessentials.economy.internal.cross.rabbit.PlayerPresencePacketNamespace;
+import fr.elias.oessentials.economy.internal.cross.rabbit.PlayerQuitPacket;
+import fr.elias.oessentials.economy.internal.cross.rabbit.PlayerQuitPacketHandler;
 import java.util.UUID;
 import fr.elias.oessentials.economy.internal.persistence.database.PostgreSQLManager;
-import fr.elias.oessentials.messaging.internal.cross.PlayerDataListener;
-import fr.elias.oessentials.messaging.internal.cross.PlayerListener;
+import fr.elias.oessentials.economy.internal.cross.PlayerDataListener;
+import fr.elias.oessentials.economy.internal.cross.PlayerListener;
 import fr.elias.oessentials.economy.internal.EconomyBootstrap;
 import fr.elias.oessentials.economy.internal.ecocommands.ChequeCommand;
 import fr.elias.oessentials.economy.internal.ecocommands.MoneyCommand;
@@ -26,7 +32,7 @@ import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "economy", dependencies = {"configuration::services", "redis::services", "storage::services"})
+@PluginModule(value = "economy", dependencies = {"configuration::services", "messaging::services", "redis::services", "storage::services"})
 public final class EconomyModule extends ManagedModule implements EconomyServices {
     private EconomyBootstrap ecoBootstrap;
     private PlayerEconomyDatabase database;
@@ -37,6 +43,11 @@ public final class EconomyModule extends ManagedModule implements EconomyService
     protected void start() {
         cleanup("database", () -> { if (database != null) database.close(); });
         cleanup("ecoBootstrap", () -> { if (ecoBootstrap != null) ecoBootstrap.disable(); });
+        // Other servers announce joins and quits so the offline player cache stays current.
+        var messaging = services(MessagingServices.class);
+        messaging.registerNamespace(new PlayerPresencePacketNamespace());
+        messaging.subscribe(PlayerJoinPacket.class, new PlayerJoinPacketHandler(plugin));
+        messaging.subscribe(PlayerQuitPacket.class, new PlayerQuitPacketHandler(plugin));
         initEconomy();
     }
 

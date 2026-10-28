@@ -8,4 +8,5 @@ import fr.elias.oessentials.trade.internal.service.TradeService;
 public interface TradeServices {
     TradeConfig getTradeConfig();
     TradeService getTradeService();
+    fr.elias.oessentials.trade.internal.rabbit.TradeCrossServerBroker getTradeBroker();
 }

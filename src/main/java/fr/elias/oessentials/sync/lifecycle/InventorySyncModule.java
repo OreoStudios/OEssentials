@@ -6,13 +6,64 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "inventory-sync", dependencies = {"configuration::services", "storage::services"}, after = {"ender-chest"})
+@PluginModule(value = "inventory-sync", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"ender-chest"})
 public final class InventorySyncModule extends ManagedModule implements InventorySyncServices {
+    private volatile fr.elias.oessentials.sync.internal.invsee.InvseeService invseeService;
+    private volatile fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker invseeBroker;
+    private final fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager invlookManager = new fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager();
 
     @Override
     protected void start() {
         cleanup("online-inventories", this::saveOnlineInventories);
+        cleanup("invlookManager", invlookManager::clear);
         initInventorySync();
+        initInvsee();
+        listenForModuleEvents(this);
+    }
+
+    @Override public fr.elias.oessentials.sync.internal.invsee.InvseeService getInvseeService() { return invseeService; }
+    @Override public fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
+    @Override public fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager getInvlookManager() { return invlookManager; }
+
+    /** /invsee and its read-only /invlook. They work locally, and across servers once RabbitMQ connects. */
+    private void initInvsee() {
+        // Created after the InventoryService above is registered, so offline snapshots are available.
+        this.invseeService = new fr.elias.oessentials.sync.internal.invsee.InvseeService(plugin, null);
+        plugin.getLogger().info("[INVSEE] Local mode until RabbitMQ connects.");
+
+        plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.sync.internal.invlook.listeners.InvlookListener(plugin), plugin);
+        var commands = services(ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.sync.internal.invlook.commands.InvlookCommand());
+        commands.rewireTab("invlook", new fr.elias.oessentials.sync.internal.invlook.commands.InvlookCommand());
+
+        var messaging = services(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class);
+        messaging.registerNamespace(new fr.elias.oessentials.sync.internal.invsee.rabbit.InvseePacketNamespace());
+        messaging.subscribe(fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeOpenRequestPacket.class,
+                (channel, pkt) -> { var broker = invseeBroker; if (broker != null) broker.handleOpenRequest(pkt); });
+        messaging.subscribe(fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeStatePacket.class,
+                (channel, pkt) -> { var broker = invseeBroker; if (broker != null) broker.handleState(pkt); });
+        messaging.subscribe(fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeEditPacket.class,
+                (channel, pkt) -> { var broker = invseeBroker; if (broker != null) broker.handleEdit(pkt); });
+    }
+
+    @dev.oreo.modulith.core.ModuleListener
+    public void onMessagingReady(fr.elias.oessentials.messaging.lifecycle.MessagingReady event) {
+        if (!isActive()) return;
+        if (!services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "invsee", true)) {
+            plugin.getLogger().info("[INVSEE] Local mode (invSyncEnabled=false)");
+            return;
+        }
+        try {
+            var broker = new fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker(plugin, event.packets(),
+                    services(ConfigurationServices.class).getServerConfig().serverName(), null);
+            var service = new fr.elias.oessentials.sync.internal.invsee.InvseeService(plugin, broker);
+            broker.setService(service);
+            this.invseeService = service;
+            this.invseeBroker = broker;
+            plugin.getLogger().info("[INVSEE] Cross-server enabled.");
+        } catch (Throwable t) {
+            plugin.getLogger().warning("[INVSEE] Cross-server failed, using local mode: " + t.getMessage());
+        }
     }
 
     private void initInventorySync() {

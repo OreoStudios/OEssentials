@@ -121,31 +121,28 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("crossserver_players_total")) {
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getNetworkTotal()
-            );
+            var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                    fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+            return String.valueOf(counts == null ? 0 : counts.networkTotal());
         }
 
         if (id.equals("server_players_total")) {
-            int cached = fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver
-                    .getServerTotal(thisServerName);
+            var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                    fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+            int cached = counts == null ? 0 : counts.serverTotal(thisServerName);
             return String.valueOf(cached > 0 ? cached : Bukkit.getOnlinePlayers().size());
         }
 
         if (id.startsWith("server_players_")) {
             String targetServer = idRaw.substring("server_players_".length());
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getServerTotal(targetServer)
-            );
+            return String.valueOf(serverPlayerCount(targetServer));
         }
 
         if (id.endsWith("_players_total")
                 && !id.equals("crossserver_players_total")
                 && !id.equals("server_players_total")) {
             String targetServer = idRaw.substring(0, idRaw.length() - "_players_total".length());
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getServerTotal(targetServer)
-            );
+            return String.valueOf(serverPlayerCount(targetServer));
         }
 
         if (id.equals("world_name") || id.equals("world")) {
@@ -634,6 +631,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return null;
         }
     }
+    private int serverPlayerCount(String serverName) {
+        var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+        return counts == null ? 0 : counts.serverTotal(serverName);
+    }
+
     private String formatTempFlyTime(int seconds) {
         if (seconds < 60) return seconds + "s";
         if (seconds < 3600) {

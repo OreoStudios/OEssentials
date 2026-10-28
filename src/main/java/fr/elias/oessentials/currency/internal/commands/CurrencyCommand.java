@@ -427,7 +427,7 @@ public class CurrencyCommand implements OreoCommand {
 
             pm.sendPacket(
                     fr.elias.oessentials.messaging.api.PacketChannel.individual(server),
-                    new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, msg)
+                    new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(targetUuid, msg)
             );
         } catch (Throwable ignored) {}
     }

@@ -31,4 +31,6 @@ public interface StorageServices {
 
     /** Registers where imported balances are written, or {@code null} when no economy is running. */
     void setBalanceImportTarget(BalanceImportTarget target);
+
+    fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker();
 }

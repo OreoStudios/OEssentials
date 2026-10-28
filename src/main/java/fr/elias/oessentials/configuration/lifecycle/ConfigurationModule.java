@@ -10,6 +10,7 @@ import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
 import fr.elias.oessentials.configuration.api.BossBarToggles;
 import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import fr.elias.oessentials.configuration.internal.config.OeSettingsCommand;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
@@ -25,6 +26,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private ConfigService configService;
     private AutoRebootService autoRebootService;
     private volatile SafeZoneRelay safeZoneRelay;
+    private volatile ServerConnector serverConnector;
     private volatile BossBarToggles bossBarToggles;
     private CommandManager commands;
     private boolean economyEnabled;
@@ -48,6 +50,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFly() { return tempFlyService; }
     @Override public AutoRebootService getAutoReboot() { return autoRebootService; }
     @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
+    @Override public void setServerConnector(ServerConnector connector) { this.serverConnector = connector; }
     @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
@@ -96,7 +99,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
 
         plugin.getLogger().info("[Economy] " + (economyEnabled ? "Enabled" : "Disabled") + " via settings.yml");
 
-        this.autoRebootService = new AutoRebootService(plugin, () -> safeZoneRelay);
+        this.autoRebootService = new AutoRebootService(plugin, () -> safeZoneRelay, () -> serverConnector);
         this.autoRebootService.start();
 
 

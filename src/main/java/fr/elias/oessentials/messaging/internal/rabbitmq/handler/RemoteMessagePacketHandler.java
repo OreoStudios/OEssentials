@@ -3,7 +3,7 @@ package fr.elias.oessentials.messaging.internal.rabbitmq.handler;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.api.PacketSubscriber;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket;
+import fr.elias.oessentials.messaging.api.SendRemoteMessagePacket;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

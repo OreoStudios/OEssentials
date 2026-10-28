@@ -18,4 +18,8 @@ public interface PlayerServices {
     GodService getGodService();
     VanishService getVanishService();
     TeleportBroker getTeleportBroker();
+    fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker getTpaBroker();
+    fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker getTpBroker();
+    fr.elias.oessentials.player.internal.back.rabbit.BackBroker getBackBroker();
+    java.util.Map<java.util.UUID, fr.elias.oessentials.player.internal.back.BackLocation> getPendingBackTeleports();
 }

@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.api.AutoReboot;
 import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import fr.elias.oessentials.shared.Lang;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -30,6 +31,7 @@ public final class AutoRebootService implements Listener, AutoReboot {
 
     private final OEssentials plugin;
     private final Supplier<SafeZoneRelay> relay;
+    private final Supplier<ServerConnector> connector;
     private String localServer = "";
     private long lastSecondsLeft = Long.MAX_VALUE;
 
@@ -71,9 +73,10 @@ public final class AutoRebootService implements Listener, AutoReboot {
 
     private record PendingSafeTeleport(String worldName, String regionName, String message) {}
 
-    public AutoRebootService(OEssentials plugin, Supplier<SafeZoneRelay> relay) {
+    public AutoRebootService(OEssentials plugin, Supplier<SafeZoneRelay> relay, Supplier<ServerConnector> connector) {
         this.plugin = plugin;
         this.relay = relay;
+        this.connector = connector;
     }
 
     public void start() {
@@ -288,8 +291,9 @@ public final class AutoRebootService implements Listener, AutoReboot {
                     transport.requestSafeZone(p.getUniqueId(), safeServer, safeWorld, safeRegion);
                 }
 
-                if (transport != null) {
-                    transport.connect(p, safeServer);
+                ServerConnector proxy = connector.get();
+                if (proxy != null) {
+                    proxy.connect(p, safeServer);
                 }
 
                 if (!msg.isEmpty()) {

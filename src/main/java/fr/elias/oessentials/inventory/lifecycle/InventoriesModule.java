@@ -1,6 +1,7 @@
 package fr.elias.oessentials.inventory.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.commandtoggle.lifecycle.CommandToggleServices;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -17,7 +18,7 @@ import fr.minuskube.inv.InventoryManager;
 import java.io.File;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services"}, after = {"mail"})
+@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services", "messaging::services"}, after = {"mail"})
 public final class InventoriesModule extends ManagedModule implements InventoriesServices {
     private AuctionHouseModule auctionHouse;
     private fr.elias.oessentials.inventory.internal.orders.OrdersModule ordersModule;
@@ -28,7 +29,29 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
     protected void start() {
         cleanup("auctionHouse", () -> { if (auctionHouse != null) auctionHouse.stop(); });
         cleanup("ordersModule", () -> { if (ordersModule != null) ordersModule.stop(); });
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.inventory.internal.InventoriesPacketNamespace());
         initInventoryManagers();
+        subscribeCrossServerSync();
+    }
+
+    private void subscribeCrossServerSync() {
+        var messaging = services(MessagingServices.class);
+        if (auctionHouse != null && auctionHouse.enabled()) {
+            messaging.subscribe(
+                    fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq.AuctionSyncPacket.class,
+                    (channel, pkt) -> {
+                        try { auctionHouse.applyIncomingSync(pkt); }
+                        catch (Throwable t) { plugin.getLogger().warning("[AH] Failed to handle AuctionSyncPacket: " + t.getMessage()); }
+                    });
+        }
+        if (ordersModule != null && ordersModule.enabled()) {
+            messaging.subscribe(
+                    fr.elias.oessentials.inventory.internal.orders.rabbitmq.OrderSyncPacket.class,
+                    (channel, pkt) -> {
+                        try { ordersModule.getEventBus().onReceive(pkt); }
+                        catch (Throwable t) { plugin.getLogger().warning("[Orders] Failed to handle OrderSyncPacket: " + t.getMessage()); }
+                    });
+        }
     }
 
     @Override public AuctionHouseModule getAuctionHouse() { return auctionHouse; }

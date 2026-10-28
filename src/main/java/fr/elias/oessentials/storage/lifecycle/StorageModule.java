@@ -1,7 +1,10 @@
 package fr.elias.oessentials.storage.lifecycle;
 
 import com.mongodb.client.MongoClient;
+import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.storage.api.BalanceImportTarget;
@@ -29,7 +32,7 @@ import fr.elias.oessentials.storage.internal.services.JsonStorage;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
 import fr.elias.oessentials.storage.internal.services.yaml.YamlPlayerWarpStorage;
 
-@PluginModule(value = "storage", dependencies = {"configuration::services"}, after = {"performance-guards"})
+@PluginModule(value = "storage", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, after = {"performance-guards"})
 public final class StorageModule extends ManagedModule implements StorageServices {
     private MongoClient homesMongoClient;
     private HomeDirectory homeDirectory;
@@ -44,14 +47,39 @@ public final class StorageModule extends ManagedModule implements StorageService
     private org.bukkit.configuration.file.FileConfiguration playerWarpsConfig;
     private fr.elias.oessentials.storage.internal.directory.PlayerDirectory playerDirectory;
     private volatile BalanceImportTarget balanceImportTarget;
+    private fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker homeTpBroker;
 
     @Override
     protected void start() {
         cleanup("mongo", () -> { if (homesMongoClient != null) homesMongoClient.close(); });
         cleanup("storage-close", () -> { if (storage != null) storage.close(); });
         cleanup("storage-flush", () -> { if (storage != null) storage.flush(); });
+        var messaging = services(MessagingServices.class);
+        messaging.registerNamespace(new fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomesPacketNamespace());
+        messaging.registerNamespace(new fr.elias.oessentials.storage.internal.warps.rabbit.namespace.WarpsPacketNamespace());
+        messaging.registerNamespace(new fr.elias.oessentials.storage.internal.spawn.rabbit.namespace.SpawnPacketNamespace());
+        messaging.registerNamespace(new fr.elias.oessentials.storage.internal.playerwarp.rabbit.PlayerWarpPacketNamespace());
         initStorage();
         registerImportCommands();
+        listenForModuleEvents(this);
+    }
+
+    /** Cross-server homes and player warps, once RabbitMQ is connected. */
+    @ModuleListener
+    public void onMessagingReady(MessagingReady event) {
+        if (!isActive()) return;
+        if (plugin.getCrossServerFeatures().homes()) {
+            this.homeTpBroker = new fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker(plugin, homeService, event.packets());
+            plugin.getLogger().info("[BROKER] HomeTeleportBroker ready.");
+        }
+        if (playerWarpService != null && plugin.getProxyMessenger() != null) {
+            try {
+                new fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpCrossServerBroker(plugin, playerWarpService, event.packets(), plugin.getProxyMessenger(), services(ConfigurationServices.class).getServerConfig().serverName());
+                plugin.getLogger().info("[BROKER] PlayerWarpCrossServerBroker enabled.");
+            } catch (Throwable t) {
+                plugin.getLogger().warning("[BROKER] Failed to init PlayerWarpCrossServerBroker: " + t.getMessage());
+            }
+        }
     }
 
     @Override public MongoClient getHomesMongoClient() { return homesMongoClient; }
@@ -67,6 +95,7 @@ public final class StorageModule extends ManagedModule implements StorageService
     @Override public org.bukkit.configuration.file.FileConfiguration getPlayerWarpsConfig() { return playerWarpsConfig; }
     @Override public fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory() { return playerDirectory; }
     @Override public void setBalanceImportTarget(BalanceImportTarget target) { this.balanceImportTarget = target; }
+    @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
 
     /** CMI, EssentialsX and zEssentials data importers; balances go to whichever economy registered itself. */
     private void registerImportCommands() {

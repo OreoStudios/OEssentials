@@ -1,6 +1,8 @@
 flowchart TD
     afk["afk"]
     afk -->|services| configuration
+    afk -->|events| messaging
+    afk -->|services| messaging
     afk --> proxy_messaging
     boss_bar["boss-bar"]
     boss_bar -->|services| configuration
@@ -15,6 +17,9 @@ flowchart TD
     clear_lag --> mobs
     command_control["command-control"]
     command_control --> economy
+    command_toggle["command-toggle"]
+    command_toggle -->|services| configuration
+    command_toggle --> skins
     commands["commands"]
     commands -->|services| afk
     commands -->|services| chat
@@ -30,12 +35,10 @@ flowchart TD
     commands -->|services| punishment_logger
     commands -->|services| storage
     commands -->|services| warnings
-    command_toggle["command-toggle"]
-    command_toggle --> skins
     configuration["configuration"]
     currency_system["currency-system"]
-    currency_system -->|events| messaging
     currency_system -->|services| configuration
+    currency_system -->|events| messaging
     currency_system -->|services| messaging
     currency_system -->|services| storage
     custom_crafting["custom-crafting"]
@@ -57,6 +60,7 @@ flowchart TD
     discord_integration -->|services| storage
     economy["economy"]
     economy -->|services| configuration
+    economy -->|services| messaging
     economy -->|services| redis
     economy -->|services| storage
     ender_chest["ender-chest"]
@@ -65,12 +69,14 @@ flowchart TD
     ender_chest -->|services| storage
     events["events"]
     events -->|services| configuration
+    events -->|services| messaging
     events --> web_panel
     freeze["freeze"]
-    freeze --> custom_crafting
     freeze -->|services| configuration
+    freeze --> custom_crafting
     group_rtp["group-rtp"]
     group_rtp -->|events| messaging
+    group_rtp -->|services| messaging
     group_rtp --> portals
     help["help"]
     help -->|services| configuration
@@ -84,17 +90,21 @@ flowchart TD
     integrations -->|services| command_toggle
     integrations -->|services| configuration
     integrations -->|services| currency_system
-    integrations -->|services| freeze
     integrations -->|services| custom_crafting
+    integrations -->|services| freeze
     integrations -->|services| kits
+    integrations -->|services| messaging
     integrations --> nametag
     inventories["inventories"]
     inventories -->|services| command_toggle
     inventories -->|services| configuration
     inventories --> mail
+    inventories -->|services| messaging
     inventory_sync["inventory-sync"]
     inventory_sync -->|services| configuration
     inventory_sync --> ender_chest
+    inventory_sync -->|events| messaging
+    inventory_sync -->|services| messaging
     inventory_sync -->|services| storage
     jails["jails"]
     jails --> commands
@@ -108,27 +118,21 @@ flowchart TD
     kits -->|services| configuration
     mail["mail"]
     mail -->|services| configuration
+    mail -->|services| messaging
     mail --> rules
     maintenance["maintenance"]
     maintenance --> afk
     maintenance -->|services| configuration
     messaging["messaging"]
-    messaging -->|services| afk
     messaging -->|services| configuration
-    messaging --> dialogs
-    messaging -->|services| economy
-    messaging -->|services| inventories
-    messaging -->|services| mail
-    messaging -->|services| player_services
-    messaging -->|services| proxy_messaging
-    messaging -->|services| storage
-    messaging -->|services| trade
     mobs["mobs"]
     mobs -->|services| configuration
     mobs --> discord_integration
     mod_gui["mod-gui"]
     mod_gui -->|services| configuration
     mod_gui --> inventories
+    mod_gui -->|events| messaging
+    mod_gui -->|services| messaging
     motd["motd"]
     motd -->|services| configuration
     motd --> punishment_logger
@@ -144,6 +148,8 @@ flowchart TD
     player_services["player-services"]
     player_services -->|services| configuration
     player_services --> inventory_sync
+    player_services -->|events| messaging
+    player_services -->|services| messaging
     player_services -->|services| storage
     player_vaults["player-vaults"]
     player_vaults -->|services| configuration
@@ -152,11 +158,12 @@ flowchart TD
     playtime -->|services| configuration
     playtime --> sharding
     portals["portals"]
-    portals -->|events| messaging
     portals -->|services| configuration
     portals --> jails
+    portals -->|events| messaging
     portals -->|services| messaging
     proxy_messaging["proxy-messaging"]
+    proxy_messaging -->|services| configuration
     proxy_messaging --> kits
     punishment_logger["punishment-logger"]
     punishment_logger --> warnings
@@ -164,8 +171,8 @@ flowchart TD
     redis -->|services| configuration
     redis --> storage
     rtp["rtp"]
-    rtp -->|events| messaging
     rtp -->|services| configuration
+    rtp -->|events| messaging
     rtp -->|services| messaging
     rtp --> player_vaults
     rules["rules"]
@@ -184,12 +191,16 @@ flowchart TD
     skins --> command_control
     storage["storage"]
     storage -->|services| configuration
+    storage -->|events| messaging
+    storage -->|services| messaging
     storage --> performance_guards
     tab["tab"]
     tab -->|services| configuration
     tab --> scoreboard
     trade["trade"]
     trade -->|services| configuration
+    trade -->|events| messaging
+    trade -->|services| messaging
     trade --> notes
     warnings["warnings"]
     warnings --> ignore

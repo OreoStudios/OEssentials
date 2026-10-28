@@ -8,7 +8,7 @@ import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;
 import fr.elias.oessentials.chat.internal.CustomConfig;
 import fr.elias.oessentials.chat.internal.FormatManager;
-import fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener;
+import fr.elias.oessentials.chat.internal.oreobot.ConversationListener;
 import org.bukkit.event.Listener;
 
 @PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, after = {"shop"})
@@ -21,7 +21,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
     private org.bukkit.event.Listener activeJoinMessagesListener;
     private org.bukkit.event.Listener activeQuitMessagesListener;
     private org.bukkit.configuration.file.FileConfiguration joinQuitCfg;
-    private fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener activeConversationListener;
+    private fr.elias.oessentials.chat.internal.oreobot.ConversationListener activeConversationListener;
     private fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler autoMessageScheduler;
 
     @Override
@@ -39,7 +39,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
     @Override public org.bukkit.event.Listener getActiveJoinMessagesListener() { return activeJoinMessagesListener; }
     @Override public org.bukkit.event.Listener getActiveQuitMessagesListener() { return activeQuitMessagesListener; }
     @Override public org.bukkit.configuration.file.FileConfiguration getJoinQuitCfg() { return joinQuitCfg; }
-    @Override public fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.ConversationListener getActiveConversationListener() { return activeConversationListener; }
+    @Override public fr.elias.oessentials.chat.internal.oreobot.ConversationListener getActiveConversationListener() { return activeConversationListener; }
 
     private void initChat() {
         this.chatConfig       = new fr.elias.oessentials.chat.internal.CustomConfig(plugin, "config/chat-messaging/chat-format.yml");
@@ -111,13 +111,13 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         if (activeJoinMessagesListener != null) {
             org.bukkit.event.HandlerList.unregisterAll(activeJoinMessagesListener);
         }
-        activeJoinMessagesListener = new fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.JoinMessagesListener(plugin, joinQuitCfg);
+        activeJoinMessagesListener = new fr.elias.oessentials.chat.internal.oreobot.JoinMessagesListener(plugin, joinQuitCfg);
         plugin.getServer().getPluginManager().registerEvents(activeJoinMessagesListener, plugin);
 
         if (activeQuitMessagesListener != null) {
             org.bukkit.event.HandlerList.unregisterAll(activeQuitMessagesListener);
         }
-        activeQuitMessagesListener = new fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.QuitMessagesListener(plugin, joinQuitCfg);
+        activeQuitMessagesListener = new fr.elias.oessentials.chat.internal.oreobot.QuitMessagesListener(plugin, joinQuitCfg);
         plugin.getServer().getPluginManager().registerEvents(activeQuitMessagesListener, plugin);
         startAutoMessages();
     }
@@ -175,10 +175,10 @@ public final class ChatModule extends ManagedModule implements ChatServices {
 
         // Reload join/quit/automessage/conversation config
         this.joinQuitCfg = loadJoinQuitConfig();
-        if (activeJoinMessagesListener instanceof fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.JoinMessagesListener jml) {
+        if (activeJoinMessagesListener instanceof fr.elias.oessentials.chat.internal.oreobot.JoinMessagesListener jml) {
             jml.setChatMessagingCfg(joinQuitCfg);
         }
-        if (activeQuitMessagesListener instanceof fr.elias.oessentials.messaging.internal.oreobotfeatures.listeners.QuitMessagesListener qml) {
+        if (activeQuitMessagesListener instanceof fr.elias.oessentials.chat.internal.oreobot.QuitMessagesListener qml) {
             qml.setChatMessagingCfg(joinQuitCfg);
         }
         if (activeConversationListener != null) {

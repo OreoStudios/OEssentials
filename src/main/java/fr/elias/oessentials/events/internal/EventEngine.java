@@ -4,7 +4,7 @@ package fr.elias.oessentials.events.internal;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.DeathMessagePacket;
+import fr.elias.oessentials.events.internal.rabbit.DeathMessagePacket;
 import org.bukkit.Bukkit;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Entity;

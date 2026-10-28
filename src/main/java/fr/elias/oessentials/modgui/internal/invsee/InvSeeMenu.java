@@ -1,7 +1,7 @@
 package fr.elias.oessentials.modgui.internal.invsee;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.invsee.InvseeService;
+import fr.elias.oessentials.sync.internal.invsee.InvseeService;
 import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
 import fr.elias.oessentials.sync.internal.services.InventoryService;
 import fr.minuskube.inv.ClickableItem;

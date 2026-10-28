@@ -1,12 +1,16 @@
 package fr.elias.oessentials.afk.lifecycle;
 
+import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.afk.internal.rabbit.namespace.AfkPacketNamespace;
+import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.afk.internal.AfkListener;
 import fr.elias.oessentials.afk.internal.AfkPoolService;
 import fr.elias.oessentials.afk.internal.AfkService;
 
-@PluginModule(value = "afk", dependencies = {"configuration::services"}, after = {"proxy-messaging"})
+@PluginModule(value = "afk", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, after = {"proxy-messaging"})
 public final class AfkModule extends ManagedModule implements AfkServices {
     private AfkService afkService;
     private AfkPoolService afkPoolService;
@@ -15,7 +19,19 @@ public final class AfkModule extends ManagedModule implements AfkServices {
     protected void start() {
         cleanup("afkService", () -> { if (afkService != null) afkService.shutdown(); });
         cleanup("afkPoolService", () -> { if (afkPoolService != null) afkPoolService.cleanupAll(); });
+        services(MessagingServices.class).registerNamespace(new AfkPacketNamespace());
         initAfk();
+        listenForModuleEvents(this);
+    }
+
+    @ModuleListener
+    public void onMessagingReady(MessagingReady event) {
+        if (!isActive()) return;
+        try { if (afkPoolService != null) afkPoolService.tryHookCrossServerNow(); }
+        catch (Throwable t) { plugin.getLogger().warning("[AfkPool] Failed to hook cross-server handlers: " + t.getMessage()); }
+
+        try { if (afkService != null) afkService.tryHookCrossServerNow(); }
+        catch (Throwable t) { plugin.getLogger().warning("[AfkService] Failed to hook cross-server handlers: " + t.getMessage()); }
     }
 
     @Override public AfkService getAfkService() { return afkService; }
