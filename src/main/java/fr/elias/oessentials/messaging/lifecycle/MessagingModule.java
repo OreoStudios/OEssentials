@@ -1,6 +1,9 @@
 package fr.elias.oessentials.messaging.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.tp.SafeZoneEnterPacket;
+import org.bukkit.entity.Player;
 import fr.elias.oessentials.messaging.internal.invlook.commands.InvlookCommand;
 import fr.elias.oessentials.messaging.internal.invlook.listeners.InvlookListener;
 import fr.elias.oessentials.messaging.internal.invlook.manager.InvlookManager;
@@ -87,6 +90,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         cleanup("pending-back", pendingBackTeleports::clear);
         cleanup("invlookManager", invlookManager::clear);
         initInvlook();
+        initSafeZoneRelay();
         initRabbitMQ();
     }
 
@@ -109,6 +113,21 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         var commands = services(ConfigurationServices.class).getCommands();
         commands.register(new InvlookCommand());
         commands.rewireTab("invlook", new InvlookCommand());
+    }
+
+    /** Auto-reboot (configuration) sends players to its safe-zone server through messaging. */
+    private void initSafeZoneRelay() {
+        var configuration = services(ConfigurationServices.class);
+        configuration.setSafeZoneRelay(new SafeZoneRelay() {
+            @Override public boolean packetsReady() { return packetManager != null && packetManager.isInitialized(); }
+            @Override public void requestSafeZone(UUID playerId, String targetServer, String worldName, String regionName) {
+                packetManager.sendPacket(new SafeZoneEnterPacket(playerId, targetServer, worldName, regionName));
+            }
+            @Override public void connect(Player player, String targetServer) {
+                services(ProxyMessagingServices.class).getProxyMessenger().sendToServer(player, targetServer);
+            }
+        });
+        cleanup("safeZoneRelay", () -> configuration.setSafeZoneRelay(null));
     }
 
     private void initRabbitMQ() {
@@ -237,6 +256,13 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
                             });
                     plugin.getLogger().info("[Mail] Cross-server delivery subscribed.");
                 }
+
+                this.packetManager.subscribe(SafeZoneEnterPacket.class, (channel, pkt) -> {
+                    var autoReboot = services(ConfigurationServices.class).getAutoReboot();
+                    if (pkt != null && autoReboot != null) {
+                        autoReboot.acceptSafeZoneEnter(pkt.getPlayerId(), pkt.getTargetServer(), pkt.getWorldName(), pkt.getRegionName());
+                    }
+                });
 
                 this.packetManager.init();
 

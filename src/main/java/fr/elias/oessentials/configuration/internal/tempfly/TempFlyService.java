@@ -1,6 +1,7 @@
 package fr.elias.oessentials.configuration.internal.tempfly;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.api.ITempFlyAPI;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
 import net.luckperms.api.LuckPermsProvider;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TempFlyService implements Listener {
+public class TempFlyService implements Listener, ITempFlyAPI {
 
     private final OEssentials plugin;
     private final TempFlyConfig config;
@@ -49,6 +50,7 @@ public class TempFlyService implements Listener {
         activeSessions.clear();
     }
 
+    @Override
     public void enableFly(Player player) {
         if (player == null) return;
         int duration = getDurationForPlayer(player);
@@ -65,6 +67,7 @@ public class TempFlyService implements Listener {
         player.sendMessage("§aTemporary fly enabled for §e" + formatTime(duration) + "§a.");
     }
 
+    @Override
     public void disableFly(Player player) {
         if (player == null) return;
         TempFlySession session = activeSessions.remove(player.getUniqueId());
@@ -77,6 +80,7 @@ public class TempFlyService implements Listener {
         player.sendMessage("§cTemporary fly disabled.");
     }
 
+    @Override
     public int getTimeRemaining(Player player) {
         if (player == null) return 0;
         TempFlySession session = activeSessions.get(player.getUniqueId());

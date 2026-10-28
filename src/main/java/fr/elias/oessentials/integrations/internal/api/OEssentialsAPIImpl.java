@@ -3,7 +3,6 @@ package fr.elias.oessentials.integrations.internal.api;
 import fr.elias.oessentials.afk.internal.api.AfkAPIImpl;
 import fr.elias.oessentials.commandcontrol.internal.api.AliasesAPIImpl;
 import fr.elias.oessentials.inventory.internal.api.AuctionHouseAPIImpl;
-import fr.elias.oessentials.configuration.internal.api.AutoRebootAPIImpl;
 import fr.elias.oessentials.player.internal.api.BackAPIImpl;
 import fr.elias.oessentials.bossbar.internal.api.BossBarAPIImpl;
 import fr.elias.oessentials.chat.internal.api.ChatAPIImpl;
@@ -39,13 +38,13 @@ import fr.elias.oessentials.shards.internal.api.ShardsAPIImpl;
 import fr.elias.oessentials.shop.internal.api.ShopAPIImpl;
 import fr.elias.oessentials.storage.internal.api.SpawnAPIImpl;
 import fr.elias.oessentials.player.internal.api.TeleportAPIImpl;
-import fr.elias.oessentials.configuration.internal.api.TempFlyAPIImpl;
 import fr.elias.oessentials.trade.internal.api.TradeAPIImpl;
 import fr.elias.oessentials.player.internal.api.VanishAPIImpl;
 import fr.elias.oessentials.warnings.internal.api.WarningsAPIImpl;
 import fr.elias.oessentials.storage.internal.api.WarpsAPIImpl;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.api.IAfkAPI;
 import fr.elias.oessentials.api.IAliasesAPI;
 import fr.elias.oessentials.api.IAuctionHouseAPI;
@@ -248,9 +247,9 @@ public class OEssentialsAPIImpl implements OEssentialsAPI {
     }
     @Override public @Nullable IScoreboardAPI scoreboard() { var s = plugin.getScoreboardService(); return s == null ? null : new ScoreboardAPIImpl(s); }
     @Override public @Nullable IShardsAPI shards() { var s = plugin.getShardsModule(); return s == null ? null : new ShardsAPIImpl(s); }
-    @Override public @Nullable ITempFlyAPI tempFly() { var s = plugin.getTempFlyService(); return s == null ? null : new TempFlyAPIImpl(s); }
+    @Override public @Nullable ITempFlyAPI tempFly() { return plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly); }
     @Override public @Nullable IWarningsAPI warnings() { var s = plugin.getWarnService(); return s == null ? null : new WarningsAPIImpl(s); }
-    @Override public @Nullable IAutoRebootAPI autoReboot() { var s = plugin.getAutoRebootService(); return s == null ? null : new AutoRebootAPIImpl(s); }
+    @Override public @Nullable IAutoRebootAPI autoReboot() { return plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getAutoReboot); }
     @Override public @Nullable IAliasesAPI aliases() { var s = plugin.getAliasService(); return s == null ? null : new AliasesAPIImpl(s); }
     @Override public @Nullable IVanishAPI vanish() { var s = plugin.getVanishService(); return s == null ? null : new VanishAPIImpl(s); }
     @Override public @Nullable IFreezeAPI freeze() { return plugin.getModuleRegistry().read(FreezeServices.class, FreezeServices::getFreezeApi); }

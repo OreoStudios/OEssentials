@@ -41,7 +41,7 @@ public final class ReloadAllCommand implements OreoCommand {
             skip++;
         }
         try {
-            var ar = plugin.getAutoRebootService();
+            var ar = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getAutoReboot);
             if (ar != null) {
                 ar.reload();
                 Lang.send(sender, "admin.reload.autoreboot",

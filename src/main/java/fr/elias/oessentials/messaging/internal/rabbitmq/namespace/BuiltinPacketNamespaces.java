@@ -2,7 +2,6 @@ package fr.elias.oessentials.messaging.internal.rabbitmq.namespace;
 
 import fr.elias.oessentials.afk.internal.rabbit.namespace.AfkPacketNamespace;
 import fr.elias.oessentials.economy.internal.rabbit.namespace.EconomyPacketNamespace;
-import fr.elias.oessentials.configuration.internal.autoreboot.rabbit.RebootPacketNamespace;
 
 import java.util.Collection;
 import java.util.Map;

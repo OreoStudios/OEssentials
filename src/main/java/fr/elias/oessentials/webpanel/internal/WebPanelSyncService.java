@@ -991,9 +991,9 @@ public class WebPanelSyncService implements Listener {
         OreScheduler.run(plugin, () -> {
             if (!settingsYml.isEmpty()) {
                 plugin.getModuleRegistry().require(ConfigurationServices.class).updateSettings(settingsYml);
-                if (settingsYml.keySet().stream().anyMatch(k -> k.startsWith("auto-reboot."))
-                        && plugin.getAutoRebootService() != null) {
-                    plugin.getAutoRebootService().reload();
+                var autoReboot = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getAutoReboot);
+                if (settingsYml.keySet().stream().anyMatch(k -> k.startsWith("auto-reboot.")) && autoReboot != null) {
+                    autoReboot.reload();
                 }
             }
 

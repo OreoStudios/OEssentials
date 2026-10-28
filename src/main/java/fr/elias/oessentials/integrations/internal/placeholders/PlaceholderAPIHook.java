@@ -1,6 +1,7 @@
 package fr.elias.oessentials.integrations.internal.placeholders;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
 import fr.elias.oessentials.economy.internal.EconomyService;
 import fr.elias.oessentials.kits.internal.Kit;
@@ -169,7 +170,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return String.valueOf(Bukkit.getOnlinePlayers().size());
         }
         if (id.equals("tempfly_active")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "false";
             Player p = player.getPlayer();
             if (p == null) return "false";
@@ -177,7 +178,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_seconds")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "0";
             Player p = player.getPlayer();
             if (p == null) return "0";
@@ -185,7 +186,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_time")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "0s";
             Player p = player.getPlayer();
             if (p == null) return "0s";
@@ -195,7 +196,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_time_or_empty")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "";
             Player p = player.getPlayer();
             if (p == null) return "";

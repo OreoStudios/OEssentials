@@ -8,6 +8,7 @@ import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.config.ConfigService;
 import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.SafeZoneRelay;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
@@ -22,6 +23,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig tempFlyConfig;
     private ConfigService configService;
     private AutoRebootService autoRebootService;
+    private volatile SafeZoneRelay safeZoneRelay;
     private CraftActionsConfig craftActionsConfig;
     private CommandManager commands;
     private boolean economyEnabled;
@@ -42,9 +44,9 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public SettingsConfig getPerformanceGuardSettings() { return settingsConfig; }
     @Override public ConfigService getServerConfig() { return configService; }
     @Override public CrossServerSettings getCrossServerFeatures() { return crossServerSettings; }
-    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return tempFlyService; }
-    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig getTempFlyConfig() { return tempFlyConfig; }
-    @Override public AutoRebootService getAutoRebootService() { return autoRebootService; }
+    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFly() { return tempFlyService; }
+    @Override public AutoRebootService getAutoReboot() { return autoRebootService; }
+    @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
     @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
@@ -93,7 +95,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
 
         plugin.getLogger().info("[Economy] " + (economyEnabled ? "Enabled" : "Disabled") + " via settings.yml");
 
-        this.autoRebootService = new AutoRebootService(plugin);
+        this.autoRebootService = new AutoRebootService(plugin, () -> safeZoneRelay);
         this.autoRebootService.start();
 
         this.craftActionsConfig = new CraftActionsConfig(plugin);

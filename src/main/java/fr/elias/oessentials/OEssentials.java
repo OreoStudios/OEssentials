@@ -265,7 +265,7 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return moduleRegistry.read(ChatServices.class, ChatServices::getChannelManager); }
 
-    public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getTempFlyService); }
+    public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return (fr.elias.oessentials.configuration.internal.tempfly.TempFlyService) moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getTempFly); }
 
     public EconomyBootstrap getEconomy() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getEcoBootstrap); }
 
@@ -275,7 +275,7 @@ public final class OEssentials extends JavaPlugin {
 
     public InventoryManager getInventoryManager() { return moduleRegistry.read(InventoriesServices.class, InventoriesServices::getInvManager); }
 
-    public AutoRebootService getAutoRebootService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getAutoRebootService); }
+    public AutoRebootService getAutoRebootService() { return (AutoRebootService) moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getAutoReboot); }
 
     public CraftActionsConfig getCraftActionsConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCraftActionsConfig); }
 

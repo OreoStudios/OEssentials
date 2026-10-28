@@ -5,9 +5,8 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.tp.SafeZoneEnterPacket;
+import fr.elias.oessentials.configuration.api.AutoReboot;
+import fr.elias.oessentials.configuration.api.SafeZoneRelay;
 import fr.elias.oessentials.shared.Lang;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -25,10 +24,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
-public final class AutoRebootService implements Listener {
+public final class AutoRebootService implements Listener, AutoReboot {
 
     private final OEssentials plugin;
+    private final Supplier<SafeZoneRelay> relay;
     private String localServer = "";
     private long lastSecondsLeft = Long.MAX_VALUE;
 
@@ -59,8 +60,6 @@ public final class AutoRebootService implements Listener {
     private Instant nextRebootAt;
     private final Set<Integer> warnedAlready = new HashSet<>();
 
-    private volatile boolean crossHandlersRegistered = false;
-
     // If packet arrives while player offline / switching server: apply on join (like AfkPool)
     private final Map<UUID, PendingSafeTeleport> pendingSafeTeleports = new ConcurrentHashMap<>();
 
@@ -72,8 +71,9 @@ public final class AutoRebootService implements Listener {
 
     private record PendingSafeTeleport(String worldName, String regionName, String message) {}
 
-    public AutoRebootService(OEssentials plugin) {
+    public AutoRebootService(OEssentials plugin, Supplier<SafeZoneRelay> relay) {
         this.plugin = plugin;
+        this.relay = relay;
     }
 
     public void start() {
@@ -85,6 +85,7 @@ public final class AutoRebootService implements Listener {
         reload();
     }
 
+    @Override
     public void stop() {
         if (tickTask != null) {
             tickTask.cancel();
@@ -95,6 +96,7 @@ public final class AutoRebootService implements Listener {
         pendingSafeTeleports.clear();
     }
 
+    @Override
     public void reload() {
         stop();
 
@@ -136,13 +138,6 @@ public final class AutoRebootService implements Listener {
         this.safeMessage = plugin.getSettingsConfig().autoRebootSafeZoneMessage();
         this.safeDelaySeconds = Math.max(0, plugin.getSettingsConfig().autoRebootSafeZoneDelaySeconds());
 
-        // hook cross-server receiver (packet) as soon as possible
-        tryHookCrossServerNow();
-        if (!crossHandlersRegistered) {
-            OreScheduler.runLater(plugin, this::tryHookCrossServerNow, 40L);
-            OreScheduler.runLater(plugin, this::tryHookCrossServerNow, 100L);
-            OreScheduler.runLater(plugin, this::tryHookCrossServerNow, 200L);
-        }
         plugin.getLogger().info("[AutoReboot/DEBUG] enabled=" + enabled
                 + " mode=" + mode
                 + " zone=" + zoneId
@@ -170,46 +165,23 @@ public final class AutoRebootService implements Listener {
                 + " local=" + localServer);
     }
 
-    public void tryHookCrossServerNow() {
-        if (crossHandlersRegistered) return;
-        if (localServer == null || localServer.isBlank()) return;
+    @Override
+    public void acceptSafeZoneEnter(UUID playerId, String targetServer, String worldName, String regionName) {
+        if (playerId == null) return;
+        if (targetServer == null || targetServer.isEmpty()) return;
+        if (!localServer.equalsIgnoreCase(targetServer)) return;
 
-        PacketManager pm = plugin.getPacketManager();
-        if (pm == null) return;
-        if (!pm.isInitialized()) return;
+        OreScheduler.run(plugin, () -> {
+            Player p = Bukkit.getPlayer(playerId);
 
-        try {
-            pm.subscribeChannel(PacketChannels.GLOBAL);
-        } catch (Throwable ignored) {}
+            // if player not online yet (server switch), store & apply on join
+            if (p == null || !p.isOnline()) {
+                pendingSafeTeleports.put(playerId, new PendingSafeTeleport(worldName, regionName, safeMessage));
+                return;
+            }
 
-        pm.subscribe(SafeZoneEnterPacket.class, (channel, pkt) -> {
-            if (pkt == null) return;
-
-            String target = pkt.getTargetServer();
-            if (target == null || target.isEmpty()) return;
-            if (!localServer.equalsIgnoreCase(target)) return;
-
-            UUID playerId = pkt.getPlayerId();
-            if (playerId == null) return;
-
-            String worldName = pkt.getWorldName();
-            String regionName = pkt.getRegionName();
-
-            OreScheduler.run(plugin, () -> {
-                Player p = Bukkit.getPlayer(playerId);
-
-                // if player not online yet (server switch), store & apply on join
-                if (p == null || !p.isOnline()) {
-                    pendingSafeTeleports.put(playerId, new PendingSafeTeleport(worldName, regionName, safeMessage));
-                    return;
-                }
-
-                teleportPlayerToSafeRegion(p, worldName, regionName, safeMessage);
-            });
+            teleportPlayerToSafeRegion(p, worldName, regionName, safeMessage);
         });
-
-        crossHandlersRegistered = true;
-        plugin.getLogger().info("[AutoReboot] Cross-server SAFE_ZONE handler hooked on server=" + localServer);
     }
 
     @EventHandler
@@ -300,24 +272,25 @@ public final class AutoRebootService implements Listener {
         final boolean hasRegion = !safeWorld.isEmpty() && !safeRegion.isEmpty();
 
         if (!safeServer.isEmpty() && !localServer.equalsIgnoreCase(safeServer)) {
-            PacketManager pm = plugin.getPacketManager();
-            boolean canPacket = pm != null && pm.isInitialized();
+            SafeZoneRelay transport = relay.get();
+            boolean canPacket = transport != null && transport.packetsReady();
 
             plugin.getLogger().info("[AutoReboot] SAFE_ZONE cross-server local=" + localServer
                     + " target=" + safeServer
                     + " hasRegion=" + hasRegion
-                    + " pm=" + (pm != null)
+                    + " relay=" + (transport != null)
                     + " init=" + canPacket);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (!p.isOnline()) continue;
 
                 if (hasRegion && canPacket) {
-                    // PacketManager.sendPacket(Packet) -> GLOBAL (matches subscribeChannel GLOBAL)
-                    pm.sendPacket(new SafeZoneEnterPacket(p.getUniqueId(), safeServer, safeWorld, safeRegion));
+                    transport.requestSafeZone(p.getUniqueId(), safeServer, safeWorld, safeRegion);
                 }
 
-                plugin.getProxyMessenger().sendToServer(p, safeServer);
+                if (transport != null) {
+                    transport.connect(p, safeServer);
+                }
 
                 if (!msg.isEmpty()) {
                     Lang.send(p, "auto-reboot.safe-zone", msg, Map.of());
