@@ -86,14 +86,23 @@ does not introduce independent hot unloading of gameplay modules.
 
 ## Asynchronous messaging
 
-Messaging starts locally and connects to RabbitMQ asynchronously. Connecting senders
-are owned before the connection completes and are closed if the plugin stops.
-Activation callbacks check module activity before touching services.
+`messaging` is the RabbitMQ transport and depends only on `configuration`, so it starts
+right after it. Every module that sends or receives packets depends on it and plugs in its
+own cross-server code:
 
-After the packet manager is initialized, the module publishes `MessagingReady` on
-the server scheduler. Currency, portals, RTP, and group RTP install their own handlers
-through `@ModuleListener`; subscriptions disappear when their modules stop. Messaging
-no longer reads later modules through the compatibility registry.
+1. While starting, a module calls `MessagingServices.registerNamespace(...)` for its packets
+   and `MessagingServices.subscribe(...)` for its handlers. Both are applied when RabbitMQ
+   connects, before any packet is dispatched.
+2. Messaging connects asynchronously. Connecting senders are owned before the connection
+   completes and are closed if the plugin stops.
+3. On the main thread it then publishes `MessagingReady`; modules build their brokers in an
+   `@ModuleListener` (player-services: tpa/tp/back and spawn/warp; trade; storage: homes and
+   player warps; inventory-sync: invsee; mod-gui: the moderation bridge; afk; currency;
+   portals; RTP; group RTP). Without RabbitMQ, or if it cannot connect, the event never
+   fires and those modules stay local.
+
+`PacketManager` stops dispatching as soon as the plugin starts disabling, so no handler runs
+against a module that has already shut down even though messaging now stops after them.
 
 ## Module boundary enforcement
 
@@ -145,8 +154,9 @@ files.
 | 2a. Configuration settings contract | 6 / 56 | 1,408 | `configuration` 177 → 37; see below |
 | 2b. Configuration protected | 7 / 56 | 1,313 | Non-configuration features moved to their owners; `messaging` 366 → 344, `storage` 188 → 173 |
 | 3a. Messaging packet contract | 7 / 56 | 1,241 | `messaging` internals 344 → 44; 228 references now fail only because their module does not declare `messaging` (see below) |
+| 3b. Messaging protected | 8 / 56 | 825 | Dependency direction reversed; cross-server code moved to its owners; no undeclared dependencies left |
 
-The largest providers are `storage` (173) and `player-services` (108).
+The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.
 
 ### Configuration contract
@@ -206,13 +216,23 @@ The packet framework is messaging's published contract in `fr.elias.oessentials.
 by the internal `PacketManager`). Modules get the bus from `MessagingServices.getPacketBus()`,
 `MessagingReady.packets()` or `OEssentials.getPacketBus()`; the released `getPacketManager()` remains.
 
-Packet ids are on the wire. `PacketWireIdsTest` pins every id, including the 23 packets numbered
-from 27006 in the order `MessagingModule` registers them at startup, so moving packets between
-modules cannot silently change them.
+`SendRemoteMessagePacket` and `NetworkPlayerCounts` (proxy player counts) are part of the
+contract too.
 
-The remaining work is a dependency cycle: `messaging` depends on `afk`, `economy`, `inventories`,
-`mail`, `player-services`, `storage` and `trade` only to build their cross-server brokers and
-handlers, so those modules cannot declare the `messaging` dependency they need for packets.
+Packet ids are on the wire. Until 7.1.6, 23 packets got their ids (27006-27028) from the order
+`MessagingModule` registered them at startup; they now have exactly those ids as fixed ids in
+namespaces next to the packets, so the wire format is unchanged. `PacketWireIdsTest` pins every
+id and fails if a `PacketNamespace` is not passed to `registerNamespace` exactly once; the
+registry fails startup on a duplicate packet, class or namespace id.
+
+Features that lived in messaging but belonged elsewhere moved to their owners: invsee and
+invlook to `inventory-sync`, the moderation bridge to `mod-gui`, join/quit cache sync to
+`economy`, death messages to `events`, `/msg` to `player-services`, and the chat join/quit
+listeners to `chat`. The unused `InvBridge` was removed. Auto-reboot reaches the proxy through
+a `ServerConnector` port that proxy-messaging registers with configuration.
+
+`docs/architecture/modules.mmd` is generated: run `python tools/generate-module-graph.py`
+after changing a `@PluginModule` (`--check` reports a stale file).
 
 ## Compatibility and diagnostics
 

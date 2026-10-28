@@ -34,6 +34,7 @@ class ModuleBoundaryRolloutTest {
             "discord-integration",
             "events",
             "help",
+            "messaging",
             "motd",
             "mute-system",
             "rules"

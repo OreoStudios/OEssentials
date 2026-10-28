@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.messaging.lifecycle.MessagingModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "messaging")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "messaging", lifecycle = fr.elias.oessentials.messaging.lifecycle.MessagingModule.class)
 package fr.elias.oessentials.messaging;
