@@ -36,7 +36,8 @@ import java.util.function.Predicate;
  */
 public final class CrossTradeService implements Listener {
     private static final long INVITE_TTL_MS = 60_000L;
-    private static final long CLAIM_DELAY_TICKS = 60L;
+    /** Inventory sync applies the saved inventory ~10 ticks after join plus a database read. */
+    private static final long CLAIM_DELAY_TICKS = 100L;
 
     private record Invite(UUID fromId, String fromName, long at) {
         boolean expired() { return System.currentTimeMillis() - at > INVITE_TTL_MS; }
@@ -189,8 +190,8 @@ public final class CrossTradeService implements Listener {
         menu.render(trade);
         menus.put(player.getUniqueId(), menu);
         player.openInventory(menu.getInventory());
-        Lang.send(player, "trade.opening", "<gray>Opening trade GUI with <aqua>%name%</aqua>…</gray>",
-                Map.of("name", trade.nameOf(side.other())));
+        Lang.send(player, "trade.opening", "<gray>Opening trade GUI with <aqua>%partner%</aqua>…</gray>",
+                Map.of("partner", trade.nameOf(side.other()), "name", trade.nameOf(side.other())));
     }
 
     private void refreshAll() {
@@ -275,9 +276,15 @@ public final class CrossTradeService implements Listener {
         if (store.tryCancel(tradeId, reason)) changed(tradeId);
     }
 
-    /** Hands out everything {@code p} is owed (deliveries and returns), each exactly once. */
+    /**
+     * Hands out everything {@code p} is owed (deliveries and returns), each exactly once.
+     * Never for a player who is not online: a disconnect closes the menu first, and items given
+     * to a player who is leaving were lost. They stay owed until the player's next join.
+     */
     private void claimOwed(Player p) {
+        if (p == null || !p.isOnline()) return;
         for (CrossTrade t : store.owedTo(p.getUniqueId())) {
+            if (!p.isOnline()) return;
             Side side = t.sideOf(p.getUniqueId());
             List<String> items = store.claim(t.id(), side);
             if (items == null) continue;
@@ -324,6 +331,8 @@ public final class CrossTradeService implements Listener {
         if (!(e.getInventory().getHolder() instanceof CrossTradeMenu menu) || menu.closingByPlugin) return;
         menus.remove(menu.viewer, menu);
         cancel(menu.tradeId, "closed");
+        // Runs a tick later: if the close was part of a disconnect the player is gone by then and
+        // keeps the items owed (handed out on their next join).
         if (e.getPlayer() instanceof Player p) OreScheduler.run(plugin, () -> claimOwed(p));
     }
 
