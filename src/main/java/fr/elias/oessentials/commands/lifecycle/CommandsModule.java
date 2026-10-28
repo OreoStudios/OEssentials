@@ -36,10 +36,6 @@ import fr.elias.oessentials.commands.internal.commands.core.playercommands.FeedC
 import fr.elias.oessentials.proxy.internal.commands.core.playercommands.ServerProxyCommand;
 import fr.elias.oessentials.commands.internal.commands.core.playercommands.SitCommand;
 import fr.elias.oessentials.commands.internal.listeners.SitListener;
-import fr.elias.oessentials.configuration.internal.migration.cmi.CMIMigrateCommand;
-import fr.elias.oessentials.configuration.internal.migration.commands.ZEssentialsHomesImportCommand;
-import fr.elias.oessentials.configuration.internal.migration.commands.ZImportCommand;
-import fr.elias.oessentials.configuration.internal.migration.essentialsx.command.MigrateEssentialsXCommand;
 import fr.elias.oessentials.afk.internal.AfkCommand;
 import fr.elias.oessentials.commands.internal.anvil.AnvilCommand;
 import fr.elias.oessentials.player.internal.back.command.BackCommand;
@@ -188,10 +184,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .registerIf(services(ConfigurationServices.class).getFeatureSettings().playerVaultsEnabled(), new fr.elias.oessentials.playervaults.internal.commands.core.playercommands.VaultsCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.UuidCommand())
                 .register(new TpCommand(services(PlayerServices.class).getTeleportService()))
-                .register(new ZEssentialsHomesImportCommand(plugin, services(StorageServices.class).getStorage(), services(StorageServices.class).getHomeDirectory()))
-                .register(new ZImportCommand(plugin, services(StorageServices.class).getHomeDirectory()))
-                .register(new MigrateEssentialsXCommand(plugin, services(StorageServices.class).getHomeDirectory()))
-                .register(new CMIMigrateCommand(plugin, services(StorageServices.class).getHomeDirectory()))
                 .register(new MoveCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new EcoMigrateCommand(plugin))
                 .register(new fr.elias.oessentials.currency.internal.commands.CurrencyAdminCommand(plugin));

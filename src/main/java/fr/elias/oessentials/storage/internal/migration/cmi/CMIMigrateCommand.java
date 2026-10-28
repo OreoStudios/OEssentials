@@ -1,6 +1,8 @@
-package fr.elias.oessentials.configuration.internal.migration.cmi;
+package fr.elias.oessentials.storage.internal.migration.cmi;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
+import java.util.function.Supplier;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -30,9 +32,11 @@ public class CMIMigrateCommand implements OreoCommand {
 
     private final OEssentials plugin;
     private final HomeDirectory  homeDirectory;
+    private final Supplier<BalanceImportTarget> balances;
 
-    public CMIMigrateCommand(OEssentials plugin, HomeDirectory homeDirectory) {
+    public CMIMigrateCommand(OEssentials plugin, HomeDirectory homeDirectory, Supplier<BalanceImportTarget> balances) {
         this.plugin        = plugin;
+        this.balances = balances;
         this.homeDirectory = homeDirectory;
     }
 
@@ -115,7 +119,7 @@ public class CMIMigrateCommand implements OreoCommand {
                 if (fEcon) {
                     sender.sendMessage("§7Importing economy…");
                     CMIEconomyImporter econImporter = new CMIEconomyImporter(
-                            plugin.getDatabase(), plugin.getLogger(), fSkip);
+                            balances.get(), plugin.getLogger(), fSkip);
                     econCount = econImporter.importEconomy(fCmi);
                     sender.sendMessage("§a  Economy: §e" + econCount + " imported.");
                 }

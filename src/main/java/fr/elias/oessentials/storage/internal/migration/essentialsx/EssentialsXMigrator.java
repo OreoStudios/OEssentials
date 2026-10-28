@@ -1,6 +1,6 @@
-package fr.elias.oessentials.configuration.internal.migration.essentialsx;
+package fr.elias.oessentials.storage.internal.migration.essentialsx;
 
-import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
@@ -42,7 +42,7 @@ public class EssentialsXMigrator {
     public enum ConflictPolicy { SKIP, OVERWRITE }
 
     private final StorageApi storage;
-    private final PlayerEconomyDatabase economy;
+    private final BalanceImportTarget economy;
     private final HomeDirectory homeDirectory;
     private final WarpDirectory warpDirectory;
     private final String serverName;
@@ -52,7 +52,7 @@ public class EssentialsXMigrator {
 
     public EssentialsXMigrator(
             StorageApi storage,
-            PlayerEconomyDatabase economy,
+            BalanceImportTarget economy,
             HomeDirectory homeDirectory,
             WarpDirectory warpDirectory,
             String serverName,

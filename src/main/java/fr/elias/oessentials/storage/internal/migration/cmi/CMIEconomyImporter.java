@@ -1,6 +1,6 @@
-package fr.elias.oessentials.configuration.internal.migration.cmi;
+package fr.elias.oessentials.storage.internal.migration.cmi;
 
-import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
@@ -18,12 +18,12 @@ import java.util.logging.Logger;
  */
 public class CMIEconomyImporter {
 
-    private final PlayerEconomyDatabase economy;
+    private final BalanceImportTarget economy;
     private final Logger                logger;
     private final boolean               skipExisting;
 
     public CMIEconomyImporter(
-            PlayerEconomyDatabase economy,
+            BalanceImportTarget economy,
             Logger                logger,
             boolean               skipExisting
     ) {

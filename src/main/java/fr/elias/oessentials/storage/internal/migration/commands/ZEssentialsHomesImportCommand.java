@@ -1,9 +1,9 @@
-package fr.elias.oessentials.configuration.internal.migration.commands;
+package fr.elias.oessentials.storage.internal.migration.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
-import fr.elias.oessentials.configuration.internal.migration.ZEssentialsHomeImporter;
+import fr.elias.oessentials.storage.internal.migration.ZEssentialsHomeImporter;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.command.CommandSender;
 

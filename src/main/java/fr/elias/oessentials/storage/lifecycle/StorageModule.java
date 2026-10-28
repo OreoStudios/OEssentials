@@ -4,6 +4,11 @@ import com.mongodb.client.MongoClient;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
+import fr.elias.oessentials.storage.internal.migration.cmi.CMIMigrateCommand;
+import fr.elias.oessentials.storage.internal.migration.commands.ZEssentialsHomesImportCommand;
+import fr.elias.oessentials.storage.internal.migration.commands.ZImportCommand;
+import fr.elias.oessentials.storage.internal.migration.essentialsx.command.MigrateEssentialsXCommand;
 import fr.elias.oessentials.storage.internal.persistence.mongoservices.MongoHomeDirectory;
 import fr.elias.oessentials.storage.internal.persistence.mongoservices.MongoHomesMigrator;
 import fr.elias.oessentials.storage.internal.persistence.mongoservices.MongoHomesStorage;
@@ -38,6 +43,7 @@ public final class StorageModule extends ManagedModule implements StorageService
     private SpawnDirectory spawnDirectory;
     private org.bukkit.configuration.file.FileConfiguration playerWarpsConfig;
     private fr.elias.oessentials.storage.internal.directory.PlayerDirectory playerDirectory;
+    private volatile BalanceImportTarget balanceImportTarget;
 
     @Override
     protected void start() {
@@ -45,6 +51,7 @@ public final class StorageModule extends ManagedModule implements StorageService
         cleanup("storage-close", () -> { if (storage != null) storage.close(); });
         cleanup("storage-flush", () -> { if (storage != null) storage.flush(); });
         initStorage();
+        registerImportCommands();
     }
 
     @Override public MongoClient getHomesMongoClient() { return homesMongoClient; }
@@ -59,6 +66,16 @@ public final class StorageModule extends ManagedModule implements StorageService
     @Override public SpawnDirectory getSpawnDirectory() { return spawnDirectory; }
     @Override public org.bukkit.configuration.file.FileConfiguration getPlayerWarpsConfig() { return playerWarpsConfig; }
     @Override public fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory() { return playerDirectory; }
+    @Override public void setBalanceImportTarget(BalanceImportTarget target) { this.balanceImportTarget = target; }
+
+    /** CMI, EssentialsX and zEssentials data importers; balances go to whichever economy registered itself. */
+    private void registerImportCommands() {
+        services(ConfigurationServices.class).getCommands()
+                .register(new ZEssentialsHomesImportCommand(plugin, storage, homeDirectory))
+                .register(new ZImportCommand(plugin, homeDirectory, () -> balanceImportTarget))
+                .register(new MigrateEssentialsXCommand(plugin, homeDirectory, () -> balanceImportTarget))
+                .register(new CMIMigrateCommand(plugin, homeDirectory, () -> balanceImportTarget));
+    }
 
     private void initStorage() {
         // Load playerwarps dedicated config

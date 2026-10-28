@@ -1,11 +1,13 @@
-package fr.elias.oessentials.configuration.internal.migration.essentialsx.command;
+package fr.elias.oessentials.storage.internal.migration.essentialsx.command;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
+import java.util.function.Supplier;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.migration.essentialsx.EssentialsXMigrator;
+import fr.elias.oessentials.storage.internal.migration.essentialsx.EssentialsXMigrator;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.configuration.internal.migration.essentialsx.EssentialsXMigrator.ConflictPolicy;
-import fr.elias.oessentials.configuration.internal.migration.essentialsx.EssentialsXMigrator.Result;
+import fr.elias.oessentials.storage.internal.migration.essentialsx.EssentialsXMigrator.ConflictPolicy;
+import fr.elias.oessentials.storage.internal.migration.essentialsx.EssentialsXMigrator.Result;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import org.bukkit.command.CommandSender;
 
@@ -33,9 +35,11 @@ public class MigrateEssentialsXCommand implements OreoCommand {
 
     private final OEssentials plugin;
     private final HomeDirectory homeDirectory;
+    private final Supplier<BalanceImportTarget> balances;
 
-    public MigrateEssentialsXCommand(OEssentials plugin, HomeDirectory homeDirectory) {
+    public MigrateEssentialsXCommand(OEssentials plugin, HomeDirectory homeDirectory, Supplier<BalanceImportTarget> balances) {
         this.plugin = plugin;
+        this.balances = balances;
         this.homeDirectory = homeDirectory;
     }
 
@@ -109,7 +113,7 @@ public class MigrateEssentialsXCommand implements OreoCommand {
         OreScheduler.runAsync(plugin, () -> {
             EssentialsXMigrator migrator = new EssentialsXMigrator(
                     plugin.getStorage(),
-                    plugin.getDatabase(),
+                    balances.get(),
                     homeDirectory,
                     plugin.getWarpDirectory(),
                     plugin.getConfig().getString("server.name", "server-1"),

@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.migration.cmi;
+package fr.elias.oessentials.storage.internal.migration.cmi;
 
 import org.bukkit.Location;
 import org.bukkit.World;

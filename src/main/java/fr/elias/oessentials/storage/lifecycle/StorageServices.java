@@ -2,6 +2,7 @@ package fr.elias.oessentials.storage.lifecycle;
 
 import com.mongodb.client.MongoClient;
 import dev.oreo.modulith.core.ModuleApi;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpDirectory;
@@ -27,4 +28,7 @@ public interface StorageServices {
     org.bukkit.configuration.file.FileConfiguration getPlayerWarpsConfig();
     fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory();
     void reloadPlayerWarpsConfig();
+
+    /** Registers where imported balances are written, or {@code null} when no economy is running. */
+    void setBalanceImportTarget(BalanceImportTarget target);
 }

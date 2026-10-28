@@ -8,6 +8,9 @@ import fr.elias.oessentials.redis.lifecycle.RedisServices;
 import fr.elias.oessentials.economy.internal.persistence.database.JsonEconomyDatabase;
 import fr.elias.oessentials.economy.internal.persistence.database.MongoDBManager;
 import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
+import fr.elias.oessentials.storage.lifecycle.StorageServices;
+import java.util.UUID;
 import fr.elias.oessentials.economy.internal.persistence.database.PostgreSQLManager;
 import fr.elias.oessentials.messaging.internal.cross.PlayerDataListener;
 import fr.elias.oessentials.messaging.internal.cross.PlayerListener;
@@ -23,7 +26,7 @@ import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "economy", dependencies = {"configuration::services", "redis::services"})
+@PluginModule(value = "economy", dependencies = {"configuration::services", "redis::services", "storage::services"})
 public final class EconomyModule extends ManagedModule implements EconomyServices {
     private EconomyBootstrap ecoBootstrap;
     private PlayerEconomyDatabase database;
@@ -116,6 +119,16 @@ public final class EconomyModule extends ManagedModule implements EconomyService
             plugin.getLogger().info("[ECON] Disabled. Skipping Vault, DB, and economy commands.");
             this.database = null;
             this.vaultEconomy = null;
+        }
+
+        if (this.database != null) {
+            final PlayerEconomyDatabase importTarget = this.database;
+            final StorageServices storage = services(StorageServices.class);
+            storage.setBalanceImportTarget(new BalanceImportTarget() {
+                @Override public double getBalance(UUID playerId) { return importTarget.getBalance(playerId); }
+                @Override public void setBalance(UUID playerId, String playerName, double balance) { importTarget.setBalance(playerId, playerName, balance); }
+            });
+            cleanup("balanceImportTarget", () -> storage.setBalanceImportTarget(null));
         }
     }
 

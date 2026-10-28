@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.migration.cmi;
+package fr.elias.oessentials.storage.internal.migration.cmi;
 
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import fr.elias.oessentials.storage.internal.services.StorageApi;

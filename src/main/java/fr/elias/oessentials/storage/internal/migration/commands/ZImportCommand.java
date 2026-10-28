@@ -1,11 +1,13 @@
-package fr.elias.oessentials.configuration.internal.migration.commands;
+package fr.elias.oessentials.storage.internal.migration.commands;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
+import java.util.function.Supplier;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.migration.ZEssentialsEconomyImporter;
+import fr.elias.oessentials.storage.internal.migration.ZEssentialsEconomyImporter;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.configuration.internal.migration.ZEssentialsHomeImporter;
-import fr.elias.oessentials.configuration.internal.migration.ZEssentialsWarpImporter;
+import fr.elias.oessentials.storage.internal.migration.ZEssentialsHomeImporter;
+import fr.elias.oessentials.storage.internal.migration.ZEssentialsWarpImporter;
 import fr.elias.oessentials.storage.internal.homes.home.HomeDirectory;
 import org.bukkit.command.CommandSender;
 
@@ -36,9 +38,11 @@ public class ZImportCommand implements OreoCommand {
 
     private final OEssentials plugin;
     private final HomeDirectory  homeDirectory;
+    private final Supplier<BalanceImportTarget> balances;
 
-    public ZImportCommand(OEssentials plugin, HomeDirectory homeDirectory) {
+    public ZImportCommand(OEssentials plugin, HomeDirectory homeDirectory, Supplier<BalanceImportTarget> balances) {
         this.plugin        = plugin;
+        this.balances = balances;
         this.homeDirectory = homeDirectory;
     }
 
@@ -127,7 +131,7 @@ public class ZImportCommand implements OreoCommand {
                 if (fEconomy) {
                     sender.sendMessage("§7Importing economy…");
                     ZEssentialsEconomyImporter e = new ZEssentialsEconomyImporter(
-                            plugin.getDatabase(), plugin.getLogger(),
+                            balances.get(), plugin.getLogger(),
                             fPrefix, fEconName, fSkip);
                     econCount = e.importEconomy(conn);
                     sender.sendMessage("§a  Economy: §e" + econCount + " imported.");

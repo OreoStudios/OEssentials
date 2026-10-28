@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.migration;
+package fr.elias.oessentials.storage.internal.migration;
 
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.storage.internal.services.StorageApi;

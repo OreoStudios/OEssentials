@@ -1,6 +1,6 @@
-package fr.elias.oessentials.configuration.internal.migration;
+package fr.elias.oessentials.storage.internal.migration;
 
-import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
+import fr.elias.oessentials.storage.api.BalanceImportTarget;
 
 import java.sql.*;
 import java.util.UUID;
@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class ZEssentialsEconomyImporter {
 
-    private final PlayerEconomyDatabase economy;
+    private final BalanceImportTarget economy;
     private final Logger logger;
     private final String economiesTable;
     private final String usersTable;
@@ -34,7 +34,7 @@ public class ZEssentialsEconomyImporter {
      * @param skipExisting  When true, players who already have a balance > 0 are skipped
      */
     public ZEssentialsEconomyImporter(
-            PlayerEconomyDatabase economy,
+            BalanceImportTarget economy,
             Logger logger,
             String tablePrefix,
             String economyName,
