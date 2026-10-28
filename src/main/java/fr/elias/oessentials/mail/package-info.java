@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.mail.lifecycle.MailModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "mail")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "mail", lifecycle = fr.elias.oessentials.mail.lifecycle.MailModule.class)
 package fr.elias.oessentials.mail;

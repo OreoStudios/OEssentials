@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.commands.lifecycle.CommandsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "commands")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "commands", lifecycle = fr.elias.oessentials.commands.lifecycle.CommandsModule.class)
 package fr.elias.oessentials.commands;

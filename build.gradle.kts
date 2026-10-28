@@ -54,7 +54,7 @@ configurations.testImplementation {
     extendsFrom(configurations.compileOnly.get())
 }
 
-val modulithVersion = "0.5.1"
+val modulithVersion = "0.5.2"
 
 dependencies {
     // ── MinecraftModulith (shaded + relocated) ──────────────────────────────

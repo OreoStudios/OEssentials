@@ -7,11 +7,11 @@ and shutdown into 56 MinecraftModulith modules. The Bukkit entry point retains t
 ## Dependency and build
 
 The project builds with **Gradle** (Kotlin DSL) via the Gradle wrapper — Maven is no
-longer used. MinecraftModulith is pinned to [`0.5.1`](https://github.com/OreoStudios/MinecraftModulith/tree/v0.5.1)
+longer used. MinecraftModulith is pinned to [`0.5.2`](https://github.com/OreoStudios/MinecraftModulith/tree/v0.5.2)
 from the Oreo Studios Maven repository:
 
 ```kotlin
-val modulithVersion = "0.5.1"
+val modulithVersion = "0.5.2"
 implementation("dev.oreo.modulith:modulith-paper:$modulithVersion")
 annotationProcessor("dev.oreo.modulith:modulith-processor:$modulithVersion")
 testImplementation("dev.oreo.modulith:modulith-test:$modulithVersion")
@@ -158,6 +158,7 @@ files.
 | 4. Storage protected | 9 / 56 | 645 | Commands registered by storage; contracts `PlayerLocator`, `Homes`, `PlayerWarps`, `BackDataStore`, `StorageDialogs` port, public `IWarpsAPI`/`ISpawnAPI`/`IPlayerWarpsAPI` |
 | 5. Commands moved to their owners | 11 / 56 | 562 | 16 modules register their own commands; `group-rtp` and `custom-worlds` protected |
 | 6. Public API published by its owners | 11 / 56 | 442 | Each module provides its `fr.elias.oessentials.api` object through `PublicApis`; integrations no longer builds them |
+| 7. MinecraftModulith 0.5.2 | 20 / 56 | 441 | Processor no longer reports false errors for lambdas over wildcards; 9 modules that no one reaches into are protected |
 
 The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.
