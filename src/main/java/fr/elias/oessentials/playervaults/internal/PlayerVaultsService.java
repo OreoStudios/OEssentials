@@ -9,7 +9,6 @@ import fr.elias.oessentials.playervaults.internal.storage.YamlPlayerVaultsStorag
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -183,13 +182,9 @@ public final class PlayerVaultsService {
 
 
     private static MongoClient getHomesMongoClient(OEssentials plugin) {
-        try {
-            Field f = OEssentials.class.getDeclaredField("homesMongoClient");
-            f.setAccessible(true);
-            Object obj = f.get(plugin);
-            if (obj instanceof MongoClient mc) return mc;
-        } catch (Throwable ignored) {}
-        return null;
+        // The client lives in the storage module; a reflective lookup of a removed OEssentials field
+        // returned null, so vaults never used MongoDB.
+        return plugin.getHomesMongoClient();
     }
 
     private void deny(Player p, String msg) {

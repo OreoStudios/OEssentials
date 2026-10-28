@@ -118,6 +118,7 @@ flowchart TD
     inventories --> mail
     inventories -->|services| messaging
     inventories -.->|uses services| shop
+    inventories -->|services| storage
     inventory_sync["inventory-sync"]
     inventory_sync -->|services| configuration
     inventory_sync --> ender_chest
@@ -185,6 +186,7 @@ flowchart TD
     player_vaults["player-vaults"]
     player_vaults -->|services| configuration
     player_vaults --> jump_pads
+    player_vaults -->|services| storage
     playtime["playtime"]
     playtime -->|services| configuration
     playtime --> sharding

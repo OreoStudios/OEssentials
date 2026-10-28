@@ -23,7 +23,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -677,13 +676,9 @@ public final class AuctionHouseModule {
     }
 
     private com.mongodb.client.MongoClient getMongoClient() {
-        try {
-            Field f = OEssentials.class.getDeclaredField("homesMongoClient");
-            f.setAccessible(true);
-            Object obj = f.get(plugin);
-            if (obj instanceof com.mongodb.client.MongoClient mc) return mc;
-        } catch (Throwable ignored) {}
-        return null;
+        // The client lives in the storage module; a reflective lookup of a removed OEssentials field
+        // returned null, so the auction house never used MongoDB.
+        return plugin.getHomesMongoClient();
     }
 
     private void detectCustomItem(Auction auction, ItemStack item) {
