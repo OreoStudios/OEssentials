@@ -32,6 +32,7 @@ class ModuleBoundaryRolloutTest {
     static final Set<String> PROTECTED = Set.of(
             "afk",
             "boss-bar",
+            "chat",
             "clear-lag",
             "command-control",
             "command-toggle",
@@ -59,6 +60,7 @@ class ModuleBoundaryRolloutTest {
             "mobs",
             "motd",
             "mute-system",
+            "notes",
             "performance-guards",
             "player-vaults",
             "playtime",

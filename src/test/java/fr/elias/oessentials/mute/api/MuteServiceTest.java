@@ -1,4 +1,4 @@
-package fr.elias.oessentials.chat.internal.chatservices;
+package fr.elias.oessentials.mute.api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

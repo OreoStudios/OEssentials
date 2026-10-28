@@ -1,5 +1,7 @@
 package fr.elias.oessentials.chat.internal;
 
+import fr.elias.oessentials.platform.config.CustomConfig;
+
 import fr.elias.oessentials.chat.internal.hooks.ItemsAdderHook;
 import fr.elias.oessentials.chat.internal.hooks.NexoHook;
 import net.kyori.adventure.text.Component;

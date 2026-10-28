@@ -1,4 +1,4 @@
-package fr.elias.oessentials.chat.internal.chatservices;
+package fr.elias.oessentials.mute.api;
 
 import com.mongodb.lang.Nullable;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -15,8 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.Objects;
 
+/** Mutes stored by mute-system; chat and moderation tools read and change them. */
+@dev.oreo.modulith.core.ModuleApi("services")
 public class MuteService {
 
+    @dev.oreo.modulith.core.ModuleApi("services")
     public static final class MuteData {
         public final UUID uuid;
         public final long until; // epoch millis; <=0 for permanent

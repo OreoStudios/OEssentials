@@ -1,9 +1,10 @@
 package fr.elias.oessentials.chat.internal;
 
+import fr.elias.oessentials.platform.config.CustomConfig;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
-import fr.elias.oessentials.modgui.internal.ModGuiService;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.DiscordWebhook;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -17,7 +18,6 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -214,7 +214,7 @@ public final class AsyncChatListener implements Listener {
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final ModGuiService gui = OEssentials.get().getModGuiService();
+        final fr.elias.oessentials.modgui.api.ChatControls gui = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getChatControls);
 
         if (gui != null && gui.chatMuted()) {
             player.sendMessage("§cChat is currently muted.");

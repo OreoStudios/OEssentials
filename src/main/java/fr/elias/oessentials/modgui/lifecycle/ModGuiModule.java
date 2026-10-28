@@ -5,15 +5,17 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.modgui.internal.world.WorldTweaksListener;
 
-@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"ender-chest::services", "freeze::services"}, after = {"inventories"})
+@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"chat::services", "ender-chest::services", "freeze::services", "notes::services"}, after = {"inventories"})
 public final class ModGuiModule extends ManagedModule implements ModGuiServices {
     private fr.elias.oessentials.modgui.internal.ModGuiService modGuiService;
     private fr.elias.oessentials.modgui.internal.cross.ModBridge modBridge;
+    private fr.elias.oessentials.modgui.internal.ip.IpTracker ipTracker;
 
     @Override
     protected void start() {
         services(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class)
                 .registerNamespace(new fr.elias.oessentials.modgui.internal.cross.rabbit.CrossInvPacketNamespace());
+        this.ipTracker = new fr.elias.oessentials.modgui.internal.ip.IpTracker(plugin);
         initModGui();
         listenForModuleEvents(this);
         providePublicApi(fr.elias.oessentials.api.ICrossServerAPI.class, this::getCrossServerApi);
@@ -30,6 +32,7 @@ public final class ModGuiModule extends ManagedModule implements ModGuiServices 
 
     @Override public fr.elias.oessentials.modgui.internal.ModGuiService getModGuiService() { return modGuiService; }
     @Override public fr.elias.oessentials.modgui.internal.cross.ModBridge getModBridge() { return modBridge; }
+    @Override public fr.elias.oessentials.modgui.internal.ip.IpTracker getIpTracker() { return ipTracker; }
 
     private void initModGui() {
         try {

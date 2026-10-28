@@ -6,12 +6,12 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.mute.lifecycle.MuteSystemServices;
 import fr.elias.oessentials.storage.lifecycle.StorageServices;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;
-import fr.elias.oessentials.chat.internal.CustomConfig;
+import fr.elias.oessentials.platform.config.CustomConfig;
 import fr.elias.oessentials.chat.internal.FormatManager;
 import fr.elias.oessentials.chat.internal.oreobot.ConversationListener;
 import org.bukkit.event.Listener;
 
-@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, uses = {"discord-integration::services"}, after = {"shop"})
+@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, uses = {"discord-integration::services", "mod-gui::services", "notes::services"}, after = {"shop"})
 public final class ChatModule extends ManagedModule implements ChatServices {
     private fr.elias.oessentials.chat.internal.channels.ChatChannelManager channelManager;
     private CustomConfig chatConfig;
@@ -47,7 +47,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
     @Override public fr.elias.oessentials.chat.internal.oreobot.ConversationListener getActiveConversationListener() { return activeConversationListener; }
 
     private void initChat() {
-        this.chatConfig       = new fr.elias.oessentials.chat.internal.CustomConfig(plugin, "config/chat-messaging/chat-format.yml");
+        this.chatConfig       = new fr.elias.oessentials.platform.config.CustomConfig(plugin, "config/chat-messaging/chat-format.yml");
         this.chatFormatManager = new fr.elias.oessentials.chat.internal.FormatManager(chatConfig);
 
         boolean discordEnabled = false;

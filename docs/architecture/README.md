@@ -166,6 +166,7 @@ files.
 | 12. Placeholders answered by their modules | 42 / 56 | 214 | `Placeholders` registry; kits, playtime, vault and balance placeholders moved to their owners |
 | 13. Aliases and dialogs moved to their features | 44 / 56 | 184 | Aliases owned by command-control; feature dialogs in their features with `platform/ui/Dialogs` |
 | 14. Clone, kits count, currency placeholders, economy lookups | 45 / 56 | 169 | /clone in skins; currency registers its PAPI expansion; economy lookups on `EconomyServices` |
+| Mute owns its service; chat/notes/mod-gui contracts | 48 / 56 | 132 | MuteService → mute-system api, MuteListener → mute internal; mod-gui ChatControls; notes openNotes/isWaitingForNote; CustomConfig → platform.config; IpTracker owned by mod-gui |
 
 The largest providers are now `storage` (160), `player-services` (76), `shop` (58) and `inventories` (54).
 Their public contracts should be designed before their consumers are migrated.

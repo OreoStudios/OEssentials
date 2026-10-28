@@ -2,12 +2,10 @@ package fr.elias.oessentials.worlds.internal.commands.core.admins;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.modgui.internal.menu.WorldGamerulesMenu;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.worlds.internal.world.VoidChunkGenerator;
 import fr.elias.oessentials.worlds.internal.world.WorldPreGenerator;
-import fr.minuskube.inv.SmartInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -391,20 +389,11 @@ public final class OeWorldCommand implements OreoCommand, TabCompleter {
             return;
         }
 
-        var modGui = plugin.getModGuiService();
-        if (modGui == null) {
+        var modGui = plugin.getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, m -> m);
+        if (modGui == null || !modGui.openWorldGamerules(p, world)) {
             Lang.send(p, "world.gamerule.modgui-unavailable",
                     "<red>Mod GUI is not available on this server.</red>");
-            return;
         }
-
-        SmartInventory.builder()
-                .manager(plugin.getInvManager())
-                .provider(new WorldGamerulesMenu(plugin, modGui, world))
-                .title(Lang.color("&8Gamerules: " + world.getName()))
-                .size(6, 9)
-                .build()
-                .open(p);
     }
 
     // -----------------------------------------------------------------------

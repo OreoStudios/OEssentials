@@ -8,7 +8,7 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.chat.internal.channels.ChatChannel;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.chat.internal.channels.ChatChannelManager;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -263,7 +263,7 @@ public class ChatSyncManager {
 
             OreScheduler.run(OEssentials.get(), () -> {
                 var plugin = OEssentials.get();
-                var svc = plugin.getModGuiService();
+                var svc = plugin.getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getChatControls);
                 if (svc == null) return;
 
                 switch (fType.toUpperCase()) {

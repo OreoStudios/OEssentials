@@ -10,7 +10,9 @@ flowchart TD
     chat["chat"]
     chat -->|services| configuration
     chat -.->|uses services| discord_integration
+    chat -.->|uses services| mod_gui
     chat -->|services| mute_system
+    chat -.->|uses services| notes
     chat --> shop
     chat -->|services| storage
     clear_lag["clear-lag"]
@@ -52,6 +54,7 @@ flowchart TD
     custom_worlds["custom-worlds"]
     custom_worlds -->|services| configuration
     custom_worlds --> currency_system
+    custom_worlds -.->|uses services| mod_gui
     daily["daily"]
     daily -->|services| configuration
     daily --> freeze
@@ -137,12 +140,14 @@ flowchart TD
     mobs -->|services| configuration
     mobs --> discord_integration
     mod_gui["mod-gui"]
+    mod_gui -.->|uses services| chat
     mod_gui -->|services| configuration
     mod_gui -.->|uses services| ender_chest
     mod_gui -.->|uses services| freeze
     mod_gui --> inventories
     mod_gui -->|events| messaging
     mod_gui -->|services| messaging
+    mod_gui -.->|uses services| notes
     mod_gui -->|services| storage
     motd["motd"]
     motd -->|services| configuration

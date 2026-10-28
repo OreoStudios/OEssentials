@@ -1,6 +1,6 @@
-package fr.elias.oessentials.chat.internal;
+package fr.elias.oessentials.mute.internal;
 
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

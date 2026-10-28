@@ -22,7 +22,6 @@ import fr.elias.oessentials.enderchest.lifecycle.EnderChestServices;
 import fr.elias.oessentials.freeze.lifecycle.FreezeServices;
 import fr.elias.oessentials.grouprtp.lifecycle.GroupRtpServices;
 import fr.elias.oessentials.ignore.lifecycle.IgnoreServices;
-import fr.elias.oessentials.integrations.lifecycle.IntegrationsServices;
 import fr.elias.oessentials.inventory.lifecycle.InventoriesServices;
 import fr.elias.oessentials.jails.lifecycle.JailsServices;
 import fr.elias.oessentials.jumppads.lifecycle.JumpPadsServices;
@@ -68,7 +67,7 @@ import fr.elias.oessentials.player.internal.back.BackLocation;
 import fr.elias.oessentials.player.internal.back.rabbit.BackBroker;
 import fr.elias.oessentials.player.internal.back.service.BackService;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.clearlag.internal.ClearLagManager;
 import fr.elias.oessentials.commandtoggle.internal.CommandToggleService;
 import fr.elias.oessentials.modgui.internal.cross.ModBridge;
@@ -384,7 +383,7 @@ public final class OEssentials extends JavaPlugin {
     // Getters
     // -------------------------------------------------------------------------
 
-    public IpTracker getIpTracker() { return moduleRegistry.read(NotesServices.class, NotesServices::getIpTracker); }
+    public IpTracker getIpTracker() { return moduleRegistry.read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getIpTracker); }
 
     public FreezeManager getFreezeManager() { return moduleRegistry.read(FreezeServices.class, FreezeServices::getFreezeManager); }
 
@@ -429,7 +428,7 @@ public final class OEssentials extends JavaPlugin {
 
     public FreezeService getFreezeService() { return moduleRegistry.read(FreezeServices.class, FreezeServices::getFreezeService); }
 
-    public fr.elias.oessentials.chat.internal.CustomConfig getChatConfig() { return moduleRegistry.read(ChatServices.class, ChatServices::getChatConfig); }
+    public fr.elias.oessentials.platform.config.CustomConfig getChatConfig() { return moduleRegistry.read(ChatServices.class, ChatServices::getChatConfig); }
 
     public org.bukkit.configuration.file.FileConfiguration getPlayerWarpsConfig() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarpsConfig); }
     public void reloadPlayerWarpsConfig() { moduleRegistry.require(StorageServices.class).reloadPlayerWarpsConfig(); }

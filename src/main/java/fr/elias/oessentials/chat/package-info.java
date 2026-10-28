@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.chat.lifecycle.ChatModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "chat")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "chat", lifecycle = fr.elias.oessentials.chat.lifecycle.ChatModule.class)
 package fr.elias.oessentials.chat;

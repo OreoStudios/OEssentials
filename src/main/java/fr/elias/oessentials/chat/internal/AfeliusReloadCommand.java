@@ -1,5 +1,7 @@
 package fr.elias.oessentials.chat.internal;
 
+import fr.elias.oessentials.platform.config.CustomConfig;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.shared.Lang;

@@ -3,7 +3,7 @@ package fr.elias.oessentials.chat.internal.channels;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.chat.internal.ChatHoverProvider;
 import fr.elias.oessentials.chat.internal.ChatItemHandler;
-import fr.elias.oessentials.chat.internal.CustomConfig;
+import fr.elias.oessentials.platform.config.CustomConfig;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;
 import fr.elias.oessentials.chat.internal.FormatManager;
 import net.kyori.adventure.text.Component;

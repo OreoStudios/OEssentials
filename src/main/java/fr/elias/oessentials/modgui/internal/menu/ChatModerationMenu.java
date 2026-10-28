@@ -3,8 +3,7 @@ package fr.elias.oessentials.modgui.internal.menu;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.modgui.internal.ModGuiService;
 import fr.elias.oessentials.platform.ui.ItemBuilder;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
-import fr.elias.oessentials.chat.internal.ChatSyncManager;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -20,13 +19,13 @@ public class ChatModerationMenu implements InventoryProvider {
     private final OEssentials plugin;
     private final ModGuiService svc;
     private final MuteService mute;
-    private final ChatSyncManager sync;
+    private final fr.elias.oessentials.chat.lifecycle.ChatServices sync;
 
     public ChatModerationMenu(OEssentials plugin) {
         this.plugin = plugin;
         this.svc = plugin.getModGuiService();
         this.mute = plugin.getMuteService();
-        this.sync = plugin.getChatSyncManager();
+        this.sync = plugin.getModuleRegistry().read(fr.elias.oessentials.chat.lifecycle.ChatServices.class, c -> c);
     }
 
     @Override

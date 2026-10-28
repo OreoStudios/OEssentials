@@ -1,13 +1,14 @@
 package fr.elias.oessentials.chat.internal;
 
+import fr.elias.oessentials.platform.config.CustomConfig;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.chat.internal.channels.ChatChannel;
 import fr.elias.oessentials.chat.internal.channels.ChatChannelHandler;
 import fr.elias.oessentials.chat.internal.channels.ChatChannelManager;
-import fr.elias.oessentials.modgui.internal.ModGuiService;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -170,7 +171,7 @@ public class AsyncChatListenerWithChannels implements Listener {
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final ModGuiService gui = plugin.getModGuiService();
+        final fr.elias.oessentials.modgui.api.ChatControls gui = plugin.getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getChatControls);
 
         if (gui != null && gui.chatMuted()) {
             player.sendMessage("§cChat is currently muted.");
@@ -203,8 +204,8 @@ public class AsyncChatListenerWithChannels implements Listener {
             return;
         }
 
-        var notesListener = plugin.getNotesChat();
-        if (notesListener != null && notesListener.isWaitingForNote(player.getUniqueId())) return;
+        var notes = plugin.getModuleRegistry().read(fr.elias.oessentials.notes.lifecycle.NotesServices.class, n -> n);
+        if (notes != null && notes.isWaitingForNote(player.getUniqueId())) return;
 
         if (channelManager != null && channelManager.isEnabled()) {
             final String message = PlainTextComponentSerializer.plainText().serialize(event.message());

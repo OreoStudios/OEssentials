@@ -1,4 +1,4 @@
-package fr.elias.oessentials.chat.internal;
+package fr.elias.oessentials.platform.config;
 
 import fr.elias.oessentials.OEssentials;
 import org.bukkit.configuration.ConfigurationSection;
