@@ -37,7 +37,8 @@ public final class EconomyModule extends ManagedModule implements EconomyService
     private EconomyBootstrap ecoBootstrap;
     private PlayerEconomyDatabase database;
     private OfflinePlayerCache offlinePlayerCache;
-    private Economy vaultEconomy;
+    // Typed Object: Vault is optional, and module classes are reflected on every server.
+    private Object vaultEconomy;
 
     @Override
     protected void start() {
@@ -56,7 +57,7 @@ public final class EconomyModule extends ManagedModule implements EconomyService
 
     @Override public EconomyBootstrap getEcoBootstrap() { return ecoBootstrap; }
     @Override public PlayerEconomyDatabase getDatabase() { return database; }
-    @Override public Economy getVaultEconomy() { return vaultEconomy; }
+    @Override public Object vaultEconomyProvider() { return vaultEconomy; }
 
     private void initEconomy() {
         final String economyType = plugin.getConfig().getString("economy.type", "none").toLowerCase();

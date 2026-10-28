@@ -99,6 +99,7 @@ public class JumpPadsManager {
         this.file = new File(serverFolder, "config/jumpads.yml");
         if (!file.exists()) {
             try {
+                file.getParentFile().mkdirs(); // the data has always lived at config/server/config/jumpads.yml
                 file.createNewFile();
             } catch (IOException e) {
                 plugin.getLogger().severe("Failed to create server/jumpads.yml: " + e.getMessage());

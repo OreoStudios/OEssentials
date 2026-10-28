@@ -23,7 +23,8 @@ import fr.elias.oessentials.currency.internal.storage.MongoCurrencyStorage;
 
 @PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"economy::services"})
 public final class CurrencySystemModule extends ManagedModule implements CurrencySystemServices {
-    private volatile fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion currencyPlaceholders;
+    // Typed Object: PlaceholderAPI is optional, and module classes are reflected (EventBus) on every server.
+    private volatile Object currencyPlaceholders;
     private CurrencyService currencyService;
     private CurrencyConfig currencyConfig;
 
@@ -37,7 +38,7 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
     }
 
     @Override public CurrencyService getCurrencyService() { return currencyService; }
-    @Override public fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return currencyPlaceholders; }
+    @Override public Object currencyPlaceholderExpansion() { return currencyPlaceholders; }
     @Override public CurrencyConfig getCurrencyConfig() { return currencyConfig; }
 
     // -------------------------------------------------------------------------
@@ -106,6 +107,6 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
                 plugin.getLogger().warning("[Currency] PlaceholderAPI expansion failed: " + t.getMessage());
             }
         }, 60L);
-        cleanup("currencyPlaceholders", () -> { if (currencyPlaceholders != null) currencyPlaceholders.unregister(); });
+        cleanup("currencyPlaceholders", () -> { if (currencyPlaceholders != null) ((fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion) currencyPlaceholders).unregister(); });
     }
 }

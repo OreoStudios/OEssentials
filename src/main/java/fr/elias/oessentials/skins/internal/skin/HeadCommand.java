@@ -49,7 +49,7 @@ public class HeadCommand implements OreoCommand, org.bukkit.command.TabCompleter
 
         // Not online - fetch from Mojang asynchronously
         Lang.send(self, "admin.head.fetching",
-                "<gray>Fetching head for <white>{target}</white>...</gray>",
+                "<gray>Fetching head for <white>%target%</white>...</gray>",
                 Map.of("target", target));
 
         OreScheduler.runAsync(OEssentials.get(), () -> {
@@ -58,7 +58,7 @@ public class HeadCommand implements OreoCommand, org.bukkit.command.TabCompleter
             if (uuid == null) {
                 OreScheduler.runForEntity(OEssentials.get(), self, () -> {
                     Lang.send(self, "admin.head.cannot-resolve",
-                            "<red>Player <white>{target}</white> not found.</red>",
+                            "<red>Player <white>%target%</white> not found.</red>",
                             Map.of("target", target));
                 });
                 return;
@@ -69,7 +69,7 @@ public class HeadCommand implements OreoCommand, org.bukkit.command.TabCompleter
             if (profile == null) {
                 OreScheduler.runForEntity(OEssentials.get(), self, () -> {
                     Lang.send(self, "admin.head.fetch-failed",
-                            "<red>Failed to fetch head for <white>{target}</white>.</red>",
+                            "<red>Failed to fetch head for <white>%target%</white>.</red>",
                             Map.of("target", target));
                 });
                 return;
@@ -97,7 +97,7 @@ public class HeadCommand implements OreoCommand, org.bukkit.command.TabCompleter
 
             // Use Lang for the display name (supports both MiniMessage and legacy)
             String headName = Lang.msgLegacy("admin.head.item-name",
-                    "<aqua>{target}</aqua><gray>'s Head</gray>",
+                    "<aqua>%target%</aqua><gray>'s Head</gray>",
                     Map.of("target", displayName),
                     player);
 
@@ -117,7 +117,7 @@ public class HeadCommand implements OreoCommand, org.bukkit.command.TabCompleter
         } else {
             // Successfully added to inventory
             Lang.send(player, "admin.head.given",
-                    "<green>Given <white>{target}</white>'s head!</green>",
+                    "<green>Given <white>%target%</white>'s head!</green>",
                     Map.of("target", targetName));
         }
     }

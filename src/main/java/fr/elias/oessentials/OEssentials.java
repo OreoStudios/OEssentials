@@ -507,7 +507,11 @@ public final class OEssentials extends JavaPlugin {
 
     public CommandToggleService getCommandToggleService() { return moduleRegistry.read(CommandToggleServices.class, CommandToggleServices::getCommandToggleService); }
 
-    public Economy getVaultEconomy() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getVaultEconomy); }
+    public Economy getVaultEconomy() {
+        // Without Vault its classes are missing; touching the Economy type would throw NoClassDefFoundError.
+        if (getServer().getPluginManager().getPlugin("Vault") == null) return null;
+        return moduleRegistry.read(EconomyServices.class, EconomyServices::getVaultEconomy);
+    }
 
     public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return moduleRegistry.read(CurrencySystemServices.class, CurrencySystemServices::getCurrencyPlaceholders); }
 
