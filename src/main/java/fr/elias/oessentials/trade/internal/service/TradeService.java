@@ -398,20 +398,10 @@ public final class TradeService implements Listener {
                     cancelSession(capturedSid, reason);
                 },
                 (s, ver) -> {
-                    var broker = plugin.getTradeBroker();
-                    if (broker == null) return;
-
-                    Player a = Bukkit.getPlayer(s.getAId());
-                    Player b = Bukkit.getPlayer(s.getBId());
-
-                    if (a != null && a.isOnline()) {
-                        broker.publishState(capturedSid, a, s.isReadyA(), s.viewOfferA());
-                        log("[TRADE] publish A state sid=" + capturedSid + " ver=" + ver);
-                    }
-                    if (b != null && b.isOnline()) {
-                        broker.publishState(capturedSid, b, s.isReadyB(), s.viewOfferB());
-                        log("[TRADE] publish B state sid=" + capturedSid + " ver=" + ver);
-                    }
+                    // Same rules as every other publish: nothing for local sessions or ended ones,
+                    // and menu decoration filtered out of the offers.
+                    publishState(capturedSid, s);
+                    log("[TRADE] state changed sid=" + capturedSid + " ver=" + ver);
                 }
         );
     }
