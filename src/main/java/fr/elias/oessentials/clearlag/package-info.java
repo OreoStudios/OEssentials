@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.clearlag.lifecycle.ClearLagModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "clear-lag")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "clear-lag", lifecycle = fr.elias.oessentials.clearlag.lifecycle.ClearLagModule.class)
 package fr.elias.oessentials.clearlag;

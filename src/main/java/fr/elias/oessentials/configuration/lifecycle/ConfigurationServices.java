@@ -47,6 +47,9 @@ public interface ConfigurationServices {
     /** The module steps of /oereload. */
     fr.elias.oessentials.configuration.api.ReloadSteps getReloadSteps();
 
+    /** Which module reloads which configuration file. */
+    fr.elias.oessentials.configuration.api.ConfigFiles getConfigFiles();
+
     /** Registers the boss bars shown in the {@code /oesettings} menu, or {@code null} to remove them. */
     void setBossBarToggles(BossBarToggles toggles);
 

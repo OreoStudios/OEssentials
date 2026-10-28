@@ -31,4 +31,10 @@ public interface InventoriesServices {
         var module = getAuctionHouse();
         return module == null ? null : new fr.elias.oessentials.inventory.internal.api.AuctionHouseAPIImpl(module);
     }
+
+    /** Market orders, or {@code null} when the orders feature is not loaded. */
+    default fr.elias.oessentials.inventory.api.MarketOrders getMarketOrders() {
+        var module = getOrdersModule();
+        return module == null ? null : new fr.elias.oessentials.inventory.internal.orders.MarketOrdersAdapter(module);
+    }
 }

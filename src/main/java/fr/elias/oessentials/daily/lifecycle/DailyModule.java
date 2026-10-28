@@ -17,6 +17,7 @@ public final class DailyModule extends ManagedModule implements DailyServices {
         initDaily();
         providePublicApi(fr.elias.oessentials.api.IDailyAPI.class, this::getDailyApi);
         registerReloadStep(14, "daily", this::reloadDaily);
+        registerConfigFile("dailyrewards.yml", () -> { plugin.getDailyConfig().load(); plugin.getDailyRewardsConfig().load(); });
     }
 
     @Override public fr.elias.oessentials.daily.internal.DailyConfig getDailyConfig() { return dailyConfig; }

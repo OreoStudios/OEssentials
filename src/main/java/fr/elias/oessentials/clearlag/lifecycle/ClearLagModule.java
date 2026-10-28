@@ -15,6 +15,7 @@ public final class ClearLagModule extends ManagedModule implements ClearLagServi
         cleanup("clearLag", () -> { if (clearLag != null) clearLag.shutdown(); });
         initClearLag();
         providePublicApi(fr.elias.oessentials.api.IClearLagAPI.class, this::getClearLagApi);
+        registerConfigFile("clearlag.yml", () -> plugin.getClearLagManager().reload());
     }
 
     @Override public ClearLagManager getClearLag() { return clearLag; }

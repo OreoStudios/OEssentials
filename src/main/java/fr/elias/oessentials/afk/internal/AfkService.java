@@ -40,7 +40,7 @@ public class AfkService implements Listener {
 
     private AfkPoolService poolService;
     private AfkWebServer   webServer;
-    private fr.elias.oessentials.webpanel.internal.WebPanelSyncService webPanelSync;
+    private volatile fr.elias.oessentials.afk.api.AfkStatusSink webPanelSync;
     private volatile boolean crossHandlersRegistered = false;
 
     // ---- config ----
@@ -315,7 +315,7 @@ public class AfkService implements Listener {
     }
 
     public void setPoolService(AfkPoolService poolService) { this.poolService = poolService; }
-    public void setWebPanelSync(fr.elias.oessentials.webpanel.internal.WebPanelSyncService sync) { this.webPanelSync = sync; }
+    public void setWebPanelSync(fr.elias.oessentials.afk.api.AfkStatusSink sync) { this.webPanelSync = sync; }
 
     /** Returns a snapshot of all AFK players tracked globally (local + remote). */
     public Map<String, AfkPlayerData> getGlobalAfkData() {

@@ -1,4 +1,4 @@
-package fr.elias.oessentials.shop.internal.hooks;
+package fr.elias.oessentials.platform.hooks;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -13,10 +13,10 @@ public class NexoHook {
             if (plugin.getServer().getPluginManager().getPlugin("Nexo") != null) {
                 Class.forName("com.nexomc.nexo.api.NexoItems");
                 found = true;
-                plugin.getLogger().info("[Shop] Nexo hook enabled.");
+                plugin.getLogger().info("[Hooks] Nexo hook enabled.");
             }
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("[Shop] Nexo found but API class missing — hook disabled.");
+            plugin.getLogger().warning("[Hooks] Nexo found but API class missing — hook disabled.");
         }
         this.enabled = found;
     }

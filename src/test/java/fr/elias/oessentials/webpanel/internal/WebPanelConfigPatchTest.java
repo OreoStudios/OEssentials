@@ -40,7 +40,10 @@ class WebPanelConfigPatchTest {
         MaintenanceConfig maintenance = new MaintenanceConfig(plugin);
         MaintenanceService service = mock(MaintenanceService.class);
         when(service.getConfig()).thenReturn(maintenance);
-        when(plugin.getMaintenanceService()).thenReturn(service);
+        var maintenanceServices = mock(fr.elias.oessentials.maintenance.lifecycle.MaintenanceServices.class);
+        when(maintenanceServices.getMaintenanceService()).thenReturn(service);
+        when(maintenanceServices.applySettingsPatch(any())).thenCallRealMethod();
+        registry.bind(fr.elias.oessentials.maintenance.lifecycle.MaintenanceServices.class, maintenanceServices);
         var payload = JsonParser.parseString("""
                 {"settings": {
                   "maintenance.enabled": true,

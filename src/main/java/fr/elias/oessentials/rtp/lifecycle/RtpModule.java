@@ -27,6 +27,7 @@ public final class RtpModule extends ManagedModule implements RtpServices {
         initRtp();
         listenForModuleEvents(this);
         registerReloadStep(6, "rtp", this::reloadRtp);
+        registerConfigFile("rtp.yml", () -> rtpConfig.reload());
     }
 
     @Override public RtpPendingService getRtpPendingService() { return rtpPendingService; }

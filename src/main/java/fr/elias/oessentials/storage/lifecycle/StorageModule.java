@@ -74,6 +74,7 @@ public final class StorageModule extends ManagedModule implements StorageService
         providePublicApi(fr.elias.oessentials.api.IWarpsAPI.class, this::getWarpsApi);
         providePublicApi(fr.elias.oessentials.api.IPlayerWarpsAPI.class, this::getPlayerWarpsApi);
         registerReloadStep(13, "playerwarps", this::reloadPlayerwarps);
+        registerConfigFile("playerwarps.yml", this::reloadPlayerWarpsConfig);
     }
 
     /** Cross-server homes and player warps, once RabbitMQ is connected. */

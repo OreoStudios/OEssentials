@@ -3,7 +3,7 @@ package fr.elias.oessentials.inventory.internal.orders.model;
 /**
  * Returned by atomic fill operations so callers know what happened.
  */
-public class FillResult {
+public class FillResult implements fr.elias.oessentials.inventory.api.OrderFillView {
 
     public enum Outcome {
         SUCCESS,
@@ -38,4 +38,5 @@ public class FillResult {
     public int     getFilledQty()     { return filledQty; }
     public double  getPaidToSeller()  { return paidToSeller; }
     public Order   getUpdatedOrder()  { return updatedOrder; }
+    @Override public String getOutcomeName() { return outcome.name(); }
 }

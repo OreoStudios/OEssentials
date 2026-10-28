@@ -12,4 +12,10 @@ public interface ShopServices {
         var s = getShopModule();
         return s == null ? null : new fr.elias.oessentials.shop.internal.api.ShopAPIImpl(s);
     }
+
+    /** Shop selling, or {@code null} when the shop is not loaded. */
+    default fr.elias.oessentials.shop.api.ShopSales getShopSales() {
+        var module = getShopModule();
+        return module == null ? null : new fr.elias.oessentials.shop.internal.ShopSalesAdapter(fr.elias.oessentials.OEssentials.get(), module);
+    }
 }

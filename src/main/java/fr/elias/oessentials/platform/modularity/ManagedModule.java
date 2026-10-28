@@ -79,6 +79,13 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final void publishEvent(Object event) { context.events().publish(event); }
 
+    /** Declares that this module reloads {@code fileName} (e.g. when the web panel pushes it). */
+    protected final void registerConfigFile(String fileName, Runnable reload) {
+        var files = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getConfigFiles();
+        files.register(fileName, reload);
+        context.lifecycle().onClose(() -> files.unregister(fileName));
+    }
+
     /** Adds a step to /oereload until the module stops; lower {@code order} runs first. */
     protected final void registerReloadStep(int order, String name, fr.elias.oessentials.configuration.api.ReloadSteps.Step step) {
         var steps = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getReloadSteps();

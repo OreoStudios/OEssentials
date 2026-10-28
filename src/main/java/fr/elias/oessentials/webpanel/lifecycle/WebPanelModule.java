@@ -5,7 +5,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.afk.lifecycle.AfkServices;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "web-panel", dependencies = {"afk::services", "configuration::services", "storage::services"}, after = {"playtime"}, optional = true)
+@PluginModule(value = "web-panel", dependencies = {"afk::services", "configuration::services", "currency-system::services", "inventories::services", "maintenance::services", "shop::services", "storage::services"}, after = {"playtime"}, optional = true)
 public final class WebPanelModule extends ManagedModule implements WebPanelServices {
     // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Web Panel Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     private fr.elias.oessentials.webpanel.internal.WebPanelSyncService webPanelSyncService;
@@ -36,15 +36,17 @@ public final class WebPanelModule extends ManagedModule implements WebPanelServi
         // Start event-driven player sync (join/quit/block events + periodic)
         this.webPanelSyncService = new fr.elias.oessentials.webpanel.internal.WebPanelSyncService(plugin, client);
         this.webPanelSyncService.start();
-        if (services(AfkServices.class).getAfkService() != null) services(AfkServices.class).getAfkService().setWebPanelSync(this.webPanelSyncService);
+        var afk = services(AfkServices.class);
+        afk.setStatusSink(this.webPanelSyncService);
+        cleanup("afkStatusSink", () -> afk.setStatusSink(null));
 
         // Register reward (oreopanel/reward.yml)
         fr.elias.oessentials.webpanel.internal.RegisterRewardConfig rrConfig =
                 new fr.elias.oessentials.webpanel.internal.RegisterRewardConfig(plugin);
-        fr.elias.oessentials.shop.internal.hooks.ItemsAdderHook rrIaHook =
-                new fr.elias.oessentials.shop.internal.hooks.ItemsAdderHook(plugin);
-        fr.elias.oessentials.shop.internal.hooks.NexoHook rrNexoHook =
-                new fr.elias.oessentials.shop.internal.hooks.NexoHook(plugin);
+        fr.elias.oessentials.platform.hooks.ItemsAdderHook rrIaHook =
+                new fr.elias.oessentials.platform.hooks.ItemsAdderHook(plugin);
+        fr.elias.oessentials.platform.hooks.NexoHook rrNexoHook =
+                new fr.elias.oessentials.platform.hooks.NexoHook(plugin);
         fr.elias.oessentials.webpanel.internal.RegisterRewardService rrService =
                 new fr.elias.oessentials.webpanel.internal.RegisterRewardService(
                         plugin, rrConfig, client, rrIaHook, rrNexoHook);

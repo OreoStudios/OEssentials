@@ -16,6 +16,7 @@ public final class MaintenanceModule extends ManagedModule implements Maintenanc
         cleanup("maintenanceService", () -> { if (maintenanceService != null) maintenanceService.shutdown(); });
         initMaintenance();
         providePublicApi(fr.elias.oessentials.api.IMaintenanceAPI.class, this::getMaintenanceApi);
+        registerConfigFile("maintenance.yml", () -> plugin.getMaintenanceService().reload());
     }
 
     @Override public fr.elias.oessentials.maintenance.internal.MaintenanceConfig getMaintenanceConfig() { return maintenanceConfig; }

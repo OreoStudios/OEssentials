@@ -12,4 +12,13 @@ public interface MaintenanceServices {
         var s = getMaintenanceService();
         return s == null ? null : new fr.elias.oessentials.maintenance.internal.api.MaintenanceAPIImpl(s);
     }
+
+    /** Writes maintenance.yml keys and reloads; {@code false} when maintenance is not running. */
+    default boolean applySettingsPatch(java.util.Map<String, Object> values) throws java.io.IOException {
+        var service = getMaintenanceService();
+        if (service == null) return false;
+        service.getConfig().applyPatch(values);
+        service.reload();
+        return true;
+    }
 }

@@ -18,6 +18,7 @@ public final class ScoreboardModule extends ManagedModule implements ScoreboardS
         initScoreboard();
         providePublicApi(fr.elias.oessentials.api.IScoreboardAPI.class, this::getScoreboardApi);
         registerReloadStep(9, "scoreboard", this::reloadScoreboard);
+        registerConfigFile("scoreboard.yml", () -> plugin.getScoreboardService().reload());
     }
 
     @Override public ScoreboardService getScoreboardService() { return scoreboardService; }

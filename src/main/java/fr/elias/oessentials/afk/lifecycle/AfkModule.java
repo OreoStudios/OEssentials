@@ -24,6 +24,7 @@ public final class AfkModule extends ManagedModule implements AfkServices {
         listenForModuleEvents(this);
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IAfkAPI.class, this::getAfkApi);
+        registerConfigFile("afk.yml", () -> afkService.getAfkConfig().reload());
     }
 
     @ModuleListener

@@ -4,12 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
-import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.api.ICurrencyAPI;
 import fr.elias.oessentials.storage.api.Homes;
-import fr.elias.oessentials.playtime.internal.PlaytimeTracker;
-import fr.elias.oessentials.shop.internal.ShopModule;
-import fr.elias.oessentials.shop.internal.models.ShopItem;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -39,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Syncs player data to the web panel on join, quit, and periodically.
  * All HTTP calls happen off the main thread.
  */
-public class WebPanelSyncService implements Listener {
+public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.api.AfkStatusSink {
 
     private final OEssentials plugin;
     private final WebPanelClient client;
@@ -386,8 +382,7 @@ public class WebPanelSyncService implements Listener {
             // fallthrough to empty
             final String ipFallback = "";
             // We need effectively-final, so re-use separate path below
-            CurrencyService cs2 = plugin.getCurrencyService();
-            List<Currency> currencies2 = cs2 != null ? cs2.getAllCurrencies() : Collections.emptyList();
+            List<ICurrencyAPI> currencies2 = currencyApis();
             final String orders2 = serializeOrders(uuid);
             if (currencies2.isEmpty()) {
                 sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
@@ -396,8 +391,8 @@ public class WebPanelSyncService implements Listener {
             }
             List<CompletableFuture<Void>> futures2 = new ArrayList<>();
             Map<String, Double> balances2 = new LinkedHashMap<>();
-            for (Currency c : currencies2) {
-                futures2.add(cs2.getBalance(uuid, c.getId())
+            for (ICurrencyAPI c : currencies2) {
+                futures2.add(c.getBalance(uuid)
                         .thenAccept(b -> balances2.put(c.getId(), b)));
             }
             CompletableFuture.allOf(futures2.toArray(new CompletableFuture[0])).thenRun(() -> {
@@ -409,8 +404,7 @@ public class WebPanelSyncService implements Listener {
         }
         final String orders = serializeOrders(uuid);
 
-        CurrencyService cs = plugin.getCurrencyService();
-        List<Currency> currencies = cs != null ? cs.getAllCurrencies() : Collections.emptyList();
+        List<ICurrencyAPI> currencies = currencyApis();
 
         if (currencies.isEmpty()) {
             sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
@@ -421,8 +415,8 @@ public class WebPanelSyncService implements Listener {
         // Fetch balances (may be async), then fire HTTP off main thread
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         Map<String, Double> balances = new LinkedHashMap<>();
-        for (Currency c : currencies) {
-            futures.add(cs.getBalance(uuid, c.getId())
+        for (ICurrencyAPI c : currencies) {
+            futures.add(c.getBalance(uuid)
                     .thenAccept(b -> balances.put(c.getId(), b)));
         }
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
@@ -439,10 +433,9 @@ public class WebPanelSyncService implements Listener {
      */
     private String serializeOrders(UUID uuid) {
         try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om = plugin.getOrdersModule();
+            var om = marketOrders();
             if (om == null || !om.enabled()) return "[]";
-            java.util.List<fr.elias.oessentials.inventory.internal.orders.model.Order> orders =
-                    om.getService().getActiveOrdersByPlayer(uuid);
+            java.util.List<? extends fr.elias.oessentials.inventory.api.OrderView> orders = om.activeOrdersByPlayer(uuid);
             if (orders == null || orders.isEmpty()) return "[]";
             return serializeOrderList(orders);
         } catch (Exception e) {
@@ -454,10 +447,9 @@ public class WebPanelSyncService implements Listener {
     /** Syncs ALL active market orders to the backend. Called periodically off main thread. */
     private void syncAllOrders() {
         try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om = plugin.getOrdersModule();
+            var om = marketOrders();
             if (om == null || !om.enabled()) return;
-            java.util.List<fr.elias.oessentials.inventory.internal.orders.model.Order> orders =
-                    om.getService().getActiveOrders();
+            java.util.List<? extends fr.elias.oessentials.inventory.api.OrderView> orders = om.activeOrders();
             if (orders == null) return;
             client.syncMarketOrders(serializeOrderList(orders));
         } catch (Exception e) {
@@ -465,10 +457,10 @@ public class WebPanelSyncService implements Listener {
         }
     }
 
-    private String serializeOrderList(java.util.List<fr.elias.oessentials.inventory.internal.orders.model.Order> orders) {
+    private String serializeOrderList(java.util.List<? extends fr.elias.oessentials.inventory.api.OrderView> orders) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
-        for (fr.elias.oessentials.inventory.internal.orders.model.Order o : orders) {
+        for (fr.elias.oessentials.inventory.api.OrderView o : orders) {
             if (!first) sb.append(",");
             first = false;
             String currencyId = o.getCurrencyId() != null
@@ -491,7 +483,7 @@ public class WebPanelSyncService implements Listener {
               .append("\"escrowTotal\":").append(o.getEscrowTotal()).append(",")
               .append("\"escrowRemaining\":").append(o.getEscrowRemaining()).append(",")
               .append("\"currencyId\":").append(currencyId).append(",")
-              .append("\"status\":\"").append(o.getStatus().name()).append("\",")
+              .append("\"status\":\"").append(o.getStatusName()).append("\",")
               .append("\"createdAt\":").append(o.getCreatedAt())
               .append("}");
         }
@@ -536,7 +528,7 @@ public class WebPanelSyncService implements Listener {
     }
 
     private long playtime(UUID uuid) {
-        PlaytimeTracker t = plugin.getPlaytimeTracker();
+        var t = publicApi(fr.elias.oessentials.api.IPlaytimeAPI.class);
         if (t == null) return 0L;
         try { return t.getSeconds(uuid); } catch (Exception e) { return 0L; }
     }
@@ -574,10 +566,10 @@ public class WebPanelSyncService implements Listener {
         return sb.append("]").toString();
     }
 
-    private String buildCurrenciesJson(List<Currency> currencies, Map<String, Double> balances) {
+    private String buildCurrenciesJson(List<ICurrencyAPI> currencies, Map<String, Double> balances) {
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
-        for (Currency c : currencies) {
+        for (ICurrencyAPI c : currencies) {
             double bal = balances.getOrDefault(c.getId(), 0.0);
             if (!first) sb.append(",");
             first = false;
@@ -621,8 +613,8 @@ public class WebPanelSyncService implements Listener {
 
     /** Builds a JSON map of { MATERIAL_NAME: pricePerItem } for all sellable items in the inventory. */
     private String serializeShopPrices(ItemStack[] items) {
-        ShopModule sm = plugin.getShopModule();
-        if (sm == null || !sm.isEnabled()) return "{}";
+        var sales = shopSales();
+        if (sales == null || !sales.isEnabled()) return "{}";
 
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
@@ -634,9 +626,9 @@ public class WebPanelSyncService implements Listener {
             if (seen.contains(mat)) continue;
             seen.add(mat);
 
-            ShopItem si = sm.getShopManager().findBestSellItem(item);
-            if (si != null && si.canSell()) {
-                double pricePerItem = si.getSellPrice() / Math.max(1, si.getAmount());
+            java.util.OptionalDouble price = sales.sellPricePerItem(item);
+            if (price.isPresent()) {
+                double pricePerItem = price.getAsDouble();
                 if (!first) sb.append(",");
                 sb.append("\"").append(mat).append("\":").append(pricePerItem);
                 first = false;
@@ -747,9 +739,9 @@ public class WebPanelSyncService implements Listener {
     private boolean processWebAction(Player player, String type, String materialName, int amount) {
         // CANCEL_ORDER uses materialName as order ID (not a Material enum) — handle before Material.valueOf
         if ("CANCEL_ORDER".equals(type)) {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om = plugin.getOrdersModule();
+            var om = marketOrders();
             if (om != null && om.enabled()) {
-                om.getService().cancelOrder(player, materialName);
+                om.cancelOrder(player, materialName);
                 OreScheduler.runAsyncLater(plugin, this::syncAllOrders, 20L);
             }
             return true;
@@ -759,9 +751,9 @@ public class WebPanelSyncService implements Listener {
         // fillOrder() does its inventory check + removal on the main thread, then
         // dispatches the DB write asynchronously — NEVER call .join() on the main thread.
         if ("FILL_ORDER".equals(type)) {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om = plugin.getOrdersModule();
+            var om = marketOrders();
             if (om != null && om.enabled()) {
-                om.getService().fillOrder(player, materialName, amount)
+                om.fillOrder(player, materialName, amount)
                     .thenAccept(result -> {
                         // Back onto the main thread for player messaging
                         OreScheduler.runForEntity(plugin, player, () -> {
@@ -772,7 +764,7 @@ public class WebPanelSyncService implements Listener {
                                 // Sync filler so the panel reflects their updated inventory/cash
                                 syncPlayer(player, true);
                                 // Sync requester if online so their "My Orders" reflects the updated order
-                                fr.elias.oessentials.inventory.internal.orders.model.Order updatedOrder = result.getUpdatedOrder();
+                                fr.elias.oessentials.inventory.api.OrderView updatedOrder = result.getUpdatedOrder();
                                 if (updatedOrder != null && updatedOrder.getRequesterUuid() != null) {
                                     Player requester = Bukkit.getPlayer(updatedOrder.getRequesterUuid());
                                     if (requester != null && requester.isOnline()) {
@@ -781,7 +773,7 @@ public class WebPanelSyncService implements Listener {
                                 }
                                 OreScheduler.runAsyncLater(plugin, this::syncAllOrders, 20L);
                             } else {
-                                String reason = result != null ? result.getOutcome().name() : "ERROR";
+                                String reason = result != null ? result.getOutcomeName() : "ERROR";
                                 player.sendMessage("§c[Web Panel] §fOrder fill failed: §e"
                                         + reason.replace("_", " ").toLowerCase());
                             }
@@ -849,61 +841,12 @@ public class WebPanelSyncService implements Listener {
             OreScheduler.runLaterForEntity(plugin, player, () -> syncPlayer(player, true), 1L);
 
         } else if ("SELL".equals(type)) {
-            ShopModule shopModule = plugin.getShopModule();
-            if (shopModule == null || !shopModule.isEnabled()) return false;
-
-            ShopItem shopItem = shopModule.getShopManager().findBestSellItem(new ItemStack(mat, 1));
-            if (shopItem == null || !shopItem.canSell()) return false;
-
-            // Count how many of this material the player actually has (by type only, ignoring meta)
-            int available = 0;
-            for (ItemStack slot : player.getInventory().getContents()) {
-                if (slot != null && slot.getType() == mat) available += slot.getAmount();
+            var sales = shopSales();
+            if (sales == null || !sales.isEnabled()) return false;
+            if (!sales.sellFromInventory(player, mat, amount,
+                    () -> OreScheduler.runLaterForEntity(plugin, player, () -> syncPlayer(player, true), 1L))) {
+                return false;
             }
-            int toSell = Math.min(amount, available);
-            if (toSell <= 0) return false;
-
-            // Remove items from inventory by material type (use setItem to properly persist)
-            int remaining = toSell;
-            ItemStack[] sellContents = player.getInventory().getContents();
-            for (int i = 0; i < sellContents.length && remaining > 0; i++) {
-                ItemStack slot = sellContents[i];
-                if (slot == null || slot.getType() != mat) continue;
-                int take = Math.min(remaining, slot.getAmount());
-                if (take >= slot.getAmount()) {
-                    player.getInventory().setItem(i, null);
-                } else {
-                    slot.setAmount(slot.getAmount() - take);
-                }
-                remaining -= take;
-            }
-            player.updateInventory();
-
-            // Pay the player using the shop's sell price per item
-            double pricePerItem = shopItem.getSellPrice() / Math.max(1, shopItem.getAmount());
-            double total = pricePerItem * toSell;
-
-            fr.elias.oessentials.shop.internal.models.Shop shop =
-                    shopModule.getShopManager().getShop(shopItem.getShopId());
-            String currencyId = shop != null ? shop.getCurrencyId() : null;
-            CurrencyService cs = (currencyId != null) ? plugin.getCurrencyService() : null;
-
-            if (cs != null) {
-                cs.deposit(player.getUniqueId(), currencyId, total)
-                        .thenRun(() -> OreScheduler.runForEntity(plugin, player,
-                                () -> OreScheduler.runLaterForEntity(plugin, player, () -> syncPlayer(player, true), 1L)))
-                        .exceptionally(ex -> {
-                            plugin.getLogger().warning("[WebPanel] Failed custom-currency SELL payout: " + ex.getMessage());
-                            return null;
-                        });
-            } else {
-                shopModule.getEconomy().deposit(player, total);
-                OreScheduler.runLaterForEntity(plugin, player, () -> syncPlayer(player, true), 1L);
-            }
-
-            shopModule.getTransactionLogger().logTransaction(
-                    player.getName(), "SOLD", toSell, mat.name(), total,
-                    cs != null ? currencyId : shopModule.getEconomy().getEconomyName());
         } else if ("ADMIN_DELETE_ITEM".equals(type)) {
             // Admin-initiated removal: same logic as DELETE but invoked for any player
             int remaining = amount;
@@ -998,15 +941,17 @@ public class WebPanelSyncService implements Listener {
             }
 
             if (!maintenanceYml.isEmpty()) {
-                var service = plugin.getMaintenanceService();
-                if (service != null) {
+                var maintenance = plugin.getModuleRegistry().read(fr.elias.oessentials.maintenance.lifecycle.MaintenanceServices.class, m -> m);
+                boolean applied = false;
+                if (maintenance != null) {
                     try {
-                        service.getConfig().applyPatch(maintenanceYml);
-                        service.reload();
+                        applied = maintenance.applySettingsPatch(maintenanceYml);
                     } catch (java.io.IOException ex) {
                         plugin.getLogger().warning("[WebPanel] Could not save maintenance settings: " + ex.getMessage());
+                        applied = true;
                     }
-                } else {
+                }
+                if (!applied) {
                     plugin.getLogger().warning("[WebPanel] Maintenance service is unavailable; maintenance patch not applied.");
                 }
             }
@@ -1096,23 +1041,14 @@ public class WebPanelSyncService implements Listener {
      */
     private void reloadConfigByName(String canonicalName) {
         switch (canonicalName) {
-            case "config.yml"             -> plugin.reloadConfig();
-            case "settings.yml"           -> plugin.getModuleRegistry().require(ConfigurationServices.class).reloadSettings();
-            case "scoreboard.yml"         -> plugin.getScoreboardService().reload();
-            case "tab.yml"                -> plugin.getTabListManager().reload();
-            case "dailyrewards.yml"       -> {
-                plugin.getDailyConfig().load();
-                plugin.getDailyRewardsConfig().load();
+            case "config.yml"   -> plugin.reloadConfig();
+            case "settings.yml" -> plugin.getModuleRegistry().require(ConfigurationServices.class).reloadSettings();
+            default -> {
+                var files = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getConfigFiles);
+                if (files == null || !files.reload(canonicalName)) {
+                    plugin.getLogger().warning("[WebPanel] No running module reloads " + canonicalName + "; it applies after a restart.");
+                }
             }
-            case "afk.yml"                -> plugin.getAfkService().getAfkConfig().reload();
-            case "maintenance.yml"        -> plugin.getMaintenanceService().reload();
-            case "clearlag.yml"           -> plugin.getClearLagManager().reload();
-            case "craft-actions.yml"      -> plugin.getCraftActionsConfig().reload();
-            case "playervaults.yml"       -> plugin.getPlayerVaultsService().reload();
-            case "playerwarps.yml"        -> plugin.reloadPlayerWarpsConfig();
-            case "chat-format.yml",
-                 "join-quit-messages.yml" -> plugin.reloadChat();
-            case "rtp.yml"                -> plugin.getRtpConfig().reload();
         }
     }
 
@@ -1286,5 +1222,26 @@ public class WebPanelSyncService implements Listener {
         } catch (Exception e) {
             plugin.getLogger().warning("[WebPanel] LuckPerms group sync failed: " + e.getMessage());
         }
+    }
+
+    private List<ICurrencyAPI> currencyApis() {
+        List<ICurrencyAPI> list = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class,
+                fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencyApis);
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    private fr.elias.oessentials.inventory.api.MarketOrders marketOrders() {
+        return plugin.getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class,
+                fr.elias.oessentials.inventory.lifecycle.InventoriesServices::getMarketOrders);
+    }
+
+    private fr.elias.oessentials.shop.api.ShopSales shopSales() {
+        return plugin.getModuleRegistry().read(fr.elias.oessentials.shop.lifecycle.ShopServices.class,
+                fr.elias.oessentials.shop.lifecycle.ShopServices::getShopSales);
+    }
+
+    private <T> T publicApi(Class<T> api) {
+        var apis = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getPublicApis);
+        return apis == null ? null : apis.get(api);
     }
 }

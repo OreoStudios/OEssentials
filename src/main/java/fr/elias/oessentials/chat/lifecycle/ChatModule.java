@@ -32,6 +32,8 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IChatAPI.class, this::getChatApi);
         registerReloadStep(3, "chat", this::reloadChat);
+        registerConfigFile("chat-format.yml", plugin::reloadChat);
+        registerConfigFile("join-quit-messages.yml", plugin::reloadChat);
     }
 
     @Override public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return channelManager; }

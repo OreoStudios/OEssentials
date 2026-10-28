@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.mobs.lifecycle.MobsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "mobs")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "mobs", lifecycle = fr.elias.oessentials.mobs.lifecycle.MobsModule.class)
 package fr.elias.oessentials.mobs;

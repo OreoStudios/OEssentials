@@ -1,8 +1,8 @@
 package fr.elias.oessentials.shop.internal.models;
 
 import fr.elias.oessentials.shop.internal.ShopModule;
-import fr.elias.oessentials.shop.internal.hooks.ItemsAdderHook;
-import fr.elias.oessentials.shop.internal.hooks.NexoHook;
+import fr.elias.oessentials.platform.hooks.ItemsAdderHook;
+import fr.elias.oessentials.platform.hooks.NexoHook;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

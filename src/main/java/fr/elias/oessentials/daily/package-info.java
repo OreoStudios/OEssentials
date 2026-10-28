@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.daily.lifecycle.DailyModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "daily")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "daily", lifecycle = fr.elias.oessentials.daily.lifecycle.DailyModule.class)
 package fr.elias.oessentials.daily;

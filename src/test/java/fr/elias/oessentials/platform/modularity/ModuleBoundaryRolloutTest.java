@@ -30,9 +30,13 @@ class ModuleBoundaryRolloutTest {
 
     /** Modules whose whole package hierarchy is enforced by the annotation processor. */
     static final Set<String> PROTECTED = Set.of(
+            "afk",
+            "boss-bar",
+            "clear-lag",
             "commands",
             "configuration",
             "custom-worlds",
+            "daily",
             "discord-integration",
             "events",
             "group-rtp",
@@ -42,14 +46,18 @@ class ModuleBoundaryRolloutTest {
             "jump-pads",
             "mail",
             "messaging",
+            "mobs",
             "motd",
             "mute-system",
             "portals",
             "punishment-logger",
             "rules",
+            "scoreboard",
             "sharding",
             "storage",
-            "warnings"
+            "tab",
+            "warnings",
+            "web-panel"
     );
 
     @Test

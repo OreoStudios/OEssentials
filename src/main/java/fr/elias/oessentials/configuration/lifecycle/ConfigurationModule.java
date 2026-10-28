@@ -29,6 +29,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private volatile ServerConnector serverConnector;
     private final fr.elias.oessentials.configuration.internal.config.PublicApiRegistry publicApis = new fr.elias.oessentials.configuration.internal.config.PublicApiRegistry();
     private final fr.elias.oessentials.configuration.internal.config.ReloadStepRegistry reloadSteps = new fr.elias.oessentials.configuration.internal.config.ReloadStepRegistry();
+    private final fr.elias.oessentials.configuration.internal.config.ConfigFileRegistry configFiles = new fr.elias.oessentials.configuration.internal.config.ConfigFileRegistry();
     private volatile BossBarToggles bossBarToggles;
     private CommandManager commands;
     private boolean economyEnabled;
@@ -58,6 +59,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public ServerConnector getServerConnector() { return serverConnector; }
     @Override public fr.elias.oessentials.configuration.api.PublicApis getPublicApis() { return publicApis; }
     @Override public fr.elias.oessentials.configuration.api.ReloadSteps getReloadSteps() { return reloadSteps; }
+    @Override public fr.elias.oessentials.configuration.api.ConfigFiles getConfigFiles() { return configFiles; }
     @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }

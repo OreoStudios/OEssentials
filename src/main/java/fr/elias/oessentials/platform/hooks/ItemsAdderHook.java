@@ -1,4 +1,4 @@
-package fr.elias.oessentials.shop.internal.hooks;
+package fr.elias.oessentials.platform.hooks;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -13,10 +13,10 @@ public class ItemsAdderHook {
             if (plugin.getServer().getPluginManager().getPlugin("ItemsAdder") != null) {
                 Class.forName("dev.lone.itemsadder.api.CustomStack");
                 found = true;
-                plugin.getLogger().info("[Shop] ItemsAdder hook enabled.");
+                plugin.getLogger().info("[Hooks] ItemsAdder hook enabled.");
             }
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("[Shop] ItemsAdder found but API class missing — hook disabled.");
+            plugin.getLogger().warning("[Hooks] ItemsAdder found but API class missing — hook disabled.");
         }
         this.enabled = found;
     }

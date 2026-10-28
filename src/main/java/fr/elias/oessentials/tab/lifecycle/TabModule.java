@@ -14,6 +14,7 @@ public final class TabModule extends ManagedModule implements TabServices {
         cleanup("tabListManager", () -> { if (tabListManager != null) tabListManager.stop(); });
         initTab();
         registerReloadStep(4, "tab", this::reloadTab);
+        registerConfigFile("tab.yml", () -> plugin.getTabListManager().reload());
     }
 
     @Override public fr.elias.oessentials.tab.internal.TabListManager getTabListManager() { return tabListManager; }
