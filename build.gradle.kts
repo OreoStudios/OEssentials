@@ -107,6 +107,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+    // Generated contract / fuzz tests for pure helpers (src/test/.../autotest)
+    testImplementation("com.oreo:oreolib-autotest:2.0.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
