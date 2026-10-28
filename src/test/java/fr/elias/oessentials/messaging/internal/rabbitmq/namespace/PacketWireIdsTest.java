@@ -129,5 +129,6 @@ class PacketWireIdsTest {
             27025=OrderSyncPacket
             27026=PortalTeleportPacket
             27027=MailDeliveryPacket
-            27028=GroupRtpSyncPacket""";
+            27028=GroupRtpSyncPacket
+            27029=CrossTradeSignalPacket""";
 }
