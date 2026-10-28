@@ -143,8 +143,9 @@ files.
 | Baseline (MinecraftModulith 0.5.1) | 0 / 56 | 1,548 | All are `internal` references across 219 consumer → provider pairs |
 | 1. Modules nothing depends on | 6 / 56 | 1,548 | `discord-integration`, `events`, `help`, `motd`, `mute-system`, `rules` had no inbound references |
 | 2a. Configuration settings contract | 6 / 56 | 1,408 | `configuration` 177 → 37; see below |
+| 2b. Configuration protected | 7 / 56 | 1,313 | Non-configuration features moved to their owners; `messaging` 366 → 344, `storage` 188 → 173 |
 
-The largest providers are `messaging` (366), `storage` (188) and `player-services` (108).
+The largest providers are `messaging` (344), `storage` (173) and `player-services` (108).
 Their public contracts should be designed before their consumers are migrated.
 
 ### Configuration contract
@@ -157,6 +158,19 @@ Their public contracts should be designed before their consumers are migrated.
 | `PerformanceGuardSettings` | the `performance.*` section of `settings.yml` | `SettingsConfig` |
 | `ServerConfig` | server name, debug flag, storage and homes keys of `config.yml` | `ConfigService` |
 | `CrossServerFeatures` | `features.cross-server.*` | `CrossServerSettings` |
+| `AutoReboot` | scheduled restarts (extends the public `IAutoRebootAPI`) | `AutoRebootService` |
+
+Tempfly is published as the public `ITempFlyAPI` (`ConfigurationServices.getTempFly()`).
+
+Modules that start after configuration plug into it through ports it publishes, instead of
+configuration depending on them:
+
+| Port | Registered by | Used for |
+| --- | --- | --- |
+| `SafeZoneRelay` | `messaging` | auto-reboot sending players to the safe-zone server; messaging also owns the reboot packet namespace (wire ids unchanged) and forwards arrivals to `AutoReboot` |
+| `BossBarToggles` | `nametag` | the multi-bossbar switches in `/oesettings` |
+
+`storage` does the same for the importers: economy registers a `BalanceImportTarget`.
 
 `ConfigurationServices` returns these types and owns writes: `reloadSettings()` reloads
 `settings.yml` and the cross-server switches, `updateSettings(Map)` writes keys (keeping the
@@ -168,12 +182,20 @@ legacy `chat.banned-words` section in sync), saves and reloads. Inside a module,
 `ModuleBoundaryRolloutTest.featureApiPackagesOnlyPublishContracts` fails if a type in any
 feature's `api` package is not `@ModuleApi` or its methods expose that feature's implementation.
 
-The remaining 37 `configuration` references are features that live in `configuration` but
-are not configuration: freeze state, tempfly, auto-reboot, the killall log, invlook and the
-CMI/EssentialsX/zEssentials importers. Several of them depend on `messaging`, `storage` and
-`economy` internals, so `configuration` (the first module to start) hides dependencies on
-modules that start after it. They move to the module that owns them before `configuration`
-is protected.
+Features that lived in `configuration` without being configuration moved to their owners
+before it was protected, because several of them depended on modules that start after it:
+
+| Feature | Now in |
+| --- | --- |
+| Freeze state, its listener and `/freeze` | `freeze` (public API via `FreezeServices.getFreezeApi()`) |
+| Killall log, `/killallr`, `/killallrlog` | `mobs` |
+| CMI, EssentialsX and zEssentials importers | `storage` |
+| `/invlook` | `messaging`, next to invsee |
+| `CraftActionsConfig` | `custom-crafting` |
+| `/oesettings` command | `configuration` (moved in from `commands`) |
+
+The released `OEssentials` getters for these keep their names; where a class moved package,
+its return type changed with it (recorded in `class-relocations.json`).
 
 ## Compatibility and diagnostics
 
