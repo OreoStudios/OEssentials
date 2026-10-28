@@ -17,7 +17,7 @@ import fr.elias.oessentials.daily.internal.api.DailyAPIImpl;
 import fr.elias.oessentials.player.internal.api.DeathBackAPIImpl;
 import fr.elias.oessentials.economy.internal.api.EconomyAPIImpl;
 import fr.elias.oessentials.enderchest.internal.api.EnderChestAPIImpl;
-import fr.elias.oessentials.freeze.internal.api.FreezeAPIImpl;
+import fr.elias.oessentials.freeze.lifecycle.FreezeServices;
 import fr.elias.oessentials.holograms.internal.api.HologramsAPIImpl;
 import fr.elias.oessentials.ignore.internal.api.IgnoreAPIImpl;
 import fr.elias.oessentials.commands.internal.api.InteractiveCommandsAPIImpl;
@@ -253,5 +253,5 @@ public class OEssentialsAPIImpl implements OEssentialsAPI {
     @Override public @Nullable IAutoRebootAPI autoReboot() { var s = plugin.getAutoRebootService(); return s == null ? null : new AutoRebootAPIImpl(s); }
     @Override public @Nullable IAliasesAPI aliases() { var s = plugin.getAliasService(); return s == null ? null : new AliasesAPIImpl(s); }
     @Override public @Nullable IVanishAPI vanish() { var s = plugin.getVanishService(); return s == null ? null : new VanishAPIImpl(s); }
-    @Override public @Nullable IFreezeAPI freeze() { var s = plugin.getFreezeService(); return s == null ? null : new FreezeAPIImpl(s); }
+    @Override public @Nullable IFreezeAPI freeze() { return plugin.getModuleRegistry().read(FreezeServices.class, FreezeServices::getFreezeApi); }
 }

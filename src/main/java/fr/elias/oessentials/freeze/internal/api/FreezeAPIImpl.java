@@ -1,7 +1,7 @@
 package fr.elias.oessentials.freeze.internal.api;
 
 import fr.elias.oessentials.api.IFreezeAPI;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
+import fr.elias.oessentials.freeze.internal.state.FreezeService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

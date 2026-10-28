@@ -57,7 +57,6 @@ import fr.elias.oessentials.economy.internal.ecocommands.BalanceCommand;
 import fr.elias.oessentials.economy.internal.ecocommands.EcoMigrateCommand;
 import fr.elias.oessentials.enderchest.internal.EcCommand;
 import fr.elias.oessentials.enderchest.internal.EcSeeCommand;
-import fr.elias.oessentials.freeze.internal.FreezeCommand;
 import fr.elias.oessentials.commands.internal.furnace.FurnaceCommand;
 import fr.elias.oessentials.storage.internal.homes.HomeTabCompleter;
 import fr.elias.oessentials.storage.internal.homes.HomesCommand;
@@ -144,7 +143,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new VanishCommand(services(PlayerServices.class).getVanishService()))
                 .register(new BanCommand())
                 .register(new KickCommand())
-                .register(new FreezeCommand(services(ConfigurationServices.class).getFreezeService()))
                 .register(new EnchantCommand())
                 .register(new DisenchantCommand())
                 .register(muteCmd)

@@ -67,6 +67,7 @@ flowchart TD
     events --> web_panel
     freeze["freeze"]
     freeze --> custom_crafting
+    freeze -->|services| configuration
     group_rtp["group-rtp"]
     group_rtp -->|events| messaging
     group_rtp --> portals
@@ -82,6 +83,7 @@ flowchart TD
     integrations -->|services| command_toggle
     integrations -->|services| configuration
     integrations -->|services| currency_system
+    integrations -->|services| freeze
     integrations -->|services| custom_crafting
     integrations -->|services| kits
     integrations --> nametag

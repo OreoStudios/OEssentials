@@ -1,7 +1,7 @@
 // src/main/java/fr/elias/oessentials/commands/core/moderation/freeze/FreezeListener.java
 package fr.elias.oessentials.freeze.internal;
 
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
+import fr.elias.oessentials.freeze.internal.state.FreezeService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

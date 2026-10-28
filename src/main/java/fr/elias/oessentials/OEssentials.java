@@ -102,7 +102,7 @@ import fr.elias.oessentials.storage.internal.warps.WarpService;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
+import fr.elias.oessentials.freeze.internal.state.FreezeService;
 import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.guards.internal.services.JoinFloodGuardService;
 import fr.elias.oessentials.player.internal.services.MessageService;
@@ -420,7 +420,7 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.mobs.internal.HealthBarListener getHealthBarListener() { return moduleRegistry.read(MobsServices.class, MobsServices::getHealthBarListener); }
 
-    public FreezeService getFreezeService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getFreezeService); }
+    public FreezeService getFreezeService() { return moduleRegistry.read(FreezeServices.class, FreezeServices::getFreezeService); }
 
     public fr.elias.oessentials.chat.internal.CustomConfig getChatConfig() { return moduleRegistry.read(ChatServices.class, ChatServices::getChatConfig); }
 

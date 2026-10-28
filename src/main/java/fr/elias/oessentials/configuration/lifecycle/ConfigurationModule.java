@@ -8,13 +8,11 @@ import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.config.ConfigService;
 import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
-import fr.elias.oessentials.configuration.internal.listeners.FreezeListener;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import fr.elias.oessentials.configuration.internal.invlook.listeners.InvlookListener;
 import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
 import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
@@ -29,7 +27,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private AutoRebootService autoRebootService;
     private CraftActionsConfig craftActionsConfig;
     private CommandManager commands;
-    private FreezeService freezeService;
     private KillallLogger killallLogger;
     private boolean economyEnabled;
     private boolean redisEnabled;
@@ -56,7 +53,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     @Override public AutoRebootService getAutoRebootService() { return autoRebootService; }
     @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
     @Override public CommandManager getCommands() { return commands; }
-    @Override public FreezeService getFreezeService() { return freezeService; }
     @Override public KillallLogger getKillallLogger() { return killallLogger; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
@@ -111,8 +107,6 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         this.autoRebootService.start();
 
         this.craftActionsConfig = new CraftActionsConfig(plugin);
-        this.freezeService = new FreezeService();
-        plugin.getServer().getPluginManager().registerEvents(new FreezeListener(freezeService), plugin);
 
         this.commands = new CommandManager(plugin);
 

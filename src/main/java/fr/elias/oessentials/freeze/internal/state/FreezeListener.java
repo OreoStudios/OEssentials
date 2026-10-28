@@ -1,6 +1,5 @@
-package fr.elias.oessentials.configuration.internal.listeners;
+package fr.elias.oessentials.freeze.internal.state;
 
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;

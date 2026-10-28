@@ -1,4 +1,4 @@
-package fr.elias.oessentials.configuration.internal.services;
+package fr.elias.oessentials.freeze.internal.state;
 
 import java.util.Set;
 import java.util.UUID;

@@ -10,7 +10,6 @@ import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
 import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
 import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ public interface ConfigurationServices {
     AutoRebootService getAutoRebootService();
     CraftActionsConfig getCraftActionsConfig();
     CommandManager getCommands();
-    FreezeService getFreezeService();
     KillallLogger getKillallLogger();
     boolean getEconomyEnabled();
     boolean getRedisEnabled();
