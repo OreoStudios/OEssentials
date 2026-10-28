@@ -25,6 +25,8 @@ public class WarnService {
     private final Plugin plugin;
     private final File file;
     private FileConfiguration cfg;
+    /** Shared network storage, or {@code null} to keep warnings in data/warnings.yml on this server. */
+    private final MongoWarnStore mongo;
 
     /** playerUuid -> list of warnings */
     private final Map<UUID, List<WarnEntry>> warnings = new ConcurrentHashMap<>();
@@ -39,7 +41,16 @@ public class WarnService {
     private static final Pattern DURATION_TOKEN = Pattern.compile("(\\d+)([smhdw])", Pattern.CASE_INSENSITIVE);
 
     public WarnService(Plugin plugin) {
+        this(plugin, null);
+    }
+
+    /**
+     * @param shared a MongoDB collection to share warnings across servers, or {@code null} for the
+     *               local data/warnings.yml (warnings then only exist on this server)
+     */
+    public WarnService(Plugin plugin, com.mongodb.client.MongoCollection<org.bson.Document> shared) {
         this.plugin = plugin;
+        this.mongo = shared == null ? null : new MongoWarnStore(shared);
 
         // Save default config
         plugin.saveResource("config/server/warnings.yml", false);
@@ -61,6 +72,17 @@ public class WarnService {
         }
         this.cfg = YamlConfiguration.loadConfiguration(file);
         loadAll();
+        if (mongo != null) importLocalWarnings();
+    }
+
+    /** First start with shared storage: copy this server's YAML warnings into MongoDB once. */
+    private void importLocalWarnings() {
+        if (warnings.isEmpty() || !mongo.isEmpty()) return;
+        int count = 0;
+        for (var e : warnings.entrySet()) {
+            for (WarnEntry w : e.getValue()) { mongo.add(e.getKey(), w); count++; }
+        }
+        plugin.getLogger().info("[Warn] Imported " + count + " warning(s) from data/warnings.yml into MongoDB.");
     }
 
     // ---------------------------------------------------------------
@@ -74,6 +96,10 @@ public class WarnService {
         String id = UUID.randomUUID().toString().substring(0, 8);
 
         WarnEntry entry = new WarnEntry(id, issuer, issuerName, reason, now, expires);
+        if (mongo != null) {
+            mongo.add(target, entry);
+            return getActiveCount(target);
+        }
         warnings.computeIfAbsent(target, k -> new ArrayList<>()).add(entry);
         savePlayer(target);
         return getActiveCount(target);
@@ -81,6 +107,7 @@ public class WarnService {
 
     /** Remove a specific warning by id. Returns true if removed. */
     public boolean removeById(UUID target, String warnId) {
+        if (mongo != null) return mongo.remove(target, warnId);
         List<WarnEntry> list = warnings.get(target);
         if (list == null) return false;
         boolean removed = list.removeIf(e -> e.id().equals(warnId));
@@ -90,6 +117,7 @@ public class WarnService {
 
     /** Clear all warnings for a player. */
     public void clearAll(UUID target) {
+        if (mongo != null) { mongo.clear(target); return; }
         warnings.remove(target);
         cfg.set("warnings." + target, null);
         saveFile();
@@ -97,7 +125,7 @@ public class WarnService {
 
     /** Active (non-expired) warnings for a player. */
     public List<WarnEntry> getActive(UUID target) {
-        List<WarnEntry> list = warnings.getOrDefault(target, Collections.emptyList());
+        List<WarnEntry> list = mongo != null ? mongo.load(target) : warnings.getOrDefault(target, Collections.emptyList());
         List<WarnEntry> active = new ArrayList<>();
         for (WarnEntry e : list) {
             if (!e.isExpired()) active.add(e);
