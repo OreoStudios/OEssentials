@@ -114,13 +114,13 @@ public final class ModBridge {
         Player p = Bukkit.getPlayer(targetId);
         if (p == null || !p.isOnline()) return false;
 
-        var fm = plugin.getFreezeManager();
+        var fm = plugin.getModuleRegistry().read(fr.elias.oessentials.freeze.lifecycle.FreezeServices.class, f -> f);
         if (fm == null) return false;
 
         if (fm.isFrozen(targetId)) {
             fm.unfreeze(p);
         } else {
-            fm.freeze(p, null, seconds);
+            fm.freeze(p, seconds);
         }
         return true;
     }

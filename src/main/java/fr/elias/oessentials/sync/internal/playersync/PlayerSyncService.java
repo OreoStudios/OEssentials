@@ -1,7 +1,6 @@
 package fr.elias.oessentials.sync.internal.playersync;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.enderchest.internal.EnderChestStorage;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -82,7 +81,7 @@ public final class PlayerSyncService {
             if (pr.inv) {
                 // null means the saving server had inv-sync disabled — skip to avoid wiping items
                 if (s.inventory != null) {
-                    ItemStack[] main = EnderChestStorage.clamp(s.inventory, 4);
+                    ItemStack[] main = padToRows(s.inventory, 4);
                     p.getInventory().setContents(main);
                 }
                 if (s.armor != null) {
@@ -172,4 +171,13 @@ public final class PlayerSyncService {
     }
 
     public PlayerSyncPrefsStore prefs() { return prefs; }
+
+    /** Pads the stored main inventory to {@code rows} rows, as the ender chest storage does. */
+    private static ItemStack[] padToRows(ItemStack[] src, int rows) {
+        int size = Math.max(1, rows) * 9;
+        if (src == null || src.length >= size) return src;
+        ItemStack[] dst = new ItemStack[size];
+        System.arraycopy(src, 0, dst, 0, src.length);
+        return dst;
+    }
 }

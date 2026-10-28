@@ -31,6 +31,7 @@ flowchart TD
     commands -->|services| ignore
     commands -->|services| inventories
     commands -->|services| mute_system
+    commands -->|services| performance_guards
     commands -->|services| player_services
     commands -->|services| proxy_messaging
     commands -->|services| punishment_logger
@@ -135,6 +136,8 @@ flowchart TD
     mobs --> discord_integration
     mod_gui["mod-gui"]
     mod_gui -->|services| configuration
+    mod_gui -.->|uses services| ender_chest
+    mod_gui -.->|uses services| freeze
     mod_gui --> inventories
     mod_gui -->|events| messaging
     mod_gui -->|services| messaging

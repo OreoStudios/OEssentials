@@ -72,7 +72,7 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
             }));
             metrics.addCustomChart(new SimplePie("redis_enabled", () -> services(ConfigurationServices.class).getRedisEnabled() ? "Enabled" : "Disabled"));
             metrics.addCustomChart(new SingleLineChart("total_kits", () -> services(KitsServices.class).getKitsManager() == null ? 0 : services(KitsServices.class).getKitsManager().getKits().size()));
-            metrics.addCustomChart(new SingleLineChart("custom_recipes", () -> services(CustomCraftingServices.class).getCustomCraftingService() == null ? 0 : services(CustomCraftingServices.class).getCustomCraftingService().getRecipeCount()));
+            metrics.addCustomChart(new SingleLineChart("custom_recipes", () -> services(CustomCraftingServices.class).customRecipeCount()));
             plugin.getLogger().info("[bStats] Metrics initialized. View at: https://bstats.org/plugin/bukkit/" + pluginId);
         } catch (Exception e) {
             plugin.getLogger().warning("[bStats] Failed to initialize metrics: " + e.getMessage());
@@ -171,7 +171,7 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
     private void applyCommandToggles() {
         try {
             if (services(CommandToggleServices.class).getCommandToggleService() != null) {
-                services(CommandToggleServices.class).getCommandToggleService().applyToggles();
+                services(CommandToggleServices.class).applyToggles();
                 plugin.getLogger().info("[CommandToggle] Command toggles applied successfully");
             }
         } catch (Exception e) {

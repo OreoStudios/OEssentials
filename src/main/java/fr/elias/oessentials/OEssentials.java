@@ -283,6 +283,13 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.maintenance.internal.MaintenanceService getMaintenanceService() { return moduleRegistry.read(MaintenanceServices.class, MaintenanceServices::getMaintenanceService); }
 
+    /** Sends the player to another server through the proxy; ignored before proxy-messaging starts. */
+    public void connectToServer(org.bukkit.entity.Player player, String server) {
+        var connector = moduleRegistry.read(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class, fr.elias.oessentials.configuration.lifecycle.ConfigurationServices::getServerConnector);
+        if (connector != null) connector.connect(player, server);
+        else getLogger().warning("[Proxy] Cannot send " + player.getName() + " to " + server + ": proxy messaging is not running.");
+    }
+
     public ProxyMessenger getProxyMessenger() { return moduleRegistry.read(ProxyMessagingServices.class, ProxyMessagingServices::getProxyMessenger); }
 
     public  fr.elias.oessentials.grouprtp.internal.GroupRtpModule getGroupRtpModule() { return moduleRegistry.read(GroupRtpServices.class, GroupRtpServices::getGroupRtpModule); }
@@ -450,7 +457,7 @@ public final class OEssentials extends JavaPlugin {
 
     public TeleportBroker getTeleportBroker() { return moduleRegistry.read(StorageServices.class, StorageServices::getTeleportBroker); }
 
-    public RedisManager getRedis() { return moduleRegistry.read(RedisServices.class, RedisServices::getRedis); }
+    public RedisManager getRedis() { return (RedisManager) moduleRegistry.read(RedisServices.class, RedisServices::getRedis); }
     public OfflinePlayerCache getOfflinePlayerCache() { return moduleRegistry.require(EconomyServices.class).getOfflinePlayerCache(); }
 
     public PlayerEconomyDatabase getDatabase() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getDatabase); }

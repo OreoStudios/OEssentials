@@ -22,7 +22,7 @@ def declarations():
         body = match.group(1)
         module_id = (re.search(r'value\s*=\s*"([^"]+)"', body) or re.search(r'^\s*"([^"]+)"', body)).group(1)
         listed = lambda key: re.findall(r'"([^"]+)"', (re.search(key + r"\s*=\s*\{([^}]*)\}", body) or [None, ""])[1])
-        modules[module_id] = (listed("dependencies"), listed("after"))
+        modules[module_id] = (listed("dependencies"), listed("after"), listed("uses"))
     return modules
 
 
@@ -30,13 +30,16 @@ def render(modules):
     node = lambda module_id: module_id.replace("-", "_")
     lines = ["flowchart TD"]
     for module_id in sorted(modules):
-        dependencies, after = modules[module_id]
+        dependencies, after, uses = modules[module_id]
         lines.append(f'    {node(module_id)}["{module_id}"]')
         edges = [(target, f"    {node(module_id)} --> {node(target)}") for target in after]
         for dependency in dependencies:
             target, _, selector = dependency.partition("::")
             label = f"|{selector}| " if selector else " "
             edges.append((target, f"    {node(module_id)} -->{label}{node(target)}"))
+        for used in uses:
+            target, _, selector = used.partition("::")
+            edges.append((target, f"    {node(module_id)} -.->|uses {selector}| {node(target)}"))
         lines.extend(line for _, line in sorted(edges))
     return "\n".join(lines) + "\n"
 

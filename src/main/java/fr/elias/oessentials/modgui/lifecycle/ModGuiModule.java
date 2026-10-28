@@ -5,7 +5,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.modgui.internal.world.WorldTweaksListener;
 
-@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventories"})
+@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"ender-chest::services", "freeze::services"}, after = {"inventories"})
 public final class ModGuiModule extends ManagedModule implements ModGuiServices {
     private fr.elias.oessentials.modgui.internal.ModGuiService modGuiService;
     private fr.elias.oessentials.modgui.internal.cross.ModBridge modBridge;

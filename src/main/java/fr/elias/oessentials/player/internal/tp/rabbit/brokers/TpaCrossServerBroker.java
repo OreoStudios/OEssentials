@@ -10,7 +10,7 @@ import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public final class TpaCrossServerBroker implements Listener {
     @SuppressWarnings("unused")
     private final TeleportService teleportService;
     private final PacketBus pm;
-    private final ProxyMessenger proxy;
+    private final ServerConnector proxy;
     private final String localServer;
 
     private final Map<UUID, Pending> pendingForTarget = new ConcurrentHashMap<>();
@@ -46,7 +46,7 @@ public final class TpaCrossServerBroker implements Listener {
     }
 
     public TpaCrossServerBroker(OEssentials plugin, TeleportService teleportService,
-                                PacketBus pm, ProxyMessenger proxy, String localServer) {
+                                PacketBus pm, ServerConnector proxy, String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
         this.pm = pm;

@@ -26,7 +26,7 @@ import fr.elias.oessentials.commands.internal.furnace.FurnaceCommand;
 import fr.elias.oessentials.commands.internal.near.NearCommand;
 import fr.elias.oessentials.commands.internal.ping.PingCommand;
 
-@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, after = {"custom-worlds"})
+@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "performance-guards::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, after = {"custom-worlds"})
 public final class CommandsModule extends ManagedModule implements CommandsServices {
     private fr.elias.oessentials.commands.internal.ic.ICManager icManager;
 
@@ -82,10 +82,8 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         } else {
             plugin.getLogger().info("[Sit] Disabled by settings.yml.");
         }
-        var visitorService = new fr.elias.oessentials.guards.internal.services.VisitorService();
-        plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.guards.internal.listeners.VisitorGuardListener(visitorService), plugin);
 
-        var gmCmd = new fr.elias.oessentials.commands.internal.commands.core.admins.GamemodeCommand(visitorService);
+        var gmCmd = new fr.elias.oessentials.commands.internal.commands.core.admins.GamemodeCommand(services(fr.elias.oessentials.guards.lifecycle.PerformanceGuardsServices.class));
         plugin.getCommands().register(gmCmd);
         services(ConfigurationServices.class).getCommands().rewireTab("gamemode", gmCmd);
 

@@ -6,7 +6,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.UUID;
 
-public class RedisManager {
+public class RedisManager implements fr.elias.oessentials.redis.api.BalanceCache {
     private JedisPool jedisPool;
     private final boolean enabled;
 

@@ -69,9 +69,9 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
         String serverName = services(ConfigurationServices.class).getServerConfig().serverName();
-        this.tpaBroker = new TpaCrossServerBroker(plugin, teleportService, event.packets(), plugin.getProxyMessenger(), serverName);
+        this.tpaBroker = new TpaCrossServerBroker(plugin, teleportService, event.packets(), services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getServerConnector(), serverName);
         plugin.getLogger().info("[BROKER] TPA cross-server broker ready.");
-        this.tpBroker = new TpCrossServerBroker(plugin, teleportService, event.packets(), plugin.getProxyMessenger(), serverName);
+        this.tpBroker = new TpCrossServerBroker(plugin, teleportService, event.packets(), services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getServerConnector(), serverName);
         plugin.getLogger().info("[BROKER] TP cross-server broker ready.");
 
         try {
@@ -139,7 +139,7 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
         commands.register(tphere);
         commands.rewireTab("tphere", tphere);
         var msg = new fr.elias.oessentials.player.internal.msg.MsgCommand(messageService, plugin);
-        var ignore = services(fr.elias.oessentials.ignore.lifecycle.IgnoreServices.class).getIgnoreService();
+        var ignore = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPublicApis().get(fr.elias.oessentials.api.IIgnoreAPI.class);
         if (ignore != null) msg.setIgnoreService(ignore);
         commands
                 .register(new fr.elias.oessentials.player.internal.back.command.BackCommand(backService, teleportService, plugin))

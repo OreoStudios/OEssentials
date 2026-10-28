@@ -1,6 +1,6 @@
 package fr.elias.oessentials.economy.internal.persistence.database;
 
-import fr.elias.oessentials.redis.internal.persistence.database.RedisManager;
+import fr.elias.oessentials.redis.api.BalanceCache;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
@@ -31,7 +31,7 @@ public class PostgreSQLManager implements PlayerEconomyDatabase {
     private String dbPassword;
 
     private final OEssentials plugin;
-    private final RedisManager redis;
+    private final BalanceCache redis;
 
     private static final String TABLE = "economy";
     // Read from config.yml (economy.*); they used to be hard-coded
@@ -40,7 +40,7 @@ public class PostgreSQLManager implements PlayerEconomyDatabase {
     private final double MAX_BALANCE;
     private final boolean ALLOW_NEGATIVE;
 
-    public PostgreSQLManager(OEssentials plugin, RedisManager redis) {
+    public PostgreSQLManager(OEssentials plugin, BalanceCache redis) {
         this.plugin = plugin;
         this.redis = redis;
         this.STARTING_BALANCE = plugin.getConfig().getDouble("economy.starting-balance", 100.0);

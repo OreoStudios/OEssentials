@@ -2,7 +2,7 @@ package fr.elias.oessentials.player.internal.msg;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.ignore.internal.IgnoreService;
+import fr.elias.oessentials.api.IIgnoreAPI;
 import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.api.PacketBus;
@@ -21,9 +21,9 @@ import java.util.UUID;
 public class MsgCommand implements OreoCommand {
     private final MessageService messages;
     private final OEssentials plugin;
-    private IgnoreService ignoreService;
+    private IIgnoreAPI ignoreService;
 
-    public void setIgnoreService(IgnoreService ignoreService) {
+    public void setIgnoreService(IIgnoreAPI ignoreService) {
         this.ignoreService = ignoreService;
     }
 

@@ -14,4 +14,9 @@ public interface CustomCraftingServices {
         var s = getCustomCraftingService();
         return s == null ? null : new fr.elias.oessentials.crafting.internal.api.CustomCraftAPIImpl(s);
     }
+
+    default int customRecipeCount() {
+        var service = getCustomCraftingService();
+        return service == null ? 0 : service.getRecipeCount();
+    }
 }

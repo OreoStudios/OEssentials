@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.freeze.lifecycle.FreezeModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "freeze")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "freeze", lifecycle = fr.elias.oessentials.freeze.lifecycle.FreezeModule.class)
 package fr.elias.oessentials.freeze;

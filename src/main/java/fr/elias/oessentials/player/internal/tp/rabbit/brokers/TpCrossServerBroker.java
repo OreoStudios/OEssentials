@@ -6,7 +6,7 @@ import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpJumpPacket;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.shared.Lang;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,13 +23,13 @@ public class TpCrossServerBroker implements Listener {
     private final OEssentials plugin;
     private final TeleportService teleportService;
     private final PacketBus packetManager;
-    private final ProxyMessenger proxyMessenger;
+    private final ServerConnector proxyMessenger;
     private final String localServer;
 
     private final Map<UUID, UUID> pendingJumps = new ConcurrentHashMap<>();
 
     public TpCrossServerBroker(OEssentials plugin, TeleportService teleportService,
-                               PacketBus packetManager, ProxyMessenger proxyMessenger,
+                               PacketBus packetManager, ServerConnector proxyMessenger,
                                String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
@@ -54,7 +54,7 @@ public class TpCrossServerBroker implements Listener {
         TpJumpPacket pkt = new TpJumpPacket(admin.getUniqueId(), targetUuid, targetName, localServer);
         packetManager.sendPacket(PacketChannel.individual(destServer), pkt);
 
-        proxyMessenger.sendToServer(admin, destServer);
+        proxyMessenger.connect(admin, destServer);
 
         Lang.send(admin, "teleport.cross-server.jumping",
                 "<gray>Teleporting to <aqua>%target%</aqua> on <aqua>%server%</aqua>…</gray>",

@@ -356,7 +356,7 @@ public final class GroupRtpService {
             for (UUID uid : group) {
                 Player p = Bukkit.getPlayer(uid);
                 if (p != null && p.isOnline()) {
-                    plugin.getProxyMessenger().sendToServer(p, def.getRtpServer());
+                    plugin.connectToServer(p, def.getRtpServer());
                 }
             }
         }, 20L); // 1 second

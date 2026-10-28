@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.ignore.lifecycle.IgnoreModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "ignore")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "ignore", lifecycle = fr.elias.oessentials.ignore.lifecycle.IgnoreModule.class)
 package fr.elias.oessentials.ignore;

@@ -12,4 +12,20 @@ public interface EnderChestServices {
         var s = getEcService();
         return s == null ? null : new fr.elias.oessentials.enderchest.internal.api.EnderChestAPIImpl(s);
     }
+
+    /** Rows of the player's ender chest even while they are offline (0 when unavailable). */
+    default int resolveSlotsOffline(java.util.UUID playerId) {
+        var service = getEcService();
+        return service == null ? 0 : service.resolveSlotsOffline(playerId);
+    }
+
+    default org.bukkit.inventory.ItemStack[] loadFor(java.util.UUID playerId, int rows) {
+        var service = getEcService();
+        return service == null ? null : service.loadFor(playerId, rows);
+    }
+
+    default void saveFor(java.util.UUID playerId, int rows, org.bukkit.inventory.ItemStack[] contents) {
+        var service = getEcService();
+        if (service != null) service.saveFor(playerId, rows, contents);
+    }
 }

@@ -198,7 +198,7 @@ public class AfkPoolService implements Listener {
                     pm2.sendPacket(packet);
 
                     plugin.getLogger().info("[AfkPool] Proxy sending player " + player.getName() + " to server " + afkPoolServer);
-                    plugin.getProxyMessenger().sendToServer(player, afkPoolServer);
+                    plugin.connectToServer(player, afkPoolServer);
 
                     Lang.send(player, "afk.pool.cross-server",
                             "<gray>You've been moved to the AFK pool on <aqua>%server%</aqua>.</gray>",
@@ -216,7 +216,7 @@ public class AfkPoolService implements Listener {
             pm.sendPacket(packet);
 
             plugin.getLogger().info("[AfkPool] Proxy sending player " + player.getName() + " to server " + afkPoolServer);
-            plugin.getProxyMessenger().sendToServer(player, afkPoolServer);
+            plugin.connectToServer(player, afkPoolServer);
 
             Lang.send(player, "afk.pool.cross-server",
                     "<gray>You've been moved to the AFK pool on <aqua>%server%</aqua>.</gray>",
@@ -264,7 +264,7 @@ public class AfkPoolService implements Listener {
             pm.sendPacket(packet);
 
             plugin.getLogger().info("[AfkPool] Proxy returning player " + player.getName() + " to server " + returnServer);
-            plugin.getProxyMessenger().sendToServer(player, returnServer);
+            plugin.connectToServer(player, returnServer);
 
             Lang.send(player, "afk.pool.cross-server-return",
                     "<gray>Returning you to <aqua>%server%</aqua>...</gray>",

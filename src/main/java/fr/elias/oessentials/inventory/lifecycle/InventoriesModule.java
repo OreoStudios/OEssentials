@@ -79,9 +79,10 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) new AuctionPlaceholders(auctionHouse).register();
         }
 
-        if (services(CommandToggleServices.class).getCommandToggleConfig() != null) {
-            services(CommandToggleServices.class).getCommandToggleConfig().registerModuleCallback("auctionhouse", () -> {
-                boolean shouldBeEnabled = services(CommandToggleServices.class).getCommandToggleConfig().isCommandEnabled("auctionhouse");
+        var toggles = services(CommandToggleServices.class);
+        if (toggles.getCommandToggleConfig() != null) {
+            toggles.onCommandToggled("auctionhouse", () -> {
+                boolean shouldBeEnabled = toggles.isCommandEnabled("auctionhouse");
                 File ahConfig = new File(plugin.getDataFolder(), "config/auctionhouse/config.yml");
                 org.bukkit.configuration.file.YamlConfiguration ahCfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(ahConfig);
                 ahCfg.set("enabled", shouldBeEnabled);

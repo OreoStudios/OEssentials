@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.maintenance.lifecycle.MaintenanceModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "maintenance")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "maintenance", lifecycle = fr.elias.oessentials.maintenance.lifecycle.MaintenanceModule.class)
 package fr.elias.oessentials.maintenance;

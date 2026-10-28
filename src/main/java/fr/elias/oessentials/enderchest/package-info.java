@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.enderchest.lifecycle.EnderChestModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "ender-chest")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "ender-chest", lifecycle = fr.elias.oessentials.enderchest.lifecycle.EnderChestModule.class)
 package fr.elias.oessentials.enderchest;
