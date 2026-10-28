@@ -33,7 +33,7 @@ public class DirectoryPresenceListener implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         OreScheduler.runAsync(OEssentials.get(), () -> {
             try {
-                dir.clearCurrentServer(e.getPlayer().getUniqueId());
+                dir.clearCurrentServer(e.getPlayer().getUniqueId(), server);
             } catch (Throwable t) {
                 OEssentials.get().getLogger().warning("[PlayerDirectory] clearCurrentServer failed: " + t.getMessage());
             }
