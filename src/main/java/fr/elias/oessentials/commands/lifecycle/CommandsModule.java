@@ -12,7 +12,6 @@ import fr.elias.oessentials.commands.internal.commands.core.admins.ClearCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.DisenchantCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.EnchantCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.FlyCommand;
-import fr.elias.oessentials.commands.internal.commands.core.admins.HeadCommand;
 import fr.elias.oessentials.commands.internal.commands.core.admins.KillCommand;
 import fr.elias.oessentials.commands.internal.commands.core.moderation.HealCommand;
 import fr.elias.oessentials.commands.internal.commands.core.moderation.KickCommand;
@@ -49,7 +48,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new EnchantCommand())
                 .register(new DisenchantCommand())
                 .register(new OeCommand())
-                .register(new HeadCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.TrashCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.WorkbenchCommand())
                 .register(new AnvilCommand())
@@ -122,7 +120,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
 
 
         // Tab-completer overrides for remaining OreoCommands.
-        services(ConfigurationServices.class).getCommands().rewireTab("head",       new HeadCommand());
         services(ConfigurationServices.class).getCommands().rewireTab("enchant",    new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());
         services(ConfigurationServices.class).getCommands().rewireTab("disenchant", new fr.elias.oessentials.commands.internal.commands.completion.EnchantTabCompleter());
     }

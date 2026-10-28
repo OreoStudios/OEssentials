@@ -70,6 +70,7 @@ class ModuleBoundaryRolloutTest {
             "rules",
             "scoreboard",
             "sharding",
+            "skins",
             "storage",
             "tab",
             "trade",

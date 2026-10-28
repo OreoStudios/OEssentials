@@ -244,9 +244,9 @@ public class CurrencySendCommand implements OreoCommand {
             }
 
             try {
-                var cache = plugin.getOfflinePlayerCache();
+                var cache = plugin.getModuleRegistry().read(fr.elias.oessentials.economy.lifecycle.EconomyServices.class, e -> e);
                 if (cache != null) {
-                    UUID cached = cache.getId(nameOrUuid);
+                    UUID cached = cache.offlinePlayerId(nameOrUuid);
                     if (cached != null) {
                         return new TargetResolved(cached, nameOrUuid);
                     }

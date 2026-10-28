@@ -1,4 +1,4 @@
-package fr.elias.oessentials.commands.internal.commands.core.admins;
+package fr.elias.oessentials.skins.internal.skin;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;

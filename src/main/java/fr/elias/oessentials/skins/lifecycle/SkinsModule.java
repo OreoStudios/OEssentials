@@ -26,5 +26,7 @@ public final class SkinsModule extends ManagedModule implements SkinsServices {
         commands.rewireTab("skin", new fr.elias.oessentials.skins.internal.skin.SkinCommand());
         commands.register(new fr.elias.oessentials.skins.internal.skin.CloneCommand());
         commands.rewireTab("clone", new fr.elias.oessentials.skins.internal.skin.CloneCommand());
+        commands.register(new fr.elias.oessentials.skins.internal.skin.HeadCommand());
+        commands.rewireTab("head", new fr.elias.oessentials.skins.internal.skin.HeadCommand());
     }
 }

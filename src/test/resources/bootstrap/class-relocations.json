@@ -787,7 +787,7 @@
   "fr.elias.oessentials.commands.core.admins.FlyCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.FlyCommand",
   "fr.elias.oessentials.commands.core.admins.FlySpeedCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.FlySpeedCommand",
   "fr.elias.oessentials.commands.core.admins.GamemodeCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.GamemodeCommand",
-  "fr.elias.oessentials.commands.core.admins.HeadCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.HeadCommand",
+  "fr.elias.oessentials.commands.core.admins.HeadCommand": "fr.elias.oessentials.skins.internal.skin.HeadCommand",
   "fr.elias.oessentials.commands.core.admins.KillallLogViewCommand": "fr.elias.oessentials.mobs.internal.killall.KillallLogViewCommand",
   "fr.elias.oessentials.commands.core.admins.KillallRecorderCommand": "fr.elias.oessentials.mobs.internal.killall.KillallRecorderCommand",
   "fr.elias.oessentials.commands.core.admins.KillCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.KillCommand",
