@@ -45,12 +45,14 @@ public final class TradeModule extends ManagedModule implements TradeServices {
     @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
+        // Cross-server trading stays off regardless of settings.yml. Its broker was never created
+        // before 7.1.6 (it was built before the trade service existed), so the feature had never
+        // run; on a two-server test network it did not sync offers or complete, and items were
+        // lost or duplicated on disconnect and server switches. Local trades do not need it.
         if (tradeService != null && services(ConfigurationServices.class).getFeatureSettings().tradeCrossServerEnabled()) {
-            this.tradeBroker = new TradeCrossServerBroker(plugin, event.packets(), services(ConfigurationServices.class).getServerConfig().serverName(), tradeService);
-            plugin.getLogger().info("[TRADE] Cross-server trade broker ready.");
-        } else {
-            plugin.getLogger().info("[TRADE] Cross-server trade broker disabled.");
+            plugin.getLogger().warning("[TRADE] Cross-server trading is not available yet; trades work between players on the same server.");
         }
+        plugin.getLogger().info("[TRADE] Cross-server trade broker disabled.");
     }
 
     @Override public TradeConfig getTradeConfig() { return tradeConfig; }
