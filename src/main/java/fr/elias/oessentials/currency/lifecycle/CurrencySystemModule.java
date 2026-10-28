@@ -20,9 +20,8 @@ import fr.elias.oessentials.currency.internal.commands.CurrencyTopTabCompleter;
 import fr.elias.oessentials.currency.internal.storage.CurrencyStorage;
 import fr.elias.oessentials.currency.internal.storage.JsonCurrencyStorage;
 import fr.elias.oessentials.currency.internal.storage.MongoCurrencyStorage;
-import org.bukkit.Bukkit;
 
-@PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"})
+@PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"economy::services"})
 public final class CurrencySystemModule extends ManagedModule implements CurrencySystemServices {
     private volatile fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion currencyPlaceholders;
     private CurrencyService currencyService;

@@ -11,7 +11,7 @@ import fr.elias.oessentials.chat.internal.FormatManager;
 import fr.elias.oessentials.chat.internal.oreobot.ConversationListener;
 import org.bukkit.event.Listener;
 
-@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, uses = {"discord-integration::services", "mod-gui::services", "notes::services"}, after = {"shop"})
+@PluginModule(value = "chat", dependencies = {"configuration::services", "mute-system::services", "storage::services"}, uses = {"discord-integration::services", "inventories::services", "mod-gui::services", "notes::services"}, after = {"shop"})
 public final class ChatModule extends ManagedModule implements ChatServices {
     private fr.elias.oessentials.chat.internal.channels.ChatChannelManager channelManager;
     private CustomConfig chatConfig;
@@ -22,7 +22,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
     private org.bukkit.event.Listener activeQuitMessagesListener;
     private org.bukkit.configuration.file.FileConfiguration joinQuitCfg;
     private fr.elias.oessentials.chat.internal.oreobot.ConversationListener activeConversationListener;
-    private fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler autoMessageScheduler;
+    private fr.elias.oessentials.chat.internal.tasks.AutoMessageScheduler autoMessageScheduler;
 
     @Override
     protected void start() {
@@ -129,7 +129,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
 
     private void startAutoMessages() {
         if (autoMessageScheduler != null) autoMessageScheduler.stop();
-        autoMessageScheduler = new fr.elias.oessentials.player.internal.tasks.AutoMessageScheduler(plugin, joinQuitCfg);
+        autoMessageScheduler = new fr.elias.oessentials.chat.internal.tasks.AutoMessageScheduler(plugin, joinQuitCfg);
         autoMessageScheduler.start();
     }
 

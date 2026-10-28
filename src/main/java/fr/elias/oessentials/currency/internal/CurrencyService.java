@@ -1,5 +1,7 @@
 package fr.elias.oessentials.currency.internal;
 
+import fr.elias.oessentials.currency.api.Currency;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.currency.internal.storage.CurrencyStorage;
 
@@ -11,7 +13,7 @@ import java.util.logging.Level;
 /**
  * Main service for managing multiple custom currencies
  */
-public class CurrencyService {
+public class CurrencyService implements fr.elias.oessentials.currency.api.Currencies {
 
     private final OEssentials plugin;
     private final CurrencyStorage storage;

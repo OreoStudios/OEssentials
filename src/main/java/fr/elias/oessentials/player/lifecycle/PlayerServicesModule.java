@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.listeners.BackJoinListener;
 import fr.elias.oessentials.player.internal.back.rabbit.BackBroker;
 import fr.elias.oessentials.player.internal.msg.ChatPacketNamespace;
@@ -30,7 +30,7 @@ import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.player.internal.services.MessageService;
 import fr.elias.oessentials.player.internal.services.VanishService;
 
-@PluginModule(value = "player-services", dependencies = {"configuration::services", "economy::services", "ignore::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventory-sync"})
+@PluginModule(value = "player-services", dependencies = {"configuration::services", "economy::services", "ignore::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"nametag::services"}, after = {"inventory-sync"})
 public final class PlayerServicesModule extends ManagedModule implements PlayerServices {
     private TeleportService teleportService;
     private BackService backService;

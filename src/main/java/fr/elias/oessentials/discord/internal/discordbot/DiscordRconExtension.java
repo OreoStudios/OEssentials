@@ -2,7 +2,7 @@ package fr.elias.oessentials.discord.internal.discordbot;
 
 import fr.elias.oessentials.storage.api.HomeLocation;
 import fr.elias.oessentials.storage.api.Homes;
-import fr.elias.oessentials.sync.internal.services.InventoryService;
+import fr.elias.oessentials.sync.api.InventoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

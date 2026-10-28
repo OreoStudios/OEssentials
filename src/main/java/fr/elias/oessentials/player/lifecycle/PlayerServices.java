@@ -19,7 +19,7 @@ public interface PlayerServices {
     fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker getTpaBroker();
     fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker getTpBroker();
     fr.elias.oessentials.player.internal.back.rabbit.BackBroker getBackBroker();
-    java.util.Map<java.util.UUID, fr.elias.oessentials.player.internal.back.BackLocation> getPendingBackTeleports();
+    java.util.Map<java.util.UUID, fr.elias.oessentials.player.api.BackLocation> getPendingBackTeleports();
 
     /** The public OEssentials API for this module, or {@code null} while it is not available. */
     default fr.elias.oessentials.api.ITeleportAPI getTeleportApi() {

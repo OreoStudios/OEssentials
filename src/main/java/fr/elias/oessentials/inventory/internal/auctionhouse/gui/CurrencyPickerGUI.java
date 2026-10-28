@@ -1,15 +1,13 @@
 package fr.elias.oessentials.inventory.internal.auctionhouse.gui;
 
 import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
-import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currency;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -87,7 +85,7 @@ public class CurrencyPickerGUI implements InventoryProvider {
         }
 
         // ── Custom currencies ─────────────────────────────────────────────────
-        CurrencyService cs = module.getPlugin().getCurrencyService();
+        Currencies cs = module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         if (cs != null) {
             List<Currency> currencies = cs.getAllCurrencies();
             for (Currency currency : currencies) {

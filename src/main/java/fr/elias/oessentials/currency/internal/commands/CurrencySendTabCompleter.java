@@ -1,7 +1,7 @@
 package fr.elias.oessentials.currency.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

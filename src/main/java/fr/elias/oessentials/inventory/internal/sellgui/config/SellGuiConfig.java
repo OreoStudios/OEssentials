@@ -1,8 +1,6 @@
 package fr.elias.oessentials.inventory.internal.sellgui.config;
 
 import fr.elias.oessentials.inventory.internal.sellgui.SellItemIdResolver;
-import fr.elias.oessentials.shop.internal.ShopModule;
-import fr.elias.oessentials.shop.internal.models.ShopItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -139,12 +137,10 @@ public final class SellGuiConfig {
         if (p != null) return p;
 
         // 4. Fallback: best sell-price from the shop module
-        ShopModule shop = ShopModule.getActive();
-        if (shop != null && shop.isEnabled()) {
-            ShopItem shopItem = shop.getShopManager().findBestSellItem(item);
-            if (shopItem != null && shopItem.canSell()) {
-                return shopItem.getSellPrice();
-            }
+        var shop = fr.elias.oessentials.OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.shop.lifecycle.ShopServices.class, fr.elias.oessentials.shop.lifecycle.ShopServices::getShopSales);
+        if (shop != null) {
+            var listed = shop.listedSellPrice(item);
+            if (listed.isPresent()) return listed.getAsDouble();
         }
 
         return -1;

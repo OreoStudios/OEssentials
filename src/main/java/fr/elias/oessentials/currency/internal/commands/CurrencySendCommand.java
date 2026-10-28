@@ -2,7 +2,7 @@ package fr.elias.oessentials.currency.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;

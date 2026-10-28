@@ -1,10 +1,11 @@
-package fr.elias.oessentials.currency.internal;
+package fr.elias.oessentials.currency.api;
 
 import java.util.Objects;
 
 /**
  * Represents a custom currency in OEssentials
  */
+@dev.oreo.modulith.core.ModuleApi("services")
 public class Currency {
 
     private final String id;
@@ -82,6 +83,7 @@ public class Currency {
         return new Builder();
     }
 
+    @dev.oreo.modulith.core.ModuleApi("services")
     public static class Builder {
         private String id;
         private String name;

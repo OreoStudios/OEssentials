@@ -2,7 +2,7 @@
 package fr.elias.oessentials.player.internal.back.service;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.storage.api.BackDataStore;
 import org.bukkit.Location;
 

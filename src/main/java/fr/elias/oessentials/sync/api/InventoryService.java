@@ -1,11 +1,14 @@
-package fr.elias.oessentials.sync.internal.services;
+package fr.elias.oessentials.sync.api;
 
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
+/** Persisted player inventories; registered with Bukkit's ServicesManager by inventory-sync. */
+@dev.oreo.modulith.core.ModuleApi("services")
 public interface InventoryService {
 
+    @dev.oreo.modulith.core.ModuleApi("services")
     final class Snapshot {
         public ItemStack[] contents;
         public ItemStack[] armor;

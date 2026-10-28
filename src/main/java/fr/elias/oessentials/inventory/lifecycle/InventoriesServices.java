@@ -37,4 +37,9 @@ public interface InventoriesServices {
         var module = getOrdersModule();
         return module == null ? null : new fr.elias.oessentials.inventory.internal.orders.MarketOrdersAdapter(module);
     }
+
+    /** Whether {@code raw} answered an auction-house or orders chat prompt of {@code player}. */
+    default boolean consumeChatInput(org.bukkit.entity.Player player, String raw) {
+        return fr.elias.oessentials.inventory.internal.ChatInputCapture.consume(getAuctionHouse(), getOrdersModule(), player, raw);
+    }
 }

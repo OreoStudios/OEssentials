@@ -1,6 +1,6 @@
 package fr.elias.oessentials.currency.internal.storage;
 
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyBalance;
 
 import java.util.List;

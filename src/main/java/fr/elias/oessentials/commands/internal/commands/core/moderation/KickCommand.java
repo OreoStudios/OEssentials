@@ -40,7 +40,7 @@ public class KickCommand implements OreoCommand {
 
         OEssentials plugin = OEssentials.get();
         var dir = plugin.getPlayerLocator();
-        var bridge = plugin.getModBridge();
+        var bridge = plugin.getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getCrossServerApi);
 
         Player local = Bukkit.getPlayerExact(arg);
         if (local != null && local.isOnline()) {

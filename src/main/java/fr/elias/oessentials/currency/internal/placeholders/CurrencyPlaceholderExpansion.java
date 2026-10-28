@@ -1,7 +1,7 @@
 package fr.elias.oessentials.currency.internal.placeholders;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyService;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;

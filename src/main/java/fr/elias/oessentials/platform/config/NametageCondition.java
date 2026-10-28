@@ -1,4 +1,4 @@
-package fr.elias.oessentials.nametag.internal;
+package fr.elias.oessentials.platform.config;
 
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;

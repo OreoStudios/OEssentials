@@ -1,5 +1,7 @@
 package fr.elias.oessentials.currency.internal;
 
+import fr.elias.oessentials.currency.api.Currency;
+
 import fr.elias.oessentials.currency.internal.util.ColorUtil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

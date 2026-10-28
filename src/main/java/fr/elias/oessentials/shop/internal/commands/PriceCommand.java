@@ -1,4 +1,4 @@
-package fr.elias.oessentials.commands.internal.commands.core.playercommands;
+package fr.elias.oessentials.shop.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;

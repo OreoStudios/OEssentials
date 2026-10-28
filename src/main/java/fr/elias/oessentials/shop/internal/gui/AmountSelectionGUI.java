@@ -1,6 +1,6 @@
 package fr.elias.oessentials.shop.internal.gui;
 
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.elias.oessentials.shop.internal.ShopModule;
 import fr.elias.oessentials.shop.internal.models.Shop;
 import fr.elias.oessentials.shop.internal.models.ShopItem;
@@ -87,7 +87,7 @@ public final class AmountSelectionGUI {
         private String fmt(double price) {
             String cid = shop.getCurrencyId();
             if (cid != null) {
-                CurrencyService cs = module.getPlugin().getCurrencyService();
+                Currencies cs = module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
                 if (cs != null) return cs.formatBalance(cid, price);
             }
             return module.getShopConfig().getCurrencySymbol() + String.format("%.2f", price);
@@ -192,7 +192,7 @@ public final class AmountSelectionGUI {
                                     "",
                                     "&eClick to auto-fill"));
                     contents.set(3, 7, ClickableItem.from(maxItem, e -> {
-                        CurrencyService cs = module.getPlugin().getCurrencyService();
+                        Currencies cs = module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
                         if (cs == null) return;
                         cs.getBalance(player.getUniqueId(), cid).thenAccept(balance ->
                                 fr.elias.oessentials.platform.scheduling.OreScheduler.runForEntity(module.getPlugin(), player, () -> {

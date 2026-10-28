@@ -5,10 +5,8 @@ import fr.elias.oessentials.integrations.internal.placeholders.PlaceholderAPIHoo
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.commandtoggle.lifecycle.CommandToggleServices;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
-import fr.elias.oessentials.currency.lifecycle.CurrencySystemServices;
 import fr.elias.oessentials.crafting.lifecycle.CustomCraftingServices;
 import fr.elias.oessentials.kits.lifecycle.KitsServices;
-import fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import java.util.HashMap;
 import java.util.Map;

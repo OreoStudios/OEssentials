@@ -38,11 +38,13 @@ class ModuleBoundaryRolloutTest {
             "command-toggle",
             "commands",
             "configuration",
+            "currency-system",
             "custom-crafting",
             "custom-worlds",
             "daily",
             "dialogs",
             "discord-integration",
+            "economy",
             "ender-chest",
             "events",
             "freeze",
@@ -51,6 +53,8 @@ class ModuleBoundaryRolloutTest {
             "holograms",
             "ignore",
             "integrations",
+            "inventories",
+            "inventory-sync",
             "jails",
             "jump-pads",
             "kits",
@@ -58,10 +62,13 @@ class ModuleBoundaryRolloutTest {
             "maintenance",
             "messaging",
             "mobs",
+            "mod-gui",
             "motd",
             "mute-system",
+            "nametag",
             "notes",
             "performance-guards",
+            "player-services",
             "player-vaults",
             "playtime",
             "portals",
@@ -72,6 +79,7 @@ class ModuleBoundaryRolloutTest {
             "rules",
             "scoreboard",
             "sharding",
+            "shop",
             "skins",
             "storage",
             "tab",
@@ -92,6 +100,16 @@ class ModuleBoundaryRolloutTest {
         }
         assertEquals(new TreeSet<>(PROTECTED), actual,
                 "Update PROTECTED when a module is migrated; protected modules must never lose @ApplicationModule");
+    }
+
+    @Test
+    void everyModuleIsProtected() {
+        var ids = new TreeSet<String>();
+        for (var lifecycle : OreoModules.TYPES) {
+            ids.add(lifecycle.getAnnotation(PluginModule.class).value());
+        }
+        assertEquals(ids, new TreeSet<>(PROTECTED),
+                "Every module declares @ApplicationModule; a new module must be protected from the start");
     }
 
     @Test

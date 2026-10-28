@@ -6,7 +6,7 @@ import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.nametag.internal.PlayerNametagManager;
 
-@PluginModule(value = "nametag", dependencies = {"configuration::services"}, after = {"events"}, optional = true)
+@PluginModule(value = "nametag", dependencies = {"configuration::services"}, uses = {"player-services::services"}, after = {"events"}, optional = true)
 public final class NametagModule extends ManagedModule implements NametagServices {
     private PlayerNametagManager nametagManager;
     private fr.elias.oessentials.nametag.internal.ChatBubbleService chatBubbleService;

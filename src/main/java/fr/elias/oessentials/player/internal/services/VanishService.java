@@ -158,7 +158,7 @@ public class VanishService {
         }
         // Refresh custom nametag visibility immediately — bypass the periodic sweep
         // so the nametag appears/disappears in the same tick as the vanish toggle.
-        fr.elias.oessentials.nametag.internal.PlayerNametagManager nm = plugin.getNametagManager();
+        var nm = plugin.getModuleRegistry().read(fr.elias.oessentials.nametag.lifecycle.NametagServices.class, n -> n);
         if (nm != null) {
             if (onlinePlayer != null && onlinePlayer.isOnline()) {
                 nm.refreshOwnerVisibility(onlinePlayer);

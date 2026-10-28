@@ -1,4 +1,4 @@
-package fr.elias.oessentials.player.internal.back;
+package fr.elias.oessentials.player.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,6 +7,7 @@ import org.bukkit.World;
 import java.util.HashMap;
 import java.util.Map;
 
+@dev.oreo.modulith.core.ModuleApi("services")
 public class BackLocation {
 
     private final String server;

@@ -1,5 +1,7 @@
 package fr.elias.oessentials.nametag.internal;
 
+import fr.elias.oessentials.platform.config.NametageCondition;
+
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -540,7 +542,7 @@ public class PlayerNametagManager implements Listener {
         // Respect the owner's own toggle
         if (toggleStore != null && toggleStore.isToggledOff(owner.getUniqueId())) return false;
         // Hide nametag for vanished players unless the viewer can see vanished players
-        fr.elias.oessentials.player.internal.services.VanishService vanishSvc = plugin.getVanishService();
+        fr.elias.oessentials.api.IVanishAPI vanishSvc = plugin.getModuleRegistry().read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getVanishApi);
         if (vanishSvc != null && vanishSvc.isVanished(owner)
                 && !viewer.hasPermission("oreo.vanish.see")) return false;
         // Hide nametag when the owner is sneaking

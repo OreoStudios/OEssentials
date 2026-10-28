@@ -1,7 +1,7 @@
 package fr.elias.oessentials.bossbar.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.nametag.internal.NametageCondition;
+import fr.elias.oessentials.platform.config.NametageCondition;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;

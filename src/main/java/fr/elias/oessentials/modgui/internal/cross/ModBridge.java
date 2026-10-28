@@ -7,7 +7,6 @@ import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.modgui.internal.cross.rabbit.CrossInvPacket;
-import fr.elias.oessentials.player.internal.services.VanishService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -147,7 +146,7 @@ public final class ModBridge {
         Player p = Bukkit.getPlayer(targetId);
         if (p == null || !p.isOnline()) return false;
 
-        VanishService vanishService = plugin.getVanishService();
+        fr.elias.oessentials.api.IVanishAPI vanishService = plugin.getModuleRegistry().read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getVanishApi);
         if (vanishService == null) return false;
         vanishService.toggle(p);
         return true;

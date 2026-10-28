@@ -3,8 +3,6 @@ package fr.elias.oessentials.commands.lifecycle;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
-import fr.elias.oessentials.inventory.lifecycle.InventoriesServices;
-import fr.elias.oessentials.proxy.lifecycle.ProxyMessagingServices;
 import fr.elias.oessentials.commands.internal.commands.OeCommand;
 import fr.elias.oessentials.commands.internal.commands.completion.ClearTabCompleter;
 import fr.elias.oessentials.commands.internal.commands.completion.KickTabCompleter;
@@ -24,7 +22,7 @@ import fr.elias.oessentials.commands.internal.furnace.FurnaceCommand;
 import fr.elias.oessentials.commands.internal.near.NearCommand;
 import fr.elias.oessentials.commands.internal.ping.PingCommand;
 
-@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "performance-guards::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, uses = {"discord-integration::services"}, after = {"custom-worlds"})
+@PluginModule(value = "commands", dependencies = {"afk::services", "chat::services", "command-toggle::services", "configuration::services", "ender-chest::services", "ignore::services", "inventories::services", "mute-system::services", "performance-guards::services", "player-services::services", "proxy-messaging::services", "punishment-logger::services", "storage::services", "warnings::services"}, uses = {"discord-integration::services", "inventory-sync::services", "mod-gui::services"}, after = {"custom-worlds"})
 public final class CommandsModule extends ManagedModule implements CommandsServices {
     private fr.elias.oessentials.commands.internal.ic.ICManager icManager;
 
@@ -61,7 +59,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new fr.elias.oessentials.commands.internal.commands.core.admins.NightCommand())
                 .register(new FurnaceCommand(plugin))
                 .register(new NearCommand(plugin))
-                .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.PriceCommand(plugin))
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.RecipeCommand(plugin))
                 .register(new KillCommand())
                 .register(new CookCommand())

@@ -3,6 +3,7 @@ flowchart TD
     afk -->|services| configuration
     afk -->|events| messaging
     afk -->|services| messaging
+    afk -.->|uses services| player_services
     afk --> proxy_messaging
     boss_bar["boss-bar"]
     boss_bar -->|services| configuration
@@ -10,6 +11,7 @@ flowchart TD
     chat["chat"]
     chat -->|services| configuration
     chat -.->|uses services| discord_integration
+    chat -.->|uses services| inventories
     chat -.->|uses services| mod_gui
     chat -->|services| mute_system
     chat -.->|uses services| notes
@@ -34,6 +36,8 @@ flowchart TD
     commands -->|services| ender_chest
     commands -->|services| ignore
     commands -->|services| inventories
+    commands -.->|uses services| inventory_sync
+    commands -.->|uses services| mod_gui
     commands -->|services| mute_system
     commands -->|services| performance_guards
     commands -->|services| player_services
@@ -44,6 +48,7 @@ flowchart TD
     configuration["configuration"]
     currency_system["currency-system"]
     currency_system -->|services| configuration
+    currency_system -.->|uses services| economy
     currency_system -->|events| messaging
     currency_system -->|services| messaging
     currency_system -->|services| storage
@@ -64,6 +69,7 @@ flowchart TD
     discord_integration["discord-integration"]
     discord_integration -->|services| configuration
     discord_integration -->|services| economy
+    discord_integration -.->|uses services| inventory_sync
     discord_integration --> mute_system
     discord_integration -->|services| storage
     economy["economy"]
@@ -108,8 +114,10 @@ flowchart TD
     inventories["inventories"]
     inventories -->|services| command_toggle
     inventories -->|services| configuration
+    inventories -.->|uses services| currency_system
     inventories --> mail
     inventories -->|services| messaging
+    inventories -.->|uses services| shop
     inventory_sync["inventory-sync"]
     inventory_sync -->|services| configuration
     inventory_sync --> ender_chest
@@ -145,9 +153,12 @@ flowchart TD
     mod_gui -.->|uses services| ender_chest
     mod_gui -.->|uses services| freeze
     mod_gui --> inventories
+    mod_gui -.->|uses services| inventory_sync
     mod_gui -->|events| messaging
     mod_gui -->|services| messaging
+    mod_gui -.->|uses services| mute_system
     mod_gui -.->|uses services| notes
+    mod_gui -.->|uses services| player_services
     mod_gui -->|services| storage
     motd["motd"]
     motd -->|services| configuration
@@ -157,6 +168,7 @@ flowchart TD
     nametag["nametag"]
     nametag -->|services| configuration
     nametag --> events
+    nametag -.->|uses services| player_services
     notes["notes"]
     notes --> mod_gui
     performance_guards["performance-guards"]
@@ -168,6 +180,7 @@ flowchart TD
     player_services --> inventory_sync
     player_services -->|events| messaging
     player_services -->|services| messaging
+    player_services -.->|uses services| nametag
     player_services -->|services| storage
     player_vaults["player-vaults"]
     player_vaults -->|services| configuration
@@ -201,12 +214,14 @@ flowchart TD
     scoreboard["scoreboard"]
     scoreboard --> boss_bar
     scoreboard -->|services| configuration
+    scoreboard -.->|uses services| nametag
     sharding["sharding"]
     sharding -->|services| configuration
     sharding --> holograms
     shop["shop"]
     shop --> clear_lag
     shop -->|services| configuration
+    shop -.->|uses services| currency_system
     skins["skins"]
     skins --> command_control
     skins -->|services| configuration
@@ -217,6 +232,7 @@ flowchart TD
     storage --> performance_guards
     tab["tab"]
     tab -->|services| configuration
+    tab -.->|uses services| player_services
     tab --> scoreboard
     tab -->|services| storage
     trade["trade"]

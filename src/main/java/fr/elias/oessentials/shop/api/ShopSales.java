@@ -15,6 +15,9 @@ public interface ShopSales {
     /** What the shop pays for one of these items, or empty when it does not buy them. */
     OptionalDouble sellPricePerItem(ItemStack item);
 
+    /** The sell price listed in the best matching shop entry (for its whole bundle), or empty. */
+    OptionalDouble listedSellPrice(ItemStack item);
+
     /**
      * Removes up to {@code amount} items of {@code material} from the player's inventory, pays the
      * player in the shop's currency and logs the sale. {@code afterPayout} runs on the player's

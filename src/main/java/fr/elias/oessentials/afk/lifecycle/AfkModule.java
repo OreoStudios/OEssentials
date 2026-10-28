@@ -10,7 +10,7 @@ import fr.elias.oessentials.afk.internal.AfkListener;
 import fr.elias.oessentials.afk.internal.AfkPoolService;
 import fr.elias.oessentials.afk.internal.AfkService;
 
-@PluginModule(value = "afk", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, after = {"proxy-messaging"})
+@PluginModule(value = "afk", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, uses = {"player-services::services"}, after = {"proxy-messaging"})
 public final class AfkModule extends ManagedModule implements AfkServices {
     private AfkService afkService;
     private AfkPoolService afkPoolService;

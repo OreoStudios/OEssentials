@@ -1,4 +1,4 @@
-package fr.elias.oessentials.player.internal.tasks;
+package fr.elias.oessentials.chat.internal.tasks;
 
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;

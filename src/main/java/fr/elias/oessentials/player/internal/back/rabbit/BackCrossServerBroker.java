@@ -1,7 +1,7 @@
 package fr.elias.oessentials.player.internal.back.rabbit;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.rabbit.packets.BackTeleportPacket;
 import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.api.PacketBus;

@@ -3,7 +3,7 @@ package fr.elias.oessentials.currency.internal.api;
 import fr.elias.oessentials.api.ICurrencyAPI;
 import fr.elias.oessentials.api.events.CurrencyTransactionEvent;
 import fr.elias.oessentials.api.events.CurrencyTransferEvent;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyService;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;

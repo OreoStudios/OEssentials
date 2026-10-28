@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.modgui.lifecycle.ModGuiModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "mod-gui")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "mod-gui", lifecycle = fr.elias.oessentials.modgui.lifecycle.ModGuiModule.class)
 package fr.elias.oessentials.modgui;

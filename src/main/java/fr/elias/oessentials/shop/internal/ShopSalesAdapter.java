@@ -31,6 +31,14 @@ public final class ShopSalesAdapter implements ShopSales {
     }
 
     @Override
+    public OptionalDouble listedSellPrice(ItemStack item) {
+        if (!shop.isEnabled()) return OptionalDouble.empty();
+        ShopItem si = shop.getShopManager().findBestSellItem(item);
+        if (si == null || !si.canSell()) return OptionalDouble.empty();
+        return OptionalDouble.of(si.getSellPrice());
+    }
+
+    @Override
     public boolean sellFromInventory(Player player, Material mat, int amount, Runnable afterPayout) {
         if (!shop.isEnabled()) return false;
 
@@ -67,7 +75,7 @@ public final class ShopSalesAdapter implements ShopSales {
 
         fr.elias.oessentials.shop.internal.models.Shop owningShop = shop.getShopManager().getShop(shopItem.getShopId());
         String currencyId = owningShop != null ? owningShop.getCurrencyId() : null;
-        var cs = (currencyId != null) ? plugin.getCurrencyService() : null;
+        var cs = (currencyId != null) ? plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
 
         if (cs != null) {
             cs.deposit(player.getUniqueId(), currencyId, total)

@@ -63,7 +63,7 @@ import fr.elias.oessentials.afk.internal.AfkPoolService;
 import fr.elias.oessentials.afk.internal.AfkService;
 import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.rabbit.BackBroker;
 import fr.elias.oessentials.player.internal.back.service.BackService;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;

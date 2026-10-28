@@ -2,7 +2,7 @@ package fr.elias.oessentials.inventory.internal.auctionhouse;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.inventory.internal.auctionhouse.gui.BrowseGUI;
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.Auction;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.AuctionCategory;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.AuctionStatus;
@@ -154,7 +154,7 @@ public final class AuctionHouseModule {
 
         double fee = (price * cfg.listingFeePercent() / 100.0) + cfg.listingFeeFlat();
         if (fee > 0) {
-            CurrencyService cs = (currencyId != null) ? plugin.getCurrencyService() : null;
+            Currencies cs = (currencyId != null) ? plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
             if (cs != null) {
                 final String finalCurrencyId = currencyId;
                 final long finalDurationHours = durationHours;
@@ -210,7 +210,7 @@ public final class AuctionHouseModule {
 
             double price = auction.getPrice();
             String auctionCurrencyId = auction.getCurrencyId();
-            CurrencyService cs = (auctionCurrencyId != null) ? plugin.getCurrencyService() : null;
+            Currencies cs = (auctionCurrencyId != null) ? plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
             double tax = price * cfg.taxPercent() / 100.0;
             double sellerReceives = price - tax;
 
@@ -481,7 +481,7 @@ public final class AuctionHouseModule {
     /** Format using the per-listing currencyId (null = Vault). */
     public String formatMoney(double amount, String currencyId) {
         if (currencyId != null) {
-            CurrencyService cs = plugin.getCurrencyService();
+            Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
             if (cs != null) return cs.formatBalance(currencyId, amount);
         }
         return formatMoney(amount);

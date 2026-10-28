@@ -1,6 +1,6 @@
 package fr.elias.oessentials.shop.internal.gui;
 
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.elias.oessentials.shop.internal.ShopModule;
 import fr.elias.oessentials.shop.internal.models.Shop;
 import fr.elias.oessentials.shop.internal.models.ShopItem;
@@ -37,7 +37,7 @@ public final class TransactionProcessor {
                 .getEffectiveBuyPrice(player.getUniqueId(), shopItem) * quantity;
 
         String currencyId = getShopCurrencyId(shopItem);
-        CurrencyService cs = (currencyId != null) ? module.getPlugin().getCurrencyService() : null;
+        Currencies cs = (currencyId != null) ? module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
 
         if (cs == null) {
             try {
@@ -135,7 +135,7 @@ public final class TransactionProcessor {
                 .getEffectiveSellPrice(player.getUniqueId(), shopItem) * quantity;
 
         String currencyId = getShopCurrencyId(shopItem);
-        CurrencyService cs = (currencyId != null) ? module.getPlugin().getCurrencyService() : null;
+        Currencies cs = (currencyId != null) ? module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
 
         if (cs == null) {
             try {
@@ -217,7 +217,7 @@ public final class TransactionProcessor {
             }
 
             double totalEarned = 0;
-            CurrencyService cs = module.getPlugin().getCurrencyService();
+            Currencies cs = module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
             CompletableFuture<?> chain = CompletableFuture.completedFuture(null);
 
             for (var entry : earningsByCurrency.entrySet()) {

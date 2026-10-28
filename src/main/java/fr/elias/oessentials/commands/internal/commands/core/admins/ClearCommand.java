@@ -3,7 +3,7 @@ package fr.elias.oessentials.commands.internal.commands.core.admins;
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.storage.api.PlayerLocator;
-import fr.elias.oessentials.sync.internal.services.InventoryService;
+import fr.elias.oessentials.sync.api.InventoryService;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

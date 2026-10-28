@@ -3,7 +3,6 @@ package fr.elias.oessentials.chat.internal;
 import fr.elias.oessentials.platform.config.CustomConfig;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
 import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.DiscordWebhook;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -90,43 +89,10 @@ public final class AsyncChatListener implements Listener {
         final Player player = event.getPlayer();
         final String raw = event.getMessage();
 
-        try {
-            AuctionHouseModule ahm = OEssentials.get().getAuctionHouseModule();
-            if (ahm != null && ahm.enabled() && ahm.isWaitingForPrice(player.getUniqueId())) {
-                event.setCancelled(true);
-                event.getRecipients().clear();
-                ahm.consumePriceInput(player, raw);
-                return;
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om =
-                    OEssentials.get().getOrdersModule();
-            if (om != null && om.enabled()) {
-                java.util.UUID uid = player.getUniqueId();
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForQty(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumeQtyInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForPrice(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumePriceInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.isWaitingForFillQty(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.consumeFillQtyInput(om, player, raw);
-                    return;
-                }
-            }
-        } catch (Throwable t) {
-            Bukkit.getLogger().severe("[Orders] Legacy chat input error: " + t);
-            t.printStackTrace();
+        var inventories = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class, i -> i);
+        if (inventories != null && inventories.consumeChatInput(player, raw)) {
+            event.setCancelled(true);
+            event.getRecipients().clear();
         }
     }
 
@@ -150,45 +116,11 @@ public final class AsyncChatListener implements Listener {
         } catch (Throwable ignored) {}
 
         final Player player = event.getPlayer();
-        try {
-            AuctionHouseModule ahm = OEssentials.get().getAuctionHouseModule();
-            if (ahm != null && ahm.enabled() && ahm.isWaitingForPrice(player.getUniqueId())) {
-                event.viewers().clear();
-                event.setCancelled(true);
-                String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
-                ahm.consumePriceInput(player, raw);
-                return;
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om =
-                    OEssentials.get().getOrdersModule();
-            if (om != null && om.enabled()) {
-                String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
-                UUID uid = player.getUniqueId();
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForQty(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumeQtyInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForPrice(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumePriceInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.isWaitingForFillQty(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.consumeFillQtyInput(om, player, raw);
-                    return;
-                }
-            }
-        } catch (Throwable t) {
-            Bukkit.getLogger().severe("[Orders] Chat input handler error: " + t);
-            t.printStackTrace();
+        var inventories = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class, i -> i);
+        if (inventories != null && inventories.consumeChatInput(player,
+                PlainTextComponentSerializer.plainText().serialize(event.message()))) {
+            event.viewers().clear();
+            event.setCancelled(true);
         }
     }
 

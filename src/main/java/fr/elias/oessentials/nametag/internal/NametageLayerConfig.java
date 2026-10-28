@@ -1,5 +1,7 @@
 package fr.elias.oessentials.nametag.internal;
 
+import fr.elias.oessentials.platform.config.NametageCondition;
+
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 

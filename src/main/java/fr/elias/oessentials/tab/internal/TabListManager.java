@@ -2,7 +2,7 @@ package fr.elias.oessentials.tab.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.configuration.api.FeatureSettings;
-import fr.elias.oessentials.nametag.internal.NametageCondition;
+import fr.elias.oessentials.platform.config.NametageCondition;
 import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -620,7 +620,7 @@ public class TabListManager {
     private String applyInternalPlaceholders(Player viewer, String input) {
         if (input == null || input.isEmpty()) return input;
 
-        fr.elias.oessentials.player.internal.services.VanishService vanishSvc = plugin.getVanishService();
+        fr.elias.oessentials.api.IVanishAPI vanishSvc = plugin.getModuleRegistry().read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getVanishApi);
         boolean viewerCanSeeVanished = viewer.hasPermission("oreo.vanish.see");
         int localOnline = (int) Bukkit.getOnlinePlayers().stream()
                 .filter(op -> viewerCanSeeVanished || vanishSvc == null || !vanishSvc.isVanished(op))

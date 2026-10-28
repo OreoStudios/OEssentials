@@ -1,7 +1,7 @@
 package fr.elias.oessentials.inventory.internal.orders.service;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -30,7 +30,7 @@ public final class OrderCurrencyAdapter {
                 return eco.getBalance(Bukkit.getOfflinePlayer(playerId));
             });
         }
-        CurrencyService cs = plugin.getCurrencyService();
+        Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         if (cs == null) return CompletableFuture.completedFuture(0.0);
         return cs.getBalance(playerId, currencyId);
     }
@@ -52,7 +52,7 @@ public final class OrderCurrencyAdapter {
                 return eco.withdrawPlayer(op, amount).transactionSuccess();
             });
         }
-        CurrencyService cs = plugin.getCurrencyService();
+        Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         if (cs == null) return CompletableFuture.completedFuture(false);
         return cs.withdraw(playerId, currencyId, amount);
     }
@@ -68,7 +68,7 @@ public final class OrderCurrencyAdapter {
                 return eco.depositPlayer(Bukkit.getOfflinePlayer(playerId), amount).transactionSuccess();
             });
         }
-        CurrencyService cs = plugin.getCurrencyService();
+        Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         if (cs == null) return CompletableFuture.completedFuture(false);
         return cs.deposit(playerId, currencyId, amount);
     }
@@ -79,7 +79,7 @@ public final class OrderCurrencyAdapter {
             Economy eco = vaultEco();
             return eco != null ? eco.format(amount) : String.format("$%.2f", amount);
         }
-        CurrencyService cs = plugin.getCurrencyService();
+        Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         return cs != null ? cs.formatBalance(currencyId, amount) : String.format("%.2f %s", amount, currencyId);
     }
 
@@ -88,7 +88,7 @@ public final class OrderCurrencyAdapter {
             Economy eco = vaultEco();
             return eco != null ? eco.currencyNamePlural() : "Money";
         }
-        CurrencyService cs = plugin.getCurrencyService();
+        Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
         if (cs == null) return currencyId;
         var cur = cs.getCurrency(currencyId);
         return cur != null ? cur.getDisplayName() : currencyId;

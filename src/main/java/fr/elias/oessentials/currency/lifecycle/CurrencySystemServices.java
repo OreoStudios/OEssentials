@@ -25,4 +25,9 @@ public interface CurrencySystemServices {
                 .map(c -> (fr.elias.oessentials.api.ICurrencyAPI) new fr.elias.oessentials.currency.internal.api.CurrencyAPIImpl(svc, c))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    /** Currencies and balances, or {@code null} while the currency system is not running. */
+    default fr.elias.oessentials.currency.api.Currencies getCurrencies() {
+        return getCurrencyService();
+    }
 }

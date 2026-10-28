@@ -1,6 +1,6 @@
 package fr.elias.oessentials.inventory.internal.orders.gui;
 
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.inventory.internal.orders.OrdersModule;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -8,7 +8,6 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -232,8 +231,8 @@ public final class CreateOrderFlow {
 
             // Custom currencies
             if (module.getConfig().allowCustomCurrencies()
-                    && module.getPlugin().getCurrencyService() != null) {
-                for (Currency cur : module.getPlugin().getCurrencyService().getAllCurrencies()) {
+                    && module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) != null) {
+                for (Currency cur : module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies).getAllCurrencies()) {
                     if (col > 7) break;
                     contents.set(1, col++, currencyButton(player, cur));
                 }

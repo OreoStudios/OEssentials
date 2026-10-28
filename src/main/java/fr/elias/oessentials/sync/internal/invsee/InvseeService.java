@@ -6,7 +6,7 @@ import fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker;
 import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeEditPacket;
 import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeOpenRequestPacket;
 import fr.elias.oessentials.sync.internal.invsee.rabbit.packets.InvseeStatePacket;
-import fr.elias.oessentials.sync.internal.services.InventoryService;
+import fr.elias.oessentials.sync.api.InventoryService;
 import fr.elias.oessentials.messaging.api.ItemStacksCodec;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class InvseeService {
+public final class InvseeService implements fr.elias.oessentials.sync.api.InvseeSnapshots {
 
     private final OEssentials plugin;
     private final InvseeCrossServerBroker broker;
