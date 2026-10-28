@@ -20,6 +20,7 @@ public final class TradeModule extends ManagedModule implements TradeServices {
     private TradeConfig tradeConfig;
     private TradeService tradeService;
     private TradeCrossServerBroker tradeBroker;
+    private volatile fr.elias.oessentials.trade.internal.cross.CrossTradeService crossTrades;
 
     @Override
     protected void start() {
@@ -40,19 +41,37 @@ public final class TradeModule extends ManagedModule implements TradeServices {
         messaging.subscribe(TradeCancelPacket.class,  new TradeCancelPacketHandler(plugin));
         messaging.subscribe(TradeGrantPacket.class,   new TradeGrantPacketHandler(plugin));
         messaging.subscribe(TradeClosePacket.class,   new TradeClosePacketHandler(plugin));
+        messaging.subscribe(fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket.class, (channel, pkt) -> {
+            var cross = crossTrades;
+            if (cross != null) cross.onSignal(pkt);
+        });
     }
 
     @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
-        // Cross-server trading stays off regardless of settings.yml. Its broker was never created
-        // before 7.1.6 (it was built before the trade service existed), so the feature had never
-        // run; on a two-server test network it did not sync offers or complete, and items were
-        // lost or duplicated on disconnect and server switches. Local trades do not need it.
-        if (tradeService != null && services(ConfigurationServices.class).getFeatureSettings().tradeCrossServerEnabled()) {
-            plugin.getLogger().warning("[TRADE] Cross-server trading is not available yet; trades work between players on the same server.");
+        // The old packet-based cross-server broker stays off: it never ran before 7.1.6 and lost or
+        // duplicated items when tested. Cross-server trades use CrossTradeService instead, whose
+        // trade record (and the offered items) lives in MongoDB.
+        if (tradeService == null || !services(ConfigurationServices.class).getFeatureSettings().tradeCrossServerEnabled()) {
+            plugin.getLogger().info("[TRADE] Cross-server trading disabled.");
+            return;
         }
-        plugin.getLogger().info("[TRADE] Cross-server trade broker disabled.");
+        var client = services(fr.elias.oessentials.storage.lifecycle.StorageServices.class).getHomesMongoClient();
+        if (client == null) {
+            plugin.getLogger().warning("[TRADE] Cross-server trading needs essentials.storage: mongodb; trades stay on one server.");
+            return;
+        }
+        var cfg = plugin.getConfig();
+        var collection = client.getDatabase(cfg.getString("storage.mongo.database", "oreo"))
+                .getCollection(cfg.getString("storage.mongo.collectionPrefix", "oreo_") + "trades");
+        var service = new fr.elias.oessentials.trade.internal.cross.CrossTradeService(plugin,
+                new fr.elias.oessentials.trade.internal.cross.CrossTradeStore(collection), event.packets(),
+                id -> tradeService.getTradeIdByPlayer(id) != null);
+        plugin.getServer().getPluginManager().registerEvents(service, plugin);
+        this.crossTrades = service;
+        cleanup("crossTrades", () -> { service.shutdown(); crossTrades = null; });
+        plugin.getLogger().info("[TRADE] Cross-server trading ready (MongoDB trade records).");
     }
 
     @Override public TradeConfig getTradeConfig() { return tradeConfig; }
@@ -64,7 +83,7 @@ public final class TradeModule extends ManagedModule implements TradeServices {
 
         if (this.tradeConfig.enabled && services(ConfigurationServices.class).getFeatureSettings().tradeEnabled()) {
             this.tradeService = new TradeService(plugin, this.tradeConfig);
-            services(ConfigurationServices.class).getCommands().registerLegacy("trade", new TradeCommand(plugin, this.tradeService));
+            services(ConfigurationServices.class).getCommands().registerLegacy("trade", new TradeCommand(plugin, this.tradeService, () -> crossTrades));
             plugin.getLogger().info("[Trade] Enabled.");
             org.bukkit.Bukkit.getPluginManager().registerEvents(new fr.elias.oessentials.trade.internal.ui.TradeGuiGuardListener(plugin), plugin);
             plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.trade.internal.ui.TradeInventoryCloseListener(plugin), plugin);

@@ -23,6 +23,8 @@ public final class TradePacketNamespace extends PacketNamespace {
     public static final int TRADE_GRANT_ID    = 27005;
     /** Numbered by startup registration order before it joined this namespace. */
     public static final int TRADE_CLOSE_ID    = 27014;
+    /** Cross-server trade notifications (the trade record lives in MongoDB). */
+    public static final int CROSS_TRADE_SIGNAL_ID = 27029;
 
     public TradePacketNamespace() {
         super(NS_ID);
@@ -38,5 +40,8 @@ public final class TradePacketNamespace extends PacketNamespace {
         registerPacket(TRADE_CANCEL_ID,  TradeCancelPacket.class,  TradeCancelPacket::new);
         registerPacket(TRADE_GRANT_ID,   TradeGrantPacket.class,   TradeGrantPacket::new);
         registerPacket(TRADE_CLOSE_ID,   TradeClosePacket.class,   TradeClosePacket::new);
+        registerPacket(CROSS_TRADE_SIGNAL_ID,
+                fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket.class,
+                fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket::new);
     }
 }
