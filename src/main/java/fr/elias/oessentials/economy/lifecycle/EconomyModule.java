@@ -49,6 +49,7 @@ public final class EconomyModule extends ManagedModule implements EconomyService
         messaging.subscribe(PlayerJoinPacket.class, new PlayerJoinPacketHandler(plugin));
         messaging.subscribe(PlayerQuitPacket.class, new PlayerQuitPacketHandler(plugin));
         initEconomy();
+        registerCommands();
     }
 
     @Override public EconomyBootstrap getEcoBootstrap() { return ecoBootstrap; }
@@ -146,5 +147,23 @@ public final class EconomyModule extends ManagedModule implements EconomyService
     public OfflinePlayerCache getOfflinePlayerCache() {
         if (offlinePlayerCache == null) offlinePlayerCache = new OfflinePlayerCache();
         return offlinePlayerCache;
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.economy.internal.ecocommands.BalanceCommand(plugin))
+                .register(new fr.elias.oessentials.economy.internal.ecocommands.BalTopCommand(plugin))
+                .register(new fr.elias.oessentials.economy.internal.ecocommands.EcoMigrateCommand(plugin));
+        commands.rewireTab("balance", (sender, cmd, alias, args) -> {
+            if (args.length == 1 && sender.hasPermission("oreo.balance.others")) {
+                String partial = args[0].toLowerCase(java.util.Locale.ROOT);
+                return org.bukkit.Bukkit.getOnlinePlayers().stream()
+                        .map(org.bukkit.entity.Player::getName)
+                        .filter(n -> n.toLowerCase(java.util.Locale.ROOT).startsWith(partial))
+                        .sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            }
+            return java.util.List.of();
+        });
     }
 }

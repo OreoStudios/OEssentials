@@ -22,6 +22,7 @@ public final class AfkModule extends ManagedModule implements AfkServices {
         services(MessagingServices.class).registerNamespace(new AfkPacketNamespace());
         initAfk();
         listenForModuleEvents(this);
+        registerCommands();
     }
 
     @ModuleListener
@@ -54,5 +55,11 @@ public final class AfkModule extends ManagedModule implements AfkServices {
             plugin.getLogger().info("[AfkPool] Disabled by afk/config.yml");
             this.afkPoolService = null;
         }
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.afk.internal.AfkCommand(afkService));
     }
 }

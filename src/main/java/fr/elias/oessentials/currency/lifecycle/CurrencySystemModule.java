@@ -22,7 +22,7 @@ import fr.elias.oessentials.currency.internal.storage.JsonCurrencyStorage;
 import fr.elias.oessentials.currency.internal.storage.MongoCurrencyStorage;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "currency-system", dependencies = {"messaging::events", "configuration::services", "messaging::services", "storage::services"})
+@PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"})
 public final class CurrencySystemModule extends ManagedModule implements CurrencySystemServices {
     private CurrencyService currencyService;
     private CurrencyConfig currencyConfig;
@@ -32,6 +32,7 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.currency.internal.rabbitmq.CurrencyPacketNamespace());
         initCurrencySystem();
         listenForModuleEvents(this);
+        registerCommands();
     }
 
     @Override public CurrencyService getCurrencyService() { return currencyService; }
@@ -82,4 +83,9 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
         plugin.getLogger().info("[Currency] Cross-server sync subscribed.");
     }
 
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.currency.internal.commands.CurrencyAdminCommand(plugin));
+    }
 }

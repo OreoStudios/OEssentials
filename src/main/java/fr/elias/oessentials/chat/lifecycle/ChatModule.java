@@ -29,6 +29,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         cleanup("chatSyncManager", () -> { if (chatSyncManager != null) chatSyncManager.close(); });
         cleanup("channelManager", () -> { if (channelManager != null) channelManager.savePlayerData(); });
         initChat();
+        registerCommands();
     }
 
     @Override public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return channelManager; }
@@ -185,5 +186,23 @@ public final class ChatModule extends ManagedModule implements ChatServices {
             activeConversationListener.setChatMessagingCfg(joinQuitCfg);
         }
         startAutoMessages();
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        var mute = services(fr.elias.oessentials.mute.lifecycle.MuteSystemServices.class).getMuteService();
+        var muteCmd = new fr.elias.oessentials.chat.internal.MuteCommand(mute, chatSyncManager);
+        var unmuteCmd = new fr.elias.oessentials.chat.internal.UnmuteCommand(mute, chatSyncManager);
+        var nickCmd = new fr.elias.oessentials.chat.internal.nick.NickCommand();
+        commands.register(nickCmd)
+                .register(new fr.elias.oessentials.chat.internal.BroadcastCommand())
+                .register(new fr.elias.oessentials.chat.internal.AfeliusReloadCommand(plugin, chatConfig))
+                .register(muteCmd)
+                .register(unmuteCmd)
+                .register(new fr.elias.oessentials.chat.internal.nick.RealNameCommand());
+        commands.rewireTab("mute", muteCmd);
+        commands.rewireTab("unmute", unmuteCmd);
+        commands.rewireTab("nick", nickCmd);
     }
 }

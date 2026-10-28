@@ -30,7 +30,7 @@ import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.player.internal.services.MessageService;
 import fr.elias.oessentials.player.internal.services.VanishService;
 
-@PluginModule(value = "player-services", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventory-sync"})
+@PluginModule(value = "player-services", dependencies = {"configuration::services", "ignore::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventory-sync"})
 public final class PlayerServicesModule extends ManagedModule implements PlayerServices {
     private TeleportService teleportService;
     private BackService backService;
@@ -57,6 +57,7 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
         messaging.subscribe(VanishSyncPacket.class,
                 (channel, pkt) -> _vanishService.handleRemoteState(pkt.getPlayerId(), pkt.isVanished(), pkt.getSourceServer()));
         listenForModuleEvents(this);
+        registerCommands();
     }
 
     /** Cross-server /tpa, /tp and /back, once RabbitMQ is connected. */
@@ -125,5 +126,32 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
 
         // store vanishService ref for commands block
         this._vanishService = vanishService;
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        var tphere = new fr.elias.oessentials.player.internal.tp.command.TphereCommand(plugin);
+        commands.register(tphere);
+        commands.rewireTab("tphere", tphere);
+        var msg = new fr.elias.oessentials.player.internal.msg.MsgCommand(messageService, plugin);
+        var ignore = services(fr.elias.oessentials.ignore.lifecycle.IgnoreServices.class).getIgnoreService();
+        if (ignore != null) msg.setIgnoreService(ignore);
+        commands
+                .register(new fr.elias.oessentials.player.internal.back.command.BackCommand(backService, teleportService, plugin))
+                .register(new fr.elias.oessentials.player.internal.tp.command.TpaCommand(teleportService))
+                .register(new fr.elias.oessentials.player.internal.tp.command.TpAcceptCommand(teleportService))
+                .register(new fr.elias.oessentials.player.internal.tp.command.TpDenyCommand(teleportService))
+                .register(msg)
+                .register(new fr.elias.oessentials.player.internal.msg.ReplyCommand(messageService, plugin))
+                .register(new fr.elias.oessentials.player.internal.deathback.DeathBackCommand(deathBackService))
+                .register(new fr.elias.oessentials.player.internal.commands.core.moderation.GodCommand(godService))
+                .register(new fr.elias.oessentials.player.internal.commands.core.moderation.VanishCommand(_vanishService))
+                .register(new fr.elias.oessentials.player.internal.tp.command.TpCommand(teleportService))
+                .register(new fr.elias.oessentials.player.internal.tp.command.MoveCommand(teleportService));
+        var tpaCompleter = new fr.elias.oessentials.player.internal.tp.completer.TpaTabCompleter(plugin);
+        commands.rewireTab("tpa", tpaCompleter);
+        commands.rewireTab("move", tpaCompleter);
+        commands.rewireTab("tp", new fr.elias.oessentials.player.internal.tp.completer.TpTabCompleter(plugin));
     }
 }

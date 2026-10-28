@@ -14,6 +14,7 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
     @Override
     protected void start() {
         initEnderChest();
+        registerCommands();
     }
 
     @Override public fr.elias.oessentials.enderchest.internal.EnderChestConfig getEcConfig() { return ecConfig; }
@@ -38,5 +39,13 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
         this.ecService = new fr.elias.oessentials.enderchest.internal.EnderChestService(plugin, this.ecConfig, ecStorage);
         Bukkit.getServicesManager().register(fr.elias.oessentials.enderchest.internal.EnderChestService.class, this.ecService, plugin, org.bukkit.plugin.ServicePriority.Normal);
         plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.enderchest.internal.EnderChestListener(plugin, ecService, crossServerEc), plugin);
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.enderchest.internal.EcCommand(ecService, services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "enderchest", true)))
+                .register(new fr.elias.oessentials.enderchest.internal.EcSeeCommand());
+        commands.rewireTab("ecsee", new fr.elias.oessentials.enderchest.internal.EcSeeCommand());
     }
 }

@@ -46,6 +46,7 @@ flowchart TD
     custom_crafting -->|services| inventories
     custom_crafting --> trade
     custom_worlds["custom-worlds"]
+    custom_worlds -->|services| configuration
     custom_worlds --> currency_system
     daily["daily"]
     daily -->|services| configuration
@@ -86,6 +87,7 @@ flowchart TD
     holograms -->|services| configuration
     holograms --> tab
     ignore["ignore"]
+    ignore -->|services| configuration
     ignore --> help
     integrations["integrations"]
     integrations -->|services| command_toggle
@@ -150,6 +152,7 @@ flowchart TD
     performance_guards -->|services| configuration
     player_services["player-services"]
     player_services -->|services| configuration
+    player_services -->|services| ignore
     player_services --> inventory_sync
     player_services -->|events| messaging
     player_services -->|services| messaging
@@ -169,6 +172,7 @@ flowchart TD
     proxy_messaging -->|services| configuration
     proxy_messaging --> kits
     punishment_logger["punishment-logger"]
+    punishment_logger -->|services| configuration
     punishment_logger --> warnings
     redis["redis"]
     redis -->|services| configuration
@@ -192,6 +196,7 @@ flowchart TD
     shop -->|services| configuration
     skins["skins"]
     skins --> command_control
+    skins -->|services| configuration
     storage["storage"]
     storage -->|services| configuration
     storage -->|events| messaging
@@ -208,6 +213,7 @@ flowchart TD
     trade --> notes
     trade -->|services| storage
     warnings["warnings"]
+    warnings -->|services| configuration
     warnings --> ignore
     web_panel["web-panel"]
     web_panel -->|services| afk

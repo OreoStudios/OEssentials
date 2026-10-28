@@ -19,6 +19,7 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
         initInventorySync();
         initInvsee();
         listenForModuleEvents(this);
+        registerCommands();
     }
 
     @Override public fr.elias.oessentials.sync.internal.invsee.InvseeService getInvseeService() { return invseeService; }
@@ -136,5 +137,12 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
             plugin.getLogger().warning("[SHUTDOWN] Error while saving inventories on shutdown: " + t.getMessage());
         }
 
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.sync.internal.invsee.command.InvseeCommand());
+        commands.rewireTab("invsee", new fr.elias.oessentials.sync.internal.invsee.command.InvseeCommand());
     }
 }

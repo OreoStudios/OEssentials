@@ -15,6 +15,7 @@ public final class CommandToggleModule extends ManagedModule implements CommandT
     @Override
     protected void start() {
         initCommandToggle();
+        registerCommands();
     }
 
     @Override public CommandToggleConfig getCommandToggleConfig() { return commandToggleConfig; }
@@ -34,6 +35,16 @@ public final class CommandToggleModule extends ManagedModule implements CommandT
         } catch (Exception e) {
             plugin.getLogger().severe("[CommandToggle] Failed to initialize: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        if (commandToggleConfig != null && commandToggleService != null) {
+            var cmdToggleCmd = new fr.elias.oessentials.commandtoggle.internal.CommandToggleCommand(plugin, commandToggleConfig, commandToggleService);
+            commands.registerLegacy("commandtoggle", cmdToggleCmd, cmdToggleCmd);
+            plugin.getLogger().info("[CommandToggle] /commandtoggle command registered");
         }
     }
 }

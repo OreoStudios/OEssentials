@@ -32,6 +32,7 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.inventory.internal.InventoriesPacketNamespace());
         initInventoryManagers();
         subscribeCrossServerSync();
+        registerCommands();
     }
 
     private void subscribeCrossServerSync() {
@@ -97,6 +98,16 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
         } catch (Throwable t) {
             plugin.getLogger().warning("[Orders] Failed to initialise: " + t.getMessage());
             this.ordersModule = null;
+        }
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.inventory.internal.sellgui.command.SellGuiCommand(plugin));
+        // Orders / Market command
+        if (ordersModule != null) {
+            commands.register(new fr.elias.oessentials.inventory.internal.orders.command.OrderCommand(ordersModule));
         }
     }
 }

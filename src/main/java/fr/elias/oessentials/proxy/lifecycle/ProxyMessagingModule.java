@@ -14,6 +14,7 @@ public final class ProxyMessagingModule extends ManagedModule implements ProxyMe
     protected void start() {
         cleanup("aliasService", () -> { if (aliasService != null) aliasService.shutdown(); });
         initProxyMessaging();
+        registerCommands();
     }
 
     @Override public ProxyMessenger getProxyMessenger() { return proxyMessenger; }
@@ -33,5 +34,12 @@ public final class ProxyMessagingModule extends ManagedModule implements ProxyMe
         final ProxyMessenger messenger = this.proxyMessenger;
         configuration.setServerConnector(messenger::sendToServer);
         cleanup("serverConnector", () -> configuration.setServerConnector(null));
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.proxy.internal.commands.core.playercommands.ServerProxyCommand(proxyMessenger));
+        commands.rewireTab("oeserver", new fr.elias.oessentials.proxy.internal.commands.core.playercommands.ServerProxyCommand(proxyMessenger));
     }
 }

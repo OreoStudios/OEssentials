@@ -791,7 +791,7 @@
   "fr.elias.oessentials.commands.core.admins.KillallLogViewCommand": "fr.elias.oessentials.mobs.internal.killall.KillallLogViewCommand",
   "fr.elias.oessentials.commands.core.admins.KillallRecorderCommand": "fr.elias.oessentials.mobs.internal.killall.KillallRecorderCommand",
   "fr.elias.oessentials.commands.core.admins.KillCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.KillCommand",
-  "fr.elias.oessentials.commands.core.admins.MoveCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.MoveCommand",
+  "fr.elias.oessentials.commands.core.admins.MoveCommand": "fr.elias.oessentials.player.internal.tp.command.MoveCommand",
   "fr.elias.oessentials.commands.core.admins.NightCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.NightCommand",
   "fr.elias.oessentials.commands.core.admins.OeSettingsCommand": "fr.elias.oessentials.configuration.internal.config.OeSettingsCommand",
   "fr.elias.oessentials.commands.core.admins.OeTimeCommand": "fr.elias.oessentials.commands.internal.commands.core.admins.OeTimeCommand",
