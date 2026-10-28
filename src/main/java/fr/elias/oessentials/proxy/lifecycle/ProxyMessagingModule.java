@@ -8,23 +8,16 @@ import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
 @PluginModule(value = "proxy-messaging", dependencies = {"configuration::services"}, after = {"kits"})
 public final class ProxyMessagingModule extends ManagedModule implements ProxyMessagingServices {
     private ProxyMessenger proxyMessenger;
-    private fr.elias.oessentials.commandcontrol.internal.aliases.AliasService aliasService;
 
     @Override
     protected void start() {
-        cleanup("aliasService", () -> { if (aliasService != null) aliasService.shutdown(); });
         initProxyMessaging();
         registerCommands();
-        providePublicApi(fr.elias.oessentials.api.IAliasesAPI.class, this::getAliasesApi);
     }
 
     @Override public ProxyMessenger getProxyMessenger() { return proxyMessenger; }
-    @Override public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return aliasService; }
 
     private void initProxyMessaging() {
-        this.aliasService = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasService(plugin);
-        this.aliasService.load();
-        this.aliasService.applyRuntimeRegistration();
 
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "bungeecord:main");

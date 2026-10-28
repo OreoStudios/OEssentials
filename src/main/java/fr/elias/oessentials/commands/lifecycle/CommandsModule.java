@@ -121,8 +121,6 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
 
 
         // Commands that have no OreoCommand registration — use registerLegacy.
-        var aliasCmd = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasEditorCommand(services(ProxyMessagingServices.class).getAliasService(), services(InventoriesServices.class).getInvManager());
-        services(ConfigurationServices.class).getCommands().registerLegacy("aliaseditor", aliasCmd, aliasCmd);
 
 
         // Tab-completer overrides for remaining OreoCommands.

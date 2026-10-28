@@ -333,7 +333,7 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.daily.internal.DailyService getDailyService() { return moduleRegistry.read(DailyServices.class, DailyServices::getDailyService); }
 
-    public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return moduleRegistry.read(ProxyMessagingServices.class, ProxyMessagingServices::getAliasService); }
+    public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return moduleRegistry.read(fr.elias.oessentials.commandcontrol.lifecycle.CommandControlServices.class, fr.elias.oessentials.commandcontrol.lifecycle.CommandControlServices::getAliasService); }
 
     public fr.elias.oessentials.jails.internal.jail.JailService getJailService() { return moduleRegistry.read(JailsServices.class, JailsServices::getJailService); }
 
