@@ -639,7 +639,7 @@
   "fr.elias.oessentials.modules.economy.ecocommands.EcoRecoverCommand": "fr.elias.oessentials.economy.internal.ecocommands.EcoRecoverCommand",
   "fr.elias.oessentials.modules.economy.ecocommands.MoneyCommand": "fr.elias.oessentials.economy.internal.ecocommands.MoneyCommand",
   "fr.elias.oessentials.modules.economy.ecocommands.PayCommand": "fr.elias.oessentials.economy.internal.ecocommands.PayCommand",
-  "fr.elias.oessentials.modules.economy.rabbit.namespace.EconomyPacketNamespace": "fr.elias.oessentials.economy.internal.rabbit.namespace.EconomyPacketNamespace",
+  "fr.elias.oessentials.modules.economy.rabbit.namespace.EconomyPacketNamespace": "fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.OreoBotPacketNamespace",
   "fr.elias.oessentials.modules.economy.ecocommands.completion.ChequeTabCompleter": "fr.elias.oessentials.economy.internal.ecocommands.completion.ChequeTabCompleter",
   "fr.elias.oessentials.modules.economy.ecocommands.completion.MoneyTabCompleter": "fr.elias.oessentials.economy.internal.ecocommands.completion.MoneyTabCompleter",
   "fr.elias.oessentials.modules.economy.ecocommands.completion.PayTabCompleter": "fr.elias.oessentials.economy.internal.ecocommands.completion.PayTabCompleter",

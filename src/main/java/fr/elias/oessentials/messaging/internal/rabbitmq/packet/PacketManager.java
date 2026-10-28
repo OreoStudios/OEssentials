@@ -2,6 +2,7 @@ package fr.elias.oessentials.messaging.internal.rabbitmq.packet;
 
 import fr.elias.oessentials.messaging.api.Packet;
 import fr.elias.oessentials.messaging.api.PacketBus;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.messaging.api.PacketChannels;
@@ -28,11 +29,11 @@ public class PacketManager implements IncomingPacketListener, PacketBus {
     private final PacketRegistry packetRegistry;
     private volatile boolean initialized;
 
-    public PacketManager(OEssentials plugin, PacketSender sender) {
+    public PacketManager(OEssentials plugin, PacketSender sender, java.util.Collection<? extends PacketNamespace> namespaces) {
         this.plugin = plugin;
         this.sender = sender;
         this.subscriptions = new ConcurrentHashMap<>();
-        this.packetRegistry = new PacketRegistry();
+        this.packetRegistry = new PacketRegistry(namespaces);
     }
 
     public void init() {

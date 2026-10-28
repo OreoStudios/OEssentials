@@ -80,6 +80,8 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     private fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker homeTpBroker;
     private Map<UUID, BackLocation> pendingBackTeleports = new ConcurrentHashMap<>();
     private final InvlookManager invlookManager = new InvlookManager();
+    private final java.util.List<fr.elias.oessentials.messaging.api.PacketNamespace> namespaces = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final java.util.List<java.util.function.Consumer<PacketManager>> pendingSubscriptions = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     @Override
     protected void start() {
@@ -89,6 +91,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         cleanup("networkCountReceiver", () -> { if (networkCountReceiver != null) networkCountReceiver.stop(); });
         cleanup("pending-back", pendingBackTeleports::clear);
         cleanup("invlookManager", invlookManager::clear);
+        registerNamespaces();
         initInvlook();
         initSafeZoneRelay();
         initRabbitMQ();
@@ -104,6 +107,43 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     @Override public InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
     @Override public TradeCrossServerBroker getTradeBroker() { return tradeBroker; }
     @Override public PacketManager getPacketBus() { return packetManager; }
+
+    @Override
+    public void registerNamespace(fr.elias.oessentials.messaging.api.PacketNamespace namespace) {
+        namespaces.add(namespace);
+        PacketManager live = packetManager;
+        if (live != null) live.getPacketRegistry().register(namespace);
+    }
+
+    @Override
+    public <T extends fr.elias.oessentials.messaging.api.Packet> void subscribe(Class<T> packetClass, fr.elias.oessentials.messaging.api.PacketSubscriber<T> subscriber) {
+        pendingSubscriptions.add(bus -> bus.subscribe(packetClass, subscriber));
+        PacketManager live = packetManager;
+        if (live != null) live.subscribe(packetClass, subscriber);
+    }
+
+    /** Messaging's own packets, and (until each owner registers its own) everyone else's. */
+    private void registerNamespaces() {
+        registerNamespace(new fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.OreoBotPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.messaging.internal.rabbitmq.namespace.RebootPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.messaging.internal.cross.rabbit.namespace.CrossInvPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.messaging.internal.invsee.rabbit.InvseePacketNamespace());
+        registerNamespace(new fr.elias.oessentials.messaging.internal.rabbitmq.namespace.DeathMessagePacketNamespace());
+        registerNamespace(new fr.elias.oessentials.afk.internal.rabbit.namespace.AfkPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomesPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.storage.internal.warps.rabbit.namespace.WarpsPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.storage.internal.spawn.rabbit.namespace.SpawnPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.storage.internal.playerwarp.rabbit.PlayerWarpPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.trade.internal.rabbit.namespace.TradePacketNamespace());
+        registerNamespace(new fr.elias.oessentials.chat.internal.msg.ChatPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.player.internal.rabbit.PlayerPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.rtp.internal.RtpPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.currency.internal.rabbitmq.CurrencyPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.inventory.internal.InventoriesPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.mail.internal.rabbitmq.MailPacketNamespace());
+        registerNamespace(new fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpPacketNamespace());
+    }
     @Override public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTpBroker() { return homeTpBroker; }
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
 
@@ -172,8 +212,9 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
                     return;
                 }
 
-                this.packetManager = new PacketManager(plugin, rabbit);
-                registerAllPacketsDeterministically(this.packetManager);
+                PacketManager bus = new PacketManager(plugin, rabbit, namespaces);
+                pendingSubscriptions.forEach(subscription -> subscription.accept(bus));
+                this.packetManager = bus;
 
                 try {
                     this.networkCountReceiver = new fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver(plugin, uri);
@@ -353,44 +394,5 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
             }
         }
 
-    }
-
-    private void registerAllPacketsDeterministically(PacketManager pm) {
-        pm.registerPacket(fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket.class, fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket::new);
-        pm.registerPacket(fr.elias.oessentials.chat.internal.msg.CrossServerMsgPacket.class, fr.elias.oessentials.chat.internal.msg.CrossServerMsgPacket::new);
-        pm.registerPacket(PlayerJoinPacket.class, PlayerJoinPacket::new);
-        pm.registerPacket(PlayerQuitPacket.class, PlayerQuitPacket::new);
-        pm.registerPacket(fr.elias.oessentials.player.internal.vanish.rabbit.VanishSyncPacket.class, fr.elias.oessentials.player.internal.vanish.rabbit.VanishSyncPacket::new);
-        pm.registerPacket(PlayerWarpTeleportRequestPacket.class, PlayerWarpTeleportRequestPacket::new);
-        pm.registerPacket(fr.elias.oessentials.rtp.internal.RtpTeleportRequestPacket.class, fr.elias.oessentials.rtp.internal.RtpTeleportRequestPacket::new);
-        pm.registerPacket(InvseeOpenRequestPacket.class, InvseeOpenRequestPacket::new);
-        pm.registerPacket(InvseeStatePacket.class, InvseeStatePacket::new);
-        pm.registerPacket(InvseeEditPacket.class, InvseeEditPacket::new);
-        pm.registerPacket(fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.DeathMessagePacket.class, fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.DeathMessagePacket::new);
-        pm.registerPacket(TradeStartPacket.class, TradeStartPacket::new);
-        pm.registerPacket(TradeInvitePacket.class, TradeInvitePacket::new);
-        pm.registerPacket(TradeStatePacket.class, TradeStatePacket::new);
-        pm.registerPacket(TradeConfirmPacket.class, TradeConfirmPacket::new);
-        pm.registerPacket(TradeCancelPacket.class, TradeCancelPacket::new);
-        pm.registerPacket(TradeGrantPacket.class, TradeGrantPacket::new);
-        pm.registerPacket(TradeClosePacket.class, TradeClosePacket::new);
-        pm.registerPacket(TpJumpPacket.class, TpJumpPacket::new);
-        pm.registerPacket(BackTeleportPacket.class, BackTeleportPacket::new);
-        pm.registerPacket(TpaBringPacket.class, TpaBringPacket::new);
-        pm.registerPacket(TpaRequestPacket.class, TpaRequestPacket::new);
-        pm.registerPacket(TpaSummonPacket.class, TpaSummonPacket::new);
-        pm.registerPacket(TpaAcceptPacket.class, TpaAcceptPacket::new);
-        pm.registerPacket(fr.elias.oessentials.currency.internal.rabbitmq.CurrencyTransferPacket.class, fr.elias.oessentials.currency.internal.rabbitmq.CurrencyTransferPacket::new);
-        pm.registerPacket(fr.elias.oessentials.currency.internal.rabbitmq.CurrencyUpdatePacket.class, fr.elias.oessentials.currency.internal.rabbitmq.CurrencyUpdatePacket::new);
-        pm.registerPacket(fr.elias.oessentials.currency.internal.rabbitmq.CurrencySyncPacket.class, fr.elias.oessentials.currency.internal.rabbitmq.CurrencySyncPacket::new);
-        pm.registerPacket(AfkPoolEnterPacket.class, AfkPoolEnterPacket::new);
-        pm.registerPacket(AfkPoolExitPacket.class, AfkPoolExitPacket::new);
-        pm.registerPacket(fr.elias.oessentials.afk.internal.rabbit.packets.AfkStatusPacket.class, fr.elias.oessentials.afk.internal.rabbit.packets.AfkStatusPacket::new);
-        pm.registerPacket(fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq.AuctionSyncPacket.class, fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq.AuctionSyncPacket::new);
-        pm.registerPacket(fr.elias.oessentials.inventory.internal.orders.rabbitmq.OrderSyncPacket.class, fr.elias.oessentials.inventory.internal.orders.rabbitmq.OrderSyncPacket::new);
-        pm.registerPacket(fr.elias.oessentials.portals.internal.rabbit.PortalTeleportPacket.class, fr.elias.oessentials.portals.internal.rabbit.PortalTeleportPacket::new);
-        pm.registerPacket(fr.elias.oessentials.mail.internal.rabbitmq.MailDeliveryPacket.class, fr.elias.oessentials.mail.internal.rabbitmq.MailDeliveryPacket::new);
-        pm.registerPacket(fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpSyncPacket.class, fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpSyncPacket::new);
-        plugin.getLogger().info("[RABBIT] Registered 35 packet types deterministically");
     }
 }

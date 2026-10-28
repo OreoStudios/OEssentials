@@ -1,6 +1,7 @@
 package fr.elias.oessentials.trade.internal.rabbit.namespace;
 
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeCancelPacket;
+import fr.elias.oessentials.trade.internal.rabbit.packet.TradeClosePacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeConfirmPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeGrantPacket;
 import fr.elias.oessentials.trade.internal.rabbit.packet.TradeInvitePacket;
@@ -20,6 +21,8 @@ public final class TradePacketNamespace extends PacketNamespace {
     public static final int TRADE_CONFIRM_ID  = 27003;
     public static final int TRADE_CANCEL_ID   = 27004;
     public static final int TRADE_GRANT_ID    = 27005;
+    /** Numbered by startup registration order before it joined this namespace. */
+    public static final int TRADE_CLOSE_ID    = 27014;
 
     public TradePacketNamespace() {
         super(NS_ID);
@@ -34,5 +37,6 @@ public final class TradePacketNamespace extends PacketNamespace {
         registerPacket(TRADE_CONFIRM_ID, TradeConfirmPacket.class, TradeConfirmPacket::new);
         registerPacket(TRADE_CANCEL_ID,  TradeCancelPacket.class,  TradeCancelPacket::new);
         registerPacket(TRADE_GRANT_ID,   TradeGrantPacket.class,   TradeGrantPacket::new);
+        registerPacket(TRADE_CLOSE_ID,   TradeClosePacket.class,   TradeClosePacket::new);
     }
 }

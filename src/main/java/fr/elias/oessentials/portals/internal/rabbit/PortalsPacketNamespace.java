@@ -2,16 +2,17 @@ package fr.elias.oessentials.portals.internal.rabbit;
 
 import fr.elias.oessentials.messaging.api.PacketNamespace;
 
+/**
+ * Packet ids are on the wire. These were numbered by registration order at startup until
+ * they got fixed ids; keep them unchanged.
+ */
 public final class PortalsPacketNamespace extends PacketNamespace {
-
-    public static final int PORTAL_TELEPORT_ID = 3001;
-
     public PortalsPacketNamespace() {
-        super((short) 30);
+        super((short) 37);
     }
 
     @Override
     protected void registerPackets() {
-        registerPacket(PORTAL_TELEPORT_ID, PortalTeleportPacket.class, PortalTeleportPacket::new);
+        registerPacket(27026, PortalTeleportPacket.class, PortalTeleportPacket::new);
     }
 }

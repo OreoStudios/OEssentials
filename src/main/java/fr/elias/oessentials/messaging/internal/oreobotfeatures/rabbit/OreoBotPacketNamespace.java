@@ -1,4 +1,4 @@
-package fr.elias.oessentials.economy.internal.rabbit.namespace;
+package fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit;
 
 
 import fr.elias.oessentials.messaging.api.PacketNamespace;
@@ -6,9 +6,9 @@ import fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.packets.Pl
 import fr.elias.oessentials.messaging.internal.oreobotfeatures.rabbit.packets.PlayerQuitPacket;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket;
 
-public class EconomyPacketNamespace extends PacketNamespace {
+public class OreoBotPacketNamespace extends PacketNamespace {
 
-    public EconomyPacketNamespace() {
+    public OreoBotPacketNamespace() {
         super((short) 1);
     }
 
