@@ -2,16 +2,19 @@ package fr.elias.oessentials.webpanel.internal;
 
 import com.google.gson.JsonParser;
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
 import fr.elias.oessentials.maintenance.internal.MaintenanceConfig;
 import fr.elias.oessentials.maintenance.internal.MaintenanceService;
+import fr.elias.oessentials.platform.modularity.OreoModuleRegistry;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,11 +31,10 @@ class WebPanelConfigPatchTest {
         when(plugin.getLogger()).thenReturn(Logger.getAnonymousLogger());
         YamlConfiguration config = new YamlConfiguration();
         when(plugin.getConfig()).thenReturn(config);
-        SettingsConfig settings = mock(SettingsConfig.class);
-        YamlConfiguration raw = new YamlConfiguration();
-        raw.set("chat.banned-words.enabled", false);
-        when(settings.raw()).thenReturn(raw);
-        when(plugin.getSettingsConfig()).thenReturn(settings);
+        ConfigurationServices configuration = mock(ConfigurationServices.class);
+        OreoModuleRegistry registry = new OreoModuleRegistry();
+        registry.bind(ConfigurationServices.class, configuration);
+        when(plugin.getModuleRegistry()).thenReturn(registry);
         AutoRebootService reboot = mock(AutoRebootService.class);
         when(plugin.getAutoRebootService()).thenReturn(reboot);
         MaintenanceConfig maintenance = new MaintenanceConfig(plugin);
@@ -64,10 +66,17 @@ class WebPanelConfigPatchTest {
         assertEquals("New MOTD", maintenance.getMotdLine1());
         assertEquals(java.util.List.of("Alice"), maintenance.getWhitelist());
         assertEquals("keep-me", maintenance.getTimerFormat());
-        assertFalse(raw.contains("maintenance.enabled"));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> settings = ArgumentCaptor.forClass(Map.class);
+        verify(configuration).updateSettings(settings.capture());
+        var written = settings.getValue();
+        assertEquals(java.util.Set.of(
+                "performance.join-flood-protection.login-rate-limit.max-logins-per-window",
+                "features.chat.banned-words.enabled",
+                "auto-reboot.enabled"), written.keySet());
+        assertEquals(35, ((Number) written.get("performance.join-flood-protection.login-rate-limit.max-logins-per-window")).intValue());
+        assertEquals(true, written.get("features.chat.banned-words.enabled"));
         assertFalse(config.contains("maintenance.enabled"));
-        assertEquals(35, raw.getInt("performance.join-flood-protection.login-rate-limit.max-logins-per-window"));
-        assertTrue(raw.getBoolean("chat.banned-words.enabled"));
         assertEquals(5000000000L, config.getLong("economy.max-balance"));
         verify(service).reload();
         verify(reboot).reload();

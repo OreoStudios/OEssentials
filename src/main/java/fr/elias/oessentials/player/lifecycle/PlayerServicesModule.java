@@ -43,11 +43,11 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
     private void initCoreServices() {
         this.backService      = new BackService(services(StorageServices.class).getStorage());
         this.messageService   = new MessageService();
-        this.teleportService  = new TeleportService(plugin, backService, services(ConfigurationServices.class).getConfigService());
+        this.teleportService  = new TeleportService(plugin, backService, services(ConfigurationServices.class).getServerConfig());
         this.deathBackService = new DeathBackService();
         this.godService       = new GodService();
 
-        boolean vanishCrossServer = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "vanish", true);
+        boolean vanishCrossServer = services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "vanish", true);
         fr.elias.oessentials.player.internal.services.vanish.VanishStateStorage vanishStorage =
                 new fr.elias.oessentials.player.internal.services.vanish.YamlVanishStateStorage(plugin);
 
@@ -60,7 +60,7 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
             plugin.getLogger().info("[VANISH] Using local YAML storage for persistent state.");
         }
 
-        VanishService vanishService = new VanishService(plugin, vanishStorage, vanishCrossServer, services(ConfigurationServices.class).getConfigService().serverName());
+        VanishService vanishService = new VanishService(plugin, vanishStorage, vanishCrossServer, services(ConfigurationServices.class).getServerConfig().serverName());
         plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.player.internal.listeners.VanishListener(vanishService, plugin), plugin);
         plugin.getServer().getPluginManager().registerEvents(new PlayerTrackingListener(backService), plugin);
         plugin.getServer().getPluginManager().registerEvents(new DeathBackListener(deathBackService), plugin);

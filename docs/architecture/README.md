@@ -142,10 +142,38 @@ files.
 | --- | --- | --- | --- |
 | Baseline (MinecraftModulith 0.5.1) | 0 / 56 | 1,548 | All are `internal` references across 219 consumer → provider pairs |
 | 1. Modules nothing depends on | 6 / 56 | 1,548 | `discord-integration`, `events`, `help`, `motd`, `mute-system`, `rules` had no inbound references |
+| 2a. Configuration settings contract | 6 / 56 | 1,408 | `configuration` 177 → 37; see below |
 
-The largest providers are `messaging` (366), `storage` (188), `configuration` (177) and
-`player-services` (108). Their public contracts should be designed before their consumers
-are migrated.
+The largest providers are `messaging` (366), `storage` (188) and `player-services` (108).
+Their public contracts should be designed before their consumers are migrated.
+
+### Configuration contract
+
+`fr.elias.oessentials.configuration.api` holds what other modules may read:
+
+| Type | Source | Replaces |
+| --- | --- | --- |
+| `FeatureSettings` | `config/settings.yml` feature switches and options | `SettingsConfig` |
+| `PerformanceGuardSettings` | the `performance.*` section of `settings.yml` | `SettingsConfig` |
+| `ServerConfig` | server name, debug flag, storage and homes keys of `config.yml` | `ConfigService` |
+| `CrossServerFeatures` | `features.cross-server.*` | `CrossServerSettings` |
+
+`ConfigurationServices` returns these types and owns writes: `reloadSettings()` reloads
+`settings.yml` and the cross-server switches, `updateSettings(Map)` writes keys (keeping the
+legacy `chat.banned-words` section in sync), saves and reloads. Inside a module, use
+`OEssentials.getFeatureSettings()`, `getPerformanceGuardSettings()`, `getServerConfig()` and
+`getCrossServerFeatures()`. The released getters (`getSettingsConfig()`, `getSettings()`,
+`getConfigService()`, `getCrossServerSettings()`) still return the same objects for other plugins.
+
+`ModuleBoundaryRolloutTest.featureApiPackagesOnlyPublishContracts` fails if a type in any
+feature's `api` package is not `@ModuleApi` or its methods expose that feature's implementation.
+
+The remaining 37 `configuration` references are features that live in `configuration` but
+are not configuration: freeze state, tempfly, auto-reboot, the killall log, invlook and the
+CMI/EssentialsX/zEssentials importers. Several of them depend on `messaging`, `storage` and
+`economy` internals, so `configuration` (the first module to start) hides dependencies on
+modules that start after it. They move to the module that owns them before `configuration`
+is protected.
 
 ## Compatibility and diagnostics
 

@@ -17,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayOutputStream;
@@ -68,7 +67,7 @@ public class WarpsAdminCommand implements OreoCommand {
         final OEssentials plugin = OEssentials.get();
         final String key = warpName.trim().toLowerCase(Locale.ROOT);
 
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
         final WarpDirectory dir = plugin.getWarpDirectory();
         String targetServer = (dir != null ? dir.getWarpServer(key) : localServer);
         if (targetServer == null || targetServer.isBlank()) targetServer = localServer;
@@ -107,7 +106,7 @@ public class WarpsAdminCommand implements OreoCommand {
                 if (p.hasPermission("oreo.warp.bypasscooldown")) {
                     doTeleport.run();
                 } else {
-                    FileConfiguration settings = plugin.getSettingsConfig().getRoot();
+                    ConfigurationSection settings = plugin.getFeatureSettings().getRoot();
                     ConfigurationSection warpSection = settings.getConfigurationSection("features.warp");
                     boolean useCooldown = warpSection != null && warpSection.getBoolean("cooldown", false);
                     int seconds = (warpSection != null ? warpSection.getInt("cooldown-amount", 0) : 0);
@@ -121,7 +120,7 @@ public class WarpsAdminCommand implements OreoCommand {
             return true;
         }
 
-        var cs = plugin.getCrossServerSettings();
+        var cs = plugin.getCrossServerFeatures();
         if (!cs.warps()) {
             Lang.send(p, "warp.cross-disabled",
                     "<red>Cross-server warps are disabled by server config.</red>");

@@ -302,13 +302,13 @@ public class InvSeeMenu implements InventoryProvider {
     }
 
     private static void debugInfo(OEssentials plugin, String message) {
-        if (plugin.getConfigService().isDebugEnabled()) {
+        if (plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().info(message);
         }
     }
 
     private static void debugWarn(OEssentials plugin, String message) {
-        if (plugin.getConfigService().isDebugEnabled()) {
+        if (plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().warning(message);
         }
     }

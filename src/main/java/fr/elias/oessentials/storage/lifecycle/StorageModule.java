@@ -70,9 +70,9 @@ public final class StorageModule extends ManagedModule implements StorageService
         this.playerWarpsConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(pwCfgFile);
 
         final String essentialsStorage = plugin.getConfig().getString("essentials.storage", "yaml").toLowerCase();
-        var pwRoot = services(ConfigurationServices.class).getSettingsConfig().getRoot().getConfigurationSection("features.playerwarps");
+        var pwRoot = services(ConfigurationServices.class).getFeatureSettings().getRoot().getConfigurationSection("features.playerwarps");
         if (pwRoot == null) {
-            pwRoot = services(ConfigurationServices.class).getSettingsConfig().getRoot().getConfigurationSection("playerwarps");
+            pwRoot = services(ConfigurationServices.class).getFeatureSettings().getRoot().getConfigurationSection("playerwarps");
         }
         boolean pwEnabled = (pwRoot == null) || pwRoot.getBoolean("enabled", true);
         boolean pwCross   = (pwRoot == null) || pwRoot.getBoolean("cross-server", true);
@@ -86,23 +86,23 @@ public final class StorageModule extends ManagedModule implements StorageService
                 this.homesMongoClient = com.mongodb.client.MongoClients.create(uri);
 
                 this.playerDirectory = new fr.elias.oessentials.storage.internal.directory.PlayerDirectory(this.homesMongoClient, dbName, prefix);
-                var dirListener = new fr.elias.oessentials.storage.internal.directory.DirectoryPresenceListener(this.playerDirectory, services(ConfigurationServices.class).getConfigService().serverName());
+                var dirListener = new fr.elias.oessentials.storage.internal.directory.DirectoryPresenceListener(this.playerDirectory, services(ConfigurationServices.class).getServerConfig().serverName());
                 plugin.getServer().getPluginManager().registerEvents(dirListener, plugin);
                 dirListener.backfillOnline();
                 try {
-                    new fr.elias.oessentials.storage.internal.directory.DirectoryHeartbeat(this.playerDirectory, services(ConfigurationServices.class).getConfigService().serverName()).start();
+                    new fr.elias.oessentials.storage.internal.directory.DirectoryHeartbeat(this.playerDirectory, services(ConfigurationServices.class).getServerConfig().serverName()).start();
                     plugin.getLogger().info("[PlayerDirectory] Heartbeat started.");
                 } catch (Throwable t) {
                     plugin.getLogger().warning("[PlayerDirectory] Heartbeat failed to start: " + t.getMessage());
                 }
 
                 try {
-                    MongoHomesMigrator.run(this.homesMongoClient, dbName, prefix, org.bukkit.Bukkit.getServer().getName(), services(ConfigurationServices.class).getConfigService().serverName(), plugin.getLogger());
+                    MongoHomesMigrator.run(this.homesMongoClient, dbName, prefix, org.bukkit.Bukkit.getServer().getName(), services(ConfigurationServices.class).getServerConfig().serverName(), plugin.getLogger());
                 } catch (Throwable ignored) {
                     plugin.getLogger().info("[STORAGE] MongoHomesMigrator skipped.");
                 }
 
-                this.storage       = new MongoHomesStorage(this.homesMongoClient, dbName, prefix, services(ConfigurationServices.class).getConfigService().serverName());
+                this.storage       = new MongoHomesStorage(this.homesMongoClient, dbName, prefix, services(ConfigurationServices.class).getServerConfig().serverName());
                 this.homeDirectory = new MongoHomeDirectory(this.homesMongoClient, dbName, prefix + "home_directory");
 
                 try { this.warpDirectory  = new MongoWarpDirectory(this.homesMongoClient, dbName, prefix + "warp_directory"); }
@@ -159,9 +159,9 @@ public final class StorageModule extends ManagedModule implements StorageService
             }
         }
 
-        this.spawnService = new SpawnService(storage, services(ConfigurationServices.class).getConfigService().serverName());
+        this.spawnService = new SpawnService(storage, services(ConfigurationServices.class).getServerConfig().serverName());
         this.warpService  = new WarpService(storage, this.warpDirectory);
-        this.homeService  = new HomeService(this.storage, services(ConfigurationServices.class).getConfigService(), this.homeDirectory);
+        this.homeService  = new HomeService(this.storage, services(ConfigurationServices.class).getServerConfig(), this.homeDirectory);
     }
 
     public void reloadPlayerWarpsConfig() {

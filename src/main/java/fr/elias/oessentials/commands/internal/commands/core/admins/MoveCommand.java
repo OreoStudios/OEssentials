@@ -51,7 +51,7 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
         }
 
         OEssentials plugin = OEssentials.get();
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
         PlayerDirectory dir = plugin.getPlayerDirectory();
 
         // 1) try both local
@@ -161,7 +161,7 @@ public class MoveCommand implements OreoCommand, org.bukkit.command.TabCompleter
         }
 
         OEssentials plugin = OEssentials.get();
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         // 1) local online
         Player localTarget = resolveOnline(arg);

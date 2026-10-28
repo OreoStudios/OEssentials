@@ -13,7 +13,7 @@ public final class HelpModule extends ManagedModule implements HelpServices {
     }
 
     private void initHelp() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().helpEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().helpEnabled()) {
             plugin.getLogger().info("[Help] Disabled by settings.yml.");
             return;
         }

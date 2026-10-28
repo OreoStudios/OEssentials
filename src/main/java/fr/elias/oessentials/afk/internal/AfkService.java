@@ -67,7 +67,7 @@ public class AfkService implements Listener {
         this.orePlugin  = (plugin instanceof OEssentials ore) ? ore : null;
         this.afkConfig  = new AfkConfig(plugin);
         this.logger     = plugin.getLogger();
-        this.localServer = (orePlugin != null) ? orePlugin.getConfigService().serverName() : Bukkit.getServer().getName();
+        this.localServer = (orePlugin != null) ? orePlugin.getServerConfig().serverName() : Bukkit.getServer().getName();
 
         reloadAutoConfig();
         Bukkit.getPluginManager().registerEvents(this, plugin);

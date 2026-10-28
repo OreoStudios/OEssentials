@@ -177,7 +177,7 @@ public class ChatSyncManager {
         if (!enabled) return;
         String serverName;
         try {
-            serverName = OEssentials.get().getConfigService().serverName();
+            serverName = OEssentials.get().getServerConfig().serverName();
         } catch (Throwable t) {
             serverName = Bukkit.getServer().getName();
         }
@@ -363,7 +363,7 @@ public class ChatSyncManager {
 
                 if (channel != null && channel.isEnabled()) {
                     if (channel.getScope() == ChatChannel.ChannelScope.SERVER) {
-                        String localServer = OEssentials.get().getConfigService().serverName();
+                        String localServer = OEssentials.get().getServerConfig().serverName();
                         if (!serverName.equalsIgnoreCase(localServer)) return;
                     }
 
@@ -442,7 +442,7 @@ public class ChatSyncManager {
             }
 
             if (channel.getScope() == ChatChannel.ChannelScope.SERVER) {
-                String localServer = OEssentials.get().getConfigService().serverName();
+                String localServer = OEssentials.get().getServerConfig().serverName();
                 if (!serverName.equalsIgnoreCase(localServer)) {
                     return;
                 }

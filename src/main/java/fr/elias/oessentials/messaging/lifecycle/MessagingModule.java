@@ -97,7 +97,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
     @Override public Map<UUID, BackLocation> getPendingBackTeleports() { return pendingBackTeleports; }
 
     private void initRabbitMQ() {
-        final boolean invSyncEnabled = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "invsee", true);
+        final boolean invSyncEnabled = services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "invsee", true);
 
         if (!services(ConfigurationServices.class).getRabbitEnabled()) {
             plugin.getLogger().info("[RABBIT] Disabled.");
@@ -116,11 +116,11 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         plugin.getLogger().info("[RABBIT] Connecting async (non-blocking)...");
 
         final String uri        = plugin.getConfig().getString("rabbitmq.uri");
-        final String serverName = services(ConfigurationServices.class).getConfigService().serverName();
+        final String serverName = services(ConfigurationServices.class).getServerConfig().serverName();
 
         fr.elias.oessentials.platform.scheduling.OreScheduler.runAsync(plugin, () -> {
             if (!isActive()) return;
-            RabbitMQSender rabbit = new RabbitMQSender(uri, serverName, services(ConfigurationServices.class).getConfigService()::isDebugEnabled);
+            RabbitMQSender rabbit = new RabbitMQSender(uri, serverName, services(ConfigurationServices.class).getServerConfig()::isDebugEnabled);
             connectingSender = rabbit;
             if (!isActive()) { rabbit.close(); return; }
             boolean connected = rabbit.connect();
@@ -149,7 +149,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
 
                 if (invSyncEnabled) {
                     try {
-                        this.invseeBroker  = new InvseeCrossServerBroker(plugin, this.packetManager, services(ConfigurationServices.class).getConfigService().serverName(), null);
+                        this.invseeBroker  = new InvseeCrossServerBroker(plugin, this.packetManager, services(ConfigurationServices.class).getServerConfig().serverName(), null);
                         this.invseeService = new InvseeService(plugin, this.invseeBroker);
                         this.invseeBroker.setService(this.invseeService);
                         plugin.getLogger().info("[INVSEE] Cross-server enabled.");
@@ -163,8 +163,8 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
                 }
 
                 this.packetManager.subscribeChannel(PacketChannels.GLOBAL);
-                this.packetManager.subscribeChannel(fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(services(ConfigurationServices.class).getConfigService().serverName()));
-                plugin.getLogger().info("[RABBIT] Subscribed channels: global + individual(" + services(ConfigurationServices.class).getConfigService().serverName() + ")");
+                this.packetManager.subscribeChannel(fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(services(ConfigurationServices.class).getServerConfig().serverName()));
+                plugin.getLogger().info("[RABBIT] Subscribed channels: global + individual(" + services(ConfigurationServices.class).getServerConfig().serverName() + ")");
 
                 if (this.invseeBroker != null) {
                     this.packetManager.subscribe(InvseeOpenRequestPacket.class, (channel, pkt) -> this.invseeBroker.handleOpenRequest(pkt));
@@ -247,15 +247,15 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
 
     private void initBrokers() {
         if (packetManager != null && packetManager.isInitialized()) {
-            this.modBridge = new ModBridge(plugin, packetManager, services(ConfigurationServices.class).getConfigService().serverName());
+            this.modBridge = new ModBridge(plugin, packetManager, services(ConfigurationServices.class).getServerConfig().serverName());
             plugin.getLogger().info("[MOD-BRIDGE] Cross-server moderation bridge ready.");
         } else {
             this.modBridge = null;
             plugin.getLogger().info("[MOD-BRIDGE] Disabled (PacketManager unavailable).");
         }
 
-        if (packetManager != null && packetManager.isInitialized() && services(TradeServices.class).getTradeService() != null && services(ConfigurationServices.class).getSettingsConfig().tradeCrossServerEnabled()) {
-            this.tradeBroker = new TradeCrossServerBroker(plugin, packetManager, services(ConfigurationServices.class).getConfigService().serverName(), services(TradeServices.class).getTradeService());
+        if (packetManager != null && packetManager.isInitialized() && services(TradeServices.class).getTradeService() != null && services(ConfigurationServices.class).getFeatureSettings().tradeCrossServerEnabled()) {
+            this.tradeBroker = new TradeCrossServerBroker(plugin, packetManager, services(ConfigurationServices.class).getServerConfig().serverName(), services(TradeServices.class).getTradeService());
             plugin.getLogger().info("[TRADE] Cross-server trade broker ready.");
         } else {
             this.tradeBroker = null;
@@ -263,9 +263,9 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         }
 
         if (packetManager != null && packetManager.isInitialized()) {
-            final var cs = plugin.getCrossServerSettings();
+            final var cs = plugin.getCrossServerFeatures();
             if (cs.spawn() || cs.warps()) {
-                new CrossServerTeleportBroker(plugin, services(StorageServices.class).getSpawnService(), services(StorageServices.class).getWarpService(), packetManager, services(ConfigurationServices.class).getConfigService().serverName());
+                new CrossServerTeleportBroker(plugin, services(StorageServices.class).getSpawnService(), services(StorageServices.class).getWarpService(), packetManager, services(ConfigurationServices.class).getServerConfig().serverName());
                 plugin.getLogger().info("[BROKER] CrossServerTeleportBroker ready.");
             }
             if (cs.homes()) {
@@ -273,10 +273,10 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
                 plugin.getLogger().info("[BROKER] HomeTeleportBroker ready.");
             }
 
-            this.tpaBroker = new TpaCrossServerBroker(plugin, services(PlayerServices.class).getTeleportService(), this.packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getConfigService().serverName());
+            this.tpaBroker = new TpaCrossServerBroker(plugin, services(PlayerServices.class).getTeleportService(), this.packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getServerConfig().serverName());
             plugin.getLogger().info("[BROKER] TPA cross-server broker ready.");
 
-            this.tpBroker = new TpCrossServerBroker(plugin, services(PlayerServices.class).getTeleportService(), this.packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getConfigService().serverName());
+            this.tpBroker = new TpCrossServerBroker(plugin, services(PlayerServices.class).getTeleportService(), this.packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getServerConfig().serverName());
             plugin.getLogger().info("[BROKER] TP cross-server broker ready.");
         } else {
             this.tpaBroker = null;
@@ -305,7 +305,7 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
 
         if (packetManager != null && packetManager.isInitialized() && services(StorageServices.class).getPlayerWarpService() != null && services(ProxyMessagingServices.class).getProxyMessenger() != null) {
             try {
-                new fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpCrossServerBroker(plugin, services(StorageServices.class).getPlayerWarpService(), packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getConfigService().serverName());
+                new fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpCrossServerBroker(plugin, services(StorageServices.class).getPlayerWarpService(), packetManager, services(ProxyMessagingServices.class).getProxyMessenger(), services(ConfigurationServices.class).getServerConfig().serverName());
                 plugin.getLogger().info("[BROKER] PlayerWarpCrossServerBroker enabled.");
             } catch (Throwable t) {
                 plugin.getLogger().warning("[BROKER] Failed to init PlayerWarpCrossServerBroker: " + t.getMessage());

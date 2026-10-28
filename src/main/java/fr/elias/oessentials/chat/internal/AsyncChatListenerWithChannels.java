@@ -102,7 +102,7 @@ public class AsyncChatListenerWithChannels implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onLegacyChat(AsyncPlayerChatEvent event) {
-        if (!plugin.getSettingsConfig().chatEnabled()) return;
+        if (!plugin.getFeatureSettings().chatEnabled()) return;
         event.setCancelled(true);
         event.getRecipients().clear();
     }
@@ -158,7 +158,7 @@ public class AsyncChatListenerWithChannels implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onChat(AsyncChatEvent event) {
         // Chat module disabled — leave the event alone so CHC (or other chat plugins) can handle it
-        if (!plugin.getSettingsConfig().chatEnabled()) return;
+        if (!plugin.getFeatureSettings().chatEnabled()) return;
 
         // OreoFactions signals it handled a faction channel by cancelling the event AND clearing
         // viewers. If both are true, skip — faction chat already delivered the message.

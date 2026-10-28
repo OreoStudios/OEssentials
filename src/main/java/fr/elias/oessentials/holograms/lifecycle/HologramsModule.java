@@ -18,7 +18,7 @@ public final class HologramsModule extends ManagedModule implements HologramsSer
     @Override public fr.elias.oessentials.holograms.internal.OHolograms getEmbeddedOHolograms() { return embeddedOHolograms; }
 
     private void initHolograms() {
-        if (services(ConfigurationServices.class).getSettingsConfig().oreoHologramsEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().oreoHologramsEnabled()) {
             try {
                 try {
                     Class.forName("org.bukkit.entity.Display");

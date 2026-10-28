@@ -18,8 +18,8 @@ public final class KitsModule extends ManagedModule implements KitsServices {
     @Override public fr.elias.oessentials.kits.internal.KitsManager getKitsManager() { return kitsManager; }
 
     private void initKits() {
-        boolean kitsFeature  = services(ConfigurationServices.class).getSettingsConfig().kitsEnabled();
-        boolean kitsRegister = services(ConfigurationServices.class).getSettingsConfig().kitsCommandsEnabled();
+        boolean kitsFeature  = services(ConfigurationServices.class).getFeatureSettings().kitsEnabled();
+        boolean kitsRegister = services(ConfigurationServices.class).getFeatureSettings().kitsCommandsEnabled();
 
         if (kitsFeature) {
             this.kitsManager = new fr.elias.oessentials.kits.internal.KitsManager(plugin);

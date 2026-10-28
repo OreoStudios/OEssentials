@@ -37,7 +37,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public PlaceholderAPIHook(OEssentials plugin) {
         this.plugin = plugin;
         this.debug = plugin.getConfig().getBoolean("placeholder-debug", false);
-        this.thisServerName = plugin.getConfigService().serverName();
+        this.thisServerName = plugin.getServerConfig().serverName();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
         if (id.equals("server_name")) {
             try {
-                return plugin.getConfigService().serverName();
+                return plugin.getServerConfig().serverName();
             } catch (Throwable t) {
                 return Bukkit.getServer().getName();
             }

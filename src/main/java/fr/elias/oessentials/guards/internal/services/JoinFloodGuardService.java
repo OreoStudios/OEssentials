@@ -1,7 +1,7 @@
 package fr.elias.oessentials.guards.internal.services;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.PerformanceGuardSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
@@ -144,8 +144,8 @@ public final class JoinFloodGuardService implements Listener {
         uiReadyAtMs.remove(event.getPlayer().getUniqueId());
     }
 
-    private SettingsConfig settings() {
-        return plugin.getSettingsConfig();
+    private PerformanceGuardSettings settings() {
+        return plugin.getPerformanceGuardSettings();
     }
 
     private static void prune(Deque<Long> deque, long now, long windowMs) {

@@ -90,13 +90,13 @@ public class RtpCommand implements OreoCommand {
             return true;
         }
 
-        String localServer  = plugin.getConfigService().serverName();
+        String localServer  = plugin.getServerConfig().serverName();
         String targetServer = cfg.serverForWorld(targetWorldName); // may be null
 
         boolean crossEnabled = cfg.isCrossServerEnabled();
         boolean sameServer   = (targetServer == null) || targetServer.equalsIgnoreCase(localServer);
 
-        var settings = plugin.getSettingsConfig();
+        var settings = plugin.getFeatureSettings();
         final boolean useWarmup = settings.rtpWarmupEnabled();
         final int seconds = settings.rtpWarmupSeconds();
 

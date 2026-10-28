@@ -108,7 +108,7 @@ public class HomesGuiCommand implements OreoCommand {
             return true;
         }
 
-        var cs = OEssentials.get().getCrossServerSettings();
+        var cs = OEssentials.get().getCrossServerFeatures();
         if (!cs.homes()) {
             Lang.send(p, "homes.gui.cross-disabled",
                     "<red>Cross-server homes are disabled by server config.</red>");

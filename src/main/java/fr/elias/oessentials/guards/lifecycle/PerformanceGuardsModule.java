@@ -23,8 +23,8 @@ public final class PerformanceGuardsModule extends ManagedModule implements Perf
         plugin.getServer().getPluginManager().registerEvents(new ContainerSpamGuardListener(plugin), plugin);
 
         plugin.getLogger().info("[Performance] Join flood protection "
-                + (services(ConfigurationServices.class).getSettingsConfig().joinFloodProtectionEnabled() ? "enabled." : "disabled."));
+                + (services(ConfigurationServices.class).getPerformanceGuardSettings().joinFloodProtectionEnabled() ? "enabled." : "disabled."));
         plugin.getLogger().info("[Performance] Container spam guard "
-                + (services(ConfigurationServices.class).getSettingsConfig().containerSpamGuardEnabled() ? "enabled." : "disabled."));
+                + (services(ConfigurationServices.class).getPerformanceGuardSettings().containerSpamGuardEnabled() ? "enabled." : "disabled."));
     }
 }

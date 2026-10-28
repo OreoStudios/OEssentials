@@ -19,7 +19,7 @@ package fr.elias.oessentials.player.internal.back.listeners;
 
         public BackListener(BackService backService, OEssentials plugin) {
             this.backService = backService;
-            this.serverName = plugin.getConfigService().serverName();
+            this.serverName = plugin.getServerConfig().serverName();
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

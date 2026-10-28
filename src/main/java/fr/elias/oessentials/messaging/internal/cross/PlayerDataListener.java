@@ -43,6 +43,6 @@ public class PlayerDataListener implements Listener {
     }
 
     private boolean isDebugEnabled() {
-        return plugin.getConfigService().isDebugEnabled();
+        return plugin.getServerConfig().isDebugEnabled();
     }
 }

@@ -1,5 +1,6 @@
 flowchart TD
     afk["afk"]
+    afk -->|services| configuration
     afk --> proxy_messaging
     boss_bar["boss-bar"]
     boss_bar -->|services| configuration
@@ -47,6 +48,7 @@ flowchart TD
     daily -->|services| configuration
     daily --> freeze
     dialogs["dialogs"]
+    dialogs -->|services| configuration
     dialogs --> player_services
     discord_integration["discord-integration"]
     discord_integration -->|services| configuration
@@ -122,6 +124,7 @@ flowchart TD
     mobs -->|services| configuration
     mobs --> discord_integration
     mod_gui["mod-gui"]
+    mod_gui -->|services| configuration
     mod_gui --> inventories
     motd["motd"]
     motd -->|services| configuration
@@ -140,6 +143,7 @@ flowchart TD
     player_services --> inventory_sync
     player_services -->|services| storage
     player_vaults["player-vaults"]
+    player_vaults -->|services| configuration
     player_vaults --> jump_pads
     playtime["playtime"]
     playtime -->|services| configuration

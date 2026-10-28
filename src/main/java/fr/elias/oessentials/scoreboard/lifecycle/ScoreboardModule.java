@@ -21,7 +21,7 @@ public final class ScoreboardModule extends ManagedModule implements ScoreboardS
     @Override public ScoreboardService getScoreboardService() { return scoreboardService; }
 
     private void initScoreboard() {
-        if (services(ConfigurationServices.class).getSettingsConfig().scoreboardEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "scoreboard")) {
+        if (services(ConfigurationServices.class).getFeatureSettings().scoreboardEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "scoreboard")) {
             ScoreboardConfig sbCfg = ScoreboardConfig.load(plugin);
             this.scoreboardService = new ScoreboardService(plugin, sbCfg);
             this.scoreboardService.start();

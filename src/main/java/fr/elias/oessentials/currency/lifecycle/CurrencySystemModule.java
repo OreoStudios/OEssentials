@@ -40,7 +40,7 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
     // -------------------------------------------------------------------------
 
     private void initCurrencySystem() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().currencyEnabled()) { plugin.getLogger().info("[Currency] Disabled by settings.yml"); return; }
+        if (!services(ConfigurationServices.class).getFeatureSettings().currencyEnabled()) { plugin.getLogger().info("[Currency] Disabled by settings.yml"); return; }
         try {
             this.currencyConfig = new CurrencyConfig(plugin);
             final CurrencyStorage currencyStorage;

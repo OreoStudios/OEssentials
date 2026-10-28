@@ -25,7 +25,7 @@ public final class DeathRespawnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        ConfigurationSection root = plugin.getSettingsConfig().getRoot();
+        ConfigurationSection root = plugin.getFeatureSettings().getRoot();
         if (root == null) return;
 
         ConfigurationSection sec = root.getConfigurationSection("features.death-respawn");

@@ -281,7 +281,7 @@ public final class ScoreboardService implements Listener {
             p.setScoreboard(board);
             renderStates.put(p.getUniqueId(), state);
             shown.add(p.getUniqueId());
-            if (plugin.getConfigService().isDebugEnabled()) {
+            if (plugin.getServerConfig().isDebugEnabled()) {
                 plugin.getLogger().info("[Scoreboard] Shown for " + p.getName());
             }
         } catch (Throwable t) {

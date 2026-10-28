@@ -18,7 +18,7 @@ public final class MobsModule extends ManagedModule implements MobsServices {
     @Override public fr.elias.oessentials.mobs.internal.HealthBarListener getHealthBarListener() { return healthBarListener; }
 
     private void initMobs() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().mobsEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().mobsEnabled()) {
             plugin.getLogger().info("[MOBS] Disabled by settings.yml.");
             return;
         }
@@ -32,7 +32,7 @@ public final class MobsModule extends ManagedModule implements MobsServices {
                 }
             } catch (Throwable ignored) {}
 
-            if (services(ConfigurationServices.class).getSettingsConfig().mobsHealthbarEnabled()) {
+            if (services(ConfigurationServices.class).getFeatureSettings().mobsHealthbarEnabled()) {
                 try {
                     var hbl = new fr.elias.oessentials.mobs.internal.HealthBarListener(plugin, xmasHook);
                     this.healthBarListener = hbl;

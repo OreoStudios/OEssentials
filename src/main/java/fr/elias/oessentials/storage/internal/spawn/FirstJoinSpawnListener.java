@@ -20,7 +20,7 @@ public final class FirstJoinSpawnListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFirstJoin(PlayerJoinEvent event) {
-        ConfigurationSection sec = plugin.getSettingsConfig().getRoot()
+        ConfigurationSection sec = plugin.getFeatureSettings().getRoot()
                 .getConfigurationSection("features.first-join-spawn");
         if (sec == null || !sec.getBoolean("enabled", false)) return;
 

@@ -84,7 +84,7 @@ public class JumpPadsManager {
 
         // Read config (with sane defaults)
         FileConfiguration c = plugin.getConfig();
-        this.enabled = plugin.getSettings().jumpPadsEnabled();
+        this.enabled = plugin.getFeatureSettings().jumpPadsEnabled();
         this.cooldownMs = c.getLong("jumpads.cooldown_ms", 800L);
         this.soundName = c.getString("jumpads.sound", "ENTITY_FIREWORK_ROCKET_LAUNCH");
         this.particleName = c.getString("jumpads.particle", "CLOUD");

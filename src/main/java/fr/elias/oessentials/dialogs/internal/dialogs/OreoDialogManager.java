@@ -29,11 +29,11 @@ public final class OreoDialogManager {
     public boolean isAvailable() { return apiAvailable; }
 
     public boolean isEnabled() {
-        return apiAvailable && plugin.getSettingsConfig().isDialogEnabled();
+        return apiAvailable && plugin.getFeatureSettings().isDialogEnabled();
     }
 
     public boolean isEnabledFor(String feature) {
-        return apiAvailable && plugin.getSettingsConfig().isDialogEnabledFor(feature);
+        return apiAvailable && plugin.getFeatureSettings().isDialogEnabledFor(feature);
     }
 
     /** Open the home list/selection dialog. */

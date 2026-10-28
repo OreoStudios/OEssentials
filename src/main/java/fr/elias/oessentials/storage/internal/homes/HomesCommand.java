@@ -2,7 +2,7 @@ package fr.elias.oessentials.storage.internal.homes;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomeTeleportRequestPacket;
 import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 public class HomesCommand implements OreoCommand {
 
     private final HomeService homes;
-    private final ConfigService cfg;
+    private final ServerConfig cfg;
 
     public HomesCommand(HomeService homes) {
         this.homes = homes;
-        this.cfg = OEssentials.get().getConfigService();
+        this.cfg = OEssentials.get().getServerConfig();
     }
 
     @Override public String name() { return "homes"; }
@@ -129,7 +129,7 @@ public class HomesCommand implements OreoCommand {
                     return;
                 }
 
-                var cs = plugin.getCrossServerSettings();
+                var cs = plugin.getCrossServerFeatures();
                 if (!cs.homes()) {
                     Lang.send(player, "homes.cross-disabled",
                             "<red>Cross-server homes are disabled by server config.</red>");

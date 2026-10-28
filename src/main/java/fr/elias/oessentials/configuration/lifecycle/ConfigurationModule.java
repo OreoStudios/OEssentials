@@ -6,6 +6,7 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
 import fr.elias.oessentials.configuration.internal.listeners.FreezeListener;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
@@ -17,10 +18,11 @@ import fr.elias.oessentials.configuration.internal.services.FreezeService;
 import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
+import java.util.Map;
 
 @PluginModule(value = "configuration")
 public final class ConfigurationModule extends ManagedModule implements ConfigurationServices {
-    private fr.elias.oessentials.configuration.internal.config.SettingsConfig settingsConfig;
+    private SettingsConfig settingsConfig;
     private fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tempFlyService;
     private fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig tempFlyConfig;
     private ConfigService configService;
@@ -29,12 +31,11 @@ public final class ConfigurationModule extends ManagedModule implements Configur
     private CommandManager commands;
     private FreezeService freezeService;
     private KillallLogger killallLogger;
-    private SettingsConfig settings;
     private boolean economyEnabled;
     private boolean redisEnabled;
     private boolean rabbitEnabled;
     private InvlookManager invlookManager;
-    private fr.elias.oessentials.configuration.internal.config.CrossServerSettings crossServerSettings;
+    private volatile CrossServerSettings crossServerSettings;
     private Gson gson = new Gson();
 
     @Override
@@ -46,22 +47,33 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         initConfig();
     }
 
-    @Override public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return settingsConfig; }
+    @Override public SettingsConfig getFeatureSettings() { return settingsConfig; }
+    @Override public SettingsConfig getPerformanceGuardSettings() { return settingsConfig; }
+    @Override public ConfigService getServerConfig() { return configService; }
+    @Override public CrossServerSettings getCrossServerFeatures() { return crossServerSettings; }
     @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return tempFlyService; }
     @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig getTempFlyConfig() { return tempFlyConfig; }
-    @Override public ConfigService getConfigService() { return configService; }
     @Override public AutoRebootService getAutoRebootService() { return autoRebootService; }
     @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
     @Override public CommandManager getCommands() { return commands; }
     @Override public FreezeService getFreezeService() { return freezeService; }
     @Override public KillallLogger getKillallLogger() { return killallLogger; }
-    @Override public SettingsConfig getSettings() { return settings; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
     @Override public boolean getRabbitEnabled() { return rabbitEnabled; }
     @Override public InvlookManager getInvlookManager() { return invlookManager; }
-    @Override public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return crossServerSettings; }
     @Override public Gson getGson() { return gson; }
+
+    @Override
+    public void reloadSettings() {
+        settingsConfig.reload();
+        crossServerSettings = CrossServerSettings.load(plugin);
+    }
+
+    @Override
+    public void updateSettings(Map<String, Object> values) {
+        settingsConfig.update(values);
+    }
 
     // Init methods
 
@@ -81,13 +93,12 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         fr.elias.oessentials.configuration.internal.migration.FeatureConfigMigrator.migrate(plugin);
         plugin.reloadConfig();
 
-        this.settingsConfig = new fr.elias.oessentials.configuration.internal.config.SettingsConfig(plugin);
-        this.settings = this.settingsConfig;
+        this.settingsConfig = new SettingsConfig(plugin);
 
         showStartupBanner();
 
         this.configService    = new ConfigService(plugin);
-        this.crossServerSettings = fr.elias.oessentials.configuration.internal.config.CrossServerSettings.load(plugin);
+        this.crossServerSettings = CrossServerSettings.load(plugin);
         this.economyEnabled   = settingsConfig.economyEnabled();
         this.redisEnabled     = plugin.getConfig().getBoolean("redis.enabled", false);
         this.rabbitEnabled    = plugin.getConfig().getBoolean("rabbitmq.enabled", false);

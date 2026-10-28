@@ -190,7 +190,7 @@ public final class FoliaScoreboard {
             sendPkt(CTOR_SET_DISPLAY_PKT.newInstance(DISPLAY_SLOT_SIDEBAR, nmsObjective));
             activeHolders.clear(); // force full line resend
             sendLines(lines);
-            if (OEssentials.get().getConfigService().isDebugEnabled()) {
+            if (OEssentials.get().getServerConfig().isDebugEnabled()) {
                 LOG.info("[FoliaScoreboard] Scoreboard (re)created for " + player.getName()
                         + " (" + lines.size() + " lines, refresh#" + refreshCount + ")");
             }

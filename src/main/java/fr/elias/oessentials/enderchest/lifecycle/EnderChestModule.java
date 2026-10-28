@@ -21,7 +21,7 @@ public final class EnderChestModule extends ManagedModule implements EnderChestS
 
     private void initEnderChest() {
         this.ecConfig = new fr.elias.oessentials.enderchest.internal.EnderChestConfig(plugin);
-        final boolean crossServerEc = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "enderchest", true);
+        final boolean crossServerEc = services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "enderchest", true);
         final boolean mongoStorage  = "mongodb".equalsIgnoreCase(plugin.getConfig().getString("essentials.storage", "yaml"));
 
         fr.elias.oessentials.enderchest.internal.EnderChestStorage ecStorage;

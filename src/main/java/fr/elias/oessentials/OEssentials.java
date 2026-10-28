@@ -232,7 +232,12 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.punishment.internal.PunishmentLogger getPunishmentLogger() { return moduleRegistry.read(PunishmentLoggerServices.class, PunishmentLoggerServices::getPunishmentLogger); }
 
-    public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getSettingsConfig); }
+    /** Released API. Feature modules read {@link #getFeatureSettings()} instead. */
+    public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return (SettingsConfig) getFeatureSettings(); }
+
+    public fr.elias.oessentials.configuration.api.FeatureSettings getFeatureSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getFeatureSettings); }
+
+    public fr.elias.oessentials.configuration.api.PerformanceGuardSettings getPerformanceGuardSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getPerformanceGuardSettings); }
 
     public JoinFloodGuardService getJoinFloodGuardService() { return moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService); }
 
@@ -306,7 +311,10 @@ public final class OEssentials extends JavaPlugin {
 
     public AfkPoolService getAfkPoolService() { return moduleRegistry.read(AfkServices.class, AfkServices::getAfkPoolService); }
 
-    public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCrossServerSettings); }
+    /** Released API. Feature modules read {@link #getCrossServerFeatures()} instead. */
+    public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return (fr.elias.oessentials.configuration.internal.config.CrossServerSettings) getCrossServerFeatures(); }
+
+    public fr.elias.oessentials.configuration.api.CrossServerFeatures getCrossServerFeatures() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCrossServerFeatures); }
 
     public fr.elias.oessentials.enderchest.internal.EnderChestService getEnderChestService() { return moduleRegistry.read(EnderChestServices.class, EnderChestServices::getEcService); }
 
@@ -377,7 +385,10 @@ public final class OEssentials extends JavaPlugin {
 
     public NotesChatListener getNotesChat() { return moduleRegistry.read(NotesServices.class, NotesServices::getNotesChat); }
 
-    public ConfigService getConfigService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService); }
+    /** Released API. Feature modules read {@link #getServerConfig()} instead. */
+    public ConfigService getConfigService() { return (ConfigService) getServerConfig(); }
+
+    public fr.elias.oessentials.configuration.api.ServerConfig getServerConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getServerConfig); }
 
     public StorageApi getStorage() { return moduleRegistry.read(StorageServices.class, StorageServices::getStorage); }
 
@@ -456,7 +467,8 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.nametag.internal.ChatBubbleService getChatBubbleService() { return moduleRegistry.read(NametagServices.class, NametagServices::getChatBubbleService); }
 
-    public SettingsConfig getSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getSettings); }
+    /** Released API; same object as {@link #getSettingsConfig()}. */
+    public SettingsConfig getSettings() { return getSettingsConfig(); }
 
     public boolean isJoinUiReady(Player player) {
         return moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService) == null || moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService).isUiReady(player);
@@ -482,7 +494,7 @@ public final class OEssentials extends JavaPlugin {
 
     public String getServerNameSafe() {
         try {
-            if (moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService) != null) { String name = moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService).serverName(); if (name != null && !name.isBlank()) return name; }
+            if (getServerConfig() != null) { String name = getServerConfig().serverName(); if (name != null && !name.isBlank()) return name; }
         } catch (Throwable ignored) {}
         try { String name = getServer().getName(); if (name != null && !name.isBlank()) return name; } catch (Throwable ignored) {}
         return "UNKNOWN";

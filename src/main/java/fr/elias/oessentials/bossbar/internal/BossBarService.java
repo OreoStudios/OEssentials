@@ -51,7 +51,7 @@ public final class BossBarService implements Listener {
     private void readConfig() {
         var cfg = plugin.getConfig().getConfigurationSection("bossbar");
 
-        this.enabled = plugin.getSettingsConfig().bossbarEnabled();
+        this.enabled = plugin.getFeatureSettings().bossbarEnabled();
 
         this.text     = cfg != null ? cfg.getString("text", "<gradient:#FF1493:#00FF7F>Welcome</gradient> {player}")
                 : "<gradient:#FF1493:#00FF7FF>Welcome</gradient> {player}";

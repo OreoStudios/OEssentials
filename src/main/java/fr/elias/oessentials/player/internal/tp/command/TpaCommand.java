@@ -83,7 +83,7 @@ public class TpaCommand implements OreoCommand {
         final long t0 = System.nanoTime();
         final String input = args[0].trim();
         final OEssentials plugin = OEssentials.get();
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
 
         D(id, "enter by=" + requester.getName() + " input='" + input + "' server=" + localServer);
         P(requester, id, "start");

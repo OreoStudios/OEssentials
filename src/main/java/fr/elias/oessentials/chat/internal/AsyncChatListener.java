@@ -76,7 +76,7 @@ public final class AsyncChatListener implements Listener {
         );
         this.chatItemHandler = new ChatItemHandler(chatCfg);
 
-        var settings = OEssentials.get().getSettingsConfig();
+        var settings = OEssentials.get().getFeatureSettings();
         this.bannedWordsEnabled = settings.bannedWordsEnabled();
         this.bannedWords = settings.bannedWords();
 
@@ -133,7 +133,7 @@ public final class AsyncChatListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onLegacyChat(AsyncPlayerChatEvent event) {
-        if (!OEssentials.get().getSettingsConfig().chatEnabled()) return;
+        if (!OEssentials.get().getFeatureSettings().chatEnabled()) return;
         event.setCancelled(true);
         event.getRecipients().clear();
     }
@@ -203,7 +203,7 @@ public final class AsyncChatListener implements Listener {
         }
 
         // Chat module disabled — leave the event alone so CHC (or other chat plugins) can handle it
-        if (!OEssentials.get().getSettingsConfig().chatEnabled()) return;
+        if (!OEssentials.get().getFeatureSettings().chatEnabled()) return;
 
         // Modern Factions signals a handled private channel by cancelling the Paper event
         // and clearing all viewers. If the event is cancelled but viewers still exist,
@@ -249,7 +249,7 @@ public final class AsyncChatListener implements Listener {
 
         final UUID senderUuid = player.getUniqueId();
         final String rawMsg = msg;
-        final String serverName = OEssentials.get().getConfigService().serverName();
+        final String serverName = OEssentials.get().getServerConfig().serverName();
 
         OreScheduler.run(OEssentials.get(), () -> {
             Player live = Bukkit.getPlayer(senderUuid);
@@ -430,7 +430,7 @@ public final class AsyncChatListener implements Listener {
         String gm = p.getGameMode() != null ? p.getGameMode().name() : "SURVIVAL";
         String uuid = p.getUniqueId().toString();
         String lpGroup = hoverPrimaryGroup(p);
-        String server = OEssentials.get().getConfigService().serverName();
+        String server = OEssentials.get().getServerConfig().serverName();
         String time24 = new SimpleDateFormat("HH:mm:ss").format(new Date());
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 

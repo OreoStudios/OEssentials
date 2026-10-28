@@ -50,7 +50,7 @@ public final class JailsModule extends ManagedModule implements JailsServices {
                 new fr.elias.oessentials.jails.internal.jail.commands.JailListCommandTabCompleter(jailService));
 
         if (services(StorageServices.class).getPlayerWarpService() != null
-                && services(ConfigurationServices.class).getSettingsConfig().playerWarpsEnabled()) {
+                && services(ConfigurationServices.class).getFeatureSettings().playerWarpsEnabled()) {
             services(ConfigurationServices.class).getCommands().register(new PlayerWarpCommand(services(StorageServices.class).getPlayerWarpService()));
             PlayerWarpWhitelistCommand pwwCmd = new PlayerWarpWhitelistCommand(services(StorageServices.class).getPlayerWarpService());
             services(ConfigurationServices.class).getCommands().registerLegacy("pwwhitelist", pwwCmd, pwwCmd);

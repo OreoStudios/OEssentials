@@ -3,6 +3,7 @@ package fr.elias.oessentials.webpanel.internal;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.currency.internal.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyService;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
@@ -989,17 +990,7 @@ public class WebPanelSyncService implements Listener {
 
         OreScheduler.run(plugin, () -> {
             if (!settingsYml.isEmpty()) {
-                org.bukkit.configuration.file.FileConfiguration raw = plugin.getSettingsConfig().raw();
-                for (java.util.Map.Entry<String, Object> e : settingsYml.entrySet()) {
-                    raw.set(e.getKey(), e.getValue());
-                    // Older configs may use this higher-priority legacy section.
-                    if (e.getKey().startsWith("features.chat.banned-words.")
-                            && raw.isConfigurationSection("chat.banned-words")) {
-                        raw.set(e.getKey().substring("features.".length()), e.getValue());
-                    }
-                }
-                plugin.getSettingsConfig().save();
-                plugin.getSettingsConfig().reload();
+                plugin.getModuleRegistry().require(ConfigurationServices.class).updateSettings(settingsYml);
                 if (settingsYml.keySet().stream().anyMatch(k -> k.startsWith("auto-reboot."))
                         && plugin.getAutoRebootService() != null) {
                     plugin.getAutoRebootService().reload();
@@ -1106,7 +1097,7 @@ public class WebPanelSyncService implements Listener {
     private void reloadConfigByName(String canonicalName) {
         switch (canonicalName) {
             case "config.yml"             -> plugin.reloadConfig();
-            case "settings.yml"           -> plugin.getSettingsConfig().reload();
+            case "settings.yml"           -> plugin.getModuleRegistry().require(ConfigurationServices.class).reloadSettings();
             case "scoreboard.yml"         -> plugin.getScoreboardService().reload();
             case "tab.yml"                -> plugin.getTabListManager().reload();
             case "dailyrewards.yml"       -> {

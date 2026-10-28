@@ -61,7 +61,7 @@ public class BackCommand implements OreoCommand {
             return true;
         }
 
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         if (last.getServer().equalsIgnoreCase(localServer)) {
             Location loc = last.toLocalLocation();

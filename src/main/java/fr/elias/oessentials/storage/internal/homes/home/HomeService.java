@@ -1,6 +1,6 @@
 package fr.elias.oessentials.storage.internal.homes.home;
 
-import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,12 +11,12 @@ import java.util.logging.Logger;
 
 public class HomeService {
     private final StorageApi storage;
-    private final ConfigService config;
+    private final ServerConfig config;
     private final HomeDirectory directory;
     private final String localServer;
     private final Logger logger;
 
-    public HomeService(StorageApi storage, ConfigService config, HomeDirectory directory, Logger logger) {
+    public HomeService(StorageApi storage, ServerConfig config, HomeDirectory directory, Logger logger) {
         this.storage = Objects.requireNonNull(storage, "storage");
         this.config = Objects.requireNonNull(config, "config");
         this.directory = directory; // optional
@@ -25,7 +25,7 @@ public class HomeService {
     }
 
 
-    public HomeService(StorageApi storage, ConfigService config, HomeDirectory directory) {
+    public HomeService(StorageApi storage, ServerConfig config, HomeDirectory directory) {
         this(storage, config, directory, Logger.getLogger("OEssentials"));
     }
 

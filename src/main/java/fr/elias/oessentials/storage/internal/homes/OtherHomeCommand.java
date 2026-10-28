@@ -110,7 +110,7 @@ public class OtherHomeCommand implements OreoCommand, org.bukkit.command.TabComp
         }
 
         // 3) Cross-server disabled?
-        var cs = plugin.getCrossServerSettings();
+        var cs = plugin.getCrossServerFeatures();
         if (!cs.homes()) {
             String ownerName = target.getName() != null ? target.getName() : ownerId.toString();
             Lang.send(sender, "admin.otherhome.cross-disabled",

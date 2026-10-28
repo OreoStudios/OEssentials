@@ -23,14 +23,14 @@ public final class PlaytimeModule extends ManagedModule implements PlaytimeServi
         this.playtimeRewards = new fr.elias.oessentials.playtime.internal.PlaytimeRewardsService(plugin, playtimeTracker);
         this.playtimeRewards.init();
 
-        if (!services(ConfigurationServices.class).getSettingsConfig().playtimeRewardsEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().playtimeRewardsEnabled()) {
             this.playtimeRewards.setEnabled(false);
             plugin.getLogger().info("[Prewards] Disabled by settings.yml.");
         } else {
             plugin.getLogger().info("[Prewards] Enabled.");
         }
 
-        if (services(ConfigurationServices.class).getSettingsConfig().playtimeRewardsEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().playtimeRewardsEnabled()) {
             var prewardsCmd = new fr.elias.oessentials.playtime.internal.PrewardsCommand(plugin, this.playtimeRewards);
             services(ConfigurationServices.class).getCommands().registerLegacy("prewards", prewardsCmd, prewardsCmd);
         }

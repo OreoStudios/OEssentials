@@ -45,7 +45,7 @@ public final class HomeTeleportBroker implements Listener {
         this.plugin = plugin;
         this.homes = homes;
         this.pm = pm;
-        this.thisServer = OEssentials.get().getConfigService().serverName();
+        this.thisServer = OEssentials.get().getServerConfig().serverName();
         this.log = plugin.getLogger();
 
         log.info("[HOME/BROKER] up on server=" + thisServer + " pm.init=" + pm.isInitialized());

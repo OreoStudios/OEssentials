@@ -20,7 +20,7 @@ public class BackService {
 
     public BackService(StorageApi storage) {
         this.storage = storage;
-        this.localServer = OEssentials.get().getConfigService().serverName();
+        this.localServer = OEssentials.get().getServerConfig().serverName();
     }
 
     public BackLocation getLastRaw(UUID uuid) {

@@ -163,7 +163,7 @@ public final class TpaCrossServerBroker implements Listener {
         OreScheduler.runForEntity(plugin, requester, () -> {
             if (!requester.isOnline()) return;
 
-            var sec = plugin.getSettingsConfig().getRoot().getConfigurationSection("features.tpa");
+            var sec = plugin.getFeatureSettings().getRoot().getConfigurationSection("features.tpa");
             boolean countdownEnabled = sec != null && sec.getBoolean("cooldown", false);
             int seconds = sec != null ? sec.getInt("cooldown-amount", 0) : 0;
             String destServer = pkt.getDestServer();

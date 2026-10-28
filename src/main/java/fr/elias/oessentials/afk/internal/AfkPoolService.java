@@ -49,7 +49,7 @@ public class AfkPoolService implements Listener {
     public AfkPoolService(OEssentials plugin, AfkService afkService) {
         this.plugin = plugin;
         this.afkService = afkService;
-        this.localServer = plugin.getConfigService().serverName();
+        this.localServer = plugin.getServerConfig().serverName();
 
         loadConfig();
 

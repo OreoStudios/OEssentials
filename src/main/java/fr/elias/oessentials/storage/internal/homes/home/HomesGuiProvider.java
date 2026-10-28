@@ -108,7 +108,7 @@ public class HomesGuiProvider implements InventoryProvider {
 
     private int guessMaxHomes(Player p) {
         try {
-            var cfg = OEssentials.get().getConfigService();
+            var cfg = OEssentials.get().getServerConfig();
             if (cfg != null) {
                 try {
                     var m = cfg.getClass().getMethod("getMaxHomesFor", Player.class);

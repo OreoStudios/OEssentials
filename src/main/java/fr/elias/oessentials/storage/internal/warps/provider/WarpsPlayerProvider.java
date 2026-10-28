@@ -39,7 +39,7 @@ public class WarpsPlayerProvider implements InventoryProvider {
         contents.fill(ClickableItem.empty(filler()));
 
         final OEssentials plugin = OEssentials.get();
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
         final WarpDirectory dir = plugin.getWarpDirectory();
 
         List<String> names = new ArrayList<>(safeListWarps());

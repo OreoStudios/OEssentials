@@ -35,6 +35,6 @@ public class PlayerQuitPacketHandler implements PacketSubscriber<PlayerQuitPacke
     }
 
     private boolean isDebugEnabled() {
-        return plugin.getConfigService().isDebugEnabled();
+        return plugin.getServerConfig().isDebugEnabled();
     }
 }

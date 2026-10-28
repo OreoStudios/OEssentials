@@ -21,7 +21,7 @@ public final class MaintenanceModule extends ManagedModule implements Maintenanc
     @Override public fr.elias.oessentials.maintenance.internal.MaintenanceService getMaintenanceService() { return maintenanceService; }
 
     private void initMaintenance() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().maintenanceEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().maintenanceEnabled()) {
             BootstrapSupport.unregisterCommandHard(plugin, "maintenance");
             plugin.getLogger().info("[Maintenance] Disabled by settings.yml");
             return;

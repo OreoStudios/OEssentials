@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class FeaturePackageLayoutTest {
     private static final String BASE = "fr.elias.oessentials";
     private static final Path ROOT = Path.of("src/main/java/fr/elias/oessentials");
+    /** {@code api} holds a feature's published contracts; the other layers are its implementation. */
+    private static final Set<String> FEATURE_LAYERS =
+            Set.of("api", "domain", "application", "infra", "internal", "lifecycle");
 
     @Test
     void everyLifecycleBelongsToOneDocumentedFeaturePackage() throws Exception {
@@ -47,7 +50,7 @@ class FeaturePackageLayoutTest {
                 }
                 assertTrue(allowed.contains(relative.getName(0).toString()), "Unowned source: " + relative);
                 if (!Set.of("api", "platform", "shared").contains(relative.getName(0).toString()) && relative.getNameCount() > 2) {
-                    assertTrue(Set.of("internal", "lifecycle").contains(relative.getName(1).toString()), "Unexpected feature layout: " + relative);
+                    assertTrue(FEATURE_LAYERS.contains(relative.getName(1).toString()), "Unexpected feature layout: " + relative);
                 }
             }
         }

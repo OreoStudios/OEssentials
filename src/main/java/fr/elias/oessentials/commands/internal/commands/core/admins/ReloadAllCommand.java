@@ -1,6 +1,7 @@
 package fr.elias.oessentials.commands.internal.commands.core.admins;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.tab.internal.TabListManager;
 import fr.elias.oessentials.shared.Lang;
@@ -28,14 +29,7 @@ public final class ReloadAllCommand implements OreoCommand {
 
         // 0) settings.yml
         try {
-            plugin.getSettingsConfig().reload();
-
-            fr.elias.oessentials.configuration.internal.config.CrossServerSettings cross =
-                    fr.elias.oessentials.configuration.internal.config.CrossServerSettings.load(plugin);
-
-            var f = OEssentials.class.getDeclaredField("crossServerSettings");
-            f.setAccessible(true);
-            f.set(plugin, cross);
+            plugin.getModuleRegistry().require(ConfigurationServices.class).reloadSettings();
 
             Lang.send(sender, "admin.reload.settings",
                     "<green>✔ Reloaded <white>settings.yml</white> <gray>(+ cross-server settings)</gray></green>");

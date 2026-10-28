@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.modgui.internal.world.WorldTweaksListener;
 
-@PluginModule(value = "mod-gui", after = {"inventories"})
+@PluginModule(value = "mod-gui", dependencies = {"configuration::services"}, after = {"inventories"})
 public final class ModGuiModule extends ManagedModule implements ModGuiServices {
     private fr.elias.oessentials.modgui.internal.ModGuiService modGuiService;
 

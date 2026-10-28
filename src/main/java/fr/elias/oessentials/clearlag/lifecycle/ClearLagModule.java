@@ -19,7 +19,7 @@ public final class ClearLagModule extends ManagedModule implements ClearLagServi
     @Override public ClearLagManager getClearLag() { return clearLag; }
 
     private void initClearLag() {
-        if (services(ConfigurationServices.class).getSettingsConfig().clearLagEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().clearLagEnabled()) {
             try {
                 this.clearLag = new ClearLagManager(plugin);
                 var olagg = new fr.elias.oessentials.clearlag.internal.ClearLagCommands(clearLag);

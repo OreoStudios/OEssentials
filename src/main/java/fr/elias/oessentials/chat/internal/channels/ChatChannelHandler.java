@@ -394,7 +394,7 @@ public class ChatChannelHandler {
     }
 
     private String safeServerName() {
-        try { return plugin.getConfigService().serverName(); }
+        try { return plugin.getServerConfig().serverName(); }
         catch (Throwable t) { return Bukkit.getServer().getName(); }
     }
 

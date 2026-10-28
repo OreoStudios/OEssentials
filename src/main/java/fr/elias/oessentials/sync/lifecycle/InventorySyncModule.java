@@ -16,7 +16,7 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
     }
 
     private void initInventorySync() {
-        final boolean invSyncEnabled = services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "inventory", true);
+        final boolean invSyncEnabled = services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "inventory", true);
 
         fr.elias.oessentials.sync.internal.playersync.PlayerSyncStorage invStorage;
         if (invSyncEnabled && "mongodb".equalsIgnoreCase(plugin.getConfig().getString("essentials.storage", "yaml")) && services(StorageServices.class).getHomesMongoClient() != null) {

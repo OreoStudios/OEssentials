@@ -53,21 +53,21 @@ public final class IntegrationsModule extends ManagedModule implements Integrati
             metrics.addCustomChart(new SimplePie("economy_type", () -> services(ConfigurationServices.class).getEconomyEnabled() ? plugin.getConfig().getString("economy.type", "none").toUpperCase() : "Disabled"));
             metrics.addCustomChart(new AdvancedPie("enabled_features", () -> {
                 Map<String, Integer> features = new HashMap<>();
-                if (services(ConfigurationServices.class).getSettingsConfig().kitsEnabled())           features.put("Kits", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().tradeEnabled())          features.put("Trade", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().rtpEnabled())            features.put("RTP", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().bossbarEnabled())        features.put("BossBar", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().scoreboardEnabled())     features.put("Scoreboard", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().tabEnabled())            features.put("Tab", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().clearLagEnabled())       features.put("ClearLag", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().oreoHologramsEnabled())  features.put("Holograms", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().playtimeRewardsEnabled()) features.put("PlaytimeRewards", 1);
-                if (services(ConfigurationServices.class).getSettingsConfig().worldShardingEnabled())  features.put("Sharding", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().kitsEnabled())           features.put("Kits", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().tradeEnabled())          features.put("Trade", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().rtpEnabled())            features.put("RTP", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().bossbarEnabled())        features.put("BossBar", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().scoreboardEnabled())     features.put("Scoreboard", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().tabEnabled())            features.put("Tab", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().clearLagEnabled())       features.put("ClearLag", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().oreoHologramsEnabled())  features.put("Holograms", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().playtimeRewardsEnabled()) features.put("PlaytimeRewards", 1);
+                if (services(ConfigurationServices.class).getFeatureSettings().worldShardingEnabled())  features.put("Sharding", 1);
                 return features;
             }));
             metrics.addCustomChart(new SimplePie("cross_server_mode", () -> {
                 if (!services(ConfigurationServices.class).getRabbitEnabled()) return "Disabled";
-                boolean anyCross = services(ConfigurationServices.class).getCrossServerSettings().homes() || services(ConfigurationServices.class).getCrossServerSettings().warps() || services(ConfigurationServices.class).getCrossServerSettings().spawn() || services(ConfigurationServices.class).getCrossServerSettings().economy();
+                boolean anyCross = services(ConfigurationServices.class).getCrossServerFeatures().homes() || services(ConfigurationServices.class).getCrossServerFeatures().warps() || services(ConfigurationServices.class).getCrossServerFeatures().spawn() || services(ConfigurationServices.class).getCrossServerFeatures().economy();
                 return anyCross ? "Enabled" : "Disabled";
             }));
             metrics.addCustomChart(new SimplePie("redis_enabled", () -> services(ConfigurationServices.class).getRedisEnabled() ? "Enabled" : "Disabled"));

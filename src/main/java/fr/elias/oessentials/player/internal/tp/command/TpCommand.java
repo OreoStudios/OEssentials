@@ -46,7 +46,7 @@ public class TpCommand implements OreoCommand {
         }
 
         OEssentials plugin = OEssentials.get();
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         Player localTarget = resolveOnline(arg);
         if (localTarget != null) {

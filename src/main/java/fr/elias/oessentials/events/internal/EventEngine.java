@@ -341,7 +341,7 @@ public final class EventEngine implements Listener {
         PacketManager pm = plugin.getPacketManager();
 
         if (pm != null && pm.isInitialized() && msg != null && !msg.isEmpty()) {
-            String serverName = plugin.getConfigService().serverName();
+            String serverName = plugin.getServerConfig().serverName();
 
             DeathMessagePacket packet = new DeathMessagePacket(
                     dead.getUniqueId(),

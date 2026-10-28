@@ -113,7 +113,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         services(ConfigurationServices.class).getCommands().rewireTab("tphere", tphere);
         services(ConfigurationServices.class).getCommands().register(nickCmd);
 
-        final boolean homes = services(ConfigurationServices.class).getSettingsConfig().homesEnabled();
+        final boolean homes = services(ConfigurationServices.class).getFeatureSettings().homesEnabled();
         services(ConfigurationServices.class).getCommands()
                 .register(new SpawnCommand(services(StorageServices.class).getSpawnService()))
                 .register(new SetSpawnCommand(services(StorageServices.class).getSpawnService()))
@@ -125,7 +125,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new WarpsAdminCommand(services(StorageServices.class).getWarpService()))
                 .registerIf(homes, new HomeCommand(services(StorageServices.class).getHomeService()))
                 .register(new DelWarpCommand(services(StorageServices.class).getWarpService()))
-                .registerIf(homes, new SetHomeCommand(services(StorageServices.class).getHomeService(), services(ConfigurationServices.class).getConfigService()))
+                .registerIf(homes, new SetHomeCommand(services(StorageServices.class).getHomeService(), services(ConfigurationServices.class).getServerConfig()))
                 .registerIf(homes, new DelHomeCommand(services(StorageServices.class).getHomeService()))
                 .register(new TpaCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new TpAcceptCommand(services(PlayerServices.class).getTeleportService()))
@@ -154,7 +154,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new ServerProxyCommand(services(ProxyMessagingServices.class).getProxyMessenger()))
                 .register(new SkinCommand())
                 .register(new CloneCommand())
-                .register(new EcCommand(services(EnderChestServices.class).getEcService(), services(ConfigurationServices.class).getSettingsConfig().featureOption("cross-server", "enderchest", true)))
+                .register(new EcCommand(services(EnderChestServices.class).getEcService(), services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "enderchest", true)))
                 .register(new HeadCommand())
                 .register(new SellGuiCommand(plugin))
                 .register(new AfkCommand(services(AfkServices.class).getAfkService()))
@@ -187,7 +187,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
                 .register(new BalTopCommand(plugin))
                 .register(new EcSeeCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.admins.ReloadAllCommand())
-                .registerIf(services(ConfigurationServices.class).getSettingsConfig().playerVaultsEnabled(), new fr.elias.oessentials.playervaults.internal.commands.core.playercommands.VaultsCommand())
+                .registerIf(services(ConfigurationServices.class).getFeatureSettings().playerVaultsEnabled(), new fr.elias.oessentials.playervaults.internal.commands.core.playercommands.VaultsCommand())
                 .register(new fr.elias.oessentials.commands.internal.commands.core.playercommands.UuidCommand())
                 .register(new TpCommand(services(PlayerServices.class).getTeleportService()))
                 .register(new ZEssentialsHomesImportCommand(plugin, services(StorageServices.class).getStorage(), services(StorageServices.class).getHomeDirectory()))
@@ -205,7 +205,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
 
                 plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.commands.internal.furnace.VirtualFurnaceListener(), plugin);
 
-        if (services(ConfigurationServices.class).getSettingsConfig().sitEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().sitEnabled()) {
             services(ConfigurationServices.class).getCommands().register(new SitCommand());
             plugin.getServer().getPluginManager().registerEvents(new SitListener(), plugin);
             plugin.getLogger().info("[Sit] Enabled.");
@@ -277,7 +277,7 @@ public final class CommandsModule extends ManagedModule implements CommandsServi
         });
 
         // Commands that have no OreoCommand registration — use registerLegacy.
-        if (services(ConfigurationServices.class).getSettingsConfig().homesEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().homesEnabled()) {
             var otherHomesCmd = new OtherHomesListCommand(plugin, services(StorageServices.class).getHomeService());
             services(ConfigurationServices.class).getCommands().registerLegacy("otherhomes", otherHomesCmd, otherHomesCmd);
 

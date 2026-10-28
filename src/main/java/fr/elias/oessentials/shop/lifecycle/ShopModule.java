@@ -17,7 +17,7 @@ public final class ShopModule extends ManagedModule implements ShopServices {
     @Override public fr.elias.oessentials.shop.internal.ShopModule getShopModule() { return shopModule; }
 
     private void initShop() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().shopEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().shopEnabled()) {
             plugin.getLogger().info("[Shop] Disabled by settings.yml");
             return;
         }

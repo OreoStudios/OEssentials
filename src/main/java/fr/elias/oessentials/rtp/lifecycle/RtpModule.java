@@ -33,10 +33,10 @@ public final class RtpModule extends ManagedModule implements RtpServices {
     private void initRtp() {
         this.rtpPendingService = new RtpPendingService();
         this.rtpConfig         = new RtpConfig(plugin);
-        if (services(ConfigurationServices.class).getSettingsConfig().rtpEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().rtpEnabled()) {
             plugin.getServer().getPluginManager().registerEvents(new RtpJoinListener(plugin), plugin);
         }
-        if (!services(ConfigurationServices.class).getSettingsConfig().rtpEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().rtpEnabled()) {
             BootstrapSupport.unregisterCommandHard(plugin, "rtp"); BootstrapSupport.unregisterCommandHard(plugin, "wild");
             plugin.getLogger().info("[RTP] Disabled by settings.yml.");
         } else if (!this.rtpConfig.isEnabled()) {
@@ -56,7 +56,7 @@ public final class RtpModule extends ManagedModule implements RtpServices {
     public void onMessagingReady(MessagingReady event) {
         if (!isActive() || rtpConfig == null || !rtpConfig.isCrossServerEnabled()) return;
         rtpBridge = new fr.elias.oessentials.rtp.internal.RtpCrossServerBridge(
-                plugin, event.packets(), services(ConfigurationServices.class).getConfigService().serverName());
+                plugin, event.packets(), services(ConfigurationServices.class).getServerConfig().serverName());
         plugin.getLogger().info("[RTP] Cross-server RTP bridge ready.");
     }
 

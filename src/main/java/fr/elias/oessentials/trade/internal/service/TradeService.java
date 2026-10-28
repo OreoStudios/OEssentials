@@ -487,7 +487,7 @@ public final class TradeService implements Listener {
             return;
         }
 
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
         String nodeA = findNodeFor(s.getAId());
 
         // If the player directory can tell us which server A is on, use it to elect the leader.

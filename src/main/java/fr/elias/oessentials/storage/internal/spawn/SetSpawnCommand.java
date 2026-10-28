@@ -29,7 +29,7 @@ public class SetSpawnCommand implements OreoCommand {
     public boolean execute(CommandSender sender, String label, String[] args) {
         Player p = (Player) sender;
         OEssentials plugin = OEssentials.get();
-        String local = plugin.getConfigService().serverName();
+        String local = plugin.getServerConfig().serverName();
         org.bukkit.Location loc = p.getLocation();
 
         Async.run(() -> {

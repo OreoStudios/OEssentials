@@ -48,7 +48,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         boolean discordEnabled = false;
         String discordWebhookUrl = "";
         try {
-            if (plugin.getSettingsConfig().chatDiscordBridgeEnabled()) {
+            if (plugin.getFeatureSettings().chatDiscordBridgeEnabled()) {
                 var chatRoot = chatConfig.getCustomConfig().getConfigurationSection("chat.discord");
                 if (chatRoot != null) {
                     discordEnabled    = chatRoot.getBoolean("enabled", false);
@@ -84,7 +84,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         plugin.getServer().getPluginManager().registerEvents(chatListener, plugin);
         this.activeChatListener = chatListener;
 
-        if (channelManager.isEnabled() && plugin.getSettingsConfig().chatEnabled()) {
+        if (channelManager.isEnabled() && plugin.getFeatureSettings().chatEnabled()) {
             var channelsCmd  = new fr.elias.oessentials.chat.internal.channels.commands.OeChannelsCommand(plugin, channelManager);
             var channelCmd   = new fr.elias.oessentials.chat.internal.channels.commands.OeChannelCommand(plugin, channelManager);
             services(ConfigurationServices.class).getCommands().register(channelsCmd);
@@ -148,7 +148,7 @@ public final class ChatModule extends ManagedModule implements ChatServices {
         boolean discordEnabled = false;
         String discordWebhookUrl = "";
         try {
-            if (plugin.getSettingsConfig().chatDiscordBridgeEnabled()) {
+            if (plugin.getFeatureSettings().chatDiscordBridgeEnabled()) {
                 var chatRoot = chatConfig.getCustomConfig().getConfigurationSection("chat.discord");
                 if (chatRoot != null) {
                     discordEnabled    = chatRoot.getBoolean("enabled", false);

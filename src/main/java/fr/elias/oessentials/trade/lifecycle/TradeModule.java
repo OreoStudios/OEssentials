@@ -25,7 +25,7 @@ public final class TradeModule extends ManagedModule implements TradeServices {
     private void initTrade() {
         this.tradeConfig = new TradeConfig(plugin);
 
-        if (this.tradeConfig.enabled && services(ConfigurationServices.class).getSettingsConfig().tradeEnabled()) {
+        if (this.tradeConfig.enabled && services(ConfigurationServices.class).getFeatureSettings().tradeEnabled()) {
             this.tradeService = new TradeService(plugin, this.tradeConfig);
             services(ConfigurationServices.class).getCommands().registerLegacy("trade", new TradeCommand(plugin, this.tradeService));
             plugin.getLogger().info("[Trade] Enabled.");

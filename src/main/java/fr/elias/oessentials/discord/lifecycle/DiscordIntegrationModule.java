@@ -20,7 +20,7 @@ public final class DiscordIntegrationModule extends ManagedModule implements Dis
     @Override public fr.elias.oessentials.discord.internal.discordbot.DiscordLinkManager getDiscordLinkManager() { return discordLinkManager; }
 
     private void initDiscordIntegration() {
-        if (services(ConfigurationServices.class).getSettingsConfig().discordModerationEnabled()) {
+        if (services(ConfigurationServices.class).getFeatureSettings().discordModerationEnabled()) {
             this.discordMod = new fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier(plugin);
             plugin.getLogger().info("[DiscordMod] Discord moderation integration enabled.");
         } else {

@@ -28,7 +28,7 @@ public class DeathMessagePacketHandler implements PacketSubscriber<DeathMessageP
             return;
         }
 
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         if (sourceServer != null && sourceServer.equalsIgnoreCase(localServer)) {
             plugin.getLogger().fine("[Rabbit] Death @" + channel + " -> " + deadPlayerName + " (local server, skipping broadcast)");

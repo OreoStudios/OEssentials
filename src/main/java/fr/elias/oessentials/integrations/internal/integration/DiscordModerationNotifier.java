@@ -83,7 +83,7 @@ public class DiscordModerationNotifier {
     }
 
     public boolean isEnabled() {
-        return OEssentials.get().getSettingsConfig().discordModerationEnabled()
+        return OEssentials.get().getFeatureSettings().discordModerationEnabled()
                 && fileEnabled
                 && hasAnyWebhook();
     }

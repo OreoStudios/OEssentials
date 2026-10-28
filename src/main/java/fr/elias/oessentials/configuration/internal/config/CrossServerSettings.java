@@ -1,9 +1,10 @@
 package fr.elias.oessentials.configuration.internal.config;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.api.CrossServerFeatures;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public final class CrossServerSettings {
+public final class CrossServerSettings implements CrossServerFeatures {
 
     private final boolean homes;
     private final boolean warps;

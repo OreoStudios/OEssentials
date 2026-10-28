@@ -54,7 +54,7 @@ public class PlayerWarpService {
         if (directory != null) {
             try {
                 String serverName = OEssentials.get()
-                        .getConfigService()
+                        .getServerConfig()
                         .serverName();
                 directory.setWarpServer(id, serverName);
                 OEssentials.get().getLogger().info(
@@ -221,7 +221,7 @@ public class PlayerWarpService {
         storage.save(renamed);
         if (directory != null) {
             try {
-                String serverName = OEssentials.get().getConfigService().serverName();
+                String serverName = OEssentials.get().getServerConfig().serverName();
                 directory.setWarpServer(newId, serverName);
             } catch (Throwable t) {
                 OEssentials.get().getLogger().warning(
@@ -254,7 +254,7 @@ public class PlayerWarpService {
         storage.save(transferred);
         if (directory != null) {
             try {
-                String serverName = OEssentials.get().getConfigService().serverName();
+                String serverName = OEssentials.get().getServerConfig().serverName();
                 directory.setWarpServer(newId, serverName);
             } catch (Throwable t) {
                 OEssentials.get().getLogger().warning(
@@ -329,9 +329,9 @@ public class PlayerWarpService {
             }
         }
 
-        String localServer   = plugin.getConfigService().serverName();
+        String localServer   = plugin.getServerConfig().serverName();
         String targetServer  = getWarpServer(warp, localServer);
-        boolean crossEnabled = plugin.getCrossServerSettings().warps();
+        boolean crossEnabled = plugin.getCrossServerFeatures().warps();
         boolean messaging    = plugin.isMessagingAvailable();
         boolean sameServer   = localServer.equalsIgnoreCase(targetServer);
 
@@ -437,7 +437,7 @@ public class PlayerWarpService {
 
     private void debugInfo(String message) {
         OEssentials plugin = OEssentials.get();
-        if (plugin != null && plugin.getConfigService().isDebugEnabled()) {
+        if (plugin != null && plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().info(message);
         }
     }

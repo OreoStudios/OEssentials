@@ -54,8 +54,8 @@ public final class BootstrapSupport {
     }
 
     public static boolean uiModuleAllowed(OEssentials plugin, String moduleKey) {
-        String server = plugin.getConfigService() != null ? plugin.getConfigService().serverName() : Bukkit.getServer().getName();
-        boolean disabled = plugin.getSettingsConfig() != null && plugin.getSettingsConfig().uiModuleDisabledForServer(server, moduleKey);
+        String server = plugin.getServerConfig() != null ? plugin.getServerConfig().serverName() : Bukkit.getServer().getName();
+        boolean disabled = plugin.getFeatureSettings() != null && plugin.getFeatureSettings().uiModuleDisabledForServer(server, moduleKey);
         if (disabled) {
             plugin.getLogger().info("[UI Safeguard] Disabled " + moduleKey + " on server " + server + ".");
         }

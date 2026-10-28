@@ -215,7 +215,7 @@ public final class OrdersModule {
     }
 
     private String serverName() {
-        try { return plugin.getConfigService().serverName(); }
+        try { return plugin.getServerConfig().serverName(); }
         catch (Throwable t) { return "unknown"; }
     }
 }

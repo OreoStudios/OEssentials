@@ -1,7 +1,7 @@
 package fr.elias.oessentials.guards.internal.listeners;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.PerformanceGuardSettings;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -125,8 +125,8 @@ public final class ContainerSpamGuardListener implements Listener {
         burstStates.remove(event.getPlayer().getUniqueId());
     }
 
-    private SettingsConfig settings() {
-        return plugin.getSettingsConfig();
+    private PerformanceGuardSettings settings() {
+        return plugin.getPerformanceGuardSettings();
     }
 
     private boolean isProtectedContainer(Inventory top) {

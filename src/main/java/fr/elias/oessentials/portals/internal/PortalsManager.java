@@ -108,7 +108,7 @@ public class PortalsManager implements Listener {
     public PortalsManager(OEssentials plugin) {
         this.plugin  = plugin;
         this.config  = new PortalConfig(plugin.getDataFolder());
-        this.enabled = plugin.getSettings().portalsEnabled();
+        this.enabled = plugin.getFeatureSettings().portalsEnabled();
 
         this.portalsFile = config.getPortalsFile();
         if (!portalsFile.exists()) {

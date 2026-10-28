@@ -1,12 +1,13 @@
 package fr.elias.oessentials.configuration.internal.config;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class ConfigService {
+public class ConfigService implements ServerConfig {
     private final OEssentials plugin;
 
     public ConfigService(OEssentials plugin) {

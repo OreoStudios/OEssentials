@@ -18,7 +18,7 @@ public final class TabModule extends ManagedModule implements TabServices {
     @Override public fr.elias.oessentials.tab.internal.TabListManager getTabListManager() { return tabListManager; }
 
     private void initTab() {
-        if (services(ConfigurationServices.class).getSettingsConfig().tabEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "tab")) {
+        if (services(ConfigurationServices.class).getFeatureSettings().tabEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "tab")) {
             this.tabListManager = new fr.elias.oessentials.tab.internal.TabListManager(plugin);
             this.tabListManager.start();
             plugin.getLogger().info("[TAB] Custom tab-list enabled.");

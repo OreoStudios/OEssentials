@@ -115,7 +115,7 @@ public class ChannelAnnounceCommand implements CommandExecutor, TabCompleter {
         if (syncManager != null && (channel.getScope() == ChatChannel.ChannelScope.ALL ||
                 channel.getScope() == ChatChannel.ChannelScope.SHARD)) {
             try {
-                String serverName = plugin.getConfigService().serverName();
+                String serverName = plugin.getServerConfig().serverName();
                 String jsonComponent = GsonComponentSerializer.gson().serialize(announcement);
                 syncManager.publishChannelSystem(serverName, channel.getId(), jsonComponent);
             } catch (Exception e) {

@@ -21,7 +21,7 @@ public final class PortalsModule extends ManagedModule implements PortalsService
 
     private void initPortals() {
         this.portals = new fr.elias.oessentials.portals.internal.PortalsManager(plugin);
-        if (!services(ConfigurationServices.class).getSettingsConfig().portalsEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().portalsEnabled()) {
             plugin.getLogger().info("[Portals] Disabled by settings.yml.");
             this.portals = null;
             return;

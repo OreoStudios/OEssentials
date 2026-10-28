@@ -1,7 +1,7 @@
 package fr.elias.oessentials.tab.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.FeatureSettings;
 import fr.elias.oessentials.nametag.internal.NametageCondition;
 import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
 import fr.elias.oessentials.shared.MiniMessageCompat;
@@ -32,7 +32,7 @@ public class TabListManager {
     );
 
     private final OEssentials plugin;
-    private final SettingsConfig settings;
+    private final FeatureSettings settings;
     private final PlayerDirectory playerDirectory;
 
     private CustomTablistLayout customLayout;
@@ -93,7 +93,7 @@ public class TabListManager {
 
     public TabListManager(OEssentials plugin) {
         this.plugin = plugin;
-        this.settings = plugin.getSettingsConfig();
+        this.settings = plugin.getFeatureSettings();
         this.playerDirectory = plugin.getPlayerDirectory();
 
         load();
@@ -642,7 +642,7 @@ public class TabListManager {
                         String server = invokeString(e, "getServer", "server", "getServerName");
                         if (name == null || name.isEmpty()) continue;
                         if (server == null || server.isEmpty()) {
-                            server = plugin.getConfigService().serverName();
+                            server = plugin.getServerConfig().serverName();
                         }
                         if (!networkExcludedServers.isEmpty()
                                 && networkExcludedServers.contains(server.toLowerCase(Locale.ROOT))) continue;

@@ -20,7 +20,7 @@ public final class BossBarModule extends ManagedModule implements BossBarService
     @Override public fr.elias.oessentials.bossbar.internal.BossBarService getBossBarService() { return bossBarService; }
 
     private void initBossBar() {
-        if (services(ConfigurationServices.class).getSettingsConfig().bossbarEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "bossbar")) {
+        if (services(ConfigurationServices.class).getFeatureSettings().bossbarEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "bossbar")) {
             this.bossBarService = new BossBarService(plugin);
             this.bossBarService.start();
             services(ConfigurationServices.class).getCommands().register(new BossBarToggleCommand(this.bossBarService));
