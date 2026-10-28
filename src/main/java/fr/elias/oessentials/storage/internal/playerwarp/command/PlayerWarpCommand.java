@@ -58,6 +58,63 @@ public class PlayerWarpCommand implements OreoCommand {
         this.service = service;
         this.extraWarpsFile = new File(OEssentials.get().getDataFolder(), "playerwarps-extra.yml");
         loadExtraWarps();
+        this.sharedExtra = sharedExtraCollection();
+        importLocalExtraWarps();
+    }
+
+    // Extra slots granted with /pw addwarps. With MongoDB storage they are shared by the network
+    // (granted on one server, they used to apply only there); otherwise playerwarps-extra.yml.
+    private final com.mongodb.client.MongoCollection<org.bson.Document> sharedExtra;
+
+    private static com.mongodb.client.MongoCollection<org.bson.Document> sharedExtraCollection() {
+        var plugin = OEssentials.get();
+        var client = plugin.getHomesMongoClient();
+        if (client == null) return null;
+        var cfg = plugin.getConfig();
+        return client.getDatabase(cfg.getString("storage.mongo.database", "oreo"))
+                .getCollection(cfg.getString("storage.mongo.collectionPrefix", "oreo_") + "playerwarp_extra");
+    }
+
+    private void importLocalExtraWarps() {
+        if (sharedExtra == null || extraWarps.isEmpty() || sharedExtra.countDocuments() > 0) return;
+        extraWarps.forEach((id, n) -> sharedExtra.insertOne(new org.bson.Document("_id", id.toString()).append("extra", n)));
+        OEssentials.get().getLogger().info("[PlayerWarps] Imported " + extraWarps.size() + " extra-slot grant(s) into MongoDB.");
+    }
+
+    private int extraOf(UUID player) {
+        if (sharedExtra == null) return extraWarps.getOrDefault(player, 0);
+        var doc = sharedExtra.find(com.mongodb.client.model.Filters.eq("_id", player.toString())).first();
+        return doc == null ? 0 : Math.max(0, doc.getInteger("extra", 0));
+    }
+
+    /** Adds {@code amount} (may be negative) and returns the new total, never below zero. */
+    private int addExtra(UUID player, int amount) {
+        int newVal = Math.max(0, extraOf(player) + amount);
+        if (sharedExtra != null) {
+            sharedExtra.updateOne(com.mongodb.client.model.Filters.eq("_id", player.toString()),
+                    com.mongodb.client.model.Updates.set("extra", newVal),
+                    new com.mongodb.client.model.UpdateOptions().upsert(true));
+        } else {
+            extraWarps.put(player, newVal);
+            saveExtraWarps();
+        }
+        return newVal;
+    }
+
+    /**
+     * A player's UUID by name: online here, then the network player directory (online on another
+     * server or seen before), then Bukkit's offline-player cache. {@code null} when unknown.
+     */
+    private static UUID resolvePlayerId(String name) {
+        Player local = Bukkit.getPlayerExact(name);
+        if (local != null) return local.getUniqueId();
+        try {
+            var dir = OEssentials.get().getPlayerLocator();
+            UUID id = dir == null ? null : dir.lookupUuidByName(name);
+            if (id != null) return id;
+        } catch (Throwable ignored) {}
+        OfflinePlayer off = Bukkit.getOfflinePlayerIfCached(name);
+        return off != null && off.hasPlayedBefore() ? off.getUniqueId() : null;
     }
 
     private void loadExtraWarps() {
@@ -147,7 +204,7 @@ public class PlayerWarpCommand implements OreoCommand {
                 String name = args[1];
 
                 int baseLimit = service.getLimit(actor);
-                int extra = extraWarps.getOrDefault(actor.getUniqueId(), 0);
+                int extra = extraOf(actor.getUniqueId());
                 int effectiveLimit = baseLimit + extra;
 
                 if (!service.isUnderLimit(actor, effectiveLimit) &&
@@ -266,16 +323,16 @@ public class PlayerWarpCommand implements OreoCommand {
 
                 if (args.length >= 2) {
                     String targetName = args[1];
-                    Player target = Bukkit.getPlayerExact(targetName);
-                    if (target == null) {
+                    UUID targetId = resolvePlayerId(targetName);
+                    if (targetId == null) {
                         Lang.send(sender, "pw.list-target-offline",
                                 "<red>Player <yellow>%player%</yellow> is not online.</red>",
                                 Map.of("player", targetName));
                         return true;
                     }
 
-                    var warps = service.listByOwner(target.getUniqueId());
-                    sendList(sender, target.getName(), warps);
+                    var warps = service.listByOwner(targetId);
+                    sendList(sender, targetName, warps);
                 } else {
                     if (actor == null) {
                         var warps = service.listAll();
@@ -298,18 +355,18 @@ public class PlayerWarpCommand implements OreoCommand {
 
                 if (args.length >= 2) {
                     String targetName = args[1];
-                    Player target = Bukkit.getPlayerExact(targetName);
-                    if (target == null) {
+                    UUID targetId = resolvePlayerId(targetName);
+                    if (targetId == null) {
                         Lang.send(sender, "pw.amount-target-offline",
                                 "<red>Player <yellow>%player%</yellow> is not online.</red>",
                                 Map.of("player", targetName));
                         return true;
                     }
 
-                    int count = service.getWarpCount(target);
+                    int count = service.listByOwner(targetId).size();
                     Lang.send(sender, "pw.amount-other",
                             "<green><yellow>%player%</yellow> has <white>%amount%</white> warp(s).</green>",
-                            Map.of("player", target.getName(), "amount", String.valueOf(count)));
+                            Map.of("player", targetName, "amount", String.valueOf(count)));
                 } else {
                     if (actor == null) {
                         Lang.send(sender, "pw.amount-console-usage",
@@ -647,11 +704,7 @@ public class PlayerWarpCommand implements OreoCommand {
                 }
 
                 UUID uuid = off.getUniqueId();
-                int current = extraWarps.getOrDefault(uuid, 0);
-                int newVal = current + amount;
-                if (newVal < 0) newVal = 0;
-                extraWarps.put(uuid, newVal);
-                saveExtraWarps();
+                int newVal = addExtra(uuid, amount);
 
                 Lang.send(sender, "pw.addwarps-success",
                         "<green>Added <white>%amount%</white> extra warp slot(s) to <yellow>%player%</yellow>. Total extra: <white>%total%</white>.</green>",
