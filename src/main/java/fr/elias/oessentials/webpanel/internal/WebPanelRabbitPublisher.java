@@ -32,7 +32,7 @@ public class WebPanelRabbitPublisher {
     public WebPanelRabbitPublisher(String amqpUri, Logger logger) throws Exception {
         this.logger = logger;
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(amqpUri);
+        factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(amqpUri));
         factory.setAutomaticRecoveryEnabled(true);
         factory.setNetworkRecoveryInterval(5000);
         this.connection = factory.newConnection("oreo-webpanel");
