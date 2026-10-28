@@ -18,7 +18,7 @@ import fr.minuskube.inv.InventoryManager;
 import java.io.File;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services", "messaging::services"}, uses = {"currency-system::services", "shop::services"}, after = {"mail"})
+@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services", "messaging::services", "storage::services"}, uses = {"currency-system::services", "shop::services"}, after = {"mail"})
 public final class InventoriesModule extends ManagedModule implements InventoriesServices {
     private AuctionHouseModule auctionHouse;
     private fr.elias.oessentials.inventory.internal.orders.OrdersModule ordersModule;
