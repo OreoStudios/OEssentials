@@ -1,7 +1,7 @@
 package fr.elias.oessentials.storage.internal.spawn.rabbit.namespace;
 
 import fr.elias.oessentials.storage.internal.spawn.rabbit.packets.SpawnTeleportRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 public final class SpawnPacketNamespace extends PacketNamespace {
 

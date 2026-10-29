@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.webpanel.lifecycle.WebPanelModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "web-panel")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "web-panel", lifecycle = fr.elias.oessentials.webpanel.lifecycle.WebPanelModule.class)
 package fr.elias.oessentials.webpanel;

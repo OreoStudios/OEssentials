@@ -281,7 +281,7 @@ public final class ScoreboardService implements Listener {
             p.setScoreboard(board);
             renderStates.put(p.getUniqueId(), state);
             shown.add(p.getUniqueId());
-            if (plugin.getConfigService().isDebugEnabled()) {
+            if (plugin.getServerConfig().isDebugEnabled()) {
                 plugin.getLogger().info("[Scoreboard] Shown for " + p.getName());
             }
         } catch (Throwable t) {
@@ -833,8 +833,8 @@ public final class ScoreboardService implements Listener {
 
     private void forceNametagUpdate(Player p) {
         try {
-            if (plugin.getNametagManager() != null)
-                plugin.getNametagManager().forceUpdate(p);
+            var nametags = plugin.getModuleRegistry().read(fr.elias.oessentials.nametag.lifecycle.NametagServices.class, n -> n);
+            if (nametags != null) nametags.forceUpdate(p);
         } catch (Throwable ignored) {}
     }
 

@@ -13,15 +13,17 @@ public final class PortalsModule extends ManagedModule implements PortalsService
 
     @Override
     protected void start() {
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
         initPortals();
         listenForModuleEvents(this);
+        providePublicApi(fr.elias.oessentials.api.IPortalsAPI.class, this::getPortalsApi);
     }
 
     @Override public fr.elias.oessentials.portals.internal.PortalsManager getPortals() { return portals; }
 
     private void initPortals() {
         this.portals = new fr.elias.oessentials.portals.internal.PortalsManager(plugin);
-        if (!services(ConfigurationServices.class).getSettingsConfig().portalsEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().portalsEnabled()) {
             plugin.getLogger().info("[Portals] Disabled by settings.yml.");
             this.portals = null;
             return;
@@ -37,8 +39,8 @@ public final class PortalsModule extends ManagedModule implements PortalsService
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
 
         // Wire up cross-server support if RabbitMQ is available
-        if (services(MessagingServices.class).getPacketManager() != null && services(MessagingServices.class).getPacketManager().isInitialized()) {
-            this.portals.initCrossServer(services(MessagingServices.class).getPacketManager());
+        if (services(MessagingServices.class).getPacketBus() != null && services(MessagingServices.class).getPacketBus().isInitialized()) {
+            this.portals.initCrossServer(services(MessagingServices.class).getPacketBus());
             plugin.getLogger().info("[Portals] Cross-server support enabled.");
         } else {
             plugin.getLogger().info("[Portals] RabbitMQ unavailable — cross-server portals disabled.");

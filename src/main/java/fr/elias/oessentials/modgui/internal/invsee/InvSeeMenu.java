@@ -1,9 +1,8 @@
 package fr.elias.oessentials.modgui.internal.invsee;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.invsee.InvseeService;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
-import fr.elias.oessentials.sync.internal.services.InventoryService;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
+import fr.elias.oessentials.sync.api.InventoryService;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.InventoryListener;
 import fr.minuskube.inv.SmartInventory;
@@ -71,7 +70,7 @@ public class InvSeeMenu implements InventoryProvider {
         debugInfo(plugin, "[INVSEE-DEBUG] init(): viewer=" + viewer.getName()
                 + " targetId=" + targetId + " on server=" + plugin.getServerNameSafe());
 
-        InvseeService invsee = plugin.getInvseeService();
+        fr.elias.oessentials.sync.api.InvseeSnapshots invsee = plugin.getModuleRegistry().read(fr.elias.oessentials.sync.lifecycle.InventorySyncServices.class, fr.elias.oessentials.sync.lifecycle.InventorySyncServices::getInvseeSnapshots);
         if (invsee == null) {
             debugWarn(plugin, "[INVSEE-DEBUG] init(): InvseeService is null, aborting.");
             viewer.closeInventory();
@@ -165,7 +164,7 @@ public class InvSeeMenu implements InventoryProvider {
         debugInfo(plugin, "[INVSEE-DEBUG] syncAndApply(): viewer=" + viewer.getName()
                 + " targetId=" + targetId + " invSize=" + inv.getSize());
 
-        InvseeService invsee = plugin.getInvseeService();
+        fr.elias.oessentials.sync.api.InvseeSnapshots invsee = plugin.getModuleRegistry().read(fr.elias.oessentials.sync.lifecycle.InventorySyncServices.class, fr.elias.oessentials.sync.lifecycle.InventorySyncServices::getInvseeSnapshots);
         if (invsee == null) {
             debugWarn(plugin, "[INVSEE-DEBUG] syncAndApply(): InvseeService is null, aborting.");
             viewer.sendMessage("§cCannot apply inventory changes: invsee service unavailable.");
@@ -302,13 +301,13 @@ public class InvSeeMenu implements InventoryProvider {
     }
 
     private static void debugInfo(OEssentials plugin, String message) {
-        if (plugin.getConfigService().isDebugEnabled()) {
+        if (plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().info(message);
         }
     }
 
     private static void debugWarn(OEssentials plugin, String message) {
-        if (plugin.getConfigService().isDebugEnabled()) {
+        if (plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().warning(message);
         }
     }

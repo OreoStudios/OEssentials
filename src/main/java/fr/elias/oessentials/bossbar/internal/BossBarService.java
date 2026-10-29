@@ -1,7 +1,7 @@
 package fr.elias.oessentials.bossbar.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.nametag.internal.NametageCondition;
+import fr.elias.oessentials.platform.config.NametageCondition;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -51,7 +51,7 @@ public final class BossBarService implements Listener {
     private void readConfig() {
         var cfg = plugin.getConfig().getConfigurationSection("bossbar");
 
-        this.enabled = plugin.getSettingsConfig().bossbarEnabled();
+        this.enabled = plugin.getFeatureSettings().bossbarEnabled();
 
         this.text     = cfg != null ? cfg.getString("text", "<gradient:#FF1493:#00FF7F>Welcome</gradient> {player}")
                 : "<gradient:#FF1493:#00FF7FF>Welcome</gradient> {player}";

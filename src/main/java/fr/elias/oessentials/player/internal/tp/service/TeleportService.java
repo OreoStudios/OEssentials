@@ -2,9 +2,9 @@
 package fr.elias.oessentials.player.internal.tp.service;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.service.BackService;
-import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
@@ -34,7 +34,7 @@ public class TeleportService implements Listener {
 
     private final Map<UUID, TpaRequest> pendingToTarget = new ConcurrentHashMap<>();
 
-    public TeleportService(OEssentials plugin, BackService back, ConfigService config) {
+    public TeleportService(OEssentials plugin, BackService back, ServerConfig config) {
         this.plugin = plugin;
         this.back = back;
         this.timeoutSec = config.tpaTimeoutSeconds();
@@ -230,7 +230,7 @@ public class TeleportService implements Listener {
     public boolean teleportToServerLocation(Player who, BackLocation loc) {
         if (who == null || loc == null) return false;
 
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
         if (loc.getServer() == null
                 || loc.getServer().isBlank()
                 || loc.getServer().equalsIgnoreCase(localServer)) {

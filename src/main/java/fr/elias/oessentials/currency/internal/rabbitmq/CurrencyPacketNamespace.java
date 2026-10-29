@@ -1,22 +1,20 @@
 package fr.elias.oessentials.currency.internal.rabbitmq;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 
 /**
- * RabbitMQ packet namespace for currency system
+ * Packet ids are on the wire. These were numbered by registration order at startup until
+ * they got fixed ids; keep them unchanged.
  */
-public class CurrencyPacketNamespace extends PacketNamespace {
-
+public final class CurrencyPacketNamespace extends PacketNamespace {
     public CurrencyPacketNamespace() {
-        super((short) 7);
+        super((short) 35);
     }
 
     @Override
     protected void registerPackets() {
-        registerPacket(1, CurrencyTransferPacket.class, CurrencyTransferPacket::new);
-
-        registerPacket(2, CurrencyUpdatePacket.class, CurrencyUpdatePacket::new);
-
-        registerPacket(3, CurrencySyncPacket.class, CurrencySyncPacket::new);
+        registerPacket(27021, CurrencyTransferPacket.class, CurrencyTransferPacket::new);
+        registerPacket(27022, CurrencyUpdatePacket.class, CurrencyUpdatePacket::new);
+        registerPacket(27023, CurrencySyncPacket.class, CurrencySyncPacket::new);
     }
 }

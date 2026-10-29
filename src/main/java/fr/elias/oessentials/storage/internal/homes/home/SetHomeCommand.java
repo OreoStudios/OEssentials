@@ -2,7 +2,7 @@ package fr.elias.oessentials.storage.internal.homes.home;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -17,9 +17,9 @@ import java.util.Map;
 
 public class SetHomeCommand implements OreoCommand {
     private final HomeService homes;
-    private final ConfigService config;
+    private final ServerConfig config;
 
-    public SetHomeCommand(HomeService homes, ConfigService config) {
+    public SetHomeCommand(HomeService homes, ServerConfig config) {
         this.homes = homes;
         this.config = config;
     }

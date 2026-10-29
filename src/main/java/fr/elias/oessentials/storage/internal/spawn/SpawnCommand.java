@@ -2,8 +2,8 @@ package fr.elias.oessentials.storage.internal.spawn;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.spawn.rabbit.packets.SpawnTeleportRequestPacket;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
@@ -39,14 +39,14 @@ public class SpawnCommand implements OreoCommand {
         final var log = plugin.getLogger();
         if (!(sender instanceof Player p)) return true;
 
-        if (!plugin.getSettingsConfig().isEnabled("spawn")) {
+        if (!plugin.getFeatureSettings().isEnabled("spawn")) {
             Lang.send(p, "spawn.disabled",
                     "<red>Spawn command is currently disabled.</red>");
             return true;
         }
 
-        final String localServer = plugin.getConfigService().serverName();
-        var cs = plugin.getCrossServerSettings();
+        final String localServer = plugin.getServerConfig().serverName();
+        var cs = plugin.getCrossServerFeatures();
 
         String targetServer = localServer; // Default to local server
 
@@ -70,7 +70,7 @@ public class SpawnCommand implements OreoCommand {
         }
 
 
-        final PacketManager pm = plugin.getPacketManager();
+        final PacketBus pm = plugin.getPacketBus();
         log.info("[SpawnCmd] Remote spawn. pm=" + (pm == null ? "null" : "ok")
                 + " pm.init=" + (pm != null && pm.isInitialized()));
 
@@ -86,10 +86,10 @@ public class SpawnCommand implements OreoCommand {
         return handleRemoteSpawn(plugin, p, localServer, targetServer, log);
     }
     private boolean handleLocalSpawn(OEssentials plugin, Player p, java.util.logging.Logger log) {
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         ConfigurationSection sec =
-                plugin.getSettingsConfig().getRoot().getConfigurationSection("features.spawn");
+                plugin.getFeatureSettings().getRoot().getConfigurationSection("features.spawn");
         boolean enabled = sec != null && sec.getBoolean("cooldown", false);
         int seconds     = (sec != null ? sec.getInt("cooldown-amount", 0) : 0);
         boolean bypassCooldown = p.isOp();
@@ -191,7 +191,7 @@ public class SpawnCommand implements OreoCommand {
                                       String targetServer,
                                       java.util.logging.Logger log) {
 
-        final PacketManager pm = plugin.getPacketManager();
+        final PacketBus pm = plugin.getPacketBus();
         log.info("[SpawnCmd] Remote spawn. pm=" + (pm == null ? "null" : "ok")
                 + " pm.init=" + (pm != null && pm.isInitialized()));
 
@@ -205,7 +205,7 @@ public class SpawnCommand implements OreoCommand {
         }
 
         ConfigurationSection sec =
-                plugin.getSettingsConfig().getRoot().getConfigurationSection("features.spawn");
+                plugin.getFeatureSettings().getRoot().getConfigurationSection("features.spawn");
         boolean enabled = sec != null && sec.getBoolean("cooldown", false);
         int seconds     = (sec != null ? sec.getInt("cooldown-amount", 0) : 0);
 

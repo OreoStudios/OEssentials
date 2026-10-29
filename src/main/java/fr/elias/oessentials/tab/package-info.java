@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.tab.lifecycle.TabModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "tab")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "tab", lifecycle = fr.elias.oessentials.tab.lifecycle.TabModule.class)
 package fr.elias.oessentials.tab;

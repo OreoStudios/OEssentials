@@ -4,16 +4,32 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "command-control", after = {"economy"})
+@PluginModule(value = "command-control", dependencies = {"configuration::services"}, after = {"economy"})
 public final class CommandControlModule extends ManagedModule implements CommandControlServices {
     private fr.elias.oessentials.commandcontrol.internal.CommandControlService commandControlService;
+    private fr.elias.oessentials.commandcontrol.internal.aliases.AliasService aliasService;
 
     @Override
     protected void start() {
+        cleanup("aliasService", () -> { if (aliasService != null) aliasService.shutdown(); });
         initCommandControl();
+        initAliases();
+        providePublicApi(fr.elias.oessentials.api.ICommandControlAPI.class, this::getCommandControlApi);
+        providePublicApi(fr.elias.oessentials.api.IAliasesAPI.class, this::getAliasesApi);
     }
 
     @Override public fr.elias.oessentials.commandcontrol.internal.CommandControlService getCommandControlService() { return commandControlService; }
+    @Override public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return aliasService; }
+
+    /** Command aliases and /aliaseditor (owned by proxy-messaging and commands until 7.1.6). */
+    private void initAliases() {
+        this.aliasService = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasService(plugin);
+        this.aliasService.load();
+        this.aliasService.applyRuntimeRegistration();
+        // The editor GUI uses the inventory manager, which starts later; resolve it when opened.
+        var aliasCmd = new fr.elias.oessentials.commandcontrol.internal.aliases.AliasEditorCommand(aliasService, plugin::getInvManager);
+        services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands().registerLegacy("aliaseditor", aliasCmd, aliasCmd);
+    }
 
     private void initCommandControl() {
         try {

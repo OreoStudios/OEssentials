@@ -1,7 +1,6 @@
 package fr.elias.oessentials.sync.internal.playersync;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.enderchest.internal.EnderChestStorage;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -26,6 +25,16 @@ public final class PlayerSyncService {
     }
 
     /** Capture Bukkit player state. Must run on the player's owning thread/region. */
+    /**
+     * Players whose saved inventory has been loaded on this server (or who had none). Until then the
+     * player still holds this server's stale copy, and saving it would overwrite the real one.
+     */
+    private final java.util.Set<java.util.UUID> loaded = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    public void markLoaded(java.util.UUID id) { loaded.add(id); }
+    public void forget(java.util.UUID id) { loaded.remove(id); }
+    public boolean isLoaded(java.util.UUID id) { return loaded.contains(id); }
+
     public PlayerSyncSnapshot captureSnapshot(Player p) {
         PlayerSyncPrefs pr = prefs.get(p.getUniqueId());
         PlayerSyncSnapshot s = new PlayerSyncSnapshot();
@@ -51,6 +60,7 @@ public final class PlayerSyncService {
         s.food = Math.max(0, Math.min(20, p.getFoodLevel()));
         s.saturation = Math.max(0f, Math.min(20f, p.getSaturation()));
         s.potionData = pr.potions ? serializePotions(p.getActivePotionEffects()) : null;
+        s.journal = pr.inv ? fr.elias.oessentials.shared.PlayerJournal.raw(p) : null;
         return s;
     }
 
@@ -82,7 +92,7 @@ public final class PlayerSyncService {
             if (pr.inv) {
                 // null means the saving server had inv-sync disabled — skip to avoid wiping items
                 if (s.inventory != null) {
-                    ItemStack[] main = EnderChestStorage.clamp(s.inventory, 4);
+                    ItemStack[] main = padToRows(s.inventory, 4);
                     p.getInventory().setContents(main);
                 }
                 if (s.armor != null) {
@@ -91,6 +101,8 @@ public final class PlayerSyncService {
                 if (s.offhand != null) {
                     p.getInventory().setItemInOffHand(s.offhand);
                 }
+                // Receipts travel with the inventory they describe.
+                if (s.journal != null) fr.elias.oessentials.shared.PlayerJournal.setRaw(p, s.journal);
             }
 
             if (pr.xp && s.level >= 0) { // level=-1 means not captured on the saving server
@@ -172,4 +184,13 @@ public final class PlayerSyncService {
     }
 
     public PlayerSyncPrefsStore prefs() { return prefs; }
+
+    /** Pads the stored main inventory to {@code rows} rows, as the ender chest storage does. */
+    private static ItemStack[] padToRows(ItemStack[] src, int rows) {
+        int size = Math.max(1, rows) * 9;
+        if (src == null || src.length >= size) return src;
+        ItemStack[] dst = new ItemStack[size];
+        System.arraycopy(src, 0, dst, 0, src.length);
+        return dst;
+    }
 }

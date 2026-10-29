@@ -37,6 +37,10 @@ public class CommandManager {
     private java.util.function.Predicate<String> registrationGate;
     /** Registrations held back because their command is disabled in commands-toggle.yml. */
     private final Map<String, Runnable> deferred = new LinkedHashMap<>();
+    /** What each label registered before the gate existed put into the CommandMap. */
+    private final Map<String, Registration> registered = new LinkedHashMap<>();
+
+    private record Registration(Runnable registration, Set<Command> commands) {}
 
     public CommandManager(OEssentials plugin) {
         this.plugin = plugin;
@@ -50,6 +54,18 @@ public class CommandManager {
      */
     public void setRegistrationGate(java.util.function.Predicate<String> gate) {
         this.registrationGate = gate;
+        if (gate == null) return;
+        // Modules that start before command toggles are loaded have already registered their
+        // commands; take back the disabled ones so start order does not matter.
+        CommandMap map = getCommandMap();
+        for (var iterator = registered.entrySet().iterator(); iterator.hasNext(); ) {
+            var entry = iterator.next();
+            if (gate.test(entry.getKey())) continue;
+            if (map != null) ownedCommands.remove(entry.getValue().commands(), map);
+            deferred.put(entry.getKey(), entry.getValue().registration());
+            iterator.remove();
+            plugin.getLogger().fine("[Commands] /" + entry.getKey() + " is disabled in commands-toggle.yml; unregistered.");
+        }
     }
 
     /** Registers a command held back by the gate. Returns false when nothing was deferred. */
@@ -76,11 +92,14 @@ public class CommandManager {
         CommandMap commandMap = getCommandMap();
         Set<Command> before = commandMap == null ? Set.of() : new HashSet<>(commandMap.getKnownCommands().values());
         api.registerCommand(new OreoCommandAdapter(plugin, cmd));
+        Set<Command> added = Collections.newSetFromMap(new IdentityHashMap<>());
         if (commandMap != null) {
-            for (Command registered : commandMap.getKnownCommands().values()) {
-                if (!before.contains(registered)) ownedCommands.add(registered);
+            for (Command command : commandMap.getKnownCommands().values()) {
+                if (!before.contains(command)) added.add(command);
             }
+            added.forEach(ownedCommands::add);
         }
+        remember(cmd.name(), () -> doRegister(cmd), added);
 
         rewireTabCompleter(cmd.name(), cmd);
         for (String alias : cmd.aliases()) {
@@ -126,7 +145,12 @@ public class CommandManager {
         };
         map.register(plugin.getName().toLowerCase(Locale.ROOT), cmd);
         ownedCommands.add(cmd);
+        remember(name, () -> doRegisterLegacy(name, exec, tab), Set.of(cmd));
         return this;
+    }
+
+    private void remember(String name, Runnable registration, Set<Command> commands) {
+        if (registrationGate == null) registered.put(name.toLowerCase(Locale.ROOT), new Registration(registration, commands));
     }
 
     /** Called by the configuration module after all command consumers have stopped. */

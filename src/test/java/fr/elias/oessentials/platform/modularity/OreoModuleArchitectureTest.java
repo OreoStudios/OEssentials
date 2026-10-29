@@ -32,9 +32,16 @@ class OreoModuleArchitectureTest {
         List<String> order = runtime.modules().stream().map(ModuleDescriptor::id).toList();
         assertEquals("configuration", order.getFirst());
         assertEquals("integrations", order.getLast());
-        for (String consumer : List.of("economy", "chat", "inventory-sync", "player-vaults", "tab", "messaging")) {
+        for (String consumer : List.of("economy", "chat", "inventory-sync", "player-vaults", "tab")) {
             assertTrue(order.indexOf("storage") < order.indexOf(consumer), consumer + " must stop before storage");
         }
+        // Messaging is the transport: modules register packets with it, so it starts before them
+        // (PacketManager stops dispatching as soon as the plugin starts disabling).
+        for (String user : List.of("storage", "economy", "player-services", "trade", "inventory-sync", "mod-gui")) {
+            assertTrue(order.indexOf("messaging") < order.indexOf(user), user + " must start after messaging");
+        }
+        assertEquals(List.of("configuration"), runtime.modules().get(order.indexOf("messaging")).dependencies().stream()
+                .map(dependency -> dependency.split("::")[0]).toList(), "messaging depends only on configuration");
         ModuleAssertions.assertMermaidContains(runtime, "messaging");
     }
 

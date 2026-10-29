@@ -2,7 +2,7 @@ package fr.elias.oessentials.portals.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.portals.internal.rabbit.PortalsCrossServerBroker;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -108,7 +108,7 @@ public class PortalsManager implements Listener {
     public PortalsManager(OEssentials plugin) {
         this.plugin  = plugin;
         this.config  = new PortalConfig(plugin.getDataFolder());
-        this.enabled = plugin.getSettings().portalsEnabled();
+        this.enabled = plugin.getFeatureSettings().portalsEnabled();
 
         this.portalsFile = config.getPortalsFile();
         if (!portalsFile.exists()) {
@@ -127,7 +127,7 @@ public class PortalsManager implements Listener {
 
     // ── Cross-server setup ────────────────────────────────────────────────────
 
-    public void initCrossServer(PacketManager pm) {
+    public void initCrossServer(PacketBus pm) {
         if (pm == null) return;
         this.crossServerBroker = new PortalsCrossServerBroker(plugin, pm);
         plugin.getLogger().info("[Portals] Cross-server support enabled.");
@@ -296,7 +296,7 @@ public class PortalsManager implements Listener {
             event.setCancelled(true);
             OreScheduler.run(plugin, () -> {
                 if (!input.equalsIgnoreCase("none")) {
-                    fr.elias.oessentials.storage.internal.warps.WarpService ws = plugin.getWarpService();
+                    fr.elias.oessentials.api.IWarpsAPI ws = plugin.getWarpsApi();
                     if (ws != null && ws.getWarp(input) == null) {
                         event.getPlayer().sendMessage(ChatColor.RED + "Warp '" + input + "' does not exist.");
                         return;
@@ -352,7 +352,7 @@ public class PortalsManager implements Listener {
             // ── Resolve warp destination if set ───────────────────────────
             Location resolvedDest = portal.destination;
             if (portal.destWarp != null && !portal.destWarp.isEmpty()) {
-                fr.elias.oessentials.storage.internal.warps.WarpService ws = plugin.getWarpService();
+                fr.elias.oessentials.api.IWarpsAPI ws = plugin.getWarpsApi();
                 Location warpLoc = ws != null ? ws.getWarp(portal.destWarp) : null;
                 if (warpLoc == null) {
                     Lang.send(p, "portals.warp-not-found",
@@ -370,7 +370,7 @@ public class PortalsManager implements Listener {
                             "<red>Cross-server portals require RabbitMQ + BungeeCord/Velocity.</red>");
                     return;
                 }
-                PacketManager pm = plugin.getPacketManager();
+                PacketBus pm = plugin.getPacketBus();
                 if (pm == null) { return; }
 
                 // P-1: record teleport time before sending cross-server

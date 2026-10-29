@@ -96,11 +96,11 @@ public class PayCommand implements OreoCommand {
                 OreScheduler.runForEntity(plugin, local, () -> local.sendMessage(receiverMsg));
             } else {
                 try {
-                    var pm = plugin.getPacketManager();
+                    var pm = plugin.getPacketBus();
                     if (pm != null && pm.isInitialized()) {
                         pm.sendPacket(
-                                fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels.GLOBAL,
-                                new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(
+                                fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL,
+                                new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(
                                         finalTarget.getUniqueId(), receiverMsg));
                         if (plugin.getConfig().getBoolean("debug", false))
                             plugin.getLogger().info("[PAY][DBG] GLOBAL remote message queued for " + finalTarget.getUniqueId());

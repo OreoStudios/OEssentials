@@ -8,8 +8,8 @@ import fr.elias.oessentials.storage.internal.spawn.SpawnService;
 import fr.elias.oessentials.storage.internal.spawn.rabbit.packets.SpawnTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.warps.WarpService;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.WarpTeleportRequestPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,14 +28,14 @@ public class TeleportBroker {
     private final WarpService warps;
     private final SpawnService spawns;
 
-    private final PacketManager pm;
+    private final PacketBus pm;
     private final Map<UUID, Runnable> pending = new ConcurrentHashMap<>();
 
     public TeleportBroker(OEssentials plugin,
                           HomeService homes,
                           WarpService warps,
                           SpawnService spawns,
-                          PacketManager pm) {
+                          PacketBus pm) {
         this.plugin = plugin;
         this.homes = homes;
         this.warps = warps;

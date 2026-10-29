@@ -46,7 +46,7 @@ public class UnbanCommand implements OreoCommand, org.bukkit.command.TabComplete
                 "<green>Unbanned <aqua>%player%</aqua>.</green>",
                 Map.of("player", exactName));
 
-        var mod = OEssentials.get().getDiscordMod();
+        var mod = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
         if (mod != null && mod.isEnabled()) {
             OfflinePlayer op = Bukkit.getOfflinePlayer(exactName);
             UUID id = (op != null) ? op.getUniqueId() : null;

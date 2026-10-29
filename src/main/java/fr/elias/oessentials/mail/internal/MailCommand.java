@@ -73,8 +73,10 @@ public final class MailCommand implements OreoCommand, TabCompleter {
             case "clear"         -> {
                 boolean confirmed = args.length >= 2 && args[1].equals("--confirmed");
                 if (!confirmed && sender instanceof Player cp) {
-                    var dm = plugin.getDialogManager();
-                    if (dm != null && dm.confirmMailClear(cp)) break;
+                    if (fr.elias.oessentials.platform.ui.Dialogs.confirm(plugin, cp, "confirm-mailclear", "MailClear confirm dialog",
+                            net.kyori.adventure.text.Component.text("Clear Mailbox", net.kyori.adventure.text.format.NamedTextColor.RED),
+                            net.kyori.adventure.text.Component.text("Delete all your mail messages? This cannot be undone.", net.kyori.adventure.text.format.NamedTextColor.GRAY),
+                            "mail clear --confirmed")) break;
                 }
                 handleClear(sender);
             }

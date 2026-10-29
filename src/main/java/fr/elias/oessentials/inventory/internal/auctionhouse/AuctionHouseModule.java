@@ -2,7 +2,7 @@ package fr.elias.oessentials.inventory.internal.auctionhouse;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.inventory.internal.auctionhouse.gui.BrowseGUI;
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.Auction;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.AuctionCategory;
 import fr.elias.oessentials.inventory.internal.auctionhouse.models.AuctionStatus;
@@ -23,7 +23,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -154,7 +153,7 @@ public final class AuctionHouseModule {
 
         double fee = (price * cfg.listingFeePercent() / 100.0) + cfg.listingFeeFlat();
         if (fee > 0) {
-            CurrencyService cs = (currencyId != null) ? plugin.getCurrencyService() : null;
+            Currencies cs = (currencyId != null) ? plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
             if (cs != null) {
                 final String finalCurrencyId = currencyId;
                 final long finalDurationHours = durationHours;
@@ -210,7 +209,7 @@ public final class AuctionHouseModule {
 
             double price = auction.getPrice();
             String auctionCurrencyId = auction.getCurrencyId();
-            CurrencyService cs = (auctionCurrencyId != null) ? plugin.getCurrencyService() : null;
+            Currencies cs = (auctionCurrencyId != null) ? plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies) : null;
             double tax = price * cfg.taxPercent() / 100.0;
             double sellerReceives = price - tax;
 
@@ -481,7 +480,7 @@ public final class AuctionHouseModule {
     /** Format using the per-listing currencyId (null = Vault). */
     public String formatMoney(double amount, String currencyId) {
         if (currencyId != null) {
-            CurrencyService cs = plugin.getCurrencyService();
+            Currencies cs = plugin.getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
             if (cs != null) return cs.formatBalance(currencyId, amount);
         }
         return formatMoney(amount);
@@ -540,18 +539,18 @@ public final class AuctionHouseModule {
     /** Sends a sync packet to all other servers (no-op if RabbitMQ is not available). */
     private void broadcastSync(AuctionSyncPacket pkt) {
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             if (pm != null && pm.isInitialized()) pm.sendPacket(pkt);
         } catch (Throwable ignored) {}
     }
 
     private String serverName() {
-        try { return plugin.getConfigService().serverName(); }
+        try { return plugin.getServerConfig().serverName(); }
         catch (Throwable t) { return "unknown"; }
     }
 
     /**
-     * Called by the PacketManager subscriber when another server broadcasts
+     * Called by the PacketBus subscriber when another server broadcasts
      * an AuctionSyncPacket. Applies the change to this server's in-memory lists,
      * then schedules a main-thread GUI refresh for all open BrowseGUI viewers.
      */
@@ -677,13 +676,9 @@ public final class AuctionHouseModule {
     }
 
     private com.mongodb.client.MongoClient getMongoClient() {
-        try {
-            Field f = OEssentials.class.getDeclaredField("homesMongoClient");
-            f.setAccessible(true);
-            Object obj = f.get(plugin);
-            if (obj instanceof com.mongodb.client.MongoClient mc) return mc;
-        } catch (Throwable ignored) {}
-        return null;
+        // The client lives in the storage module; a reflective lookup of a removed OEssentials field
+        // returned null, so the auction house never used MongoDB.
+        return plugin.getHomesMongoClient();
     }
 
     private void detectCustomItem(Auction auction, ItemStack item) {

@@ -79,7 +79,7 @@ public class KitCommands implements CommandExecutor, TabCompleter {
             }
 
             // Try dialog first, fall back to SmartInvs
-            if (plugin.getDialogManager() != null && plugin.getDialogManager().openKitsDialog(p, manager)) {
+            if (fr.elias.oessentials.platform.ui.Dialogs.show(plugin, "kits", "Kits dialog", () -> KitsDialogHandler.open(plugin, manager, p))) {
                 return true;
             }
             KitsMenuSI.open(plugin, manager, p);

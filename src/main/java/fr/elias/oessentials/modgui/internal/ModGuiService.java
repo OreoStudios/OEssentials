@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-public class ModGuiService implements TabExecutor {
+public class ModGuiService implements TabExecutor, fr.elias.oessentials.modgui.api.ChatControls {
     private final OEssentials plugin;
     private final InventoryManager inv;
     private final ModGuiConfig config;

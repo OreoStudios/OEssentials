@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.integrations.lifecycle.IntegrationsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "integrations")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "integrations", lifecycle = fr.elias.oessentials.integrations.lifecycle.IntegrationsModule.class)
 package fr.elias.oessentials.integrations;

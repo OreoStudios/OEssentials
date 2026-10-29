@@ -110,7 +110,7 @@ public final class OrdersModule {
 
     public void subscribeCrossServerEvents() {
         if (!ready || !cfg.crossServerEnabled()) return;
-        var pm = plugin.getPacketManager();
+        var pm = plugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) return;
 
         pm.subscribe(OrderSyncPacket.class, (channel, pkt) -> {
@@ -215,7 +215,7 @@ public final class OrdersModule {
     }
 
     private String serverName() {
-        try { return plugin.getConfigService().serverName(); }
+        try { return plugin.getServerConfig().serverName(); }
         catch (Throwable t) { return "unknown"; }
     }
 }

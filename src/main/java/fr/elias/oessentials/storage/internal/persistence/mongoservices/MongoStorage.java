@@ -6,7 +6,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.api.ServerConfig;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import fr.elias.oessentials.storage.internal.services.StorageApi;
 import fr.elias.oessentials.shared.LocUtil;
@@ -35,7 +35,7 @@ public class MongoStorage implements StorageApi {
     private final MongoCollection<Document> colWarps;
     private final MongoCollection<Document> colPlayers;
 
-    public MongoStorage(Plugin plugin, ConfigService cfg) {
+    public MongoStorage(Plugin plugin, ServerConfig cfg) {
         this.plugin = plugin;
         this.client = MongoClients.create(cfg.mongoUri());
         this.db = client.getDatabase(cfg.mongoDatabase());

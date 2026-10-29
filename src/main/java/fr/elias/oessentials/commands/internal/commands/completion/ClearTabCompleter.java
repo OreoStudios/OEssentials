@@ -1,7 +1,7 @@
 package fr.elias.oessentials.commands.internal.commands.completion;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,7 +46,7 @@ public class ClearTabCompleter implements TabCompleter {
             }
         }
 
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
         if (dir != null) {
             try {
                 var names = dir.suggestOnlineNames(want, 50);

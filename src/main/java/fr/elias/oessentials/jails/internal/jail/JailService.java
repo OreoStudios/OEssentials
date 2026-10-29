@@ -120,7 +120,7 @@ public final class JailService {
 
         try {
             if (plugin instanceof OEssentials oe) {
-                var d = oe.getDiscordMod();
+                var d = oe.getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
                 if (d != null && d.isEnabled()) {
                     String playerName = String.valueOf(Bukkit.getOfflinePlayer(player).getName());
                     d.notifyJail(playerName, player, j.name, cellId, s.reason, s.by, s.endEpochMs);
@@ -146,7 +146,7 @@ public final class JailService {
 
         try {
             if (plugin instanceof OEssentials oe) {
-                var d = oe.getDiscordMod();
+                var d = oe.getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
                 if (d != null && d.isEnabled()) {
                     String playerName = String.valueOf(Bukkit.getOfflinePlayer(player).getName());
                     d.notifyUnjail(playerName, player, s.by == null || s.by.isBlank() ? "system" : s.by);

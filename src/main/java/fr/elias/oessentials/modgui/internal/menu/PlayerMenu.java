@@ -1,8 +1,8 @@
 package fr.elias.oessentials.modgui.internal.menu;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -27,7 +27,7 @@ public class PlayerMenu implements InventoryProvider {
 
     @Override
     public void init(Player p, InventoryContents c) {
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
 
         if (dir == null) {
             displayLocalPlayers(p, c);
@@ -73,7 +73,7 @@ public class PlayerMenu implements InventoryProvider {
         }
     }
 
-    private void displayNetworkPlayers(Player p, InventoryContents c, PlayerDirectory dir) {
+    private void displayNetworkPlayers(Player p, InventoryContents c, PlayerLocator dir) {
         Collection<UUID> online = dir.onlinePlayers();
 
         List<PlayerEntry> entries = online.stream()
@@ -120,7 +120,7 @@ public class PlayerMenu implements InventoryProvider {
         }
     }
 
-    private PlayerEntry createPlayerEntry(UUID uuid, PlayerDirectory dir) {
+    private PlayerEntry createPlayerEntry(UUID uuid, PlayerLocator dir) {
         String name = dir.lookupNameByUuid(uuid);
         if (name == null || name.isBlank()) {
             name = uuid.toString().substring(0, 8);

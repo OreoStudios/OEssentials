@@ -13,13 +13,16 @@ public final class KitsModule extends ManagedModule implements KitsServices {
     protected void start() {
         cleanup("kitsManager", () -> { if (kitsManager != null) kitsManager.saveData(); });
         initKits();
+        providePublicApi(fr.elias.oessentials.api.IKitsAPI.class, this::getKitsApi);
+        registerReloadStep(5, "kits", this::reloadKits);
+        registerPlaceholders(new fr.elias.oessentials.kits.internal.KitsPlaceholders(plugin));
     }
 
     @Override public fr.elias.oessentials.kits.internal.KitsManager getKitsManager() { return kitsManager; }
 
     private void initKits() {
-        boolean kitsFeature  = services(ConfigurationServices.class).getSettingsConfig().kitsEnabled();
-        boolean kitsRegister = services(ConfigurationServices.class).getSettingsConfig().kitsCommandsEnabled();
+        boolean kitsFeature  = services(ConfigurationServices.class).getFeatureSettings().kitsEnabled();
+        boolean kitsRegister = services(ConfigurationServices.class).getFeatureSettings().kitsCommandsEnabled();
 
         if (kitsFeature) {
             this.kitsManager = new fr.elias.oessentials.kits.internal.KitsManager(plugin);
@@ -36,6 +39,27 @@ public final class KitsModule extends ManagedModule implements KitsServices {
             BootstrapSupport.unregisterCommandHard(plugin, "kit");
             this.kitsManager = null;
             plugin.getLogger().info("[Kits] Disabled by config.");
+        }
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadKits(org.bukkit.command.CommandSender sender) {
+        try {
+            var target = plugin.getKitsManager();
+            if (target != null) {
+                target.reload();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.kits",
+                        "<green>✔ Reloaded <white>kits.yml</white></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.kits-skip",
+                    "<yellow>• Skipped kits.yml (manager unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.kits-skip",
+                    "<yellow>• Skipped kits.yml: <gray>%error%</gray></yellow>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
         }
     }
 }

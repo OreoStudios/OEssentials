@@ -1,8 +1,10 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.packet.event;
 
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.Packet;
+
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.Packet;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

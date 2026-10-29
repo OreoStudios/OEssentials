@@ -2,8 +2,8 @@ package fr.elias.oessentials.afk.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkStatusPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -40,7 +40,7 @@ public class AfkService implements Listener {
 
     private AfkPoolService poolService;
     private AfkWebServer   webServer;
-    private fr.elias.oessentials.webpanel.internal.WebPanelSyncService webPanelSync;
+    private volatile fr.elias.oessentials.afk.api.AfkStatusSink webPanelSync;
     private volatile boolean crossHandlersRegistered = false;
 
     // ---- config ----
@@ -67,7 +67,7 @@ public class AfkService implements Listener {
         this.orePlugin  = (plugin instanceof OEssentials ore) ? ore : null;
         this.afkConfig  = new AfkConfig(plugin);
         this.logger     = plugin.getLogger();
-        this.localServer = (orePlugin != null) ? orePlugin.getConfigService().serverName() : Bukkit.getServer().getName();
+        this.localServer = (orePlugin != null) ? orePlugin.getServerConfig().serverName() : Bukkit.getServer().getName();
 
         reloadAutoConfig();
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -138,7 +138,7 @@ public class AfkService implements Listener {
         if (crossHandlersRegistered) return;
         if (orePlugin == null) return;
 
-        PacketManager pm = orePlugin.getPacketManager();
+        PacketBus pm = orePlugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) return;
 
         try { pm.subscribeChannel(PacketChannels.GLOBAL); } catch (Throwable ignored) {}
@@ -173,7 +173,7 @@ public class AfkService implements Listener {
 
         // Cross-server plugin broadcast via RabbitMQ (AfkStatusPacket)
         if (orePlugin != null) {
-            PacketManager pm = orePlugin.getPacketManager();
+            PacketBus pm = orePlugin.getPacketBus();
             if (pm != null && pm.isInitialized()) {
                 AfkStatusPacket pkt = new AfkStatusPacket(
                         player.getUniqueId(), player.getName(),
@@ -315,7 +315,7 @@ public class AfkService implements Listener {
     }
 
     public void setPoolService(AfkPoolService poolService) { this.poolService = poolService; }
-    public void setWebPanelSync(fr.elias.oessentials.webpanel.internal.WebPanelSyncService sync) { this.webPanelSync = sync; }
+    public void setWebPanelSync(fr.elias.oessentials.afk.api.AfkStatusSink sync) { this.webPanelSync = sync; }
 
     /** Returns a snapshot of all AFK players tracked globally (local + remote). */
     public Map<String, AfkPlayerData> getGlobalAfkData() {

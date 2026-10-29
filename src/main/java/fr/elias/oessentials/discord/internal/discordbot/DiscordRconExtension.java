@@ -1,8 +1,8 @@
 package fr.elias.oessentials.discord.internal.discordbot;
 
-import fr.elias.oessentials.economy.internal.persistence.database.PlayerEconomyDatabase;
-import fr.elias.oessentials.storage.internal.homes.home.HomeService;
-import fr.elias.oessentials.sync.internal.services.InventoryService;
+import fr.elias.oessentials.storage.api.HomeLocation;
+import fr.elias.oessentials.storage.api.Homes;
+import fr.elias.oessentials.sync.api.InventoryService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 
 public class DiscordRconExtension implements CommandExecutor {
 
-    private final HomeService           homeService;
-    private final PlayerEconomyDatabase economyDb;
+    private final Homes           homeService;
+    private final java.util.function.ToDoubleFunction<UUID> economyDb;
 
-    public DiscordRconExtension(HomeService homeService,
-                                PlayerEconomyDatabase economyDb) {
+    public DiscordRconExtension(Homes homeService,
+                                java.util.function.ToDoubleFunction<UUID> economyDb) {
         this.homeService = homeService;
         this.economyDb   = economyDb;
     }
@@ -65,7 +65,7 @@ public class DiscordRconExtension implements CommandExecutor {
             return "OK: N/A";
         }
         try {
-            double balance   = economyDb.getBalance(uuid);
+            double balance   = economyDb.applyAsDouble(uuid);
             String formatted = NumberFormat.getNumberInstance(Locale.US).format(balance);
             return "OK: " + formatted;
         } catch (Exception e) {
@@ -77,7 +77,8 @@ public class DiscordRconExtension implements CommandExecutor {
 
     private String handleHomes(UUID uuid) {
         try {
-            Map<String, HomeService.StoredHome> homes = homeService.listHomes(uuid);
+            Map<String, ? extends HomeLocation> listed = homeService.listHomes(uuid);
+            Map<String, HomeLocation> homes = listed == null ? null : new java.util.HashMap<>(listed);
 
             if (homes == null || homes.isEmpty()) {
                 return "OK: (none)";

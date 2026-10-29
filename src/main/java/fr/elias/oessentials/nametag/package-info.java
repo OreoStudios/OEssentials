@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.nametag.lifecycle.NametagModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "nametag")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "nametag", lifecycle = fr.elias.oessentials.nametag.lifecycle.NametagModule.class)
 package fr.elias.oessentials.nametag;

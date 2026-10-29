@@ -1,7 +1,7 @@
 package fr.elias.oessentials.configuration.internal.config;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
+import fr.elias.oessentials.configuration.api.BossBarToggles;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -13,23 +13,26 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class OeSettingsMenu implements InventoryProvider {
 
     private final OEssentials plugin;
     private final SettingsConfig settings;
+    private final Supplier<BossBarToggles> bossBars;
 
-    public OeSettingsMenu(OEssentials plugin) {
+    public OeSettingsMenu(OEssentials plugin, Supplier<BossBarToggles> bossBars) {
         this.plugin = plugin;
+        this.bossBars = bossBars;
         this.settings = plugin.getSettingsConfig();
     }
 
-    public static SmartInventory getInventory(OEssentials plugin) {
+    public static SmartInventory getInventory(OEssentials plugin, Supplier<BossBarToggles> bossBars) {
         String title = plugin.getSettingsConfig().raw().getString("settings-gui.title", "§8Settings");
 
         return SmartInventory.builder()
                 .id("oe-settings")
-                .provider(new OeSettingsMenu(plugin))
+                .provider(new OeSettingsMenu(plugin, bossBars))
                 .manager(plugin.getInvManager())
                 .size(6, 9)
                 .title(title)
@@ -113,7 +116,7 @@ public class OeSettingsMenu implements InventoryProvider {
         contents.set(row, col, ClickableItem.of(item, e -> {
             toggleFeature(featureKey);
             if (e.getWhoClicked() instanceof Player p) {
-                getInventory(plugin).open(p);
+                getInventory(plugin, bossBars).open(p);
             }
         }));
 
@@ -130,8 +133,8 @@ public class OeSettingsMenu implements InventoryProvider {
             slot = row * 9 + col;
         }
 
-        var multiBar = plugin.getMultiBossBarService();
-        boolean enabled = multiBar != null && multiBar.isBarEnabled(barId);
+        BossBarToggles toggles = bossBars.get();
+        boolean enabled = toggles != null && toggles.isBarEnabled(barId);
 
         ItemStack item = createItem(
                 enabled ? Material.LIME_DYE : Material.GRAY_DYE,
@@ -147,7 +150,7 @@ public class OeSettingsMenu implements InventoryProvider {
         contents.set(row, col, ClickableItem.of(item, e -> {
             toggleMultiBar(barId);
             if (e.getWhoClicked() instanceof Player p) {
-                getInventory(plugin).open(p);
+                getInventory(plugin, bossBars).open(p);
             }
         }));
 
@@ -155,22 +158,9 @@ public class OeSettingsMenu implements InventoryProvider {
     }
 
     private void toggleMultiBar(String barId) {
-        var npConfig = plugin.getCustomNameplatesConfig();
-        if (npConfig == null) return;
-
-        var cfg = npConfig.raw();
-        String path = "bossbars.bars." + barId + ".enabled";
-        boolean current = cfg.getBoolean(path, true);
-        cfg.set(path, !current);
-        npConfig.save();
-
-        // Reload the multi-bossbar service to apply the change immediately
-        var multiBar = plugin.getMultiBossBarService();
-        if (multiBar != null) {
-            multiBar.reload(cfg);
-        }
-
-        plugin.getLogger().info("[Settings] Toggled multi-bossbar '" + barId + "': " + !current);
+        BossBarToggles toggles = bossBars.get();
+        if (toggles == null) return;
+        toggles.toggleBar(barId);
     }
 
     private void toggleFeature(String featureKey) {

@@ -24,7 +24,7 @@ public class PayTabCompleter implements TabCompleter {
 
             Bukkit.getOnlinePlayers().forEach(p -> suggestions.add(p.getName()));
 
-            var dir = plugin.getPlayerDirectory(); // <-- whatever getter you use
+            var dir = plugin.getPlayerLocator(); // <-- whatever getter you use
             if (dir != null) {
                 suggestions.addAll(dir.suggestOnlineNames(prefix, 80));
             }

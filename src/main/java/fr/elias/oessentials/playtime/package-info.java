@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.playtime.lifecycle.PlaytimeModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "playtime")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "playtime", lifecycle = fr.elias.oessentials.playtime.lifecycle.PlaytimeModule.class)
 package fr.elias.oessentials.playtime;

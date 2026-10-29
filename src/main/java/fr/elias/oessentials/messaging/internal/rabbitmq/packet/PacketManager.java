@@ -1,23 +1,27 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq.packet;
 
+import fr.elias.oessentials.messaging.api.Packet;
+import fr.elias.oessentials.messaging.api.PacketBus;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
+
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketDefinition;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketDefinition;
 import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketRegistry;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.IncomingPacketListener;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSender;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriptionQueue;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteInputStream;
-import fr.elias.oessentials.messaging.internal.rabbitmq.stream.FriendlyByteOutputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteInputStream;
+import fr.elias.oessentials.messaging.api.FriendlyByteOutputStream;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-public class PacketManager implements IncomingPacketListener {
+public class PacketManager implements IncomingPacketListener, PacketBus {
 
     private final OEssentials plugin;
     private final PacketSender sender;
@@ -25,11 +29,11 @@ public class PacketManager implements IncomingPacketListener {
     private final PacketRegistry packetRegistry;
     private volatile boolean initialized;
 
-    public PacketManager(OEssentials plugin, PacketSender sender) {
+    public PacketManager(OEssentials plugin, PacketSender sender, java.util.Collection<? extends PacketNamespace> namespaces) {
         this.plugin = plugin;
         this.sender = sender;
         this.subscriptions = new ConcurrentHashMap<>();
-        this.packetRegistry = new PacketRegistry();
+        this.packetRegistry = new PacketRegistry(namespaces);
     }
 
     public void init() {
@@ -109,6 +113,11 @@ public class PacketManager implements IncomingPacketListener {
 
     @Override
     public void onReceive(PacketChannel channel, byte[] content) {
+        // Modules stop after messaging now; once the plugin is disabling, no handler may run
+        // against a module that has already released its resources.
+        if (!plugin.isEnabled()) {
+            return;
+        }
         if (channel == null) {
             warn("[PM/RECV] channel is null (contentBytes=" + (content == null ? -1 : content.length) + ")");
             return;
@@ -155,6 +164,7 @@ public class PacketManager implements IncomingPacketListener {
         // subscriber code directly there. Move the dispatch onto the server scheduler first;
         // entity-specific subscribers must still hop to the relevant entity scheduler.
         OreScheduler.run(plugin, () -> {
+            if (!plugin.isEnabled()) return;
             try {
                 queue.dispatch(channel, packet);
             } catch (Throwable t) {

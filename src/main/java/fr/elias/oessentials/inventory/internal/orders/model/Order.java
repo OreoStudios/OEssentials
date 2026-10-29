@@ -7,7 +7,7 @@ import java.util.UUID;
  * A requester escrows (unitPrice * totalQty) upfront.
  * Fillers deliver items and receive escrow proportionally.
  */
-public class Order {
+public class Order implements fr.elias.oessentials.inventory.api.OrderView {
 
     private String id;
     private UUID requesterUuid;
@@ -91,6 +91,7 @@ public class Order {
     public void        setStatus(OrderStatus status)              { this.status = status; }
 
     public long        getCreatedAt()                             { return createdAt; }
+    @Override public String getStatusName()                      { return status.name(); }
     public void        setCreatedAt(long createdAt)               { this.createdAt = createdAt; }
 
     public long        getUpdatedAt()                             { return updatedAt; }

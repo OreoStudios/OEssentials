@@ -185,11 +185,12 @@ public final class AuctionHouseConfig {
 
 
     private void saveDefault(String name) {
+        // Empty files were written by earlier versions that looked for the defaults at the wrong path.
         File target = new File(folder, name);
-        if (target.exists()) return;
-        try (InputStream in = getClass().getResourceAsStream("/auctionhouse/" + name)) {
+        if (target.exists() && target.length() > 0) return;
+        try (InputStream in = getClass().getResourceAsStream("/config/auctionhouse/" + name)) {
             if (in != null) {
-                Files.copy(in, target.toPath());
+                Files.copy(in, target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             } else {
                 target.createNewFile();
             }

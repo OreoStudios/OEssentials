@@ -5,8 +5,8 @@ import fr.elias.oessentials.grouprtp.internal.GroupRtpConfig;
 import fr.elias.oessentials.grouprtp.internal.model.GroupRtpPortalDef;
 import fr.elias.oessentials.grouprtp.internal.model.GroupSession;
 import fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpSyncPacket;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -308,7 +308,7 @@ public final class GroupRtpService {
     // ── Cross-server dispatch ─────────────────────────────────────────────────
 
     private void dispatchCrossServerRtp(GroupRtpPortalDef def, Set<UUID> group) {
-        PacketManager pm = plugin.getPacketManager();
+        PacketBus pm = plugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) {
             log.warning("[GroupRTP] Cross-server RTP configured but PacketManager is unavailable for portal " + def.getId());
             for (UUID uid : group) {
@@ -356,7 +356,7 @@ public final class GroupRtpService {
             for (UUID uid : group) {
                 Player p = Bukkit.getPlayer(uid);
                 if (p != null && p.isOnline()) {
-                    plugin.getProxyMessenger().sendToServer(p, def.getRtpServer());
+                    plugin.connectToServer(p, def.getRtpServer());
                 }
             }
         }, 20L); // 1 second

@@ -1,14 +1,8 @@
 package fr.elias.oessentials.integrations.internal.placeholders;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-import fr.elias.oessentials.economy.internal.EconomyService;
-import fr.elias.oessentials.kits.internal.Kit;
-import fr.elias.oessentials.kits.internal.KitsManager;
-import fr.elias.oessentials.playervaults.internal.PlayerVaultsConfig;
-import fr.elias.oessentials.playervaults.internal.PlayerVaultsService;
-import fr.elias.oessentials.playtime.internal.PlaytimeRewardsService;
-import fr.elias.oessentials.playtime.internal.PlaytimeTracker;
 import fr.elias.oessentials.shared.Lang;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
@@ -29,15 +23,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     private boolean debug;
     private final String thisServerName;
 
-    // --- Vault-access cache (avoids repeated sync DB/permission checks per placeholder tick) ---
-    private final ConcurrentHashMap<UUID, long[]> vaultCacheTime = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<UUID, List<Integer>> vaultAccessibleCache = new ConcurrentHashMap<>();
-    private static final long VAULT_CACHE_TTL = 4_000L;
 
     public PlaceholderAPIHook(OEssentials plugin) {
         this.plugin = plugin;
         this.debug = plugin.getConfig().getBoolean("placeholder-debug", false);
-        this.thisServerName = plugin.getConfigService().serverName();
+        this.thisServerName = plugin.getServerConfig().serverName();
     }
 
     @Override
@@ -76,34 +66,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
         debugLog("Processing placeholder: %oreo_" + idRaw + "% for player: " + player.getName());
 
-        if (id.equals("balance")) {
-            EconomyService eco = getEconomyService();
-            if (eco == null || player.getUniqueId() == null) {
-                debugLog("Economy is null or player UUID is null for 'balance'");
-                return "0";
-            }
-            double bal = eco.getBalance(player.getUniqueId());
-            String result = String.valueOf(bal);
-            debugLog("balance = " + result);
-            return result;
-        }
-
-        if (id.equals("balance_formatted")) {
-            EconomyService eco = getEconomyService();
-            if (eco == null || player.getUniqueId() == null) {
-                debugLog("Economy is null or player UUID is null for 'balance_formatted'");
-                return "0";
-            }
-            double bal = eco.getBalance(player.getUniqueId());
-            DecimalFormat df = new DecimalFormat("#,##0.##");
-            String result = df.format(bal);
-            debugLog("balance_formatted = " + result);
-            return result;
-        }
+        // Kits, playtime, vaults and balance placeholders are answered by their modules.
+        var registered = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getPlaceholders);
+        String fromModule = registered == null ? null : registered.resolve(player, id, idRaw);
+        if (fromModule != null) return fromModule;
 
         if (id.equals("server_name")) {
             try {
-                return plugin.getConfigService().serverName();
+                return plugin.getServerConfig().serverName();
             } catch (Throwable t) {
                 return Bukkit.getServer().getName();
             }
@@ -120,31 +90,28 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("crossserver_players_total")) {
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getNetworkTotal()
-            );
+            var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                    fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+            return String.valueOf(counts == null ? 0 : counts.networkTotal());
         }
 
         if (id.equals("server_players_total")) {
-            int cached = fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver
-                    .getServerTotal(thisServerName);
+            var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                    fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+            int cached = counts == null ? 0 : counts.serverTotal(thisServerName);
             return String.valueOf(cached > 0 ? cached : Bukkit.getOnlinePlayers().size());
         }
 
         if (id.startsWith("server_players_")) {
             String targetServer = idRaw.substring("server_players_".length());
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getServerTotal(targetServer)
-            );
+            return String.valueOf(serverPlayerCount(targetServer));
         }
 
         if (id.endsWith("_players_total")
                 && !id.equals("crossserver_players_total")
                 && !id.equals("server_players_total")) {
             String targetServer = idRaw.substring(0, idRaw.length() - "_players_total".length());
-            return String.valueOf(
-                    fr.elias.oessentials.messaging.internal.network.NetworkCountReceiver.getServerTotal(targetServer)
-            );
+            return String.valueOf(serverPlayerCount(targetServer));
         }
 
         if (id.equals("world_name") || id.equals("world")) {
@@ -169,7 +136,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return String.valueOf(Bukkit.getOnlinePlayers().size());
         }
         if (id.equals("tempfly_active")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "false";
             Player p = player.getPlayer();
             if (p == null) return "false";
@@ -177,7 +144,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_seconds")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "0";
             Player p = player.getPlayer();
             if (p == null) return "0";
@@ -185,7 +152,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_time")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "0s";
             Player p = player.getPlayer();
             if (p == null) return "0s";
@@ -195,221 +162,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         if (id.equals("tempfly_time_or_empty")) {
-            fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tfs = plugin.getTempFlyService();
+            fr.elias.oessentials.api.ITempFlyAPI tfs = plugin.getModuleRegistry().read(ConfigurationServices.class, ConfigurationServices::getTempFly);
             if (tfs == null) return "";
             Player p = player.getPlayer();
             if (p == null) return "";
             int secs = tfs.getTimeRemaining(p);
             return secs > 0 ? formatTempFlyTime(secs) : "";
         }
-        if (id.equals("kits_enabled")) {
-            KitsManager km = kits();
-            return (km != null && km.isEnabled()) ? "true" : "false";
-        }
-
-        if (id.equals("kits_count")) {
-            KitsManager km = kits();
-            return (km != null) ? String.valueOf(km.getKits().size()) : "0";
-        }
-
-        if (id.equals("kits_ready_count")) {
-            Player p = player.getPlayer();
-            KitsManager km = kits();
-            if (p == null || km == null) return "0";
-            return String.valueOf((int) km.getKits().values().stream()
-                    .filter(k -> isKitReady(km, p, k))
-                    .count());
-        }
-
-        if (id.equals("kits_ready_list")) {
-            Player p = player.getPlayer();
-            KitsManager km = kits();
-            if (p == null || km == null) return "";
-            List<String> ready = km.getKits().values().stream()
-                    .filter(k -> isKitReady(km, p, k))
-                    .map(Kit::getId)
-                    .collect(Collectors.toList());
-            return trim64(String.join(", ", ready));
-        }
-
-        if (id.startsWith("kit_ready_")) {
-            Player p = player.getPlayer();
-            if (p == null) return "false";
-            String kitId = id.substring("kit_ready_".length());
-            KitsManager km = kits();
-            if (km == null) return "false";
-            Kit k = km.getKits().get(kitId.toLowerCase(Locale.ROOT));
-            return (k != null && isKitReady(km, p, k)) ? "true" : "false";
-        }
-
-        if (id.startsWith("kit_cooldown_formatted_") || (id.startsWith("kit_") && id.endsWith("_cooldown_formatted"))) {
-            Player p = player.getPlayer();
-            if (p == null) return "";
-
-            String kitId;
-            if (id.startsWith("kit_cooldown_formatted_")) {
-                kitId = id.substring("kit_cooldown_formatted_".length());
-            } else {
-                kitId = id.substring("kit_".length(), id.length() - "_cooldown_formatted".length());
-            }
-
-            KitsManager km = kits();
-            if (km == null) return "";
-            Kit k = km.getKits().get(kitId.toLowerCase(Locale.ROOT));
-            if (k == null) return "";
-
-            long left = Math.max(0, km.getSecondsLeft(p, k));
-            if (left <= 0) return "ready";
-
-            return Lang.timeHuman(left);
-        }
-
-        if (id.startsWith("kit_cooldown_")) {
-            Player p = player.getPlayer();
-            if (p == null) return "";
-            String kitId = id.substring("kit_cooldown_".length());
-            KitsManager km = kits();
-            if (km == null) return "";
-            Kit k = km.getKits().get(kitId.toLowerCase(Locale.ROOT));
-            if (k == null) return "";
-            long left = Math.max(0, km.getSecondsLeft(p, k));
-            return left <= 0 ? "ready" : String.valueOf(left);
-        }
-
-        if (id.equals("playtime_total_seconds")) {
-            long secs = playtimeTotalSeconds(player);
-            return String.valueOf(secs);
-        }
-
-        if (id.equals("playtime_total_minutes")) {
-            long secs = playtimeTotalSeconds(player);
-            return String.valueOf(secs / 60);
-        }
-
-        if (id.equals("playtime_total_hours")) {
-            long secs = playtimeTotalSeconds(player);
-            return String.valueOf(secs / 3600);
-        }
-
-        if (id.equals("playtime_total_days")) {
-            long secs = playtimeTotalSeconds(player);
-            return String.valueOf(secs / 86400);
-        }
-
-        if (id.equals("prewards_enabled")) {
-            PlaytimeRewardsService svc = prewards();
-            return (svc != null && svc.isEnabled()) ? "true" : "false";
-        }
-
-        if (id.equals("prewards_ready_count")) {
-            Player p = player.getPlayer();
-            PlaytimeRewardsService svc = prewards();
-            if (p == null || svc == null || !svc.isEnabled()) return "0";
-            return String.valueOf(svc.rewardsReady(p).size());
-        }
-
-        if (id.equals("prewards_ready_list")) {
-            Player p = player.getPlayer();
-            PlaytimeRewardsService svc = prewards();
-            if (p == null || svc == null || !svc.isEnabled()) return "";
-            return trim64(String.join(", ", svc.rewardsReady(p)));
-        }
-
-        if (id.startsWith("prewards_state_")) {
-            Player p = player.getPlayer();
-            PlaytimeRewardsService svc = prewards();
-            if (p == null || svc == null || !svc.isEnabled()) return "";
-            String rewardId = id.substring("prewards_state_".length());
-            var entry = svc.rewards.get(rewardId);
-            if (entry == null) return "";
-            return svc.stateOf(p, entry).name();
-        }
-
-        if (id.equals("vaults_enabled")) {
-            PlayerVaultsService pv = pvService();
-            return (pv != null && pv.enabled()) ? "true" : "false";
-        }
-
-        if (id.equals("vaults_max")) {
-            int max = pvConfigMax();
-            return String.valueOf(Math.max(0, max));
-        }
-
-        if (id.equals("vaults_unlocked_count")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "0";
-            int max = pvConfigMax();
-            return String.valueOf(getCachedAccessibleVaults(p, pv, max).size());
-        }
-
-        if (id.equals("vaults_unlocked_list")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "";
-            int max = pvConfigMax();
-            List<String> ids = new ArrayList<>();
-            for (int vid : getCachedAccessibleVaults(p, pv, max)) ids.add(String.valueOf(vid));
-            return trim64(String.join(", ", ids));
-        }
-
-        if (id.equals("vaults_locked_list")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "";
-            int max = pvConfigMax();
-            List<Integer> accessible = getCachedAccessibleVaults(p, pv, max);
-            List<String> ids = new ArrayList<>();
-            for (int i = 1; i <= max; i++) {
-                if (!accessible.contains(i)) ids.add(String.valueOf(i));
-            }
-            return trim64(String.join(", ", ids));
-        }
-
-        if (id.startsWith("vault_can_access_")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "false";
-            int vid = parseIntSafe(id.substring("vault_can_access_".length()));
-            if (vid <= 0) return "false";
-            return pv.canAccess(p, vid) ? "true" : "false";
-        }
-
-        if (id.startsWith("vault_slots_")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "0";
-            int vid = parseIntSafe(id.substring("vault_slots_".length()));
-            if (vid <= 0) return "0";
-            return String.valueOf(pv.resolveSlots(p, vid));
-        }
-
-        if (id.startsWith("vault_rows_")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            if (p == null || pv == null || !pv.enabled()) return "0";
-            int vid = parseIntSafe(id.substring("vault_rows_".length()));
-            if (vid <= 0) return "0";
-            int slots = pv.resolveSlots(p, vid);
-            int rows = Math.max(1, (int) Math.ceil(slots / 9.0));
-            return String.valueOf(rows);
-        }
-
-        if (id.startsWith("vault_title_preview_")) {
-            Player p = player.getPlayer();
-            PlayerVaultsService pv = pvService();
-            PlayerVaultsConfig cfg = pvConfig();
-            if (p == null || pv == null || !pv.enabled() || cfg == null) return "";
-            int vid = parseIntSafe(id.substring("vault_title_preview_".length()));
-            if (vid <= 0) return "";
-            int slots = pv.resolveSlots(p, vid);
-            int rows = Math.max(1, (int) Math.ceil(slots / 9.0));
-            String title = cfg.vaultTitle()
-                    .replace("<id>", String.valueOf(vid))
-                    .replace("<rows>", String.valueOf(rows));
-            return org.bukkit.ChatColor.translateAlternateColorCodes('&', title);
-        }
-
         if (id.equals("homes_used") || id.equals("homes_max") || id.equals("homes")) {
             int used = 0;
             int max = 0;
@@ -456,21 +215,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
     }
 
-    private EconomyService getEconomyService() {
-        try {
-            return plugin.getEcoBootstrap().api();
-        } catch (Throwable t) {
-            debugLog("Failed to get EconomyService: " + t.getMessage());
-            return null;
-        }
-    }
 
-    private boolean isKitReady(KitsManager km, Player p, Kit k) {
-        if (!km.isEnabled()) return false;
-        if (!p.hasPermission("oreo.kit.claim")) return false;
-        long left = Math.max(0, km.getSecondsLeft(p, k));
-        return left == 0 || p.hasPermission("oreo.kit.bypasscooldown");
-    }
 
     private String resolveServerNick(String serverName) {
         try {
@@ -506,124 +251,19 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
     }
 
-    private long playtimeTotalSeconds(OfflinePlayer off) {
-        Player p = off.getPlayer();
-        if (p != null) {
-            PlaytimeRewardsService svc = prewards();
-            if (svc != null && svc.isEnabled()) {
-                try {
-                    return Math.max(0, svc.getPlaytimeSeconds(p));
-                } catch (Throwable ignored) {}
-            }
-        }
-
-        PlaytimeTracker tr = tracker();
-        if (tr != null && off.getUniqueId() != null) {
-            try {
-                return Math.max(0, tr.getSeconds(off.getUniqueId()));
-            } catch (Throwable ignored) {}
-        }
-
-        try {
-            if (p != null) {
-                int ticks = p.getStatistic(Statistic.PLAY_ONE_MINUTE);
-                return Math.max(0, ticks / 20L);
-            }
-        } catch (Throwable ignored) {}
-
-        return 0;
-    }
 
     private static String trim64(String s) {
         if (s == null) return "";
         return s.length() > 64 ? s.substring(0, 61) + "..." : s;
     }
 
-    private static int parseIntSafe(String s) {
-        try {
-            return Integer.parseInt(s);
-        } catch (Exception e) {
-            return -1;
-        }
-    }
 
-    private KitsManager kits() {
-        try {
-            Method m = plugin.getClass().getMethod("getKitsManager");
-            return (KitsManager) m.invoke(plugin);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
 
-    private PlaytimeRewardsService prewards() {
-        try {
-            Method m = plugin.getClass().getMethod("getPlaytimeRewardsService");
-            return (PlaytimeRewardsService) m.invoke(plugin);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
 
-    private PlaytimeTracker tracker() {
-        try {
-            Method m = plugin.getClass().getMethod("getPlaytimeTracker");
-            return (PlaytimeTracker) m.invoke(plugin);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
 
-    /**
-     * Returns the list of vault IDs (1-based, up to {@code max}) that {@code p} can
-     * access, using a short-lived per-player cache (TTL: {@value #VAULT_CACHE_TTL} ms).
-     *
-     * <p>Without caching, each of the three vault placeholder handlers
-     * ({@code vaults_unlocked_count}, {@code vaults_unlocked_list},
-     * {@code vaults_locked_list}) would invoke {@code pv.canAccess()} in a tight loop
-     * on every placeholder refresh, potentially causing synchronous DB or permission
-     * I/O on the main thread for every online player.</p>
-     */
-    private List<Integer> getCachedAccessibleVaults(Player p, PlayerVaultsService pv, int max) {
-        UUID uuid = p.getUniqueId();
-        long now = System.currentTimeMillis();
-        long[] ts = vaultCacheTime.get(uuid);
-        if (ts != null && now - ts[0] < VAULT_CACHE_TTL) {
-            return vaultAccessibleCache.getOrDefault(uuid, Collections.emptyList());
-        }
-        List<Integer> accessible = new ArrayList<>();
-        for (int i = 1; i <= max; i++) {
-            if (pv.canAccess(p, i)) accessible.add(i);
-        }
-        vaultAccessibleCache.put(uuid, accessible);
-        vaultCacheTime.put(uuid, new long[]{now});
-        return accessible;
-    }
 
-    private PlayerVaultsService pvService() {
-        try {
-            Method m = plugin.getClass().getMethod("getPlayerVaultsService");
-            return (PlayerVaultsService) m.invoke(plugin);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
 
-    private PlayerVaultsConfig pvConfig() {
-        try {
-            PlayerVaultsService svc = pvService();
-            if (svc == null) return null;
-            Method gm = svc.getClass().getMethod("getConfigBean");
-            return (PlayerVaultsConfig) gm.invoke(svc);
-        } catch (Throwable ignored) {
-            return null;
-        }
-    }
 
-    private int pvConfigMax() {
-        PlayerVaultsConfig c = pvConfig();
-        return (c != null) ? c.maxVaults() : 0;
-    }
 
     private Object homeService() {
         try {
@@ -633,6 +273,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return null;
         }
     }
+    private int serverPlayerCount(String serverName) {
+        var counts = plugin.getModuleRegistry().read(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class,
+                fr.elias.oessentials.messaging.lifecycle.MessagingServices::getNetworkPlayerCounts);
+        return counts == null ? 0 : counts.serverTotal(serverName);
+    }
+
     private String formatTempFlyTime(int seconds) {
         if (seconds < 60) return seconds + "s";
         if (seconds < 3600) {

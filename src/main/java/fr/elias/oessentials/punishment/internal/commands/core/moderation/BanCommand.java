@@ -2,7 +2,6 @@ package fr.elias.oessentials.punishment.internal.commands.core.moderation;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -10,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +50,11 @@ public class BanCommand implements OreoCommand {
 
         if (args.length >= 2) {
             Long ms = parseDurationMillis(args[1]);
+            if (ms != null && ms < 0) {
+                Lang.send(sender, "moderation.ban.duration-too-long",
+                        "<red>That duration is too long (max 100 years). Leave it out for a permanent ban.</red>");
+                return true;
+            }
             if (ms != null) {
                 expires = new Date(System.currentTimeMillis() + ms);
                 if (args.length >= 3) {
@@ -97,7 +100,7 @@ public class BanCommand implements OreoCommand {
                     Map.of("player", target.getName(), "reason", reason));
         }
 
-        DiscordModerationNotifier mod = OEssentials.get().getDiscordMod();
+        fr.elias.oessentials.discord.api.ModerationNotifier mod = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
         if (mod != null && mod.isEnabled()) {
             Long expiresAt = (expires == null) ? null : expires.getTime();
             mod.notifyBan(target.getName(), target.getUniqueId(), reason, sender.getName(), expiresAt);
@@ -122,20 +125,25 @@ public class BanCommand implements OreoCommand {
 
     private static final Pattern DURATION_TOKEN = Pattern.compile("(\\d+)([smhdw])", Pattern.CASE_INSENSITIVE);
 
+    /** Milliseconds, {@code null} when {@code s} is not a duration, or {@code -1} when it is absurdly long. */
     private static Long parseDurationMillis(String s) {
         if (s == null || s.isEmpty()) return null;
         Matcher m = DURATION_TOKEN.matcher(s);
         long total = 0;
         int found = 0;
         while (m.find()) {
-            long val = Long.parseLong(m.group(1));
-            switch (Character.toLowerCase(m.group(2).charAt(0))) {
-                case 's' -> total += Duration.ofSeconds(val).toMillis();
-                case 'm' -> total += Duration.ofMinutes(val).toMillis();
-                case 'h' -> total += Duration.ofHours(val).toMillis();
-                case 'd' -> total += Duration.ofDays(val).toMillis();
-                case 'w' -> total += Duration.ofDays(val * 7).toMillis();
-            }
+            long val;
+            try { val = Long.parseLong(m.group(1)); } catch (NumberFormatException e) { return -1L; }
+            long unit = switch (Character.toLowerCase(m.group(2).charAt(0))) {
+                case 's' -> 1000L;
+                case 'm' -> 60_000L;
+                case 'h' -> 3_600_000L;
+                case 'd' -> 86_400_000L;
+                case 'w' -> 604_800_000L;
+                default  -> 0L;
+            };
+            total = fr.elias.oessentials.shared.Durations.plus(total, fr.elias.oessentials.shared.Durations.times(val, unit));
+            if (total < 0) return -1L; // longer than 100 years
             found++;
         }
         return found == 0 ? null : total;

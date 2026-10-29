@@ -5,10 +5,10 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkPoolEnterPacket;
 import fr.elias.oessentials.afk.internal.rabbit.packets.AfkPoolExitPacket;
 import fr.elias.oessentials.shared.Lang;
@@ -49,7 +49,7 @@ public class AfkPoolService implements Listener {
     public AfkPoolService(OEssentials plugin, AfkService afkService) {
         this.plugin = plugin;
         this.afkService = afkService;
-        this.localServer = plugin.getConfigService().serverName();
+        this.localServer = plugin.getServerConfig().serverName();
 
         loadConfig();
 
@@ -82,7 +82,7 @@ public class AfkPoolService implements Listener {
         if (!enabled) return;
         if (!crossServerEnabled) return;
 
-        PacketManager pm = plugin.getPacketManager();
+        PacketBus pm = plugin.getPacketBus();
         if (pm == null) return;
         if (!pm.isInitialized()) return;
 
@@ -97,7 +97,7 @@ public class AfkPoolService implements Listener {
         plugin.getLogger().info("[AfkPool] Cross-server handlers hooked on server=" + localServer);
     }
 
-    private void setupCrossServerHandlers(PacketManager pm) {
+    private void setupCrossServerHandlers(PacketBus pm) {
         pm.subscribe(AfkPoolEnterPacket.class, (channel, pkt) -> {
             if (pkt == null) return;
 
@@ -173,7 +173,7 @@ public class AfkPoolService implements Listener {
 
         if (crossServerEnabled && !localServer.equalsIgnoreCase(afkPoolServer)) {
 
-            PacketManager pm = plugin.getPacketManager();
+            PacketBus pm = plugin.getPacketBus();
 
             if (pm == null || !pm.isInitialized()) {
                 plugin.getLogger().warning("[AfkPool] PacketManager not ready, retrying soon. local=" + localServer);
@@ -181,7 +181,7 @@ public class AfkPoolService implements Listener {
                 OreScheduler.runLater(plugin, () -> {
                     if (!player.isOnline()) return;
 
-                    PacketManager pm2 = plugin.getPacketManager();
+                    PacketBus pm2 = plugin.getPacketBus();
                     if (pm2 == null || !pm2.isInitialized()) {
                         plugin.getLogger().warning("[AfkPool] PacketManager still not ready, cannot cross-server send. local=" + localServer);
                         Lang.send(player, "afk.pool.not-ready",
@@ -198,7 +198,7 @@ public class AfkPoolService implements Listener {
                     pm2.sendPacket(packet);
 
                     plugin.getLogger().info("[AfkPool] Proxy sending player " + player.getName() + " to server " + afkPoolServer);
-                    plugin.getProxyMessenger().sendToServer(player, afkPoolServer);
+                    plugin.connectToServer(player, afkPoolServer);
 
                     Lang.send(player, "afk.pool.cross-server",
                             "<gray>You've been moved to the AFK pool on <aqua>%server%</aqua>.</gray>",
@@ -216,7 +216,7 @@ public class AfkPoolService implements Listener {
             pm.sendPacket(packet);
 
             plugin.getLogger().info("[AfkPool] Proxy sending player " + player.getName() + " to server " + afkPoolServer);
-            plugin.getProxyMessenger().sendToServer(player, afkPoolServer);
+            plugin.connectToServer(player, afkPoolServer);
 
             Lang.send(player, "afk.pool.cross-server",
                     "<gray>You've been moved to the AFK pool on <aqua>%server%</aqua>.</gray>",
@@ -250,7 +250,7 @@ public class AfkPoolService implements Listener {
         if (crossServerEnabled && returnServer != null && !returnServer.isEmpty()
                 && !localServer.equalsIgnoreCase(returnServer)) {
 
-            PacketManager pm = plugin.getPacketManager();
+            PacketBus pm = plugin.getPacketBus();
             if (pm == null || !pm.isInitialized()) {
                 plugin.getLogger().warning("[AfkPool] PacketManager not ready, cannot cross-server return. local=" + localServer);
                 return;
@@ -264,7 +264,7 @@ public class AfkPoolService implements Listener {
             pm.sendPacket(packet);
 
             plugin.getLogger().info("[AfkPool] Proxy returning player " + player.getName() + " to server " + returnServer);
-            plugin.getProxyMessenger().sendToServer(player, returnServer);
+            plugin.connectToServer(player, returnServer);
 
             Lang.send(player, "afk.pool.cross-server-return",
                     "<gray>Returning you to <aqua>%server%</aqua>...</gray>",

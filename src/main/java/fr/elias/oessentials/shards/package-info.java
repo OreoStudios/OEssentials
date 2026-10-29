@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.shards.lifecycle.ShardingModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "sharding")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "sharding", lifecycle = fr.elias.oessentials.shards.lifecycle.ShardingModule.class)
 package fr.elias.oessentials.shards;

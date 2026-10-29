@@ -1,6 +1,6 @@
 package fr.elias.oessentials.storage.internal.homes.rabbit.packet;
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.namespace.PacketNamespace;
+import fr.elias.oessentials.messaging.api.PacketNamespace;
 // ADD:
 
 

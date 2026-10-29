@@ -1,7 +1,7 @@
 package fr.elias.oessentials.messaging.internal.rabbitmq;
 
 
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketChannel;
 
 import java.util.ArrayList;
 import java.util.List;

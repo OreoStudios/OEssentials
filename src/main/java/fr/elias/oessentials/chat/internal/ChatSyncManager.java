@@ -8,7 +8,7 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.chat.internal.channels.ChatChannel;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.chat.internal.channels.ChatChannelManager;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -52,7 +52,7 @@ public class ChatSyncManager {
 
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setUri(rabbitUri);
+            factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(rabbitUri));
             factory.setAutomaticRecoveryEnabled(true);
             factory.setNetworkRecoveryInterval(5000);
 
@@ -63,7 +63,7 @@ public class ChatSyncManager {
             Bukkit.getLogger().info("[ChatSync] Connected to RabbitMQ successfully. Server ID: " + SERVER_ID);
         } catch (Exception e) {
             this.enabled = false;
-            Bukkit.getLogger().severe("[ChatSync] Init failed: " + e.getMessage());
+            Bukkit.getLogger().severe("[ChatSync] Init failed: " + fr.elias.oessentials.shared.Throwables.describe(e));
             e.printStackTrace();
             safeClose();
         }
@@ -177,7 +177,7 @@ public class ChatSyncManager {
         if (!enabled) return;
         String serverName;
         try {
-            serverName = OEssentials.get().getConfigService().serverName();
+            serverName = OEssentials.get().getServerConfig().serverName();
         } catch (Throwable t) {
             serverName = Bukkit.getServer().getName();
         }
@@ -263,7 +263,7 @@ public class ChatSyncManager {
 
             OreScheduler.run(OEssentials.get(), () -> {
                 var plugin = OEssentials.get();
-                var svc = plugin.getModGuiService();
+                var svc = plugin.getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getChatControls);
                 if (svc == null) return;
 
                 switch (fType.toUpperCase()) {
@@ -363,7 +363,7 @@ public class ChatSyncManager {
 
                 if (channel != null && channel.isEnabled()) {
                     if (channel.getScope() == ChatChannel.ChannelScope.SERVER) {
-                        String localServer = OEssentials.get().getConfigService().serverName();
+                        String localServer = OEssentials.get().getServerConfig().serverName();
                         if (!serverName.equalsIgnoreCase(localServer)) return;
                     }
 
@@ -442,7 +442,7 @@ public class ChatSyncManager {
             }
 
             if (channel.getScope() == ChatChannel.ChannelScope.SERVER) {
-                String localServer = OEssentials.get().getConfigService().serverName();
+                String localServer = OEssentials.get().getServerConfig().serverName();
                 if (!serverName.equalsIgnoreCase(localServer)) {
                     return;
                 }

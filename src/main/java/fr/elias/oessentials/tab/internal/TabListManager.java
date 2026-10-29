@@ -1,9 +1,9 @@
 package fr.elias.oessentials.tab.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
-import fr.elias.oessentials.nametag.internal.NametageCondition;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.configuration.api.FeatureSettings;
+import fr.elias.oessentials.platform.config.NametageCondition;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -32,8 +32,8 @@ public class TabListManager {
     );
 
     private final OEssentials plugin;
-    private final SettingsConfig settings;
-    private final PlayerDirectory playerDirectory;
+    private final FeatureSettings settings;
+    private final PlayerLocator playerDirectory;
 
     private CustomTablistLayout customLayout;
     private boolean useCustomLayout;
@@ -93,8 +93,8 @@ public class TabListManager {
 
     public TabListManager(OEssentials plugin) {
         this.plugin = plugin;
-        this.settings = plugin.getSettingsConfig();
-        this.playerDirectory = plugin.getPlayerDirectory();
+        this.settings = plugin.getFeatureSettings();
+        this.playerDirectory = plugin.getPlayerLocator();
 
         load();
 
@@ -620,7 +620,7 @@ public class TabListManager {
     private String applyInternalPlaceholders(Player viewer, String input) {
         if (input == null || input.isEmpty()) return input;
 
-        fr.elias.oessentials.player.internal.services.VanishService vanishSvc = plugin.getVanishService();
+        fr.elias.oessentials.api.IVanishAPI vanishSvc = plugin.getModuleRegistry().read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getVanishApi);
         boolean viewerCanSeeVanished = viewer.hasPermission("oreo.vanish.see");
         int localOnline = (int) Bukkit.getOnlinePlayers().stream()
                 .filter(op -> viewerCanSeeVanished || vanishSvc == null || !vanishSvc.isVanished(op))
@@ -642,7 +642,7 @@ public class TabListManager {
                         String server = invokeString(e, "getServer", "server", "getServerName");
                         if (name == null || name.isEmpty()) continue;
                         if (server == null || server.isEmpty()) {
-                            server = plugin.getConfigService().serverName();
+                            server = plugin.getServerConfig().serverName();
                         }
                         if (!networkExcludedServers.isEmpty()
                                 && networkExcludedServers.contains(server.toLowerCase(Locale.ROOT))) continue;

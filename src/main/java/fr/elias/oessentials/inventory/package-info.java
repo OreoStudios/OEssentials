@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.inventory.lifecycle.InventoriesModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "inventories")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "inventories", lifecycle = fr.elias.oessentials.inventory.lifecycle.InventoriesModule.class)
 package fr.elias.oessentials.inventory;

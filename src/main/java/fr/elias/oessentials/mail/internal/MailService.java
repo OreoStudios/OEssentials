@@ -232,7 +232,7 @@ public final class MailService {
             sendNotification(online, senderName, hasItem, isBroadcast);
             return;
         }
-        var pm = plugin.getPacketManager();
+        var pm = plugin.getPacketBus();
         if (pm != null && pm.isInitialized()) {
             pm.sendPacket(new MailDeliveryPacket(recipientUuid, senderName, hasItem, isBroadcast));
         }

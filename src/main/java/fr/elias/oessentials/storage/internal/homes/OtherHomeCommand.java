@@ -3,8 +3,8 @@ package fr.elias.oessentials.storage.internal.homes;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.OtherHomeTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import fr.elias.oessentials.platform.scheduling.Async;
@@ -110,7 +110,7 @@ public class OtherHomeCommand implements OreoCommand, org.bukkit.command.TabComp
         }
 
         // 3) Cross-server disabled?
-        var cs = plugin.getCrossServerSettings();
+        var cs = plugin.getCrossServerFeatures();
         if (!cs.homes()) {
             String ownerName = target.getName() != null ? target.getName() : ownerId.toString();
             Lang.send(sender, "admin.otherhome.cross-disabled",
@@ -122,7 +122,7 @@ public class OtherHomeCommand implements OreoCommand, org.bukkit.command.TabComp
         }
 
         // 4) Publish to the target server's INDIVIDUAL channel
-        PacketManager pm = plugin.getPacketManager();
+        PacketBus pm = plugin.getPacketBus();
         if (pm != null && pm.isInitialized()) {
             final String requestId = java.util.UUID.randomUUID().toString();
 

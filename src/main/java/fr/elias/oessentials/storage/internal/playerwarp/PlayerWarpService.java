@@ -1,7 +1,7 @@
 package fr.elias.oessentials.storage.internal.playerwarp;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannels;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.PlayerWarpTeleportRequestPacket;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
@@ -54,7 +54,7 @@ public class PlayerWarpService {
         if (directory != null) {
             try {
                 String serverName = OEssentials.get()
-                        .getConfigService()
+                        .getServerConfig()
                         .serverName();
                 directory.setWarpServer(id, serverName);
                 OEssentials.get().getLogger().info(
@@ -221,7 +221,7 @@ public class PlayerWarpService {
         storage.save(renamed);
         if (directory != null) {
             try {
-                String serverName = OEssentials.get().getConfigService().serverName();
+                String serverName = OEssentials.get().getServerConfig().serverName();
                 directory.setWarpServer(newId, serverName);
             } catch (Throwable t) {
                 OEssentials.get().getLogger().warning(
@@ -254,7 +254,7 @@ public class PlayerWarpService {
         storage.save(transferred);
         if (directory != null) {
             try {
-                String serverName = OEssentials.get().getConfigService().serverName();
+                String serverName = OEssentials.get().getServerConfig().serverName();
                 directory.setWarpServer(newId, serverName);
             } catch (Throwable t) {
                 OEssentials.get().getLogger().warning(
@@ -329,9 +329,9 @@ public class PlayerWarpService {
             }
         }
 
-        String localServer   = plugin.getConfigService().serverName();
+        String localServer   = plugin.getServerConfig().serverName();
         String targetServer  = getWarpServer(warp, localServer);
-        boolean crossEnabled = plugin.getCrossServerSettings().warps();
+        boolean crossEnabled = plugin.getCrossServerFeatures().warps();
         boolean messaging    = plugin.isMessagingAvailable();
         boolean sameServer   = localServer.equalsIgnoreCase(targetServer);
 
@@ -402,7 +402,7 @@ public class PlayerWarpService {
                 "<gray>Sending you to server</gray> <yellow>%server%</yellow> <gray>for warp</gray> <white>%name%</white>…",
                 Map.of("name", warp.getName(), "server", targetServer));
 
-        var pm = plugin.getPacketManager();
+        var pm = plugin.getPacketBus();
         if (pm == null || !pm.isInitialized()) {
             plugin.getLogger().warning("[OEssentials] [PW] PacketManager unavailable during cross-server playerwarp teleport.");
             Lang.send(player, "playerwarps.teleport.messaging-disabled",
@@ -422,7 +422,9 @@ public class PlayerWarpService {
         );
 
         pm.sendPacket(PacketChannels.individual(targetServer), pkt);
-        plugin.getProxyMessenger().sendToServer(player, targetServer);
+        var connector = plugin.getModuleRegistry().read(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class,
+                fr.elias.oessentials.configuration.lifecycle.ConfigurationServices::getServerConnector);
+        if (connector != null) connector.connect(player, targetServer);
 
         return true;
     }
@@ -437,7 +439,7 @@ public class PlayerWarpService {
 
     private void debugInfo(String message) {
         OEssentials plugin = OEssentials.get();
-        if (plugin != null && plugin.getConfigService().isDebugEnabled()) {
+        if (plugin != null && plugin.getServerConfig().isDebugEnabled()) {
             plugin.getLogger().info(message);
         }
     }

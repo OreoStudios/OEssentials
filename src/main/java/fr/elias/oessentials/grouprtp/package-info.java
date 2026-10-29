@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.grouprtp.lifecycle.GroupRtpModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "group-rtp")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "group-rtp", lifecycle = fr.elias.oessentials.grouprtp.lifecycle.GroupRtpModule.class)
 package fr.elias.oessentials.grouprtp;

@@ -2,7 +2,7 @@ package fr.elias.oessentials.player.internal.tp.command;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker;
 import fr.elias.oessentials.shared.Lang;
@@ -46,7 +46,7 @@ public class TpCommand implements OreoCommand {
         }
 
         OEssentials plugin = OEssentials.get();
-        String localServer = plugin.getConfigService().serverName();
+        String localServer = plugin.getServerConfig().serverName();
 
         Player localTarget = resolveOnline(arg);
         if (localTarget != null) {
@@ -61,14 +61,14 @@ public class TpCommand implements OreoCommand {
             return true;
         }
 
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
         if (dir == null) {
             Lang.send(admin, "admin.tp.not-found-no-directory",
                     "<red>Player not found online. <gray>(Cross-server directory is not available.)</gray></red>");
             return true;
         }
 
-        // PlayerDirectory uses synchronous MongoDB. Resolve presence asynchronously and
+        // PlayerLocator uses synchronous MongoDB. Resolve presence asynchronously and
         // return to the admin's entity scheduler before touching Bukkit/player state again.
         OreScheduler.runAsync(plugin, () -> {
             UUID targetUuid = null;

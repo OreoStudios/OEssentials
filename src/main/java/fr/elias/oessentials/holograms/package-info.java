@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.holograms.lifecycle.HologramsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "holograms")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "holograms", lifecycle = fr.elias.oessentials.holograms.lifecycle.HologramsModule.class)
 package fr.elias.oessentials.holograms;

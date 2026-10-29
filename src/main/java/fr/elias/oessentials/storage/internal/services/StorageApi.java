@@ -1,6 +1,5 @@
 package fr.elias.oessentials.storage.internal.services;
 
-import fr.elias.oessentials.player.internal.back.BackLocation;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public interface StorageApi {
+public interface StorageApi extends fr.elias.oessentials.storage.api.BackDataStore {
 
 
     void setSpawn(String server, Location loc);
@@ -65,16 +64,22 @@ public interface StorageApi {
         Map<String, Object> map = getBackData(uuid);
         if (map == null) return null;
 
-        BackLocation b = BackLocation.fromMap(map);
-
-        String current = Bukkit.getServer().getName();
-        String lastServer = b.getServer();
-
-        if (lastServer != null && lastServer.equalsIgnoreCase(current)) {
-            return b.toLocalLocation();
+        // Same layout as setLast() and player-services' BackLocation.toMap().
+        if (!(map.get("world") instanceof String worldName)
+                || !(map.get("x") instanceof Number x) || !(map.get("y") instanceof Number y) || !(map.get("z") instanceof Number z)
+                || !(map.get("yaw") instanceof Number yaw) || !(map.get("pitch") instanceof Number pitch)) {
+            return null;
         }
 
-        return null;
+        String current = Bukkit.getServer().getName();
+        String lastServer = map.get("server") instanceof String server ? server : null;
+        if (lastServer == null || !lastServer.equalsIgnoreCase(current)) {
+            return null;
+        }
+
+        org.bukkit.World world = Bukkit.getWorld(worldName);
+        if (world == null) return null;
+        return new Location(world, x.doubleValue(), y.doubleValue(), z.doubleValue(), yaw.floatValue(), pitch.floatValue());
     }
 
     void flush();

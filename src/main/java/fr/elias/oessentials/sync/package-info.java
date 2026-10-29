@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.sync.lifecycle.InventorySyncModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "inventory-sync")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "inventory-sync", lifecycle = fr.elias.oessentials.sync.lifecycle.InventorySyncModule.class)
 package fr.elias.oessentials.sync;

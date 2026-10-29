@@ -83,7 +83,7 @@ public class TpaCommand implements OreoCommand {
         final long t0 = System.nanoTime();
         final String input = args[0].trim();
         final OEssentials plugin = OEssentials.get();
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
 
         D(id, "enter by=" + requester.getName() + " input='" + input + "' server=" + localServer);
         P(requester, id, "start");
@@ -107,7 +107,7 @@ public class TpaCommand implements OreoCommand {
             return true;
         }
 
-        final var dir = plugin.getPlayerDirectory();
+        final var dir = plugin.getPlayerLocator();
         if (dir == null) {
             Lang.send(requester, "tpa.not-found.generic",
                     "<red>Player <white>%input%</white> not found online. <gray>(They may be offline or on another proxy cluster.)</gray></red>",
@@ -115,7 +115,7 @@ public class TpaCommand implements OreoCommand {
             return true;
         }
 
-        // PlayerDirectory uses the synchronous Mongo driver. Never perform these lookups
+        // PlayerLocator uses the synchronous Mongo driver. Never perform these lookups
         // on the player's region thread.
         OreScheduler.runAsync(plugin, () -> {
             UUID targetUuid = null;
@@ -204,13 +204,12 @@ public class TpaCommand implements OreoCommand {
     private void queueLocalRequest(Player requester, Player target) {
         teleportService.request(requester, target);
         OEssentials plugin = OEssentials.get();
-        if (plugin.getDialogManager() != null) {
-            OreScheduler.runForEntity(plugin, target, () -> {
-                if (target.isOnline() && plugin.getDialogManager() != null) {
-                    plugin.getDialogManager().sendTpaRequestDialog(target, requester, false);
-                }
-            });
-        }
+        OreScheduler.runForEntity(plugin, target, () -> {
+            if (target.isOnline()) {
+                fr.elias.oessentials.platform.ui.Dialogs.show(plugin, "tpa", "TPA dialog",
+                        () -> fr.elias.oessentials.player.internal.tp.TpaDialogHandler.sendRequest(plugin, target, requester, false));
+            }
+        });
     }
 
     private Player resolveOnline(String input) {

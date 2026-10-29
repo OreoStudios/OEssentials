@@ -3,7 +3,7 @@ package fr.elias.oessentials.holograms.internal.api.hologram;
 import fr.elias.oessentials.holograms.internal.api.data.HologramData;
 import fr.elias.oessentials.holograms.internal.api.data.TextHologramData;
 import fr.elias.oessentials.holograms.internal.api.data.property.Visibility;
-import fr.elias.oessentials.nametag.internal.NametageCondition;
+import fr.elias.oessentials.platform.config.NametageCondition;
 import fr.elias.oessentials.shared.MiniMessageCompat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;

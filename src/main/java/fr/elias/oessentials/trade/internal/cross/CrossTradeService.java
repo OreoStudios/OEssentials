@@ -1,0 +1,445 @@
+package fr.elias.oessentials.trade.internal.cross;
+
+import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.messaging.api.PacketBus;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.platform.scheduling.OreScheduler;
+import fr.elias.oessentials.platform.scheduling.OreTask;
+import fr.elias.oessentials.shared.Lang;
+import fr.elias.oessentials.shared.PlayerJournal;
+import fr.elias.oessentials.trade.internal.cross.CrossTradeStore.CrossTrade;
+import fr.elias.oessentials.trade.internal.cross.CrossTradeStore.Side;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+
+/**
+ * Trades between players on different servers. The trade record in MongoDB holds the offered
+ * items and decides every outcome ({@link CrossTradeStore}); this class turns player actions into
+ * record updates, shows the record in each player's menu, and hands out what a player is owed.
+ *
+ * <p>Leaving or switching servers during a trade cancels it, and anything owed is handed out a few
+ * seconds after the player next joins any server (after inventory sync has loaded).</p>
+ */
+public final class CrossTradeService implements Listener {
+    private static final long INVITE_TTL_MS = 60_000L;
+    /**
+     * A partner whose heartbeat is older than this is gone (their server crashed, or their menu
+     * never opened): the trade is cancelled so this player's items come straight back.
+     */
+    private static final long PARTNER_TIMEOUT_MS = 15_000L;
+    /** Inventory sync applies the saved inventory ~10 ticks after join plus a database read. */
+    private static final long CLAIM_DELAY_TICKS = 100L;
+
+    private record Invite(UUID fromId, String fromName, long at) {
+        boolean expired() { return System.currentTimeMillis() - at > INVITE_TTL_MS; }
+    }
+
+    private final OEssentials plugin;
+    private final CrossTradeStore store;
+    private final PacketBus bus;
+    /** Busy check for the local (same-server) trade system. */
+    private final Predicate<UUID> inLocalTrade;
+    /** Saves the player's inventory right now (player file + inventory sync). */
+    private final java.util.function.Consumer<Player> saveNow;
+
+    /** receiver -> invite from a player on another server */
+    private final Map<UUID, Invite> incoming = new ConcurrentHashMap<>();
+    /** requester -> target they invited (the requester's consent to the trade being opened) */
+    private final Map<UUID, Invite> outgoing = new ConcurrentHashMap<>();
+    /** viewer -> open menu */
+    private final Map<UUID, CrossTradeMenu> menus = new ConcurrentHashMap<>();
+    private final OreTask poller;
+
+    public CrossTradeService(OEssentials plugin, CrossTradeStore store, PacketBus bus, Predicate<UUID> inLocalTrade,
+                             java.util.function.Consumer<Player> saveNow) {
+        this.plugin = plugin;
+        this.store = store;
+        this.bus = bus;
+        this.inLocalTrade = inLocalTrade;
+        this.saveNow = saveNow;
+        // Signals can be lost; the record is the truth, so open menus re-read it every second.
+        this.poller = OreScheduler.runTimer(plugin, this::refreshAll, 20L, 20L);
+    }
+
+    public void shutdown() {
+        try { poller.cancel(); } catch (Throwable ignored) {}
+        for (CrossTradeMenu menu : menus.values()) {
+            Player p = Bukkit.getPlayer(menu.viewer);
+            if (p != null) closeMenu(p, menu);
+        }
+        menus.clear();
+    }
+
+    // ------------------------------------------------------------------ /trade
+
+    /**
+     * Handles {@code /trade <name>} when {@code name} is not on this server: accepts their invite,
+     * or invites them. Returns false when the player is not online anywhere.
+     */
+    public boolean handleCommand(Player player, String targetName) {
+        Invite inv = incoming.get(player.getUniqueId());
+        if (inv != null && !inv.expired() && inv.fromName().equalsIgnoreCase(targetName)) {
+            incoming.remove(player.getUniqueId());
+            accept(player, inv);
+            return true;
+        }
+        UUID targetId = lookupOnline(targetName);
+        if (targetId == null) return false;
+        if (targetId.equals(player.getUniqueId())) {
+            Lang.send(player, "trade.self", "<red>You cannot trade with yourself.</red>");
+            return true;
+        }
+        if (busy(player.getUniqueId())) {
+            Lang.send(player, "trade.cross.busy-self", "<red>Finish your current trade first.</red>");
+            return true;
+        }
+        outgoing.put(player.getUniqueId(), new Invite(targetId, targetName, System.currentTimeMillis()));
+        signal(CrossTradeSignalPacket.INVITE, null, player.getUniqueId(), player.getName(), targetId, targetName);
+        Lang.send(player, "trade.cross.invite-sent",
+                "<gray>Trade request sent to <aqua>%name%</aqua> on another server. Expires in <yellow>60s</yellow>.</gray>",
+                Map.of("name", targetName));
+        return true;
+    }
+
+    private UUID lookupOnline(String name) {
+        try {
+            var dir = plugin.getPlayerLocator();
+            if (dir == null) return null;
+            UUID id = dir.lookupUuidByName(name);
+            if (id == null) return null;
+            String server = dir.lookupCurrentServer(id);
+            return server == null || server.isBlank() ? null : id;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    private boolean busy(UUID player) {
+        return inLocalTrade.test(player) || menus.containsKey(player) || store.openTradeOf(player) != null;
+    }
+
+    private void accept(Player accepter, Invite inv) {
+        if (busy(accepter.getUniqueId())) {
+            Lang.send(accepter, "trade.cross.busy-self", "<red>Finish your current trade first.</red>");
+            return;
+        }
+        if (store.openTradeOf(inv.fromId()) != null || lookupOnline(inv.fromName()) == null) {
+            Lang.send(accepter, "trade.cross.unavailable", "<red>%name% is no longer available to trade.</red>",
+                    Map.of("name", inv.fromName()));
+            return;
+        }
+        UUID tradeId = store.create(inv.fromId(), inv.fromName(), accepter.getUniqueId(), accepter.getName());
+        openMenu(accepter, tradeId);
+        signal(CrossTradeSignalPacket.OPEN, tradeId, inv.fromId(), inv.fromName(), accepter.getUniqueId(), accepter.getName());
+    }
+
+    // ------------------------------------------------------------------ signals
+
+    public void onSignal(CrossTradeSignalPacket pkt) {
+        OreScheduler.run(plugin, () -> {
+            switch (pkt.kind()) {
+                case CrossTradeSignalPacket.INVITE -> {
+                    Player target = Bukkit.getPlayer(pkt.toId());
+                    if (target == null || !target.isOnline()) return;
+                    incoming.put(target.getUniqueId(), new Invite(pkt.fromId(), pkt.fromName(), System.currentTimeMillis()));
+                    Lang.send(target, "trade.cross.invite-received",
+                            "<yellow>%name%</yellow> <gray>(on another server) wants to trade. Type</gray> <aqua>/trade %name%</aqua> <gray>to accept (60s).</gray>",
+                            Map.of("name", pkt.fromName()));
+                }
+                case CrossTradeSignalPacket.OPEN -> {
+                    Player requester = Bukkit.getPlayer(pkt.fromId());
+                    if (requester == null || !requester.isOnline()) return;
+                    Invite sent = outgoing.get(requester.getUniqueId());
+                    // Only open a trade the requester actually asked for.
+                    if (sent == null || sent.expired() || !sent.fromId().equals(pkt.toId())) return;
+                    outgoing.remove(requester.getUniqueId());
+                    openMenu(requester, pkt.tradeId());
+                }
+                case CrossTradeSignalPacket.CHANGED -> refreshTrade(pkt.tradeId());
+                default -> { }
+            }
+        });
+    }
+
+    private void signal(byte kind, UUID tradeId, UUID fromId, String fromName, UUID toId, String toName) {
+        try {
+            bus.sendPacket(PacketChannels.GLOBAL, new CrossTradeSignalPacket(kind, tradeId, fromId, fromName, toId, toName));
+        } catch (Throwable t) {
+            plugin.getLogger().warning("[TRADE] Cross-server signal failed (menus will catch up by polling): " + t.getMessage());
+        }
+    }
+
+    private void changed(UUID tradeId) {
+        signal(CrossTradeSignalPacket.CHANGED, tradeId, null, null, null, null);
+        refreshTrade(tradeId);
+    }
+
+    // ------------------------------------------------------------------ menus
+
+    private void openMenu(Player player, UUID tradeId) {
+        CrossTrade trade = store.get(tradeId);
+        if (trade == null || !trade.open()) return;
+        Side side = trade.sideOf(player.getUniqueId());
+        if (side == null) return;
+        CrossTradeMenu menu = new CrossTradeMenu(tradeId, player.getUniqueId(), side, trade.nameOf(side.other()));
+        menu.render(trade);
+        menus.put(player.getUniqueId(), menu);
+        player.openInventory(menu.getInventory());
+        Lang.send(player, "trade.opening", "<gray>Opening trade GUI with <aqua>%partner%</aqua>…</gray>",
+                Map.of("partner", trade.nameOf(side.other()), "name", trade.nameOf(side.other())));
+    }
+
+    private void refreshAll() {
+        for (CrossTradeMenu menu : List.copyOf(menus.values())) refreshTrade(menu.tradeId);
+    }
+
+    /** Re-reads the record: repaints open menus, or finishes the trade for local players once it ended. */
+    private void refreshTrade(UUID tradeId) {
+        if (tradeId == null) return;
+        List<CrossTradeMenu> local = menus.values().stream().filter(m -> m.tradeId.equals(tradeId)).toList();
+        if (local.isEmpty()) return;
+        for (CrossTradeMenu menu : local) {
+            if (Bukkit.getPlayer(menu.viewer) == null) continue;
+            store.touch(tradeId, menu.side);
+            if (store.cancelIfGone(tradeId, menu.side.other(), PARTNER_TIMEOUT_MS)) {
+                Player p = Bukkit.getPlayer(menu.viewer);
+                Lang.send(p, "trade.cross.partner-lost",
+                        "<red>Your trade partner is no longer reachable, so the trade was cancelled. Your items were returned.</red>");
+                signal(CrossTradeSignalPacket.CHANGED, tradeId, null, null, null, null);
+                break;
+            }
+        }
+        CrossTrade trade = store.get(tradeId);
+        for (CrossTradeMenu menu : local) {
+            Player p = Bukkit.getPlayer(menu.viewer);
+            if (p == null) { menus.remove(menu.viewer, menu); continue; }
+            if (trade != null && trade.open()) {
+                menu.render(trade);
+            } else {
+                closeMenu(p, menu);
+                if (trade != null) {
+                    if ("COMMITTED".equals(trade.state())) {
+                        Lang.send(p, "trade.complete", "<green>Trade complete! Items received.</green>");
+                    } else {
+                        Lang.send(p, "trade.cancelled", "<red>Trade cancelled.</red>");
+                    }
+                }
+                settle(p);
+            }
+        }
+    }
+
+    private void closeMenu(Player p, CrossTradeMenu menu) {
+        menus.remove(p.getUniqueId(), menu);
+        if (p.getOpenInventory().getTopInventory().getHolder() == menu) {
+            menu.closingByPlugin = true;
+            p.closeInventory();
+        }
+    }
+
+    // ------------------------------------------------------------------ actions
+
+    /**
+     * Offering: (1) record the item as staged, (2) take it from the player and save the player with a
+     * receipt, (3) make it part of the offer. A crash before (2) is saved leaves the item in the saved
+     * inventory and the staged entry is dropped; after it, the receipt proves the item left and it is
+     * offered or owed back. It is never in both places.
+     */
+    private void offer(Player p, CrossTradeMenu menu, int invSlot) {
+        ItemStack item = p.getInventory().getItem(invSlot);
+        if (item == null || item.getType().isAir()) return;
+        CrossTrade trade = store.get(menu.tradeId);
+        if (trade == null || !trade.open()) return;
+        List<String> mine = trade.offer(menu.side);
+        java.util.Set<Integer> staged = new java.util.HashSet<>();
+        trade.staged(menu.side).forEach(st -> staged.add(st.slot()));
+        int free = -1;
+        for (int i = 0; i < CrossTradeStore.SLOTS; i++) if (mine.get(i) == null && !staged.contains(i)) { free = i; break; }
+        if (free < 0) {
+            Lang.send(p, "trade.cross.full", "<red>Your side of the trade is full.</red>");
+            return;
+        }
+        String enc = CrossTradeMenu.encode(item.clone());
+        String token = newToken();
+        if (!store.stage(menu.tradeId, menu.side, free, enc, token)) return;
+
+        p.getInventory().setItem(invSlot, null);
+        PlayerJournal.add(p, token);
+        save(p);
+
+        if (store.promote(menu.tradeId, menu.side, free, enc, token)) {
+            PlayerJournal.remove(p, token);
+        } else {
+            // The trade ended in between: the item already left the saved inventory, owe it back.
+            store.stagedToHandout(menu.tradeId, menu.side, token, enc, newToken());
+            PlayerJournal.remove(p, token);
+            settle(p);
+        }
+        changed(menu.tradeId);
+    }
+
+    private void takeBack(Player p, CrossTradeMenu menu, int ownIndex) {
+        CrossTrade trade = store.get(menu.tradeId);
+        if (trade == null || !trade.open()) return;
+        String enc = trade.offer(menu.side).get(ownIndex);
+        if (enc == null) return;
+        if (store.takeBack(menu.tradeId, menu.side, ownIndex, enc, newToken())) {
+            payHandouts(p, menu.tradeId, menu.side);
+        }
+        changed(menu.tradeId);
+    }
+
+    private void toggleConfirm(Player p, CrossTradeMenu menu) {
+        CrossTrade trade = store.get(menu.tradeId);
+        if (trade == null || !trade.open()) return;
+        boolean nowReady = !trade.ready(menu.side);
+        if (!store.setReady(menu.tradeId, menu.side, nowReady, trade.ver())) {
+            Lang.send(p, "trade.cross.changed", "<yellow>The offers just changed — check them and confirm again.</yellow>");
+        } else if (nowReady && store.tryCommit(menu.tradeId)) {
+            plugin.getLogger().info("[TRADE] Cross-server trade " + menu.tradeId + " completed.");
+        }
+        changed(menu.tradeId);
+    }
+
+    private void cancel(UUID tradeId, String reason) {
+        if (store.tryCancel(tradeId, reason)) changed(tradeId);
+    }
+
+    /**
+     * Settles everything for {@code p}: staged items left by a crash, ended trades (delivery or
+     * return), and hand-outs. Only for online players: a disconnect closes the menu first, and items
+     * given to a player who is leaving are lost; they stay owed until the next join.
+     */
+    private void settle(Player p) {
+        if (p == null || !p.isOnline()) return;
+        for (CrossTrade t : store.pendingFor(p.getUniqueId())) {
+            Side side = t.sideOf(p.getUniqueId());
+            if (side == null) continue;
+            for (CrossTradeStore.Staged st : t.staged(side)) {
+                if (PlayerJournal.has(p, st.token())) {
+                    // The item left the saved inventory but never joined the offer: owe it back.
+                    store.stagedToHandout(t.id(), side, st.token(), st.item(), newToken());
+                } else {
+                    // The removal was never saved: the item is still in the inventory.
+                    store.dropStaged(t.id(), side, st.token());
+                }
+                PlayerJournal.remove(p, st.token());
+            }
+            if (!t.open()) store.settle(t.id(), side, newToken());
+            payHandouts(p, t.id(), side);
+        }
+        if (store.pendingFor(p.getUniqueId()).isEmpty()) PlayerJournal.setRaw(p, "");
+    }
+
+    /**
+     * Pays hand-outs: give the items, save the player with a receipt, then remove the hand-out. After a
+     * crash, a receipt in the saved data means "already given"; no receipt means "give again".
+     */
+    private void payHandouts(Player p, UUID tradeId, Side side) {
+        if (!p.isOnline()) return;
+        CrossTrade t = store.get(tradeId);
+        if (t == null) return;
+        for (CrossTradeStore.Handout h : t.handouts(side)) {
+            if (!PlayerJournal.has(p, h.token())) {
+                for (String enc : h.items()) give(p, CrossTradeMenu.decode(enc));
+                PlayerJournal.add(p, h.token());
+                save(p);
+            }
+            store.removeHandout(tradeId, side, h.token());
+            PlayerJournal.remove(p, h.token());
+        }
+    }
+
+    private void save(Player p) {
+        try { p.saveData(); } catch (Throwable t) {
+            plugin.getLogger().warning("[TRADE] Could not save " + p.getName() + ": " + t.getMessage());
+        }
+        try { saveNow.accept(p); } catch (Throwable t) {
+            plugin.getLogger().warning("[TRADE] Could not save synced inventory of " + p.getName() + ": " + t.getMessage());
+        }
+    }
+
+    private static String newToken() {
+        return "t" + UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private static void give(Player p, ItemStack item) {
+        if (item == null || item.getType().isAir()) return;
+        p.getInventory().addItem(item).values().forEach(left -> p.getWorld().dropItemNaturally(p.getLocation(), left));
+    }
+
+    // ------------------------------------------------------------------ events
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onClick(InventoryClickEvent e) {
+        if (!(e.getView().getTopInventory().getHolder() instanceof CrossTradeMenu menu)) return;
+        e.setCancelled(true); // nothing moves through this menu by itself
+        if (!(e.getWhoClicked() instanceof Player p) || !p.getUniqueId().equals(menu.viewer)) return;
+        int raw = e.getRawSlot();
+        if (raw < 0) return;
+        if (raw >= e.getView().getTopInventory().getSize()) {
+            offer(p, menu, e.getSlot());
+        } else if (raw == CrossTradeMenu.CONFIRM_SLOT) {
+            toggleConfirm(p, menu);
+        } else if (raw == CrossTradeMenu.CANCEL_SLOT) {
+            cancel(menu.tradeId, "cancelled");
+        } else {
+            int own = menu.ownIndexOf(raw);
+            if (own >= 0) takeBack(p, menu, own);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDrag(InventoryDragEvent e) {
+        if (e.getView().getTopInventory().getHolder() instanceof CrossTradeMenu) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent e) {
+        if (!(e.getInventory().getHolder() instanceof CrossTradeMenu menu) || menu.closingByPlugin) return;
+        menus.remove(menu.viewer, menu);
+        cancel(menu.tradeId, "closed");
+        // Runs a tick later: if the close was part of a disconnect the player is gone by then and
+        // keeps the items owed (handed out on their next join).
+        if (e.getPlayer() instanceof Player p) OreScheduler.run(plugin, () -> settle(p));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        UUID id = e.getPlayer().getUniqueId();
+        incoming.remove(id);
+        outgoing.remove(id);
+        CrossTradeMenu menu = menus.remove(id);
+        if (menu != null) cancel(menu.tradeId, "left");
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        // After inventory sync has loaded, so handed-out items are not overwritten.
+        OreScheduler.runLater(plugin, () -> {
+            if (!p.isOnline()) return;
+            CrossTrade open = store.openTradeOf(p.getUniqueId());
+            if (open != null && !menus.containsKey(p.getUniqueId())) {
+                // They left (or switched servers) mid-trade: that trade is over.
+                cancel(open.id(), "left");
+            }
+            settle(p);
+        }, CLAIM_DELAY_TICKS);
+    }
+}

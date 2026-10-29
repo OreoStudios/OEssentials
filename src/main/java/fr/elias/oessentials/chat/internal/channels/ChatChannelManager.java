@@ -1,7 +1,7 @@
 package fr.elias.oessentials.chat.internal.channels;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.chat.internal.CustomConfig;
+import fr.elias.oessentials.platform.config.CustomConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.ConfigurationSection;

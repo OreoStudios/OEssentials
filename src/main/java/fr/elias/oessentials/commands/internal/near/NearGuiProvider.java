@@ -1,8 +1,7 @@
 package fr.elias.oessentials.commands.internal.near;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
-import fr.elias.oessentials.player.internal.services.VanishService;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
@@ -43,7 +42,7 @@ public class NearGuiProvider implements InventoryProvider {
 
         Location me = p.getLocation();
         // N-1: filter out vanished players unless the viewer has oreo.vanish.see
-        VanishService vanishService = plugin.getVanishService();
+        fr.elias.oessentials.api.IVanishAPI vanishService = plugin.getModuleRegistry().read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getVanishApi);
         boolean canSeeVanished = p.hasPermission("oreo.vanish.see");
         List<Player> nearby = new ArrayList<>();
         for (Player other : p.getWorld().getPlayers()) {

@@ -1,9 +1,9 @@
 package fr.elias.oessentials.chat.internal;
 
+import fr.elias.oessentials.platform.config.CustomConfig;
+
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
-import fr.elias.oessentials.modgui.internal.ModGuiService;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.DiscordWebhook;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -17,7 +17,6 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -34,6 +33,12 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class AsyncChatListener implements Listener {
+    /**
+     * Players whose line just answered an auction-house / orders prompt in the legacy chat event.
+     * Paper then fires its chat event for the same line already cancelled but with viewers, which
+     * onChat treats as "another plugin cancelled, still broadcast" - so the answer leaked into chat.
+     */
+    private final java.util.Map<java.util.UUID, Long> answeredPrompt = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final FormatManager formatManager;
     private final CustomConfig chatCfg;
@@ -76,7 +81,7 @@ public final class AsyncChatListener implements Listener {
         );
         this.chatItemHandler = new ChatItemHandler(chatCfg);
 
-        var settings = OEssentials.get().getSettingsConfig();
+        var settings = OEssentials.get().getFeatureSettings();
         this.bannedWordsEnabled = settings.bannedWordsEnabled();
         this.bannedWords = settings.bannedWords();
 
@@ -90,50 +95,18 @@ public final class AsyncChatListener implements Listener {
         final Player player = event.getPlayer();
         final String raw = event.getMessage();
 
-        try {
-            AuctionHouseModule ahm = OEssentials.get().getAuctionHouseModule();
-            if (ahm != null && ahm.enabled() && ahm.isWaitingForPrice(player.getUniqueId())) {
-                event.setCancelled(true);
-                event.getRecipients().clear();
-                ahm.consumePriceInput(player, raw);
-                return;
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om =
-                    OEssentials.get().getOrdersModule();
-            if (om != null && om.enabled()) {
-                java.util.UUID uid = player.getUniqueId();
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForQty(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumeQtyInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForPrice(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumePriceInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.isWaitingForFillQty(uid)) {
-                    event.setCancelled(true);
-                    event.getRecipients().clear();
-                    fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.consumeFillQtyInput(om, player, raw);
-                    return;
-                }
-            }
-        } catch (Throwable t) {
-            Bukkit.getLogger().severe("[Orders] Legacy chat input error: " + t);
-            t.printStackTrace();
+        var inventories = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class, i -> i);
+        if (inventories != null && inventories.consumeChatInput(player, raw)) {
+            event.setCancelled(true);
+            event.getRecipients().clear();
+            answeredPrompt.put(player.getUniqueId(), System.nanoTime());
         }
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onLegacyChat(AsyncPlayerChatEvent event) {
-        if (!OEssentials.get().getSettingsConfig().chatEnabled()) return;
+        if (!OEssentials.get().getFeatureSettings().chatEnabled()) return;
         event.setCancelled(true);
         event.getRecipients().clear();
     }
@@ -150,45 +123,17 @@ public final class AsyncChatListener implements Listener {
         } catch (Throwable ignored) {}
 
         final Player player = event.getPlayer();
-        try {
-            AuctionHouseModule ahm = OEssentials.get().getAuctionHouseModule();
-            if (ahm != null && ahm.enabled() && ahm.isWaitingForPrice(player.getUniqueId())) {
-                event.viewers().clear();
-                event.setCancelled(true);
-                String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
-                ahm.consumePriceInput(player, raw);
-                return;
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            fr.elias.oessentials.inventory.internal.orders.OrdersModule om =
-                    OEssentials.get().getOrdersModule();
-            if (om != null && om.enabled()) {
-                String raw = PlainTextComponentSerializer.plainText().serialize(event.message());
-                UUID uid = player.getUniqueId();
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForQty(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumeQtyInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.isWaitingForPrice(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.CreateOrderFlow.consumePriceInput(om, player, raw);
-                    return;
-                }
-                if (fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.isWaitingForFillQty(uid)) {
-                    event.viewers().clear();
-                    event.setCancelled(true);
-                    fr.elias.oessentials.inventory.internal.orders.gui.FillOrderMenu.consumeFillQtyInput(om, player, raw);
-                    return;
-                }
-            }
-        } catch (Throwable t) {
-            Bukkit.getLogger().severe("[Orders] Chat input handler error: " + t);
-            t.printStackTrace();
+        Long answered = answeredPrompt.remove(player.getUniqueId());
+        if (answered != null && System.nanoTime() - answered < 2_000_000_000L) {
+            event.viewers().clear();
+            event.setCancelled(true);
+            return;
+        }
+        var inventories = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class, i -> i);
+        if (inventories != null && inventories.consumeChatInput(player,
+                PlainTextComponentSerializer.plainText().serialize(event.message()))) {
+            event.viewers().clear();
+            event.setCancelled(true);
         }
     }
 
@@ -203,7 +148,7 @@ public final class AsyncChatListener implements Listener {
         }
 
         // Chat module disabled — leave the event alone so CHC (or other chat plugins) can handle it
-        if (!OEssentials.get().getSettingsConfig().chatEnabled()) return;
+        if (!OEssentials.get().getFeatureSettings().chatEnabled()) return;
 
         // Modern Factions signals a handled private channel by cancelling the Paper event
         // and clearing all viewers. If the event is cancelled but viewers still exist,
@@ -214,7 +159,7 @@ public final class AsyncChatListener implements Listener {
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final ModGuiService gui = OEssentials.get().getModGuiService();
+        final fr.elias.oessentials.modgui.api.ChatControls gui = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getChatControls);
 
         if (gui != null && gui.chatMuted()) {
             player.sendMessage("§cChat is currently muted.");
@@ -249,7 +194,7 @@ public final class AsyncChatListener implements Listener {
 
         final UUID senderUuid = player.getUniqueId();
         final String rawMsg = msg;
-        final String serverName = OEssentials.get().getConfigService().serverName();
+        final String serverName = OEssentials.get().getServerConfig().serverName();
 
         OreScheduler.run(OEssentials.get(), () -> {
             Player live = Bukkit.getPlayer(senderUuid);
@@ -430,7 +375,7 @@ public final class AsyncChatListener implements Listener {
         String gm = p.getGameMode() != null ? p.getGameMode().name() : "SURVIVAL";
         String uuid = p.getUniqueId().toString();
         String lpGroup = hoverPrimaryGroup(p);
-        String server = OEssentials.get().getConfigService().serverName();
+        String server = OEssentials.get().getServerConfig().serverName();
         String time24 = new SimpleDateFormat("HH:mm:ss").format(new Date());
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 

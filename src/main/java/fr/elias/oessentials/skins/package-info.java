@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.skins.lifecycle.SkinsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "skins")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "skins", lifecycle = fr.elias.oessentials.skins.lifecycle.SkinsModule.class)
 package fr.elias.oessentials.skins;

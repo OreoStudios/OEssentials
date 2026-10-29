@@ -8,4 +8,10 @@ import fr.elias.oessentials.trade.internal.service.TradeService;
 public interface TradeServices {
     TradeConfig getTradeConfig();
     TradeService getTradeService();
+
+    /** The public OEssentials API for this module, or {@code null} while it is not available. */
+    default fr.elias.oessentials.api.ITradeAPI getTradeApi() {
+        var s = getTradeService();
+        return s == null ? null : new fr.elias.oessentials.trade.internal.api.TradeAPIImpl(s);
+    }
 }

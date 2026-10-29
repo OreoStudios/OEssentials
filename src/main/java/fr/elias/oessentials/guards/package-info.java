@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.guards.lifecycle.PerformanceGuardsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "performance-guards")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "performance-guards", lifecycle = fr.elias.oessentials.guards.lifecycle.PerformanceGuardsModule.class)
 package fr.elias.oessentials.guards;

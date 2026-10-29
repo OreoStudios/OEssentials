@@ -158,7 +158,7 @@ public class VanishService {
         }
         // Refresh custom nametag visibility immediately — bypass the periodic sweep
         // so the nametag appears/disappears in the same tick as the vanish toggle.
-        fr.elias.oessentials.nametag.internal.PlayerNametagManager nm = plugin.getNametagManager();
+        var nm = plugin.getModuleRegistry().read(fr.elias.oessentials.nametag.lifecycle.NametagServices.class, n -> n);
         if (nm != null) {
             if (onlinePlayer != null && onlinePlayer.isOnline()) {
                 nm.refreshOwnerVisibility(onlinePlayer);
@@ -225,9 +225,9 @@ public class VanishService {
 
     private void broadcastState(UUID playerId, boolean vanish) {
         if (!crossServerSyncEnabled) return;
-        if (plugin.getPacketManager() == null || !plugin.getPacketManager().isInitialized()) return;
+        if (plugin.getPacketBus() == null || !plugin.getPacketBus().isInitialized()) return;
         try {
-            plugin.getPacketManager().sendPacket(new VanishSyncPacket(playerId, vanish, localServerName));
+            plugin.getPacketBus().sendPacket(new VanishSyncPacket(playerId, vanish, localServerName));
         } catch (Throwable t) {
             plugin.getLogger().warning("[VANISH] Failed to broadcast cross-server state: " + t.getMessage());
         }

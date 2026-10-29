@@ -2,8 +2,8 @@ package fr.elias.oessentials.currency.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.currency.api.Currency;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -208,12 +208,12 @@ public class CurrencySendCommand implements OreoCommand {
         }
 
         try {
-            var pm = plugin.getPacketManager();
+            var pm = plugin.getPacketBus();
             if (pm == null || !pm.isInitialized()) return;
 
             pm.sendPacket(
-                    fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels.GLOBAL,
-                    new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, msg)
+                    fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL,
+                    new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(targetUuid, msg)
             );
         } catch (Throwable ignored) {}
     }
@@ -244,18 +244,18 @@ public class CurrencySendCommand implements OreoCommand {
             }
 
             try {
-                var cache = plugin.getOfflinePlayerCache();
+                var cache = plugin.getModuleRegistry().read(fr.elias.oessentials.economy.lifecycle.EconomyServices.class, e -> e);
                 if (cache != null) {
-                    UUID cached = cache.getId(nameOrUuid);
+                    UUID cached = cache.offlinePlayerId(nameOrUuid);
                     if (cached != null) {
                         return new TargetResolved(cached, nameOrUuid);
                     }
                 }
             } catch (Throwable ignored) {}
 
-            PlayerDirectory dir;
+            PlayerLocator dir;
             try {
-                dir = plugin.getPlayerDirectory();
+                dir = plugin.getPlayerLocator();
             } catch (Throwable t) {
                 dir = null;
             }

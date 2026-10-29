@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.commandtoggle.lifecycle.CommandToggleModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "command-toggle")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "command-toggle", lifecycle = fr.elias.oessentials.commandtoggle.lifecycle.CommandToggleModule.class)
 package fr.elias.oessentials.commandtoggle;

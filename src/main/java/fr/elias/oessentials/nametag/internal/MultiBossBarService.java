@@ -1,5 +1,7 @@
 package fr.elias.oessentials.nametag.internal;
 
+import fr.elias.oessentials.platform.config.NametageCondition;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;

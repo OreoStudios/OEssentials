@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.portals.lifecycle.PortalsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "portals")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "portals", lifecycle = fr.elias.oessentials.portals.lifecycle.PortalsModule.class)
 package fr.elias.oessentials.portals;

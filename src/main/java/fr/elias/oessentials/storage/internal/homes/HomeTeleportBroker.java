@@ -2,7 +2,7 @@
 package fr.elias.oessentials.storage.internal.homes;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomeTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.OtherHomeTeleportRequestPacket;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
@@ -28,7 +28,7 @@ public final class HomeTeleportBroker implements Listener {
 
     private final Plugin plugin;
     private final HomeService homes;
-    private final PacketManager pm;
+    private final PacketBus pm;
     private final String thisServer;
     private final Logger log;
 
@@ -41,11 +41,11 @@ public final class HomeTeleportBroker implements Listener {
     /** presence means we owe a teleport on join / while online */
     private final Map<UUID, Boolean> pending = new ConcurrentHashMap<>();
 
-    public HomeTeleportBroker(Plugin plugin, HomeService homes, PacketManager pm) {
+    public HomeTeleportBroker(Plugin plugin, HomeService homes, PacketBus pm) {
         this.plugin = plugin;
         this.homes = homes;
         this.pm = pm;
-        this.thisServer = OEssentials.get().getConfigService().serverName();
+        this.thisServer = OEssentials.get().getServerConfig().serverName();
         this.log = plugin.getLogger();
 
         log.info("[HOME/BROKER] up on server=" + thisServer + " pm.init=" + pm.isInitialized());
@@ -152,7 +152,7 @@ public final class HomeTeleportBroker implements Listener {
             );
 
             // Send on GLOBAL; broker filters by targetServer
-            pm.sendPacket(fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(server), pkt);
+            pm.sendPacket(fr.elias.oessentials.messaging.api.PacketChannel.individual(server), pkt);
 
             log.info("[HOME/SEND-OTHER] queued -> server=" + server
                     + " subject=" + adminId + " owner=" + ownerId

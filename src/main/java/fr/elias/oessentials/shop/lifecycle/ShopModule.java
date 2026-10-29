@@ -4,7 +4,7 @@ import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 
-@PluginModule(value = "shop", dependencies = {"configuration::services"}, after = {"clear-lag"})
+@PluginModule(value = "shop", dependencies = {"configuration::services"}, uses = {"currency-system::services"}, after = {"clear-lag"})
 public final class ShopModule extends ManagedModule implements ShopServices {
     private fr.elias.oessentials.shop.internal.ShopModule shopModule;
 
@@ -12,12 +12,15 @@ public final class ShopModule extends ManagedModule implements ShopServices {
     protected void start() {
         cleanup("shopModule", () -> { if (shopModule != null) shopModule.shutdown(); });
         initShop();
+        // /price answers "shop unavailable" itself when the shop is off (registered by commands until 7.1.6)
+        services(ConfigurationServices.class).getCommands().register(new fr.elias.oessentials.shop.internal.commands.PriceCommand(plugin));
+        providePublicApi(fr.elias.oessentials.api.IShopAPI.class, this::getShopApi);
     }
 
     @Override public fr.elias.oessentials.shop.internal.ShopModule getShopModule() { return shopModule; }
 
     private void initShop() {
-        if (!services(ConfigurationServices.class).getSettingsConfig().shopEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().shopEnabled()) {
             plugin.getLogger().info("[Shop] Disabled by settings.yml");
             return;
         }

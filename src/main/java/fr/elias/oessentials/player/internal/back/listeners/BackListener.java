@@ -3,7 +3,7 @@ package fr.elias.oessentials.player.internal.back.listeners;
 
     import fr.elias.oessentials.OEssentials;
 
-    import fr.elias.oessentials.player.internal.back.BackLocation;
+    import fr.elias.oessentials.player.api.BackLocation;
     import fr.elias.oessentials.player.internal.back.service.BackService;
     import org.bukkit.entity.Player;
     import org.bukkit.event.EventHandler;
@@ -19,7 +19,7 @@ package fr.elias.oessentials.player.internal.back.listeners;
 
         public BackListener(BackService backService, OEssentials plugin) {
             this.backService = backService;
-            this.serverName = plugin.getConfigService().serverName();
+            this.serverName = plugin.getServerConfig().serverName();
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

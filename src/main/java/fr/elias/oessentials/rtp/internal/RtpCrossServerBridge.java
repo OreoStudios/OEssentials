@@ -1,8 +1,8 @@
 package fr.elias.oessentials.rtp.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,10 +13,10 @@ import java.util.UUID;
 public final class RtpCrossServerBridge {
 
     private final OEssentials plugin;
-    private final PacketManager packets;
+    private final PacketBus packets;
     private final String thisServer;
 
-    public RtpCrossServerBridge(OEssentials plugin, PacketManager packets, String thisServer) {
+    public RtpCrossServerBridge(OEssentials plugin, PacketBus packets, String thisServer) {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.packets = packets;
         this.thisServer = thisServer == null ? "" : thisServer;

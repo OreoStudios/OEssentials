@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.jumppads.lifecycle.JumpPadsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "jump-pads")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "jump-pads", lifecycle = fr.elias.oessentials.jumppads.lifecycle.JumpPadsModule.class)
 package fr.elias.oessentials.jumppads;

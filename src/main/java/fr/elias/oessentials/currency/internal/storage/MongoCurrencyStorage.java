@@ -5,7 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.elias.oessentials.currency.internal.CurrencyBalance;
 import org.bson.Document;
 

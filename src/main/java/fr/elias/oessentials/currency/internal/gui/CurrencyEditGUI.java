@@ -1,7 +1,7 @@
 package fr.elias.oessentials.currency.internal.gui;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.currency.internal.Currency;
+import fr.elias.oessentials.currency.api.Currency;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;

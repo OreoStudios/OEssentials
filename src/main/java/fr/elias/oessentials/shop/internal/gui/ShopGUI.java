@@ -1,6 +1,6 @@
 package fr.elias.oessentials.shop.internal.gui;
 
-import fr.elias.oessentials.currency.internal.CurrencyService;
+import fr.elias.oessentials.currency.api.Currencies;
 import fr.elias.oessentials.shop.internal.ShopModule;
 import fr.elias.oessentials.shop.internal.models.Shop;
 import fr.elias.oessentials.shop.internal.models.ShopGuiLayout;
@@ -191,7 +191,7 @@ public final class ShopGUI {
         private String formatPrice(double price, String sym) {
             String cid = shop.getCurrencyId();
             if (cid != null) {
-                CurrencyService cs = module.getPlugin().getCurrencyService();
+                Currencies cs = module.getPlugin().getModuleRegistry().read(fr.elias.oessentials.currency.lifecycle.CurrencySystemServices.class, fr.elias.oessentials.currency.lifecycle.CurrencySystemServices::getCurrencies);
                 if (cs != null) return cs.formatBalance(cid, price);
             }
             return sym + String.format("%.2f", price);

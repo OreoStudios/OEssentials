@@ -1,6 +1,8 @@
 package fr.elias.oessentials.configuration.internal.config;
 
 import fr.elias.oessentials.OEssentials;
+import fr.elias.oessentials.configuration.api.FeatureSettings;
+import fr.elias.oessentials.configuration.api.PerformanceGuardSettings;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -8,9 +10,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
-public class SettingsConfig {
+public class SettingsConfig implements FeatureSettings, PerformanceGuardSettings {
 
     private final OEssentials plugin;
     private File file;
@@ -44,6 +47,20 @@ public class SettingsConfig {
 
     public FileConfiguration raw() {
         return cfg;
+    }
+
+    /** Sets each key, saves settings.yml and reloads it. */
+    public void update(Map<String, Object> values) {
+        for (Map.Entry<String, Object> e : values.entrySet()) {
+            cfg.set(e.getKey(), e.getValue());
+            // Older configs may use this higher-priority legacy section.
+            if (e.getKey().startsWith("features.chat.banned-words.")
+                    && cfg.isConfigurationSection("chat.banned-words")) {
+                cfg.set(e.getKey().substring("features.".length()), e.getValue());
+            }
+        }
+        save();
+        reload();
     }
 
     public boolean isEnabled(String featureKey) {

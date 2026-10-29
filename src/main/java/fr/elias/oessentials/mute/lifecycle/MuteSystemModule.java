@@ -2,8 +2,8 @@ package fr.elias.oessentials.mute.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
-import fr.elias.oessentials.chat.internal.MuteListener;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.internal.MuteListener;
+import fr.elias.oessentials.mute.api.MuteService;
 
 @PluginModule(value = "mute-system", after = {"daily"})
 public final class MuteSystemModule extends ManagedModule implements MuteSystemServices {

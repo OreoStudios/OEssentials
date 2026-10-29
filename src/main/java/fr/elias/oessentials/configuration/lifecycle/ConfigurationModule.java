@@ -6,35 +6,37 @@ import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.platform.commands.CommandManager;
 import fr.elias.oessentials.configuration.internal.config.ConfigService;
+import fr.elias.oessentials.configuration.internal.config.CrossServerSettings;
 import fr.elias.oessentials.configuration.internal.config.SettingsConfig;
-import fr.elias.oessentials.configuration.internal.listeners.FreezeListener;
+import fr.elias.oessentials.configuration.api.BossBarToggles;
+import fr.elias.oessentials.configuration.api.SafeZoneRelay;
+import fr.elias.oessentials.configuration.api.ServerConnector;
+import fr.elias.oessentials.configuration.internal.config.OeSettingsCommand;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
-import fr.elias.oessentials.crafting.internal.customcraft.CraftActionsConfig;
-import fr.elias.oessentials.configuration.internal.invlook.listeners.InvlookListener;
-import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
 import fr.elias.oessentials.configuration.internal.tempfly.TempFlyCommand;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
-import fr.elias.oessentials.configuration.internal.logging.KillallLogger;
 import fr.elias.oessentials.shared.Lang;
 import java.io.File;
+import java.util.Map;
 
 @PluginModule(value = "configuration")
 public final class ConfigurationModule extends ManagedModule implements ConfigurationServices {
-    private fr.elias.oessentials.configuration.internal.config.SettingsConfig settingsConfig;
+    private SettingsConfig settingsConfig;
     private fr.elias.oessentials.configuration.internal.tempfly.TempFlyService tempFlyService;
     private fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig tempFlyConfig;
     private ConfigService configService;
     private AutoRebootService autoRebootService;
-    private CraftActionsConfig craftActionsConfig;
+    private volatile SafeZoneRelay safeZoneRelay;
+    private volatile ServerConnector serverConnector;
+    private final fr.elias.oessentials.configuration.internal.config.PublicApiRegistry publicApis = new fr.elias.oessentials.configuration.internal.config.PublicApiRegistry();
+    private final fr.elias.oessentials.configuration.internal.config.ReloadStepRegistry reloadSteps = new fr.elias.oessentials.configuration.internal.config.ReloadStepRegistry();
+    private final fr.elias.oessentials.configuration.internal.config.ConfigFileRegistry configFiles = new fr.elias.oessentials.configuration.internal.config.ConfigFileRegistry();
+    private final fr.elias.oessentials.configuration.internal.config.PlaceholderRegistry placeholders = new fr.elias.oessentials.configuration.internal.config.PlaceholderRegistry();
+    private volatile BossBarToggles bossBarToggles;
     private CommandManager commands;
-    private FreezeService freezeService;
-    private KillallLogger killallLogger;
-    private SettingsConfig settings;
     private boolean economyEnabled;
     private boolean redisEnabled;
     private boolean rabbitEnabled;
-    private InvlookManager invlookManager;
-    private fr.elias.oessentials.configuration.internal.config.CrossServerSettings crossServerSettings;
+    private volatile CrossServerSettings crossServerSettings;
     private Gson gson = new Gson();
 
     @Override
@@ -42,26 +44,46 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         cleanup("commands", () -> { if (commands != null) commands.shutdown(); });
         cleanup("autoRebootService", () -> { if (autoRebootService != null) autoRebootService.stop(); });
         cleanup("tempFlyService", () -> { if (tempFlyService != null) tempFlyService.shutdown(); });
-        cleanup("invlookManager", () -> { if (invlookManager != null) invlookManager.clear(); });
         initConfig();
+        publicApis.provide(fr.elias.oessentials.api.ITempFlyAPI.class, this::getTempFly);
+        publicApis.provide(fr.elias.oessentials.api.IAutoRebootAPI.class, this::getAutoReboot);
+        // The public OEssentials API; each module provides its part through PublicApis.
+        var api = new fr.elias.oessentials.configuration.internal.api.OEssentialsAPIImpl(plugin);
+        org.bukkit.Bukkit.getServicesManager().register(fr.elias.oessentials.api.OEssentialsAPI.class, api, plugin, org.bukkit.plugin.ServicePriority.Normal);
+        cleanup("oessentialsApi", () -> org.bukkit.Bukkit.getServicesManager().unregister(fr.elias.oessentials.api.OEssentialsAPI.class, api));
+        plugin.getLogger().info("[API] Registered OEssentialsAPI via ServicesManager");
     }
 
-    @Override public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return settingsConfig; }
-    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return tempFlyService; }
-    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyConfig getTempFlyConfig() { return tempFlyConfig; }
-    @Override public ConfigService getConfigService() { return configService; }
-    @Override public AutoRebootService getAutoRebootService() { return autoRebootService; }
-    @Override public CraftActionsConfig getCraftActionsConfig() { return craftActionsConfig; }
+    @Override public SettingsConfig getFeatureSettings() { return settingsConfig; }
+    @Override public SettingsConfig getPerformanceGuardSettings() { return settingsConfig; }
+    @Override public ConfigService getServerConfig() { return configService; }
+    @Override public CrossServerSettings getCrossServerFeatures() { return crossServerSettings; }
+    @Override public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFly() { return tempFlyService; }
+    @Override public AutoRebootService getAutoReboot() { return autoRebootService; }
+    @Override public void setSafeZoneRelay(SafeZoneRelay relay) { this.safeZoneRelay = relay; }
+    @Override public void setServerConnector(ServerConnector connector) { this.serverConnector = connector; }
+    @Override public ServerConnector getServerConnector() { return serverConnector; }
+    @Override public fr.elias.oessentials.configuration.api.PublicApis getPublicApis() { return publicApis; }
+    @Override public fr.elias.oessentials.configuration.api.ReloadSteps getReloadSteps() { return reloadSteps; }
+    @Override public fr.elias.oessentials.configuration.api.ConfigFiles getConfigFiles() { return configFiles; }
+    @Override public fr.elias.oessentials.configuration.api.Placeholders getPlaceholders() { return placeholders; }
+    @Override public void setBossBarToggles(BossBarToggles toggles) { this.bossBarToggles = toggles; }
     @Override public CommandManager getCommands() { return commands; }
-    @Override public FreezeService getFreezeService() { return freezeService; }
-    @Override public KillallLogger getKillallLogger() { return killallLogger; }
-    @Override public SettingsConfig getSettings() { return settings; }
     @Override public boolean getEconomyEnabled() { return economyEnabled; }
     @Override public boolean getRedisEnabled() { return redisEnabled; }
     @Override public boolean getRabbitEnabled() { return rabbitEnabled; }
-    @Override public InvlookManager getInvlookManager() { return invlookManager; }
-    @Override public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return crossServerSettings; }
     @Override public Gson getGson() { return gson; }
+
+    @Override
+    public void reloadSettings() {
+        settingsConfig.reload();
+        crossServerSettings = CrossServerSettings.load(plugin);
+    }
+
+    @Override
+    public void updateSettings(Map<String, Object> values) {
+        settingsConfig.update(values);
+    }
 
     // Init methods
 
@@ -81,31 +103,23 @@ public final class ConfigurationModule extends ManagedModule implements Configur
         fr.elias.oessentials.configuration.internal.migration.FeatureConfigMigrator.migrate(plugin);
         plugin.reloadConfig();
 
-        this.settingsConfig = new fr.elias.oessentials.configuration.internal.config.SettingsConfig(plugin);
-        this.settings = this.settingsConfig;
+        this.settingsConfig = new SettingsConfig(plugin);
 
         showStartupBanner();
 
         this.configService    = new ConfigService(plugin);
-        this.crossServerSettings = fr.elias.oessentials.configuration.internal.config.CrossServerSettings.load(plugin);
+        this.crossServerSettings = CrossServerSettings.load(plugin);
         this.economyEnabled   = settingsConfig.economyEnabled();
         this.redisEnabled     = plugin.getConfig().getBoolean("redis.enabled", false);
         this.rabbitEnabled    = plugin.getConfig().getBoolean("rabbitmq.enabled", false);
-        this.invlookManager   = new InvlookManager();
-        this.killallLogger    = new KillallLogger(plugin);
 
         plugin.getLogger().info("[Economy] " + (economyEnabled ? "Enabled" : "Disabled") + " via settings.yml");
 
-        this.autoRebootService = new AutoRebootService(plugin);
+        this.autoRebootService = new AutoRebootService(plugin, () -> safeZoneRelay, () -> serverConnector);
         this.autoRebootService.start();
 
-        this.craftActionsConfig = new CraftActionsConfig(plugin);
-        this.freezeService = new FreezeService();
-        plugin.getServer().getPluginManager().registerEvents(new FreezeListener(freezeService), plugin);
 
         this.commands = new CommandManager(plugin);
-
-        plugin.getServer().getPluginManager().registerEvents(new InvlookListener(plugin), plugin);
 
         Lang.init(plugin);
 
@@ -123,7 +137,7 @@ public final class ConfigurationModule extends ManagedModule implements Configur
             plugin.getLogger().info("[TempFly] Disabled by settings.yml.");
         }
 
-        this.commands.register(new fr.elias.oessentials.commands.internal.commands.core.admins.OeSettingsCommand(plugin));
+        this.commands.register(new OeSettingsCommand(plugin, () -> bossBarToggles));
         plugin.getLogger().info("[Settings] GUI command registered (/oesettings).");
 
         plugin.getLogger().info("[BOOT] storage=" + plugin.getConfig().getString("essentials.storage", "yaml")

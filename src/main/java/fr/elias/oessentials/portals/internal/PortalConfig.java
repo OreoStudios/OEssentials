@@ -106,9 +106,9 @@ public final class PortalConfig {
 
     private void saveDefault(String name) {
         File target = new File(folder, name);
-        if (target.exists()) return;
-        try (InputStream in = getClass().getResourceAsStream("/portals/" + name)) {
-            if (in != null) Files.copy(in, target.toPath());
+        if (target.exists() && target.length() > 0) return;
+        try (InputStream in = getClass().getResourceAsStream("/data/portals/" + name)) {
+            if (in != null) Files.copy(in, target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             // ignore — folder already created
         }

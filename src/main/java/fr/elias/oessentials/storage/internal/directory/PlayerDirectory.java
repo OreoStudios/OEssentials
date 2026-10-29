@@ -14,7 +14,7 @@ import java.util.*;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
-public class PlayerDirectory {
+public class PlayerDirectory implements fr.elias.oessentials.storage.api.PlayerLocator {
     private final MongoCollection<Document> coll;
 
     public PlayerDirectory(MongoClient client, String db, String prefix) {
@@ -29,8 +29,20 @@ public class PlayerDirectory {
         try { coll.createIndex(new Document("lastServer", 1)); } catch (Throwable ignored) {}
     }
 
-    public void saveMapping(String name, UUID uuid) { upsertPresence(uuid, name, null); }
-    public void saveMapping(UUID uuid, String name) { upsertPresence(uuid, name, null); }
+    public void saveMapping(String name, UUID uuid) { saveMapping(uuid, name); }
+
+    /**
+     * Records the name only. It used to replace the whole entry without a server, so when it ran
+     * after a join's presence update (inventory sync calls it on every join) the player's current
+     * server was wiped and they looked offline to cross-server features until the next heartbeat.
+     */
+    public void saveMapping(UUID uuid, String name) {
+        if (uuid == null) return;
+        String nm = name == null ? "" : name;
+        coll.updateOne(eq("uuid", uuid.toString()),
+                combine(set("name", nm), set("nameLower", nm.toLowerCase(Locale.ROOT)), set("updatedAt", Instant.now().toString())),
+                new UpdateOptions().upsert(true));
+    }
 
     public UUID lookupUuidByName(String name) {
         if (name == null || name.isBlank()) return null;
@@ -96,24 +108,21 @@ public class PlayerDirectory {
         );
     }
 
-    public void clearCurrentServer(UUID uuid) {
-        if (uuid == null) return;
-        Document d = coll.find(eq("uuid", uuid.toString()))
-                .projection(new Document("currentServer", 1))
-                .first();
-        if (d == null) return;
-
-        String cur = d.getString("currentServer");
-        if (cur == null || cur.isBlank()) {
-            coll.updateOne(eq("uuid", uuid.toString()), set("updatedAt", Instant.now().toString()));
-        } else {
-            coll.updateOne(eq("uuid", uuid.toString()),
-                    combine(
-                            set("lastServer", cur),
-                            unset("currentServer"),
-                            set("updatedAt", Instant.now().toString())
-                    ));
-        }
+    /**
+     * Marks the player offline, but only while {@code server} is still recorded as their server.
+     *
+     * <p>On a proxy switch the new server's join is often stored before the old server's quit;
+     * clearing unconditionally then erased the new server and made the online player unreachable
+     * (e.g. cross-server /msg answered "Player not found").</p>
+     */
+    public void clearCurrentServer(UUID uuid, String server) {
+        if (uuid == null || server == null) return;
+        coll.updateOne(and(eq("uuid", uuid.toString()), eq("currentServer", server)),
+                combine(
+                        set("lastServer", server),
+                        unset("currentServer"),
+                        set("updatedAt", Instant.now().toString())
+                ));
     }
 
     public String getCurrentOrLastServer(UUID uuid) {

@@ -4,13 +4,13 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaRequestPacket;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpaSummonPacket;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.shared.Lang;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -29,8 +29,8 @@ public final class TpaCrossServerBroker implements Listener {
     private final OEssentials plugin;
     @SuppressWarnings("unused")
     private final TeleportService teleportService;
-    private final PacketManager pm;
-    private final ProxyMessenger proxy;
+    private final PacketBus pm;
+    private final ServerConnector proxy;
     private final String localServer;
 
     private final Map<UUID, Pending> pendingForTarget = new ConcurrentHashMap<>();
@@ -46,7 +46,7 @@ public final class TpaCrossServerBroker implements Listener {
     }
 
     public TpaCrossServerBroker(OEssentials plugin, TeleportService teleportService,
-                                PacketManager pm, ProxyMessenger proxy, String localServer) {
+                                PacketBus pm, ServerConnector proxy, String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
         this.pm = pm;
@@ -163,7 +163,7 @@ public final class TpaCrossServerBroker implements Listener {
         OreScheduler.runForEntity(plugin, requester, () -> {
             if (!requester.isOnline()) return;
 
-            var sec = plugin.getSettingsConfig().getRoot().getConfigurationSection("features.tpa");
+            var sec = plugin.getFeatureSettings().getRoot().getConfigurationSection("features.tpa");
             boolean countdownEnabled = sec != null && sec.getBoolean("cooldown", false);
             int seconds = sec != null ? sec.getInt("cooldown-amount", 0) : 0;
             String destServer = pkt.getDestServer();
@@ -269,7 +269,7 @@ public final class TpaCrossServerBroker implements Listener {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(targetName)) return online;
         }
-        // Intentionally no PlayerDirectory/Mongo lookup here: packet callbacks must never
+        // Intentionally no PlayerLocator/Mongo lookup here: packet callbacks must never
         // block a server/region thread. The packet already carries UUID + last-known name.
         return null;
     }

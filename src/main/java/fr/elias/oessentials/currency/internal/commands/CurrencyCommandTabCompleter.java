@@ -1,8 +1,8 @@
 package fr.elias.oessentials.currency.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.currency.api.Currency;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -96,9 +96,9 @@ public class CurrencyCommandTabCompleter implements TabCompleter {
             suggestions.add(p.getName());
         }
 
-        PlayerDirectory dir = null;
+        PlayerLocator dir = null;
         try {
-            dir = plugin.getPlayerDirectory();
+            dir = plugin.getPlayerLocator();
         } catch (Throwable ignored) {}
 
         if (dir != null) {

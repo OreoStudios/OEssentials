@@ -25,10 +25,15 @@ public final class PlayerSyncListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
+        boolean loaded = service.isLoaded(e.getPlayer().getUniqueId());
+        service.forget(e.getPlayer().getUniqueId());
         if (!enabled) return;
         // playersync.save-on-quit: false → lobby/hub servers that should never overwrite
         // the shared sync storage with empty/hub inventories when players leave.
         if (!saveOnQuit) return;
+        // Left before their saved inventory was loaded here (e.g. a quick server switch): this
+        // server only has a stale copy, and saving it would overwrite the real one.
+        if (!loaded) return;
 
         final Player quitting = e.getPlayer();
         final UUID uuid = quitting.getUniqueId();
@@ -53,11 +58,11 @@ public final class PlayerSyncListener implements Listener {
         final UUID uuid = p.getUniqueId();
         final String name = p.getName();
 
-        // PlayerDirectory uses the synchronous Mongo driver, so never query/write it on a region thread.
+        // PlayerLocator uses the synchronous Mongo driver, so never query/write it on a region thread.
         OreScheduler.runAsync(OEssentials.get(), () -> {
             try {
-                var directory = OEssentials.get().getPlayerDirectory();
-                if (directory != null) directory.saveMapping(name, uuid);
+                var directory = OEssentials.get().getPlayerLocator();
+                if (directory != null) directory.saveMapping(uuid, name);
             } catch (Throwable ignored) {}
         });
 
@@ -67,12 +72,13 @@ public final class PlayerSyncListener implements Listener {
 
             OreScheduler.runAsync(OEssentials.get(), () -> {
                 PlayerSyncSnapshot snapshot = service.loadSnapshot(uuid);
-                if (snapshot == null) return;
+                if (snapshot == null) { service.markLoaded(uuid); return; }
 
                 OreScheduler.runForEntity(OEssentials.get(), p, () -> {
                     Player online = Bukkit.getPlayer(uuid);
                     if (online == null || !online.isOnline()) return;
                     service.applySnapshot(online, snapshot);
+                    service.markLoaded(uuid);
                 });
             });
         }, 10L);

@@ -2,7 +2,7 @@
 package fr.elias.oessentials.freeze.internal;
 
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
+import fr.elias.oessentials.freeze.internal.state.FreezeService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

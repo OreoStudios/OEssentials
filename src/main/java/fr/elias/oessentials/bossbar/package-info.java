@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.bossbar.lifecycle.BossBarModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "boss-bar")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "boss-bar", lifecycle = fr.elias.oessentials.bossbar.lifecycle.BossBarModule.class)
 package fr.elias.oessentials.bossbar;

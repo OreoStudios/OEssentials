@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.motd.lifecycle.MotdModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "motd")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "motd", lifecycle = fr.elias.oessentials.motd.lifecycle.MotdModule.class)
 package fr.elias.oessentials.motd;

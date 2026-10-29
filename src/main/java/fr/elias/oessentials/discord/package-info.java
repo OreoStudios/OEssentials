@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.discord.lifecycle.DiscordIntegrationModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "discord-integration")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "discord-integration", lifecycle = fr.elias.oessentials.discord.lifecycle.DiscordIntegrationModule.class)
 package fr.elias.oessentials.discord;

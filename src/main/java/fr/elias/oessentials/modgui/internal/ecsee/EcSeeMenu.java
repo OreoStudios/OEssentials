@@ -2,8 +2,7 @@
 package fr.elias.oessentials.modgui.internal.ecsee;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.enderchest.internal.EnderChestService;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
@@ -35,7 +34,7 @@ public class EcSeeMenu implements InventoryProvider {
 
     @Override
     public void init(Player viewer, InventoryContents c) {
-        EnderChestService ecs = plugin.getEnderChestService();
+        var ecs = plugin.getModuleRegistry().read(fr.elias.oessentials.enderchest.lifecycle.EnderChestServices.class, e -> e);
         if (ecs == null) {
             viewer.closeInventory();
             Lang.send(viewer, "modgui.ecsee.service-missing",
@@ -92,7 +91,7 @@ public class EcSeeMenu implements InventoryProvider {
                                   Player viewer,
                                   UUID targetId,
                                   Inventory inv) {
-        EnderChestService ecs = plugin.getEnderChestService();
+        var ecs = plugin.getModuleRegistry().read(fr.elias.oessentials.enderchest.lifecycle.EnderChestServices.class, e -> e);
         if (ecs == null) return;
 
         int allowed = ecs.resolveSlotsOffline(targetId);

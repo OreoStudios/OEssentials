@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import fr.elias.oessentials.nametag.internal.NametageCondition;
+import fr.elias.oessentials.platform.config.NametageCondition;
 
 import java.util.ArrayList;
 import java.util.List;

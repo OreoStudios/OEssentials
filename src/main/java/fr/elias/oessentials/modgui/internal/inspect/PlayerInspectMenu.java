@@ -2,8 +2,8 @@
 package fr.elias.oessentials.modgui.internal.inspect;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.content.InventoryContents;
@@ -34,7 +34,7 @@ public class PlayerInspectMenu implements InventoryProvider {
 
     @Override
     public void update(Player viewer, InventoryContents c) {
-        PlayerDirectory dir = plugin.getPlayerDirectory();
+        PlayerLocator dir = plugin.getPlayerLocator();
 
         String name = null;
         String serverName = null;

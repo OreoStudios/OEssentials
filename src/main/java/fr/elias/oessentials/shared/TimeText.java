@@ -14,13 +14,13 @@ public final class TimeText {
             num = Long.parseLong(s.substring(0, i));
             if (i < s.length()) unit = s.charAt(i);
         } catch (Exception ignored) { return 0L; }
-        return switch (unit) {
-            case 's' -> num * 1000L;
-            case 'm' -> num * 60_000L;
-            case 'h' -> num * 3_600_000L;
-            case 'd' -> num * 86_400_000L;
-            default -> num * 1000L;
-        };
+        long ms = Durations.times(num, switch (unit) {
+            case 'm' -> 60_000L;
+            case 'h' -> 3_600_000L;
+            case 'd' -> 86_400_000L;
+            default -> 1000L;
+        });
+        return ms < 0 ? 0L : ms; // too long reads as "not a duration", like other bad input
     }
 
     public static String format(long ms) {

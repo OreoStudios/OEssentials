@@ -13,16 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 public final class TradeCommand implements TabExecutor {
 
     private final OEssentials plugin;
     private final TradeService service;
+    /** Trades with players on other servers; yields null while that is unavailable. */
+    private final java.util.function.Supplier<fr.elias.oessentials.trade.internal.cross.CrossTradeService> crossTrades;
 
-    public TradeCommand(OEssentials plugin, TradeService service) {
+    public TradeCommand(OEssentials plugin, TradeService service,
+                        java.util.function.Supplier<fr.elias.oessentials.trade.internal.cross.CrossTradeService> crossTrades) {
         this.plugin = plugin;
         this.service = service;
+        this.crossTrades = crossTrades;
     }
 
 
@@ -93,33 +96,10 @@ public final class TradeCommand implements TabExecutor {
             return true;
         }
 
-        var broker = plugin.getTradeBroker();
-        boolean msgAvail = plugin.isMessagingAvailable();
-        log("[TRADE] cross-server path: broker=" + (broker != null) + " messagingAvailable=" + msgAvail);
-
-        if (broker != null && msgAvail) {
-            UUID targetId = null;
-            try {
-                var dir = plugin.getPlayerDirectory();
-                if (dir != null) {
-                    targetId = dir.lookupUuidByName(targetName);
-                    log("[TRADE] PlayerDirectory lookup name=" + targetName + " -> " + targetId);
-                } else {
-                    log("[TRADE] PlayerDirectory is null; cannot resolve remote UUID.");
-                }
-            } catch (Throwable t) {
-                log("[TRADE] PlayerDirectory lookup error: " + t.getMessage());
-            }
-
-            if (targetId != null && !targetId.equals(p.getUniqueId())) {
-                log("[TRADE] sending REMOTE invite: " + p.getName() + " -> " + targetName + " (" + targetId + ")");
-                broker.sendInvite(p, targetId, targetName);
-                return true;
-            } else {
-                log("[TRADE] remote invite aborted: targetId=" + targetId + " (self? " + p.getUniqueId().equals(targetId) + ")");
-            }
-        } else {
-            log("[TRADE] remote invite unavailable: broker or messaging missing.");
+        var cross = crossTrades.get();
+        log("[TRADE] cross-server path: available=" + (cross != null));
+        if (cross != null && cross.handleCommand(p, targetName)) {
+            return true;
         }
 
         Lang.send(p, "trade.not-found-cross-server",

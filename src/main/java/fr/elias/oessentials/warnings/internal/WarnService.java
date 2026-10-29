@@ -6,8 +6,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -25,6 +23,8 @@ public class WarnService {
     private final Plugin plugin;
     private final File file;
     private FileConfiguration cfg;
+    /** Shared network storage, or {@code null} to keep warnings in data/warnings.yml on this server. */
+    private final MongoWarnStore mongo;
 
     /** playerUuid -> list of warnings */
     private final Map<UUID, List<WarnEntry>> warnings = new ConcurrentHashMap<>();
@@ -39,7 +39,16 @@ public class WarnService {
     private static final Pattern DURATION_TOKEN = Pattern.compile("(\\d+)([smhdw])", Pattern.CASE_INSENSITIVE);
 
     public WarnService(Plugin plugin) {
+        this(plugin, null);
+    }
+
+    /**
+     * @param shared a MongoDB collection to share warnings across servers, or {@code null} for the
+     *               local data/warnings.yml (warnings then only exist on this server)
+     */
+    public WarnService(Plugin plugin, com.mongodb.client.MongoCollection<org.bson.Document> shared) {
         this.plugin = plugin;
+        this.mongo = shared == null ? null : new MongoWarnStore(shared);
 
         // Save default config
         plugin.saveResource("config/server/warnings.yml", false);
@@ -61,6 +70,17 @@ public class WarnService {
         }
         this.cfg = YamlConfiguration.loadConfiguration(file);
         loadAll();
+        if (mongo != null) importLocalWarnings();
+    }
+
+    /** First start with shared storage: copy this server's YAML warnings into MongoDB once. */
+    private void importLocalWarnings() {
+        if (warnings.isEmpty() || !mongo.isEmpty()) return;
+        int count = 0;
+        for (var e : warnings.entrySet()) {
+            for (WarnEntry w : e.getValue()) { mongo.add(e.getKey(), w); count++; }
+        }
+        plugin.getLogger().info("[Warn] Imported " + count + " warning(s) from data/warnings.yml into MongoDB.");
     }
 
     // ---------------------------------------------------------------
@@ -74,6 +94,10 @@ public class WarnService {
         String id = UUID.randomUUID().toString().substring(0, 8);
 
         WarnEntry entry = new WarnEntry(id, issuer, issuerName, reason, now, expires);
+        if (mongo != null) {
+            mongo.add(target, entry);
+            return getActiveCount(target);
+        }
         warnings.computeIfAbsent(target, k -> new ArrayList<>()).add(entry);
         savePlayer(target);
         return getActiveCount(target);
@@ -81,6 +105,7 @@ public class WarnService {
 
     /** Remove a specific warning by id. Returns true if removed. */
     public boolean removeById(UUID target, String warnId) {
+        if (mongo != null) return mongo.remove(target, warnId);
         List<WarnEntry> list = warnings.get(target);
         if (list == null) return false;
         boolean removed = list.removeIf(e -> e.id().equals(warnId));
@@ -90,6 +115,7 @@ public class WarnService {
 
     /** Clear all warnings for a player. */
     public void clearAll(UUID target) {
+        if (mongo != null) { mongo.clear(target); return; }
         warnings.remove(target);
         cfg.set("warnings." + target, null);
         saveFile();
@@ -97,7 +123,7 @@ public class WarnService {
 
     /** Active (non-expired) warnings for a player. */
     public List<WarnEntry> getActive(UUID target) {
-        List<WarnEntry> list = warnings.getOrDefault(target, Collections.emptyList());
+        List<WarnEntry> list = mongo != null ? mongo.load(target) : warnings.getOrDefault(target, Collections.emptyList());
         List<WarnEntry> active = new ArrayList<>();
         for (WarnEntry e : list) {
             if (!e.isExpired()) active.add(e);
@@ -183,15 +209,18 @@ public class WarnService {
         Matcher m = DURATION_TOKEN.matcher(s);
         long total = 0;
         while (m.find()) {
-            long val = Long.parseLong(m.group(1));
-            total += switch (Character.toLowerCase(m.group(2).charAt(0))) {
-                case 's' -> Duration.ofSeconds(val).toMillis();
-                case 'm' -> Duration.ofMinutes(val).toMillis();
-                case 'h' -> Duration.ofHours(val).toMillis();
-                case 'd' -> Duration.ofDays(val).toMillis();
-                case 'w' -> Duration.ofDays(val * 7).toMillis();
+            long val;
+            try { val = Long.parseLong(m.group(1)); } catch (NumberFormatException e) { return -1; }
+            long unit = switch (Character.toLowerCase(m.group(2).charAt(0))) {
+                case 's' -> 1000L;
+                case 'm' -> 60_000L;
+                case 'h' -> 3_600_000L;
+                case 'd' -> 86_400_000L;
+                case 'w' -> 604_800_000L;
                 default  -> 0L;
             };
+            total = fr.elias.oessentials.shared.Durations.plus(total, fr.elias.oessentials.shared.Durations.times(val, unit));
+            if (total < 0) return -1; // longer than 100 years: treated as unset
         }
         return total == 0 ? -1 : total;
     }

@@ -79,6 +79,35 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final void publishEvent(Object event) { context.events().publish(event); }
 
+    /** Answers %oreo_...% placeholders for this module until it stops. */
+    protected final void registerPlaceholders(fr.elias.oessentials.configuration.api.Placeholders.Resolver resolver) {
+        var placeholders = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPlaceholders();
+        String owner = context.moduleId();
+        placeholders.register(owner, resolver);
+        context.lifecycle().onClose(() -> placeholders.unregister(owner));
+    }
+
+    /** Declares that this module reloads {@code fileName} (e.g. when the web panel pushes it). */
+    protected final void registerConfigFile(String fileName, Runnable reload) {
+        var files = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getConfigFiles();
+        files.register(fileName, reload);
+        context.lifecycle().onClose(() -> files.unregister(fileName));
+    }
+
+    /** Adds a step to /oereload until the module stops; lower {@code order} runs first. */
+    protected final void registerReloadStep(int order, String name, fr.elias.oessentials.configuration.api.ReloadSteps.Step step) {
+        var steps = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getReloadSteps();
+        steps.register(order, name, step);
+        context.lifecycle().onClose(() -> steps.unregister(name));
+    }
+
+    /** Publishes this module's part of the public OEssentials API until the module stops. */
+    protected final <T> void providePublicApi(Class<T> api, java.util.function.Supplier<? extends T> provider) {
+        var apis = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getPublicApis();
+        apis.provide(api, provider);
+        context.lifecycle().onClose(() -> apis.withdraw(api));
+    }
+
     protected final void cleanup(String resource, Cleanup action) {
         context.lifecycle().onClose(() -> {
             try {

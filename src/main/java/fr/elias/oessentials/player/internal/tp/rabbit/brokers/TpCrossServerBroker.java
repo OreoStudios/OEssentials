@@ -1,18 +1,18 @@
 package fr.elias.oessentials.player.internal.tp.rabbit.brokers;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.player.internal.tp.rabbit.packets.TpJumpPacket;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
 import fr.elias.oessentials.shared.Lang;
-import fr.elias.oessentials.proxy.internal.transport.ProxyMessenger;
+import fr.elias.oessentials.configuration.api.ServerConnector;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSubscriber;
+import fr.elias.oessentials.messaging.api.PacketSubscriber;
 
 import java.util.Map;
 import java.util.UUID;
@@ -22,14 +22,14 @@ public class TpCrossServerBroker implements Listener {
 
     private final OEssentials plugin;
     private final TeleportService teleportService;
-    private final PacketManager packetManager;
-    private final ProxyMessenger proxyMessenger;
+    private final PacketBus packetManager;
+    private final ServerConnector proxyMessenger;
     private final String localServer;
 
     private final Map<UUID, UUID> pendingJumps = new ConcurrentHashMap<>();
 
     public TpCrossServerBroker(OEssentials plugin, TeleportService teleportService,
-                               PacketManager packetManager, ProxyMessenger proxyMessenger,
+                               PacketBus packetManager, ServerConnector proxyMessenger,
                                String localServer) {
         this.plugin = plugin;
         this.teleportService = teleportService;
@@ -54,7 +54,7 @@ public class TpCrossServerBroker implements Listener {
         TpJumpPacket pkt = new TpJumpPacket(admin.getUniqueId(), targetUuid, targetName, localServer);
         packetManager.sendPacket(PacketChannel.individual(destServer), pkt);
 
-        proxyMessenger.sendToServer(admin, destServer);
+        proxyMessenger.connect(admin, destServer);
 
         Lang.send(admin, "teleport.cross-server.jumping",
                 "<gray>Teleporting to <aqua>%target%</aqua> on <aqua>%server%</aqua>…</gray>",

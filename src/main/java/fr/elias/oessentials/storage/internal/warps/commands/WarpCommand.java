@@ -4,8 +4,8 @@ import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.storage.internal.warps.WarpService;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.warps.rabbit.packets.WarpTeleportRequestPacket;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayOutputStream;
@@ -116,7 +115,7 @@ public class WarpCommand implements OreoCommand {
             return true;
         }
 
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
         final WarpDirectory warpDir = plugin.getWarpDirectory();
 
         String ownerServer = (warpDir != null ? warpDir.getWarpServer(warpName) : null);
@@ -124,7 +123,7 @@ public class WarpCommand implements OreoCommand {
         // Existence checks and the actual teleport both call warps.getWarp() — do them async.
         final String resolvedOwnerServer = ownerServer;
 
-        FileConfiguration settings = plugin.getSettingsConfig().getRoot();
+        ConfigurationSection settings = plugin.getFeatureSettings().getRoot();
         ConfigurationSection warpSection = settings.getConfigurationSection("features.warp");
         boolean useCooldown = warpSection != null && warpSection.getBoolean("cooldown", false);
         int seconds = (warpSection != null ? warpSection.getInt("cooldown-amount", 0) : 0);
@@ -180,7 +179,7 @@ public class WarpCommand implements OreoCommand {
 
         final var log = plugin.getLogger();
 
-        final String localServer = plugin.getConfigService().serverName();
+        final String localServer = plugin.getServerConfig().serverName();
         String targetServer = ownerServer;
         if (targetServer == null || targetServer.isBlank()) targetServer = localServer;
 
@@ -250,7 +249,7 @@ public class WarpCommand implements OreoCommand {
         }
 
         final String targetServerFinal = targetServer;
-        var cs = plugin.getCrossServerSettings();
+        var cs = plugin.getCrossServerFeatures();
         if (!cs.warps() && !targetServerFinal.equalsIgnoreCase(localServer)) {
             Lang.send(sender, "warp.cross-disabled",
                     "<red>Cross-server warps are disabled by server config.</red>");
@@ -260,7 +259,7 @@ public class WarpCommand implements OreoCommand {
             return;
         }
 
-        final PacketManager pm = plugin.getPacketManager();
+        final PacketBus pm = plugin.getPacketBus();
         log.info("[WarpCmd] Remote warp. pm=" + (pm == null ? "null" : "ok")
                 + " pm.init=" + (pm != null && pm.isInitialized()));
 

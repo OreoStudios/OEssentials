@@ -2,9 +2,8 @@ package fr.elias.oessentials.chat.internal;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.storage.api.PlayerLocator;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -44,7 +43,7 @@ public class MuteCommand implements OreoCommand, org.bukkit.command.TabCompleter
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetArg);
 
         if (target == null || (target.getName() == null && !target.hasPlayedBefore())) {
-            PlayerDirectory dir = OEssentials.get().getPlayerDirectory();
+            PlayerLocator dir = OEssentials.get().getPlayerLocator();
             if (dir != null) {
                 try {
                     UUID id = dir.lookupUuidByName(targetArg);
@@ -78,7 +77,7 @@ public class MuteCommand implements OreoCommand, org.bukkit.command.TabCompleter
 
         mutes.mute(target.getUniqueId(), untilEpochMillis, reason, sender.getName());
 
-        DiscordModerationNotifier mod = OEssentials.get().getDiscordMod();
+        fr.elias.oessentials.discord.api.ModerationNotifier mod = OEssentials.get().getModuleRegistry().read(fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices.class, fr.elias.oessentials.discord.lifecycle.DiscordIntegrationServices::getModerationNotifier);
         if (mod != null && mod.isEnabled()) {
             mod.notifyMute(target.getName(), target.getUniqueId(), reason, sender.getName(), untilEpochMillis);
         }
@@ -170,7 +169,7 @@ public class MuteCommand implements OreoCommand, org.bukkit.command.TabCompleter
                 }
             });
 
-            PlayerDirectory dir = OEssentials.get().getPlayerDirectory();
+            PlayerLocator dir = OEssentials.get().getPlayerLocator();
             if (dir != null) {
                 try {
                     Collection<String> names = dir.suggestOnlineNames(want, 50);

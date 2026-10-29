@@ -1,5 +1,7 @@
 package fr.elias.oessentials.currency.internal;
 
+import fr.elias.oessentials.currency.api.Currency;
+
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.currency.internal.storage.CurrencyStorage;
 
@@ -11,7 +13,7 @@ import java.util.logging.Level;
 /**
  * Main service for managing multiple custom currencies
  */
-public class CurrencyService {
+public class CurrencyService implements fr.elias.oessentials.currency.api.Currencies {
 
     private final OEssentials plugin;
     private final CurrencyStorage storage;
@@ -96,20 +98,20 @@ public class CurrencyService {
 
         plugin.getLogger().info("[Currency][DBG] createCurrency saving to storage: id=" + id + ", name=" + normalized.getName()
                 + ", crossServerCfg=" + config.isCrossServerEnabled()
-                + ", packetManager=" + (plugin.getPacketManager() == null ? "null" : "ok"));
+                + ", packetManager=" + (plugin.getPacketBus() == null ? "null" : "ok"));
 
         return storage.saveCurrency(normalized).thenCompose(v -> {
             currencyCache.put(id, normalized);
             plugin.getLogger().info("[Currency] Created: " + normalized.getName() + " (" + normalized.getSymbol() + ")");
 
             // Broadcast to other servers if cross-server is enabled
-            if (config.isCrossServerEnabled() && plugin.getPacketManager() != null) {
+            if (config.isCrossServerEnabled() && plugin.getPacketBus() != null) {
                 plugin.getLogger().info("[Currency][DBG] Broadcasting CREATE for " + id
-                        + " (pmInit=" + plugin.getPacketManager().isInitialized() + ")");
+                        + " (pmInit=" + plugin.getPacketBus().isInitialized() + ")");
                 broadcastCurrencySync(normalized, true);
             } else {
                 plugin.getLogger().warning("[Currency][DBG] Not broadcasting CREATE. crossServer="
-                        + config.isCrossServerEnabled() + ", packetManager=" + (plugin.getPacketManager() != null));
+                        + config.isCrossServerEnabled() + ", packetManager=" + (plugin.getPacketBus() != null));
             }
 
             return reloadCurrenciesAsync()
@@ -162,13 +164,13 @@ public class CurrencyService {
 
             plugin.getLogger().info("[Currency] Deleted: " + key);
 
-            if (config.isCrossServerEnabled() && plugin.getPacketManager() != null) {
+            if (config.isCrossServerEnabled() && plugin.getPacketBus() != null) {
                 plugin.getLogger().info("[Currency][DBG] Broadcasting DELETE for " + key
-                        + " (pmInit=" + plugin.getPacketManager().isInitialized() + ")");
+                        + " (pmInit=" + plugin.getPacketBus().isInitialized() + ")");
                 broadcastCurrencySync(currency, false);
             } else {
                 plugin.getLogger().warning("[Currency][DBG] Not broadcasting DELETE. crossServer="
-                        + config.isCrossServerEnabled() + ", packetManager=" + (plugin.getPacketManager() != null));
+                        + config.isCrossServerEnabled() + ", packetManager=" + (plugin.getPacketBus() != null));
             }
 
             return reloadCurrenciesAsync()
@@ -445,11 +447,11 @@ public class CurrencyService {
      */
     private void broadcastCurrencySync(Currency currency, boolean isCreate) {
         try {
-            if (plugin.getPacketManager() == null) {
+            if (plugin.getPacketBus() == null) {
                 plugin.getLogger().warning("[Currency][DBG] broadcastCurrencySync aborted: packetManager is null");
                 return;
             }
-            if (!plugin.getPacketManager().isInitialized()) {
+            if (!plugin.getPacketBus().isInitialized()) {
                 plugin.getLogger().warning("[Currency][DBG] broadcastCurrencySync aborted: packetManager not initialized");
                 return;
             }
@@ -475,7 +477,7 @@ public class CurrencyService {
                 );
             }
 
-            plugin.getPacketManager().sendPacket(packet);
+            plugin.getPacketBus().sendPacket(packet);
             plugin.getLogger().info("[Currency] Broadcasted " + (isCreate ? "CREATE" : "DELETE") + " for: " + currency.getId());
 
         } catch (Exception e) {

@@ -1,7 +1,6 @@
 package fr.elias.oessentials.commands.internal.commands.core.admins;
 
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.guards.internal.services.VisitorService;
 import fr.elias.oessentials.shared.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -14,9 +13,9 @@ import java.util.Map;
 
 public class GamemodeCommand implements OreoCommand, org.bukkit.command.TabCompleter {
 
-    private final VisitorService visitors;
+    private final fr.elias.oessentials.guards.lifecycle.PerformanceGuardsServices visitors;
 
-    public GamemodeCommand(VisitorService visitors) {
+    public GamemodeCommand(fr.elias.oessentials.guards.lifecycle.PerformanceGuardsServices visitors) {
         this.visitors = visitors;
     }
 

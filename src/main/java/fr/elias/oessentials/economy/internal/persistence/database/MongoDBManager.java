@@ -1,6 +1,6 @@
 package fr.elias.oessentials.economy.internal.persistence.database;
 
-import fr.elias.oessentials.redis.internal.persistence.database.RedisManager;
+import fr.elias.oessentials.redis.api.BalanceCache;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -39,7 +39,7 @@ public class MongoDBManager implements PlayerEconomyDatabase {
         }
     }
 
-    private final RedisManager redis;
+    private final BalanceCache redis;
     private final Map<UUID, CachedBalance> localBalanceCache = new ConcurrentHashMap<>();
     private MongoClient mongoClient;
     private MongoDatabase database;
@@ -52,7 +52,7 @@ public class MongoDBManager implements PlayerEconomyDatabase {
     private final double MAX_BALANCE;
     private final boolean ALLOW_NEGATIVE;
 
-    public MongoDBManager(OEssentials plugin, RedisManager redis)
+    public MongoDBManager(OEssentials plugin, BalanceCache redis)
     {
         this.redis = redis;
         this.MAX_BALANCE = plugin.getConfig().getDouble("economy.max-balance", 1_000_000_000.0);

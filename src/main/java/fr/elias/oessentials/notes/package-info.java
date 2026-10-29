@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.notes.lifecycle.NotesModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "notes")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "notes", lifecycle = fr.elias.oessentials.notes.lifecycle.NotesModule.class)
 package fr.elias.oessentials.notes;

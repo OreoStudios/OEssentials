@@ -5,10 +5,7 @@ import fr.elias.oessentials.modgui.internal.ecsee.EcSeeMenu;
 import fr.elias.oessentials.modgui.internal.homes.AdminHomesGuiProvider;
 import fr.elias.oessentials.modgui.internal.inspect.PlayerInspectMenu;
 import fr.elias.oessentials.modgui.internal.ip.IpAltsMenu;
-import fr.elias.oessentials.notes.internal.notes.NotesChatListener;
-import fr.elias.oessentials.notes.internal.notes.PlayerNotesManager;
-import fr.elias.oessentials.notes.internal.notes.PlayerNotesMenu;
-import fr.elias.oessentials.modgui.internal.util.ItemBuilder;
+import fr.elias.oessentials.platform.ui.ItemBuilder;
 import fr.elias.oessentials.shared.Lang;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -16,7 +13,6 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -302,17 +298,10 @@ public class PlayerActionsMenu implements InventoryProvider {
                         .name("&ePlayer notes")
                         .lore("&7View / add staff notes.")
                         .build(),
-                e -> SmartInventory.builder()
-                        .manager(plugin.getInvManager())
-                        .provider(new PlayerNotesMenu(plugin,
-                                plugin.getNotesManager(),
-                                plugin.getNotesChat(),
-                                target))
-                        .title(Lang.color(Lang.get("modgui.actions.notes-title", "&8Notes: %name%")
-                                .replace("%name%", name)))
-                        .size(6, 9)
-                        .build()
-                        .open(p)
+                e -> {
+                    var notes = plugin.getModuleRegistry().read(fr.elias.oessentials.notes.lifecycle.NotesServices.class, n -> n);
+                    if (notes != null) notes.openNotes(p, target, name);
+                }
         ));
     }
 

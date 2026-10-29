@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 public final class AliasEditorCommand implements CommandExecutor, TabCompleter {
 
     private final AliasService service;
-    private final InventoryManager invManager;
+    private final java.util.function.Supplier<InventoryManager> invManager;
 
-    public AliasEditorCommand(AliasService service, InventoryManager invManager) {
+    public AliasEditorCommand(AliasService service, java.util.function.Supplier<InventoryManager> invManager) {
         this.service = service;
         this.invManager = invManager;
     }
@@ -36,7 +36,7 @@ public final class AliasEditorCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage("§cOnly players can use the GUI.");
                     return true;
                 }
-                new AliasEditorGUI(service, invManager).openMain(p);
+                new AliasEditorGUI(service, invManager.get()).openMain(p);
                 return true;
             }
 

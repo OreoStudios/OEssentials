@@ -86,7 +86,7 @@ public class TphereCommand implements OreoCommand, org.bukkit.command.TabComplet
             String n = p.getName();
             if (n != null && n.toLowerCase(Locale.ROOT).startsWith(want)) out.add(n);
         }
-        // Deliberately do not query PlayerDirectory/MongoDB from tab completion.
+        // Deliberately do not query PlayerLocator/MongoDB from tab completion.
         return out.stream().limit(50).collect(Collectors.toList());
     }
 }

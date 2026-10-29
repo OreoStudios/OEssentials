@@ -1,8 +1,8 @@
 package fr.elias.oessentials.webpanel.internal;
 
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.shop.internal.hooks.ItemsAdderHook;
-import fr.elias.oessentials.shop.internal.hooks.NexoHook;
+import fr.elias.oessentials.platform.hooks.ItemsAdderHook;
+import fr.elias.oessentials.platform.hooks.NexoHook;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;

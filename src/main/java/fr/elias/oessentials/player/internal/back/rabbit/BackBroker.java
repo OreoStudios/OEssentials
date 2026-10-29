@@ -5,7 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DeliverCallback;
 import fr.elias.oessentials.OEssentials;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.service.BackService;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import org.bukkit.Bukkit;
@@ -39,7 +39,7 @@ public class BackBroker {
             channel = rabbitConnection.createChannel();
             channel.exchangeDeclare(exchangeName, "topic", true);
 
-            String serverName = plugin.getConfigService().serverName();
+            String serverName = plugin.getServerConfig().serverName();
             String queueName = "back_" + serverName;
 
             channel.queueDeclare(queueName, false, false, true, null);
@@ -112,7 +112,7 @@ public class BackBroker {
                 if (player == null || !player.isOnline()) {
                     plugin.getLogger().info("[BackBroker] Player not online yet, will teleport on join");
                     BackLocation pending = new BackLocation(
-                            plugin.getConfigService().serverName(),
+                            plugin.getServerConfig().serverName(),
                             worldName, x, y, z, yaw, pitch
                     );
                     plugin.getPendingBackTeleports().put(playerUuid, pending);

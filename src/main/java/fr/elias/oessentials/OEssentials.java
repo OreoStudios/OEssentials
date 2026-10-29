@@ -22,7 +22,6 @@ import fr.elias.oessentials.enderchest.lifecycle.EnderChestServices;
 import fr.elias.oessentials.freeze.lifecycle.FreezeServices;
 import fr.elias.oessentials.grouprtp.lifecycle.GroupRtpServices;
 import fr.elias.oessentials.ignore.lifecycle.IgnoreServices;
-import fr.elias.oessentials.integrations.lifecycle.IntegrationsServices;
 import fr.elias.oessentials.inventory.lifecycle.InventoriesServices;
 import fr.elias.oessentials.jails.lifecycle.JailsServices;
 import fr.elias.oessentials.jumppads.lifecycle.JumpPadsServices;
@@ -64,14 +63,14 @@ import fr.elias.oessentials.afk.internal.AfkPoolService;
 import fr.elias.oessentials.afk.internal.AfkService;
 import fr.elias.oessentials.inventory.internal.auctionhouse.AuctionHouseModule;
 import fr.elias.oessentials.configuration.internal.autoreboot.AutoRebootService;
-import fr.elias.oessentials.player.internal.back.BackLocation;
+import fr.elias.oessentials.player.api.BackLocation;
 import fr.elias.oessentials.player.internal.back.rabbit.BackBroker;
 import fr.elias.oessentials.player.internal.back.service.BackService;
 import fr.elias.oessentials.chat.internal.ChatSyncManager;
-import fr.elias.oessentials.chat.internal.chatservices.MuteService;
+import fr.elias.oessentials.mute.api.MuteService;
 import fr.elias.oessentials.clearlag.internal.ClearLagManager;
 import fr.elias.oessentials.commandtoggle.internal.CommandToggleService;
-import fr.elias.oessentials.messaging.internal.cross.ModBridge;
+import fr.elias.oessentials.modgui.internal.cross.ModBridge;
 import fr.elias.oessentials.currency.internal.CurrencyConfig;
 import fr.elias.oessentials.currency.internal.CurrencyService;
 import fr.elias.oessentials.currency.internal.placeholders.CurrencyPlaceholderExpansion;
@@ -81,8 +80,8 @@ import fr.elias.oessentials.player.internal.deathback.DeathBackService;
 import fr.elias.oessentials.economy.internal.EconomyBootstrap;
 import fr.elias.oessentials.storage.internal.homes.TeleportBroker;
 import fr.elias.oessentials.storage.internal.homes.home.HomeService;
-import fr.elias.oessentials.configuration.internal.invlook.manager.InvlookManager;
-import fr.elias.oessentials.messaging.internal.invsee.InvseeService;
+import fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager;
+import fr.elias.oessentials.sync.internal.invsee.InvseeService;
 import fr.elias.oessentials.nametag.internal.PlayerNametagManager;
 import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpDirectory;
 import fr.elias.oessentials.storage.internal.playerwarp.PlayerWarpService;
@@ -96,13 +95,12 @@ import fr.elias.oessentials.storage.internal.spawn.SpawnService;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
-import fr.elias.oessentials.trade.internal.rabbit.TradeCrossServerBroker;
 import fr.elias.oessentials.trade.internal.service.TradeService;
 import fr.elias.oessentials.storage.internal.warps.WarpService;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
 import fr.elias.oessentials.economy.internal.offline.OfflinePlayerCache;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
-import fr.elias.oessentials.configuration.internal.services.FreezeService;
+import fr.elias.oessentials.freeze.internal.state.FreezeService;
 import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.guards.internal.services.JoinFloodGuardService;
 import fr.elias.oessentials.player.internal.services.MessageService;
@@ -232,15 +230,20 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.punishment.internal.PunishmentLogger getPunishmentLogger() { return moduleRegistry.read(PunishmentLoggerServices.class, PunishmentLoggerServices::getPunishmentLogger); }
 
-    public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getSettingsConfig); }
+    /** Released API. Feature modules read {@link #getFeatureSettings()} instead. */
+    public fr.elias.oessentials.configuration.internal.config.SettingsConfig getSettingsConfig() { return (SettingsConfig) getFeatureSettings(); }
+
+    public fr.elias.oessentials.configuration.api.FeatureSettings getFeatureSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getFeatureSettings); }
+
+    public fr.elias.oessentials.configuration.api.PerformanceGuardSettings getPerformanceGuardSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getPerformanceGuardSettings); }
 
     public JoinFloodGuardService getJoinFloodGuardService() { return moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService); }
 
     public ShopModule getShopModule() { return moduleRegistry.read(ShopServices.class, ShopServices::getShopModule); }
 
-    public fr.elias.oessentials.integrations.internal.integration.DiscordModerationNotifier getDiscordMod() { return moduleRegistry.read(DiscordIntegrationServices.class, DiscordIntegrationServices::getDiscordMod); }
+    public fr.elias.oessentials.discord.internal.DiscordModerationNotifier getDiscordMod() { return moduleRegistry.read(DiscordIntegrationServices.class, DiscordIntegrationServices::getDiscordMod); }
 
-    public TpCrossServerBroker getTpBroker() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getTpBroker); }
+    public TpCrossServerBroker getTpBroker() { return moduleRegistry.read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getTpBroker); }
 
     public fr.elias.oessentials.portals.internal.PortalsManager getPortalsManager() { return moduleRegistry.read(PortalsServices.class, PortalsServices::getPortals); }
 
@@ -260,7 +263,7 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.chat.internal.channels.ChatChannelManager getChannelManager() { return moduleRegistry.read(ChatServices.class, ChatServices::getChannelManager); }
 
-    public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getTempFlyService); }
+    public fr.elias.oessentials.configuration.internal.tempfly.TempFlyService getTempFlyService() { return (fr.elias.oessentials.configuration.internal.tempfly.TempFlyService) moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getTempFly); }
 
     public EconomyBootstrap getEconomy() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getEcoBootstrap); }
 
@@ -270,19 +273,26 @@ public final class OEssentials extends JavaPlugin {
 
     public InventoryManager getInventoryManager() { return moduleRegistry.read(InventoriesServices.class, InventoriesServices::getInvManager); }
 
-    public AutoRebootService getAutoRebootService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getAutoRebootService); }
+    public AutoRebootService getAutoRebootService() { return (AutoRebootService) moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getAutoReboot); }
 
-    public CraftActionsConfig getCraftActionsConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCraftActionsConfig); }
+    public CraftActionsConfig getCraftActionsConfig() { return moduleRegistry.read(CustomCraftingServices.class, CustomCraftingServices::getCraftActionsConfig); }
 
     public SellGuiManager getSellGuiManager() { return moduleRegistry.read(InventoriesServices.class, InventoriesServices::getSellGuiManager); }
 
     public fr.elias.oessentials.maintenance.internal.MaintenanceService getMaintenanceService() { return moduleRegistry.read(MaintenanceServices.class, MaintenanceServices::getMaintenanceService); }
 
+    /** Sends the player to another server through the proxy; ignored before proxy-messaging starts. */
+    public void connectToServer(org.bukkit.entity.Player player, String server) {
+        var connector = moduleRegistry.read(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class, fr.elias.oessentials.configuration.lifecycle.ConfigurationServices::getServerConnector);
+        if (connector != null) connector.connect(player, server);
+        else getLogger().warning("[Proxy] Cannot send " + player.getName() + " to " + server + ": proxy messaging is not running.");
+    }
+
     public ProxyMessenger getProxyMessenger() { return moduleRegistry.read(ProxyMessagingServices.class, ProxyMessagingServices::getProxyMessenger); }
 
     public  fr.elias.oessentials.grouprtp.internal.GroupRtpModule getGroupRtpModule() { return moduleRegistry.read(GroupRtpServices.class, GroupRtpServices::getGroupRtpModule); }
 
-    public TpaCrossServerBroker getTpaBroker() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getTpaBroker); }
+    public TpaCrossServerBroker getTpaBroker() { return moduleRegistry.read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getTpaBroker); }
 
     public fr.elias.oessentials.kits.internal.KitsManager getKitsManager() { return moduleRegistry.read(KitsServices.class, KitsServices::getKitsManager); }
 
@@ -292,13 +302,12 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.playervaults.internal.PlayerVaultsService getPlayervaultsService() { return moduleRegistry.read(PlayerVaultsServices.class, PlayerVaultsServices::getPlayervaultsService); }
 
-    public InvseeService getInvseeService() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getInvseeService); }
+    public InvseeService getInvseeService() { return moduleRegistry.read(fr.elias.oessentials.sync.lifecycle.InventorySyncServices.class, fr.elias.oessentials.sync.lifecycle.InventorySyncServices::getInvseeService); }
 
     public fr.elias.oessentials.commands.internal.ic.ICManager getIcManager() { return moduleRegistry.read(CommandsServices.class, CommandsServices::getIcManager); }
 
     public fr.elias.oessentials.playtime.internal.PlaytimeRewardsService getPlaytimeRewards() { return moduleRegistry.read(PlaytimeServices.class, PlaytimeServices::getPlaytimeRewards); }
 
-    public TradeCrossServerBroker getTradeBroker() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getTradeBroker); }
 
     public TradeService getTradeService() { return moduleRegistry.read(TradeServices.class, TradeServices::getTradeService); }
 
@@ -306,7 +315,10 @@ public final class OEssentials extends JavaPlugin {
 
     public AfkPoolService getAfkPoolService() { return moduleRegistry.read(AfkServices.class, AfkServices::getAfkPoolService); }
 
-    public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCrossServerSettings); }
+    /** Released API. Feature modules read {@link #getCrossServerFeatures()} instead. */
+    public fr.elias.oessentials.configuration.internal.config.CrossServerSettings getCrossServerSettings() { return (fr.elias.oessentials.configuration.internal.config.CrossServerSettings) getCrossServerFeatures(); }
+
+    public fr.elias.oessentials.configuration.api.CrossServerFeatures getCrossServerFeatures() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getCrossServerFeatures); }
 
     public fr.elias.oessentials.enderchest.internal.EnderChestService getEnderChestService() { return moduleRegistry.read(EnderChestServices.class, EnderChestServices::getEcService); }
 
@@ -318,7 +330,7 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.daily.internal.DailyService getDailyService() { return moduleRegistry.read(DailyServices.class, DailyServices::getDailyService); }
 
-    public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return moduleRegistry.read(ProxyMessagingServices.class, ProxyMessagingServices::getAliasService); }
+    public fr.elias.oessentials.commandcontrol.internal.aliases.AliasService getAliasService() { return moduleRegistry.read(fr.elias.oessentials.commandcontrol.lifecycle.CommandControlServices.class, fr.elias.oessentials.commandcontrol.lifecycle.CommandControlServices::getAliasService); }
 
     public fr.elias.oessentials.jails.internal.jail.JailService getJailService() { return moduleRegistry.read(JailsServices.class, JailsServices::getJailService); }
 
@@ -328,11 +340,11 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.nametag.internal.CustomNameplatesConfig getCustomNameplatesConfig() { return moduleRegistry.read(NametagServices.class, NametagServices::getCustomNameplatesConfig); }
 
-    public BackBroker getBackBroker() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getBackBroker); }
+    public BackBroker getBackBroker() { return moduleRegistry.read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getBackBroker); }
 
     public Gson getGson() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getGson); }
 
-    public Map<UUID, BackLocation> getPendingBackTeleports() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPendingBackTeleports); }
+    public Map<UUID, BackLocation> getPendingBackTeleports() { return moduleRegistry.read(fr.elias.oessentials.player.lifecycle.PlayerServices.class, fr.elias.oessentials.player.lifecycle.PlayerServices::getPendingBackTeleports); }
 
     public VanishService getVanishService() {
         return moduleRegistry.read(PlayerServices.class, PlayerServices::getVanishService);
@@ -363,13 +375,13 @@ public final class OEssentials extends JavaPlugin {
     // Utility
     // -------------------------------------------------------------------------
 
-    public boolean isMessagingAvailable() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager) != null && moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager).isInitialized(); }
+    public boolean isMessagingAvailable() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus) != null && moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus).isInitialized(); }
 
     // -------------------------------------------------------------------------
     // Getters
     // -------------------------------------------------------------------------
 
-    public IpTracker getIpTracker() { return moduleRegistry.read(NotesServices.class, NotesServices::getIpTracker); }
+    public IpTracker getIpTracker() { return moduleRegistry.read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getIpTracker); }
 
     public FreezeManager getFreezeManager() { return moduleRegistry.read(FreezeServices.class, FreezeServices::getFreezeManager); }
 
@@ -377,7 +389,10 @@ public final class OEssentials extends JavaPlugin {
 
     public NotesChatListener getNotesChat() { return moduleRegistry.read(NotesServices.class, NotesServices::getNotesChat); }
 
-    public ConfigService getConfigService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService); }
+    /** Released API. Feature modules read {@link #getServerConfig()} instead. */
+    public ConfigService getConfigService() { return (ConfigService) getServerConfig(); }
+
+    public fr.elias.oessentials.configuration.api.ServerConfig getServerConfig() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getServerConfig); }
 
     public StorageApi getStorage() { return moduleRegistry.read(StorageServices.class, StorageServices::getStorage); }
 
@@ -391,7 +406,7 @@ public final class OEssentials extends JavaPlugin {
 
     public PlayerWarpDirectory getPlayerWarpDirectory() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarpDirectory); }
 
-    public InvlookManager getInvlookManager() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getInvlookManager); }
+    public InvlookManager getInvlookManager() { return moduleRegistry.read(fr.elias.oessentials.sync.lifecycle.InventorySyncServices.class, fr.elias.oessentials.sync.lifecycle.InventorySyncServices::getInvlookManager); }
 
     public TeleportService getTeleportService() { return moduleRegistry.read(PlayerServices.class, PlayerServices::getTeleportService); }
 
@@ -409,9 +424,9 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.mobs.internal.HealthBarListener getHealthBarListener() { return moduleRegistry.read(MobsServices.class, MobsServices::getHealthBarListener); }
 
-    public FreezeService getFreezeService() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getFreezeService); }
+    public FreezeService getFreezeService() { return moduleRegistry.read(FreezeServices.class, FreezeServices::getFreezeService); }
 
-    public fr.elias.oessentials.chat.internal.CustomConfig getChatConfig() { return moduleRegistry.read(ChatServices.class, ChatServices::getChatConfig); }
+    public fr.elias.oessentials.platform.config.CustomConfig getChatConfig() { return moduleRegistry.read(ChatServices.class, ChatServices::getChatConfig); }
 
     public org.bukkit.configuration.file.FileConfiguration getPlayerWarpsConfig() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarpsConfig); }
     public void reloadPlayerWarpsConfig() { moduleRegistry.require(StorageServices.class).reloadPlayerWarpsConfig(); }
@@ -427,24 +442,37 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.storage.internal.directory.PlayerDirectory getPlayerDirectory() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerDirectory); }
 
-    public TeleportBroker getTeleportBroker() { return moduleRegistry.read(PlayerServices.class, PlayerServices::getTeleportBroker); }
+    public fr.elias.oessentials.storage.api.PlayerLocator getPlayerLocator() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerLocator); }
 
-    public RedisManager getRedis() { return moduleRegistry.read(RedisServices.class, RedisServices::getRedis); }
+    public fr.elias.oessentials.storage.api.Homes getHomes() { return moduleRegistry.read(StorageServices.class, StorageServices::getHomes); }
+
+    public fr.elias.oessentials.storage.api.PlayerWarps getPlayerWarps() { return moduleRegistry.read(StorageServices.class, StorageServices::getPlayerWarps); }
+
+    public fr.elias.oessentials.api.IWarpsAPI getWarpsApi() { return moduleRegistry.read(StorageServices.class, StorageServices::getWarpsApi); }
+
+    public fr.elias.oessentials.api.ISpawnAPI getSpawnApi() { return moduleRegistry.read(StorageServices.class, StorageServices::getSpawnApi); }
+
+    public TeleportBroker getTeleportBroker() { return moduleRegistry.read(StorageServices.class, StorageServices::getTeleportBroker); }
+
+    public RedisManager getRedis() { return (RedisManager) moduleRegistry.read(RedisServices.class, RedisServices::getRedis); }
     public OfflinePlayerCache getOfflinePlayerCache() { return moduleRegistry.require(EconomyServices.class).getOfflinePlayerCache(); }
 
     public PlayerEconomyDatabase getDatabase() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getDatabase); }
 
-    public PacketManager getPacketManager() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketManager); }
+    /** Released API. Feature modules use {@link #getPacketBus()} instead. */
+    public PacketManager getPacketManager() { return (PacketManager) getPacketBus(); }
+
+    public fr.elias.oessentials.messaging.api.PacketBus getPacketBus() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getPacketBus); }
 
     public ScoreboardService getScoreboardService() { return moduleRegistry.read(ScoreboardServices.class, ScoreboardServices::getScoreboardService); }
 
-    public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTeleportBroker() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getHomeTpBroker); }
+    public fr.elias.oessentials.storage.internal.homes.HomeTeleportBroker getHomeTeleportBroker() { return moduleRegistry.read(fr.elias.oessentials.storage.lifecycle.StorageServices.class, fr.elias.oessentials.storage.lifecycle.StorageServices::getHomeTpBroker); }
 
     public fr.elias.oessentials.playervaults.internal.PlayerVaultsService getPlayerVaultsService() { return moduleRegistry.read(PlayerVaultsServices.class, PlayerVaultsServices::getPlayervaultsService); }
 
     public fr.elias.oessentials.playtime.internal.PlaytimeRewardsService getPlaytimeRewardsService() { return moduleRegistry.read(PlaytimeServices.class, PlaytimeServices::getPlaytimeRewards); }
 
-    public ModBridge getModBridge() { return moduleRegistry.read(MessagingServices.class, MessagingServices::getModBridge); }
+    public ModBridge getModBridge() { return moduleRegistry.read(fr.elias.oessentials.modgui.lifecycle.ModGuiServices.class, fr.elias.oessentials.modgui.lifecycle.ModGuiServices::getModBridge); }
 
     public java.util.Map<java.util.UUID, Long> getRtpCooldownCache() { return moduleRegistry.read(RtpServices.class, RtpServices::getRtpCooldownCache); }
 
@@ -456,7 +484,8 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.nametag.internal.ChatBubbleService getChatBubbleService() { return moduleRegistry.read(NametagServices.class, NametagServices::getChatBubbleService); }
 
-    public SettingsConfig getSettings() { return moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getSettings); }
+    /** Released API; same object as {@link #getSettingsConfig()}. */
+    public SettingsConfig getSettings() { return getSettingsConfig(); }
 
     public boolean isJoinUiReady(Player player) {
         return moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService) == null || moduleRegistry.read(PerformanceGuardsServices.class, PerformanceGuardsServices::getJoinFloodGuardService).isUiReady(player);
@@ -476,13 +505,17 @@ public final class OEssentials extends JavaPlugin {
 
     public CommandToggleService getCommandToggleService() { return moduleRegistry.read(CommandToggleServices.class, CommandToggleServices::getCommandToggleService); }
 
-    public Economy getVaultEconomy() { return moduleRegistry.read(EconomyServices.class, EconomyServices::getVaultEconomy); }
+    public Economy getVaultEconomy() {
+        // Without Vault its classes are missing; touching the Economy type would throw NoClassDefFoundError.
+        if (getServer().getPluginManager().getPlugin("Vault") == null) return null;
+        return moduleRegistry.read(EconomyServices.class, EconomyServices::getVaultEconomy);
+    }
 
-    public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return moduleRegistry.read(IntegrationsServices.class, IntegrationsServices::getCurrencyPlaceholders); }
+    public CurrencyPlaceholderExpansion getCurrencyPlaceholders() { return moduleRegistry.read(CurrencySystemServices.class, CurrencySystemServices::getCurrencyPlaceholders); }
 
     public String getServerNameSafe() {
         try {
-            if (moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService) != null) { String name = moduleRegistry.read(ConfigurationServices.class, ConfigurationServices::getConfigService).serverName(); if (name != null && !name.isBlank()) return name; }
+            if (getServerConfig() != null) { String name = getServerConfig().serverName(); if (name != null && !name.isBlank()) return name; }
         } catch (Throwable ignored) {}
         try { String name = getServer().getName(); if (name != null && !name.isBlank()) return name; } catch (Throwable ignored) {}
         return "UNKNOWN";

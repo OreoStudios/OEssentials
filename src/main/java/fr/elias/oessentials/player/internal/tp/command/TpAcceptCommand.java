@@ -107,7 +107,7 @@ public class TpAcceptCommand implements OreoCommand {
 
         final String id = traceId();
         final long t0 = System.nanoTime();
-        final String server = OEssentials.get().getConfigService().serverName();
+        final String server = OEssentials.get().getServerConfig().serverName();
 
         D(id, "enter player=" + target.getName() + " server=" + server);
 
@@ -157,7 +157,7 @@ public class TpAcceptCommand implements OreoCommand {
         OEssentials plugin = OEssentials.get();
 
         ConfigurationSection sec =
-                plugin.getSettingsConfig().getRoot().getConfigurationSection("features.tpa");
+                plugin.getFeatureSettings().getRoot().getConfigurationSection("features.tpa");
 
         boolean enabled = sec != null && sec.getBoolean("cooldown", false);
         int seconds = (sec != null ? sec.getInt("cooldown-amount", 0) : 0);

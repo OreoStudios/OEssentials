@@ -224,11 +224,11 @@ public class MoneyCommand implements CommandExecutor, OreoCommand {
 
             // Cross-server: broadcast notification to all other servers via RabbitMQ global channel
             try {
-                var pm = plugin.getPacketManager();
+                var pm = plugin.getPacketBus();
                 if (pm != null && pm.isInitialized()) {
                     pm.sendPacket(
-                            fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels.GLOBAL,
-                            new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(null, finalPlayerMsg)
+                            fr.elias.oessentials.messaging.api.PacketChannels.GLOBAL,
+                            new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(null, finalPlayerMsg)
                     );
                 }
             } catch (Throwable t) {
@@ -249,16 +249,16 @@ public class MoneyCommand implements CommandExecutor, OreoCommand {
         }
 
         try {
-            var pm = plugin.getPacketManager();
-            var dir = plugin.getPlayerDirectory();
+            var pm = plugin.getPacketBus();
+            var dir = plugin.getPlayerLocator();
             if (pm == null || !pm.isInitialized() || dir == null) return;
 
             String server = dir.lookupCurrentServer(targetUuid);
             if (server == null || server.isBlank()) return;
 
             pm.sendPacket(
-                    fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(server),
-                    new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, message)
+                    fr.elias.oessentials.messaging.api.PacketChannel.individual(server),
+                    new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(targetUuid, message)
             );
 
             if (plugin.getConfig().getBoolean("debug", false)) {

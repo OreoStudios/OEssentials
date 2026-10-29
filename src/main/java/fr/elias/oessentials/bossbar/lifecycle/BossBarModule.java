@@ -15,12 +15,14 @@ public final class BossBarModule extends ManagedModule implements BossBarService
     protected void start() {
         cleanup("bossBarService", () -> { if (bossBarService != null) bossBarService.stop(); });
         initBossBar();
+        providePublicApi(fr.elias.oessentials.api.IBossBarAPI.class, this::getBossBarApi);
+        registerReloadStep(8, "bossbar", this::reloadBossbar);
     }
 
     @Override public fr.elias.oessentials.bossbar.internal.BossBarService getBossBarService() { return bossBarService; }
 
     private void initBossBar() {
-        if (services(ConfigurationServices.class).getSettingsConfig().bossbarEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "bossbar")) {
+        if (services(ConfigurationServices.class).getFeatureSettings().bossbarEnabled() && BootstrapSupport.uiModuleAllowed(plugin, "bossbar")) {
             this.bossBarService = new BossBarService(plugin);
             this.bossBarService.start();
             services(ConfigurationServices.class).getCommands().register(new BossBarToggleCommand(this.bossBarService));
@@ -28,6 +30,27 @@ public final class BossBarModule extends ManagedModule implements BossBarService
         } else {
             BootstrapSupport.unregisterCommandHard(plugin, "bossbar");
             plugin.getLogger().info("[BossBar] Disabled by settings.yml.");
+        }
+    }
+
+    /** /oereload step (moved from ReloadAllCommand). */
+    private fr.elias.oessentials.configuration.api.ReloadSteps.Outcome reloadBossbar(org.bukkit.command.CommandSender sender) {
+        try {
+            var target = plugin.getBossBarService();
+            if (target != null) {
+                target.reload();
+                fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.bossbar",
+                        "<green>✔ Reloaded <white>bossbar</white></green>");
+                return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.RELOADED;
+            }
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.bossbar-skip",
+                    "<yellow>• Skipped bossbar (service unavailable)</yellow>");
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.SKIPPED;
+        } catch (Throwable t) {
+            fr.elias.oessentials.shared.Lang.send(sender, "admin.reload.bossbar-fail",
+                    "<red>✘ Failed reloading bossbar: <gray>%error%</gray></red>",
+                    java.util.Map.of("error", String.valueOf(t.getMessage())));
+            return fr.elias.oessentials.configuration.api.ReloadSteps.Outcome.FAILED;
         }
     }
 }

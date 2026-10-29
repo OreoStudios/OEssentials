@@ -61,8 +61,8 @@ public final class ScoreboardConfig {
         if (!file.exists()) plugin.saveResource("config/scoreboard-tab/scoreboard.yml", false);
         ConfigurationSection root = YamlConfiguration.loadConfiguration(file).getConfigurationSection("scoreboard");
 
-        // You already control the "enabled" toggle via SettingsConfig, so always respect that:
-        boolean enabled = plugin.getSettingsConfig().scoreboardEnabled();
+        // You already control the "enabled" toggle via FeatureSettings, so always respect that:
+        boolean enabled = plugin.getFeatureSettings().scoreboardEnabled();
 
         if (root == null) {
             return defaults(enabled);

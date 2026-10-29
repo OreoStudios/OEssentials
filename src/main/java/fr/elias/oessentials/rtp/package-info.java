@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.rtp.lifecycle.RtpModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "rtp")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "rtp", lifecycle = fr.elias.oessentials.rtp.lifecycle.RtpModule.class)
 package fr.elias.oessentials.rtp;

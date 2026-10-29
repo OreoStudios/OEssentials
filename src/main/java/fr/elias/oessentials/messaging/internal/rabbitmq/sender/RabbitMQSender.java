@@ -4,8 +4,8 @@ import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import fr.elias.oessentials.messaging.internal.rabbitmq.PacketChannels;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketChannels;
+import fr.elias.oessentials.messaging.api.PacketChannel;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.IncomingPacketListener;
 import fr.elias.oessentials.messaging.internal.rabbitmq.packet.event.PacketSender;
 
@@ -72,7 +72,7 @@ public class RabbitMQSender implements PacketSender {
                 }
             }
         } catch (Exception e) {
-            System.err.println("[OEssentials] ❌ Failed to send RabbitMQ message: " + e.getMessage());
+            System.err.println("[OEssentials] ❌ Failed to send RabbitMQ message: " + fr.elias.oessentials.shared.Throwables.describe(e));
             reconnect();
         }
     }
@@ -167,7 +167,7 @@ public class RabbitMQSender implements PacketSender {
             if (connection != null && connection.isOpen() && channel != null && channel.isOpen()) return true;
 
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setUri(connectionString);
+            factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(connectionString));
             factory.setAutomaticRecoveryEnabled(true);
             factory.setNetworkRecoveryInterval(5000);
             factory.setConnectionTimeout(5000);
@@ -181,7 +181,7 @@ public class RabbitMQSender implements PacketSender {
             dbg("[RMQ/CONNECT@" + serverName + "] channelOpen=" + channel.isOpen());
             return true;
         } catch (Exception e) {
-            System.err.println("[OEssentials] ❌ Failed to connect to RabbitMQ: " + e.getMessage());
+            System.err.println("[OEssentials] ❌ Failed to connect to RabbitMQ: " + fr.elias.oessentials.shared.Throwables.describe(e));
             closeConnectionOnly();
             return false;
         }

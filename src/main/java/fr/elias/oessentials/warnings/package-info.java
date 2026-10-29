@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.warnings.lifecycle.WarningsModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "warnings")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "warnings", lifecycle = fr.elias.oessentials.warnings.lifecycle.WarningsModule.class)
 package fr.elias.oessentials.warnings;

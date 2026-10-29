@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.proxy.lifecycle.ProxyMessagingModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "proxy-messaging")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "proxy-messaging", lifecycle = fr.elias.oessentials.proxy.lifecycle.ProxyMessagingModule.class)
 package fr.elias.oessentials.proxy;

@@ -1,6 +1,6 @@
 package fr.elias.oessentials.economy.internal.persistence.database;
 
-import fr.elias.oessentials.redis.internal.persistence.database.RedisManager;
+import fr.elias.oessentials.redis.api.BalanceCache;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JsonEconomyDatabase implements PlayerEconomyDatabase {
 
     private final JavaPlugin plugin;
-    private final RedisManager redis;
+    private final BalanceCache redis;
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Object lock = new Object();
@@ -32,7 +32,7 @@ public class JsonEconomyDatabase implements PlayerEconomyDatabase {
     private final double MAX_BALANCE;
     private final boolean ALLOW_NEGATIVE;
 
-    public JsonEconomyDatabase(JavaPlugin plugin, RedisManager redis) {
+    public JsonEconomyDatabase(JavaPlugin plugin, BalanceCache redis) {
         this.plugin = plugin;
         this.redis = redis;
         this.MAX_BALANCE = plugin.getConfig().getDouble("economy.max-balance", 1_000_000_000.0);

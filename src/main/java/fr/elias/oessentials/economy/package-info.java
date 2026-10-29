@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.economy.lifecycle.EconomyModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "economy")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "economy", lifecycle = fr.elias.oessentials.economy.lifecycle.EconomyModule.class)
 package fr.elias.oessentials.economy;

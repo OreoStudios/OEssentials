@@ -2,8 +2,8 @@ package fr.elias.oessentials.storage.internal.homes.home;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel;
-import fr.elias.oessentials.messaging.internal.rabbitmq.packet.PacketManager;
+import fr.elias.oessentials.messaging.api.PacketChannel;
+import fr.elias.oessentials.messaging.api.PacketBus;
 import fr.elias.oessentials.storage.internal.homes.rabbit.packet.HomeTeleportRequestPacket;
 import fr.elias.oessentials.platform.scheduling.Async;
 import fr.elias.oessentials.shared.Lang;
@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import fr.elias.oessentials.platform.scheduling.OreScheduler;
 import fr.elias.oessentials.platform.scheduling.OreTask;
@@ -61,14 +60,14 @@ public class HomeCommand implements OreoCommand, TabCompleter {
 
         final OEssentials plugin = OEssentials.get();
 
-        if (!plugin.getSettingsConfig().isEnabled("home")) {
+        if (!plugin.getFeatureSettings().isEnabled("home")) {
             Lang.send(player, "home.disabled", "<red>Home feature is currently disabled.</red>");
             return true;
         }
 
         if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
             OEssentials plugin2 = OEssentials.get();
-            if (plugin2.getDialogManager() != null && plugin2.getDialogManager().openHomeDialog(player, homes)) {
+            if (fr.elias.oessentials.storage.internal.dialogs.StorageDialogs.openHomes(player)) {
                 return true;
             }
             final String lbl = label;
@@ -99,7 +98,7 @@ public class HomeCommand implements OreoCommand, TabCompleter {
         final String raw = args[0];
         final String key = normalize(raw);
 
-        FileConfiguration settings = plugin.getSettingsConfig().getRoot();
+        ConfigurationSection settings = plugin.getFeatureSettings().getRoot();
         ConfigurationSection homeSection = settings.getConfigurationSection("features.home");
         final boolean useCooldown = homeSection != null && homeSection.getBoolean("cooldown", false);
         final int seconds = homeSection != null ? homeSection.getInt("cooldown-amount", 0) : 0;
@@ -158,7 +157,7 @@ public class HomeCommand implements OreoCommand, TabCompleter {
                 }
 
                 final Runnable action = () -> {
-                    var cs = plugin.getCrossServerSettings();
+                    var cs = plugin.getCrossServerFeatures();
                     if (!cs.homes()) {
                         Lang.send(player, "home.cross-disabled", "<red>Cross-server homes are disabled.</red>");
                         Lang.send(player, "home.cross-disabled-tip",
@@ -166,7 +165,7 @@ public class HomeCommand implements OreoCommand, TabCompleter {
                                 Map.of("server", targetServer, "name", key));
                         return;
                     }
-                    final PacketManager pm = plugin.getPacketManager();
+                    final PacketBus pm = plugin.getPacketBus();
                     if (pm != null && pm.isInitialized()) {
                         final String requestId = UUID.randomUUID().toString();
                         plugin.getLogger().info("[HOME/SEND] from=" + homes.localServer() + " player=" + player.getUniqueId()

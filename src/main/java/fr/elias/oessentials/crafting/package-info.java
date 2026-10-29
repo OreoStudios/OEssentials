@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.crafting.lifecycle.CustomCraftingModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "custom-crafting")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "custom-crafting", lifecycle = fr.elias.oessentials.crafting.lifecycle.CustomCraftingModule.class)
 package fr.elias.oessentials.crafting;

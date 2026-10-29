@@ -5,5 +5,6 @@ import fr.elias.oessentials.redis.internal.persistence.database.RedisManager;
 
 @ModuleApi("services")
 public interface RedisServices {
-    RedisManager getRedis();
+    /** The balance cache, or {@code null} when Redis is disabled. */
+    fr.elias.oessentials.redis.api.BalanceCache getRedis();
 }

@@ -48,7 +48,7 @@ public class WarpAdminActionsProvider implements InventoryProvider, Listener {
     public void init(Player p, InventoryContents contents) {
         final OEssentials plugin = OEssentials.get();
         final WarpDirectory dir = plugin.getWarpDirectory();
-        final String server = (dir != null ? dir.getWarpServer(warpName) : plugin.getConfigService().serverName());
+        final String server = (dir != null ? dir.getWarpServer(warpName) : plugin.getServerConfig().serverName());
         final String perm = (dir != null ? nullSafe(dir.getWarpPermission(warpName)) : null);
 
         contents.set(0, 4, ClickableItem.empty(infoItem(

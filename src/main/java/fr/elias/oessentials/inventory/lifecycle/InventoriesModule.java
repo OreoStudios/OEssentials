@@ -1,6 +1,7 @@
 package fr.elias.oessentials.inventory.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.commandtoggle.lifecycle.CommandToggleServices;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -17,7 +18,7 @@ import fr.minuskube.inv.InventoryManager;
 import java.io.File;
 import org.bukkit.Bukkit;
 
-@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services"}, after = {"mail"})
+@PluginModule(value = "inventories", dependencies = {"command-toggle::services", "configuration::services", "messaging::services", "storage::services"}, uses = {"currency-system::services", "shop::services"}, after = {"mail"})
 public final class InventoriesModule extends ManagedModule implements InventoriesServices {
     private AuctionHouseModule auctionHouse;
     private fr.elias.oessentials.inventory.internal.orders.OrdersModule ordersModule;
@@ -28,7 +29,39 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
     protected void start() {
         cleanup("auctionHouse", () -> { if (auctionHouse != null) auctionHouse.stop(); });
         cleanup("ordersModule", () -> { if (ordersModule != null) ordersModule.stop(); });
+        services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.inventory.internal.InventoriesPacketNamespace());
         initInventoryManagers();
+        subscribeCrossServerSync();
+        registerCommands();
+        providePublicApi(fr.elias.oessentials.api.ISellGuiAPI.class, this::getSellGuiApi);
+        providePublicApi(fr.elias.oessentials.api.IOrdersAPI.class, this::getOrdersApi);
+        providePublicApi(fr.elias.oessentials.api.IAuctionHouseAPI.class, this::getAuctionHouseApi);
+    }
+
+    private void subscribeCrossServerSync() {
+        // Subscribe whenever the feature exists and check readiness per packet: orders load their
+        // active orders asynchronously, so enabled() is still false here with MongoDB storage and a
+        // subscription gated on it was never made (other servers' orders never appeared). Packets
+        // received before loading finishes are covered by that load, which reads the database.
+        var messaging = services(MessagingServices.class);
+        if (auctionHouse != null) {
+            messaging.subscribe(
+                    fr.elias.oessentials.inventory.internal.auctionhouse.rabbitmq.AuctionSyncPacket.class,
+                    (channel, pkt) -> {
+                        if (!auctionHouse.enabled()) return;
+                        try { auctionHouse.applyIncomingSync(pkt); }
+                        catch (Throwable t) { plugin.getLogger().warning("[AH] Failed to handle AuctionSyncPacket: " + t.getMessage()); }
+                    });
+        }
+        if (ordersModule != null) {
+            messaging.subscribe(
+                    fr.elias.oessentials.inventory.internal.orders.rabbitmq.OrderSyncPacket.class,
+                    (channel, pkt) -> {
+                        if (!ordersModule.enabled()) return;
+                        try { ordersModule.getEventBus().onReceive(pkt); }
+                        catch (Throwable t) { plugin.getLogger().warning("[Orders] Failed to handle OrderSyncPacket: " + t.getMessage()); }
+                    });
+        }
     }
 
     @Override public AuctionHouseModule getAuctionHouse() { return auctionHouse; }
@@ -52,9 +85,10 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) new AuctionPlaceholders(auctionHouse).register();
         }
 
-        if (services(CommandToggleServices.class).getCommandToggleConfig() != null) {
-            services(CommandToggleServices.class).getCommandToggleConfig().registerModuleCallback("auctionhouse", () -> {
-                boolean shouldBeEnabled = services(CommandToggleServices.class).getCommandToggleConfig().isCommandEnabled("auctionhouse");
+        var toggles = services(CommandToggleServices.class);
+        if (toggles.getCommandToggleConfig() != null) {
+            toggles.onCommandToggled("auctionhouse", () -> {
+                boolean shouldBeEnabled = toggles.isCommandEnabled("auctionhouse");
                 File ahConfig = new File(plugin.getDataFolder(), "config/auctionhouse/config.yml");
                 org.bukkit.configuration.file.YamlConfiguration ahCfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(ahConfig);
                 ahCfg.set("enabled", shouldBeEnabled);
@@ -74,6 +108,16 @@ public final class InventoriesModule extends ManagedModule implements Inventorie
         } catch (Throwable t) {
             plugin.getLogger().warning("[Orders] Failed to initialise: " + t.getMessage());
             this.ordersModule = null;
+        }
+    }
+
+    /** Commands this module owns (registered by the commands module until 7.1.6). */
+    private void registerCommands() {
+        var commands = services(fr.elias.oessentials.configuration.lifecycle.ConfigurationServices.class).getCommands();
+        commands.register(new fr.elias.oessentials.inventory.internal.sellgui.command.SellGuiCommand(plugin));
+        // Orders / Market command
+        if (ordersModule != null) {
+            commands.register(new fr.elias.oessentials.inventory.internal.orders.command.OrderCommand(ordersModule));
         }
     }
 }

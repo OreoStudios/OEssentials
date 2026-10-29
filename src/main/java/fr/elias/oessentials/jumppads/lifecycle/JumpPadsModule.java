@@ -11,13 +11,14 @@ public final class JumpPadsModule extends ManagedModule implements JumpPadsServi
     @Override
     protected void start() {
         initJumpPads();
+        providePublicApi(fr.elias.oessentials.api.IJumpPadsAPI.class, this::getJumpPadsApi);
     }
 
     @Override public fr.elias.oessentials.jumppads.internal.jumpads.JumpPadsManager getJumpPads() { return jumpPads; }
 
     private void initJumpPads() {
         this.jumpPads = new fr.elias.oessentials.jumppads.internal.jumpads.JumpPadsManager(plugin);
-        if (!services(ConfigurationServices.class).getSettingsConfig().jumpPadsEnabled()) {
+        if (!services(ConfigurationServices.class).getFeatureSettings().jumpPadsEnabled()) {
             plugin.getLogger().info("[JumpPads] Disabled by settings.yml.");
             return;
         }

@@ -2,8 +2,8 @@ package fr.elias.oessentials.currency.internal.commands;
 
 import fr.elias.oessentials.OEssentials;
 import fr.elias.oessentials.platform.commands.OreoCommand;
-import fr.elias.oessentials.currency.internal.Currency;
-import fr.elias.oessentials.storage.internal.directory.PlayerDirectory;
+import fr.elias.oessentials.currency.api.Currency;
+import fr.elias.oessentials.storage.api.PlayerLocator;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
  * - resolves player UUID via:
  *   1) local online
  *   2) OfflinePlayerCache (if enabled)
- *   3) PlayerDirectory (Mongo)
+ *   3) PlayerLocator (Mongo)
  *   4) Bukkit.getOfflinePlayer(name) fallback
  */
 public class CurrencyCommand implements OreoCommand {
@@ -386,15 +386,15 @@ public class CurrencyCommand implements OreoCommand {
             if (local != null) return local.getUniqueId();
 
             try {
-                var cache = plugin.getOfflinePlayerCache();
+                var cache = plugin.getModuleRegistry().read(fr.elias.oessentials.economy.lifecycle.EconomyServices.class, e -> e);
                 if (cache != null) {
-                    UUID cached = cache.getId(nameOrUuid);
+                    UUID cached = cache.offlinePlayerId(nameOrUuid);
                     if (cached != null) return cached;
                 }
             } catch (Throwable ignored) {}
 
             try {
-                PlayerDirectory dir = plugin.getPlayerDirectory();
+                PlayerLocator dir = plugin.getPlayerLocator();
                 if (dir != null) {
                     UUID id = dir.lookupUuidByName(nameOrUuid);
                     if (id != null) return id;
@@ -418,16 +418,16 @@ public class CurrencyCommand implements OreoCommand {
         }
 
         try {
-            var pm = plugin.getPacketManager();
-            var dir = plugin.getPlayerDirectory();
+            var pm = plugin.getPacketBus();
+            var dir = plugin.getPlayerLocator();
             if (pm == null || !pm.isInitialized() || dir == null) return;
 
             String server = dir.lookupCurrentServer(targetUuid);
             if (server == null) return;
 
             pm.sendPacket(
-                    fr.elias.oessentials.messaging.internal.rabbitmq.channel.PacketChannel.individual(server),
-                    new fr.elias.oessentials.messaging.internal.rabbitmq.packet.impl.SendRemoteMessagePacket(targetUuid, msg)
+                    fr.elias.oessentials.messaging.api.PacketChannel.individual(server),
+                    new fr.elias.oessentials.messaging.api.SendRemoteMessagePacket(targetUuid, msg)
             );
         } catch (Throwable ignored) {}
     }

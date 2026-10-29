@@ -1,19 +1,38 @@
 package fr.elias.oessentials.modgui.lifecycle;
 
 import dev.oreo.modulith.core.PluginModule;
+import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.modgui.internal.world.WorldTweaksListener;
 
-@PluginModule(value = "mod-gui", after = {"inventories"})
+@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"chat::services", "ender-chest::services", "freeze::services", "inventory-sync::services", "mute-system::services", "notes::services", "player-services::services"}, after = {"inventories"})
 public final class ModGuiModule extends ManagedModule implements ModGuiServices {
     private fr.elias.oessentials.modgui.internal.ModGuiService modGuiService;
+    private fr.elias.oessentials.modgui.internal.cross.ModBridge modBridge;
+    private fr.elias.oessentials.modgui.internal.ip.IpTracker ipTracker;
 
     @Override
     protected void start() {
+        services(fr.elias.oessentials.messaging.lifecycle.MessagingServices.class)
+                .registerNamespace(new fr.elias.oessentials.modgui.internal.cross.rabbit.CrossInvPacketNamespace());
+        this.ipTracker = new fr.elias.oessentials.modgui.internal.ip.IpTracker(plugin);
         initModGui();
+        listenForModuleEvents(this);
+        providePublicApi(fr.elias.oessentials.api.ICrossServerAPI.class, this::getCrossServerApi);
+    }
+
+    /** Cross-server kick, freeze, vanish and other moderation actions. */
+    @dev.oreo.modulith.core.ModuleListener
+    public void onMessagingReady(fr.elias.oessentials.messaging.lifecycle.MessagingReady event) {
+        if (!isActive()) return;
+        this.modBridge = new fr.elias.oessentials.modgui.internal.cross.ModBridge(plugin, event.packets(),
+                services(ConfigurationServices.class).getServerConfig().serverName());
+        plugin.getLogger().info("[MOD-BRIDGE] Cross-server moderation bridge ready.");
     }
 
     @Override public fr.elias.oessentials.modgui.internal.ModGuiService getModGuiService() { return modGuiService; }
+    @Override public fr.elias.oessentials.modgui.internal.cross.ModBridge getModBridge() { return modBridge; }
+    @Override public fr.elias.oessentials.modgui.internal.ip.IpTracker getIpTracker() { return ipTracker; }
 
     private void initModGui() {
         try {

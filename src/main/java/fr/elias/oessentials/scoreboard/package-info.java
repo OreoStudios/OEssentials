@@ -8,6 +8,7 @@
  *
  * @see fr.elias.oessentials.scoreboard.lifecycle.ScoreboardModule
  */
+@dev.oreo.modulith.core.ApplicationModule(id = "scoreboard")
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "scoreboard", lifecycle = fr.elias.oessentials.scoreboard.lifecycle.ScoreboardModule.class)
 package fr.elias.oessentials.scoreboard;

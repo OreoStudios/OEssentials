@@ -48,7 +48,7 @@ public class NetworkCountReceiver {
     private boolean connect() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setUri(uri);
+            factory.setUri(fr.elias.oessentials.shared.AmqpUris.normalize(uri));
             factory.setAutomaticRecoveryEnabled(true);
             factory.setNetworkRecoveryInterval(5_000);
 
