@@ -24,8 +24,32 @@ public final class OreScheduler {
     // Sync – global region
     // -------------------------------------------------------------------------
 
+    // -------------------------------------------------------------------------
+    // While the plugin is disabling, the server refuses new tasks ("Plugin attempted to register
+    // task while disabled"), which broke shutdown cleanup that schedules work, e.g. removing
+    // nametag entities of online players (they were then left in the world). Work meant to run
+    // "now" runs immediately instead, when this thread may touch it; delayed or repeating work
+    // could never run any more and is skipped.
+    // -------------------------------------------------------------------------
+
+    private static boolean stopping(Plugin plugin) {
+        return !plugin.isEnabled();
+    }
+
+    private static OreTask runNowWhileStopping(Plugin plugin, Runnable task, boolean allowedOnThisThread) {
+        if (allowedOnThisThread) {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                plugin.getLogger().warning("[Scheduler] Shutdown task failed: " + t);
+            }
+        }
+        return OreTask.EMPTY;
+    }
+
     /** Run a sync task on the next available global tick. */
     public static OreTask run(Plugin plugin, Runnable task) {
+        if (stopping(plugin)) return runNowWhileStopping(plugin, task, org.bukkit.Bukkit.isGlobalTickThread());
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 plugin.getServer().getGlobalRegionScheduler()
                         .run(plugin, ctx -> owned.run())
@@ -34,6 +58,7 @@ public final class OreScheduler {
 
     /** Run a sync task after {@code delayTicks} ticks. */
     public static OreTask runLater(Plugin plugin, Runnable task, long delayTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 plugin.getServer().getGlobalRegionScheduler()
                         .runDelayed(plugin, ctx -> owned.run(), Math.max(1, delayTicks))
@@ -51,6 +76,7 @@ public final class OreScheduler {
      * and any entity property changes.
      */
     public static OreTask runAtLocation(Plugin plugin, org.bukkit.Location location, Runnable task) {
+        if (stopping(plugin)) return runNowWhileStopping(plugin, task, org.bukkit.Bukkit.isOwnedByCurrentRegion(location));
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 plugin.getServer().getRegionScheduler()
                         .run(plugin, location, ctx -> owned.run())
@@ -59,6 +85,7 @@ public final class OreScheduler {
 
     /** Run a repeating sync task (global). */
     public static OreTask runTimer(Plugin plugin, Runnable task, long delayTicks, long periodTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, true, owned ->
                 plugin.getServer().getGlobalRegionScheduler()
                         .runAtFixedRate(plugin, ctx -> owned.run(),
@@ -72,18 +99,21 @@ public final class OreScheduler {
 
     /** Run a sync task bound to an entity's region. Falls back to EMPTY if entity is invalid. */
     public static OreTask runForEntity(Plugin plugin, Entity entity, Runnable task) {
+        if (stopping(plugin)) return runNowWhileStopping(plugin, task, org.bukkit.Bukkit.isOwnedByCurrentRegion(entity));
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 entity.getScheduler().run(plugin, ctx -> owned.run(), null));
     }
 
     /** Run a delayed sync task bound to an entity's region. */
     public static OreTask runLaterForEntity(Plugin plugin, Entity entity, Runnable task, long delayTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 entity.getScheduler().runDelayed(plugin, ctx -> owned.run(), null, Math.max(1, delayTicks)));
     }
 
     /** Run a repeating sync task bound to an entity's region. */
     public static OreTask runTimerForEntity(Plugin plugin, Entity entity, Runnable task, long delayTicks, long periodTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, true, owned ->
                 entity.getScheduler().runAtFixedRate(plugin, ctx -> owned.run(), null,
                         Math.max(1, delayTicks), Math.max(1, periodTicks)));
@@ -95,6 +125,8 @@ public final class OreScheduler {
 
     /** Run a task asynchronously. */
     public static OreTask runAsync(Plugin plugin, Runnable task) {
+        // Shutdown work such as final saves still completes, on the stopping thread.
+        if (stopping(plugin)) return runNowWhileStopping(plugin, task, true);
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 plugin.getServer().getAsyncScheduler()
                         .runNow(plugin, ctx -> owned.run())
@@ -103,6 +135,7 @@ public final class OreScheduler {
 
     /** Run an async task after {@code delayTicks} ticks (converted to ms). */
     public static OreTask runAsyncLater(Plugin plugin, Runnable task, long delayTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, false, owned ->
                 plugin.getServer().getAsyncScheduler()
                         .runDelayed(plugin, ctx -> owned.run(),
@@ -112,6 +145,7 @@ public final class OreScheduler {
 
     /** Run a repeating async task. */
     public static OreTask runAsyncTimer(Plugin plugin, Runnable task, long delayTicks, long periodTicks) {
+        if (stopping(plugin)) return OreTask.EMPTY;
         return ModuleTaskScope.schedule(plugin, task, true, owned ->
                 plugin.getServer().getAsyncScheduler()
                         .runAtFixedRate(plugin, ctx -> owned.run(),
