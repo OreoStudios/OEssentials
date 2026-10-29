@@ -28,10 +28,35 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
     @Override public fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
     @Override public fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager getInvlookManager() { return invlookManager; }
 
+    /**
+     * Synced inventories used to be saved only when a player left, so a server crash lost everything
+     * since they joined. Online players are now also saved every {@code playersync.autosave-seconds}
+     * (default 60, 0 = off); a crash loses at most that much.
+     */
+    private void startPeriodicSave(fr.elias.oessentials.sync.internal.playersync.PlayerSyncService svc) {
+        long seconds = plugin.getConfig().getLong("playersync.autosave-seconds", 60L);
+        if (!playerSyncEnabled || seconds <= 0) return;
+        long ticks = Math.max(20L, seconds * 20L);
+        var task = fr.elias.oessentials.platform.scheduling.OreScheduler.runTimer(plugin, () -> {
+            for (org.bukkit.entity.Player p : plugin.getServer().getOnlinePlayers()) {
+                // Capture on the player's own thread, write to storage off-thread.
+                fr.elias.oessentials.platform.scheduling.OreScheduler.runForEntity(plugin, p, () -> {
+                    if (!p.isOnline() || !svc.isLoaded(p.getUniqueId())) return; // not loaded yet: would overwrite
+                    final var snapshot = svc.captureSnapshot(p);
+                    final java.util.UUID id = p.getUniqueId();
+                    fr.elias.oessentials.platform.scheduling.OreScheduler.runAsync(plugin, () -> svc.saveSnapshot(id, snapshot));
+                });
+            }
+        }, ticks, ticks);
+        cleanup("periodicInventorySave", task::cancel);
+        plugin.getLogger().info("[SYNC] Saving online players' inventories every " + seconds + "s.");
+    }
+
     @Override
     public void saveInventoryNow(org.bukkit.entity.Player player) {
         var svc = playerSyncService;
         if (svc == null || !playerSyncEnabled || player == null) return;
+        if (!svc.isLoaded(player.getUniqueId())) return; // saved inventory not loaded yet: would overwrite it
         svc.saveSnapshot(player.getUniqueId(), svc.captureSnapshot(player));
     }
 
@@ -98,6 +123,7 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
         plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.sync.internal.playersync.PlayerSyncListener(playerSyncService, invSyncEnabled, syncSaveOnQuit), plugin);
         this.playerSyncService = playerSyncService;
         this.playerSyncEnabled = invSyncEnabled && syncSaveOnQuit;
+        startPeriodicSave(playerSyncService);
 
         final fr.elias.oessentials.sync.internal.playersync.PlayerSyncStorage finalInvStorage = invStorage;
         fr.elias.oessentials.sync.api.InventoryService invSvc = new fr.elias.oessentials.sync.api.InventoryService() {

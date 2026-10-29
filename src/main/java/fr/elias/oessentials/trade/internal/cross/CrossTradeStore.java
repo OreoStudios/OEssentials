@@ -52,6 +52,7 @@ public final class CrossTradeStore {
         String staged() { return this == A ? "stagedA" : "stagedB"; }
         String handout() { return this == A ? "handoutA" : "handoutB"; }
         String id() { return this == A ? "aId" : "bId"; }
+        String alive() { return this == A ? "aliveA" : "aliveB"; }
         Side other() { return this == A ? B : A; }
     }
 
@@ -74,6 +75,9 @@ public final class CrossTradeStore {
                 .append("stagedA", new ArrayList<>()).append("stagedB", new ArrayList<>())
                 .append("handoutA", new ArrayList<>()).append("handoutB", new ArrayList<>())
                 .append("createdAt", System.currentTimeMillis()));
+        // Heartbeats use the database clock, so servers with drifting clocks agree on staleness.
+        coll.updateOne(eq("_id", id.toString()),
+                combine(com.mongodb.client.model.Updates.currentDate("aliveA"), com.mongodb.client.model.Updates.currentDate("aliveB")));
         return id;
     }
 
@@ -149,6 +153,24 @@ public final class CrossTradeStore {
     }
 
     // ------------------------------------------------------------------ outcome
+
+    /** Heartbeat: {@code side}'s player still has this trade open on a running server. */
+    public void touch(UUID id, Side side) {
+        coll.updateOne(and(eq("_id", id.toString()), eq("state", "OPEN")),
+                com.mongodb.client.model.Updates.currentDate(side.alive()));
+    }
+
+    /**
+     * OPEN -> CANCELLED when {@code side}'s heartbeat is older than {@code timeoutMs} by the database
+     * clock (their server stopped, or their menu never opened). True for the one caller that did it.
+     */
+    public boolean cancelIfGone(UUID id, Side side, long timeoutMs) {
+        Bson stale = Filters.expr(new Document("$lt", java.util.List.of("$" + side.alive(),
+                new Document("$subtract", java.util.List.of("$$NOW", timeoutMs)))));
+        return coll.updateOne(and(eq("_id", id.toString()), eq("state", "OPEN"), stale),
+                combine(set("state", "CANCELLED"), set("reason", "partner-unreachable"), set("endedAt", System.currentTimeMillis())))
+                .getModifiedCount() == 1;
+    }
 
     /** Confirms (or un-confirms) the offers exactly as they were at version {@code seenVersion}. */
     public boolean setReady(UUID id, Side side, boolean ready, long seenVersion) {

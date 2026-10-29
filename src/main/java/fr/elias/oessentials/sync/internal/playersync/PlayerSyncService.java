@@ -25,6 +25,16 @@ public final class PlayerSyncService {
     }
 
     /** Capture Bukkit player state. Must run on the player's owning thread/region. */
+    /**
+     * Players whose saved inventory has been loaded on this server (or who had none). Until then the
+     * player still holds this server's stale copy, and saving it would overwrite the real one.
+     */
+    private final java.util.Set<java.util.UUID> loaded = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    public void markLoaded(java.util.UUID id) { loaded.add(id); }
+    public void forget(java.util.UUID id) { loaded.remove(id); }
+    public boolean isLoaded(java.util.UUID id) { return loaded.contains(id); }
+
     public PlayerSyncSnapshot captureSnapshot(Player p) {
         PlayerSyncPrefs pr = prefs.get(p.getUniqueId());
         PlayerSyncSnapshot s = new PlayerSyncSnapshot();
