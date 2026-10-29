@@ -16,6 +16,8 @@ public final class PlayerSyncSnapshot implements Serializable {
     public float saturation;
     /** Serialized potion effects; null means none saved (old format or no effects). */
     public String potionData;
+    /** Player receipts ({@link fr.elias.oessentials.shared.PlayerJournal}); null in old snapshots. */
+    public String journal;
 
     public static String toBase64(PlayerSyncSnapshot s) throws IOException {
         try (var bos = new ByteArrayOutputStream();
@@ -29,6 +31,7 @@ public final class PlayerSyncSnapshot implements Serializable {
             oos.writeInt(s.food);
             oos.writeFloat(s.saturation);
             oos.writeObject(s.potionData != null ? s.potionData : "");
+            oos.writeObject(s.journal != null ? s.journal : "");
             oos.flush();
             return Base64.getEncoder().encodeToString(bos.toByteArray());
         }
@@ -52,6 +55,11 @@ public final class PlayerSyncSnapshot implements Serializable {
                 s.potionData = (pd != null && !pd.isEmpty()) ? pd : null;
             } catch (Exception ignored) {
                 s.potionData = null;
+            }
+            try {
+                s.journal = (String) ois.readObject(); // absent in snapshots saved before 7.1.6
+            } catch (Exception ignored) {
+                s.journal = null;
             }
             return s;
         }

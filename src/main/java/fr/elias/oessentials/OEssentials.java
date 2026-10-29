@@ -95,7 +95,6 @@ import fr.elias.oessentials.storage.internal.spawn.SpawnService;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpCrossServerBroker;
 import fr.elias.oessentials.player.internal.tp.rabbit.brokers.TpaCrossServerBroker;
 import fr.elias.oessentials.player.internal.tp.service.TeleportService;
-import fr.elias.oessentials.trade.internal.rabbit.TradeCrossServerBroker;
 import fr.elias.oessentials.trade.internal.service.TradeService;
 import fr.elias.oessentials.storage.internal.warps.WarpService;
 import fr.elias.oessentials.storage.internal.warps.rabbit.WarpDirectory;
@@ -309,7 +308,6 @@ public final class OEssentials extends JavaPlugin {
 
     public fr.elias.oessentials.playtime.internal.PlaytimeRewardsService getPlaytimeRewards() { return moduleRegistry.read(PlaytimeServices.class, PlaytimeServices::getPlaytimeRewards); }
 
-    public TradeCrossServerBroker getTradeBroker() { return moduleRegistry.read(fr.elias.oessentials.trade.lifecycle.TradeServices.class, fr.elias.oessentials.trade.lifecycle.TradeServices::getTradeBroker); }
 
     public TradeService getTradeService() { return moduleRegistry.read(TradeServices.class, TradeServices::getTradeService); }
 

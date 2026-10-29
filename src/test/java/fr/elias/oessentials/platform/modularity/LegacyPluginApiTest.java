@@ -26,7 +26,8 @@ class LegacyPluginApiTest {
             assertNotNull(input);
             var lines = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)).lines()
                     .filter(line -> !line.isBlank() && !line.startsWith("#")).toList();
-            assertEquals(119, lines.size());
+            // 118: getTradeBroker() was retired in 7.1.6 with the packet-based cross-server trade broker.
+            assertEquals(118, lines.size());
             for (String line : lines) {
                 String[] parts = line.split("\\|", -1);
                 Class<?>[] parameters = parts[2].isEmpty() ? new Class<?>[0]

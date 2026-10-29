@@ -4,10 +4,7 @@ import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
-import fr.elias.oessentials.trade.internal.rabbit.TradeCrossServerBroker;
-import fr.elias.oessentials.trade.internal.rabbit.handler.*;
 import fr.elias.oessentials.trade.internal.rabbit.namespace.TradePacketNamespace;
-import fr.elias.oessentials.trade.internal.rabbit.packet.*;
 import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -15,11 +12,10 @@ import fr.elias.oessentials.trade.internal.command.TradeCommand;
 import fr.elias.oessentials.trade.internal.config.TradeConfig;
 import fr.elias.oessentials.trade.internal.service.TradeService;
 
-@PluginModule(value = "trade", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"notes"})
+@PluginModule(value = "trade", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"inventory-sync::services"}, after = {"notes"})
 public final class TradeModule extends ManagedModule implements TradeServices {
     private TradeConfig tradeConfig;
     private TradeService tradeService;
-    private TradeCrossServerBroker tradeBroker;
     private volatile fr.elias.oessentials.trade.internal.cross.CrossTradeService crossTrades;
 
     @Override
@@ -34,13 +30,6 @@ public final class TradeModule extends ManagedModule implements TradeServices {
     private void initCrossServerPackets() {
         var messaging = services(MessagingServices.class);
         messaging.registerNamespace(new TradePacketNamespace());
-        messaging.subscribe(TradeStartPacket.class,   new TradeStartPacketHandler(plugin));
-        messaging.subscribe(TradeInvitePacket.class,  new TradeInvitePacketHandler(plugin));
-        messaging.subscribe(TradeStatePacket.class,   new TradeStatePacketHandler(plugin));
-        messaging.subscribe(TradeConfirmPacket.class, new TradeConfirmPacketHandler(plugin));
-        messaging.subscribe(TradeCancelPacket.class,  new TradeCancelPacketHandler(plugin));
-        messaging.subscribe(TradeGrantPacket.class,   new TradeGrantPacketHandler(plugin));
-        messaging.subscribe(TradeClosePacket.class,   new TradeClosePacketHandler(plugin));
         messaging.subscribe(fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket.class, (channel, pkt) -> {
             var cross = crossTrades;
             if (cross != null) cross.onSignal(pkt);
@@ -50,9 +39,8 @@ public final class TradeModule extends ManagedModule implements TradeServices {
     @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
-        // The old packet-based cross-server broker stays off: it never ran before 7.1.6 and lost or
-        // duplicated items when tested. Cross-server trades use CrossTradeService instead, whose
-        // trade record (and the offered items) lives in MongoDB.
+        // Cross-server trades keep the trade record (and the offered items) in MongoDB. The packet-based
+        // broker that preceded it never ran before 7.1.6 and lost or duplicated items; it was removed.
         if (tradeService == null || !services(ConfigurationServices.class).getFeatureSettings().tradeCrossServerEnabled()) {
             plugin.getLogger().info("[TRADE] Cross-server trading disabled.");
             return;
@@ -67,7 +55,11 @@ public final class TradeModule extends ManagedModule implements TradeServices {
                 .getCollection(cfg.getString("storage.mongo.collectionPrefix", "oreo_") + "trades");
         var service = new fr.elias.oessentials.trade.internal.cross.CrossTradeService(plugin,
                 new fr.elias.oessentials.trade.internal.cross.CrossTradeStore(collection), event.packets(),
-                id -> tradeService.getTradeIdByPlayer(id) != null);
+                id -> tradeService.getTradeIdByPlayer(id) != null,
+                player -> {
+                    var sync = plugin.getModuleRegistry().read(fr.elias.oessentials.sync.lifecycle.InventorySyncServices.class, s -> s);
+                    if (sync != null) sync.saveInventoryNow(player);
+                });
         plugin.getServer().getPluginManager().registerEvents(service, plugin);
         this.crossTrades = service;
         cleanup("crossTrades", () -> { service.shutdown(); crossTrades = null; });
@@ -76,7 +68,6 @@ public final class TradeModule extends ManagedModule implements TradeServices {
 
     @Override public TradeConfig getTradeConfig() { return tradeConfig; }
     @Override public TradeService getTradeService() { return tradeService; }
-    @Override public TradeCrossServerBroker getTradeBroker() { return tradeBroker; }
 
     private void initTrade() {
         this.tradeConfig = new TradeConfig(plugin);

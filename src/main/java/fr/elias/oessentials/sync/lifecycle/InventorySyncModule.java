@@ -11,6 +11,8 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
     private volatile fr.elias.oessentials.sync.internal.invsee.InvseeService invseeService;
     private volatile fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker invseeBroker;
     private final fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager invlookManager = new fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager();
+    private volatile fr.elias.oessentials.sync.internal.playersync.PlayerSyncService playerSyncService;
+    private volatile boolean playerSyncEnabled;
 
     @Override
     protected void start() {
@@ -25,6 +27,13 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
     @Override public fr.elias.oessentials.sync.internal.invsee.InvseeService getInvseeService() { return invseeService; }
     @Override public fr.elias.oessentials.sync.internal.invsee.rabbit.InvseeCrossServerBroker getInvseeBroker() { return invseeBroker; }
     @Override public fr.elias.oessentials.sync.internal.invlook.manager.InvlookManager getInvlookManager() { return invlookManager; }
+
+    @Override
+    public void saveInventoryNow(org.bukkit.entity.Player player) {
+        var svc = playerSyncService;
+        if (svc == null || !playerSyncEnabled || player == null) return;
+        svc.saveSnapshot(player.getUniqueId(), svc.captureSnapshot(player));
+    }
 
     /** /invsee and its read-only /invlook. They work locally, and across servers once RabbitMQ connects. */
     private void initInvsee() {
@@ -87,6 +96,8 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
         final var syncPrefsStore    = new fr.elias.oessentials.sync.internal.playersync.PlayerSyncPrefsStore(plugin);
         final var playerSyncService = new fr.elias.oessentials.sync.internal.playersync.PlayerSyncService(plugin, invStorage, syncPrefsStore);
         plugin.getServer().getPluginManager().registerEvents(new fr.elias.oessentials.sync.internal.playersync.PlayerSyncListener(playerSyncService, invSyncEnabled, syncSaveOnQuit), plugin);
+        this.playerSyncService = playerSyncService;
+        this.playerSyncEnabled = invSyncEnabled && syncSaveOnQuit;
 
         final fr.elias.oessentials.sync.internal.playersync.PlayerSyncStorage finalInvStorage = invStorage;
         fr.elias.oessentials.sync.api.InventoryService invSvc = new fr.elias.oessentials.sync.api.InventoryService() {
