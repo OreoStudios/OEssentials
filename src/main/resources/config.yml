@@ -137,6 +137,9 @@ playersync:
   # when players leave. Players will still have sync loaded on join, but quitting lobby
   # won't wipe their survival inventory. Leave true (default) on all game servers.
   save-on-quit: true
+  # Also save online players' synced inventories every N seconds, so a server crash loses at
+  # most that much (they used to be saved only on quit). 0 = only on quit.
+  autosave-seconds: 60
 
 # AFK system → configured in plugins/OEssentials/afk/config.yml
 

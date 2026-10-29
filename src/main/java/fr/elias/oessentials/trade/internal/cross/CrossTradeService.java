@@ -37,6 +37,11 @@ import java.util.function.Predicate;
  */
 public final class CrossTradeService implements Listener {
     private static final long INVITE_TTL_MS = 60_000L;
+    /**
+     * A partner whose heartbeat is older than this is gone (their server crashed, or their menu
+     * never opened): the trade is cancelled so this player's items come straight back.
+     */
+    private static final long PARTNER_TIMEOUT_MS = 15_000L;
     /** Inventory sync applies the saved inventory ~10 ticks after join plus a database read. */
     private static final long CLAIM_DELAY_TICKS = 100L;
 
@@ -208,6 +213,17 @@ public final class CrossTradeService implements Listener {
         if (tradeId == null) return;
         List<CrossTradeMenu> local = menus.values().stream().filter(m -> m.tradeId.equals(tradeId)).toList();
         if (local.isEmpty()) return;
+        for (CrossTradeMenu menu : local) {
+            if (Bukkit.getPlayer(menu.viewer) == null) continue;
+            store.touch(tradeId, menu.side);
+            if (store.cancelIfGone(tradeId, menu.side.other(), PARTNER_TIMEOUT_MS)) {
+                Player p = Bukkit.getPlayer(menu.viewer);
+                Lang.send(p, "trade.cross.partner-lost",
+                        "<red>Your trade partner is no longer reachable, so the trade was cancelled. Your items were returned.</red>");
+                signal(CrossTradeSignalPacket.CHANGED, tradeId, null, null, null, null);
+                break;
+            }
+        }
         CrossTrade trade = store.get(tradeId);
         for (CrossTradeMenu menu : local) {
             Player p = Bukkit.getPlayer(menu.viewer);
