@@ -29,8 +29,20 @@ public class PlayerDirectory implements fr.elias.oessentials.storage.api.PlayerL
         try { coll.createIndex(new Document("lastServer", 1)); } catch (Throwable ignored) {}
     }
 
-    public void saveMapping(String name, UUID uuid) { upsertPresence(uuid, name, null); }
-    public void saveMapping(UUID uuid, String name) { upsertPresence(uuid, name, null); }
+    public void saveMapping(String name, UUID uuid) { saveMapping(uuid, name); }
+
+    /**
+     * Records the name only. It used to replace the whole entry without a server, so when it ran
+     * after a join's presence update (inventory sync calls it on every join) the player's current
+     * server was wiped and they looked offline to cross-server features until the next heartbeat.
+     */
+    public void saveMapping(UUID uuid, String name) {
+        if (uuid == null) return;
+        String nm = name == null ? "" : name;
+        coll.updateOne(eq("uuid", uuid.toString()),
+                combine(set("name", nm), set("nameLower", nm.toLowerCase(Locale.ROOT)), set("updatedAt", Instant.now().toString())),
+                new UpdateOptions().upsert(true));
+    }
 
     public UUID lookupUuidByName(String name) {
         if (name == null || name.isBlank()) return null;
