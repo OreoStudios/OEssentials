@@ -50,6 +50,7 @@ public final class PlayerSyncService {
         s.food = Math.max(0, Math.min(20, p.getFoodLevel()));
         s.saturation = Math.max(0f, Math.min(20f, p.getSaturation()));
         s.potionData = pr.potions ? serializePotions(p.getActivePotionEffects()) : null;
+        s.journal = pr.inv ? fr.elias.oessentials.shared.PlayerJournal.raw(p) : null;
         return s;
     }
 
@@ -90,6 +91,8 @@ public final class PlayerSyncService {
                 if (s.offhand != null) {
                     p.getInventory().setItemInOffHand(s.offhand);
                 }
+                // Receipts travel with the inventory they describe.
+                if (s.journal != null) fr.elias.oessentials.shared.PlayerJournal.setRaw(p, s.journal);
             }
 
             if (pr.xp && s.level >= 0) { // level=-1 means not captured on the saving server

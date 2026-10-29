@@ -1,28 +1,16 @@
 package fr.elias.oessentials.trade.internal.rabbit.namespace;
 
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeCancelPacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeClosePacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeConfirmPacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeGrantPacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeInvitePacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStartPacket;
-import fr.elias.oessentials.trade.internal.rabbit.packet.TradeStatePacket;
 import fr.elias.oessentials.messaging.api.PacketNamespace;
+import fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket;
 
+/**
+ * Trade packets. Ids 27000-27005 and 27014 belonged to the removed packet-based broker and stay
+ * reserved: never reuse them, servers on older versions may still send them.
+ */
 public final class TradePacketNamespace extends PacketNamespace {
 
     public static final short NS_ID = (short) 27;
 
-    public static final int TRADE_START_ID  = 27000;
-
-
-    public static final int TRADE_INVITE_ID   = 27001;
-    public static final int TRADE_STATE_ID    = 27002;
-    public static final int TRADE_CONFIRM_ID  = 27003;
-    public static final int TRADE_CANCEL_ID   = 27004;
-    public static final int TRADE_GRANT_ID    = 27005;
-    /** Numbered by startup registration order before it joined this namespace. */
-    public static final int TRADE_CLOSE_ID    = 27014;
     /** Cross-server trade notifications (the trade record lives in MongoDB). */
     public static final int CROSS_TRADE_SIGNAL_ID = 27029;
 
@@ -32,16 +20,6 @@ public final class TradePacketNamespace extends PacketNamespace {
 
     @Override
     protected void registerPackets() {
-        registerPacket(TRADE_START_ID,  TradeStartPacket.class,  TradeStartPacket::new);
-
-        registerPacket(TRADE_INVITE_ID,  TradeInvitePacket.class,  TradeInvitePacket::new);
-        registerPacket(TRADE_STATE_ID,   TradeStatePacket.class,   TradeStatePacket::new);
-        registerPacket(TRADE_CONFIRM_ID, TradeConfirmPacket.class, TradeConfirmPacket::new);
-        registerPacket(TRADE_CANCEL_ID,  TradeCancelPacket.class,  TradeCancelPacket::new);
-        registerPacket(TRADE_GRANT_ID,   TradeGrantPacket.class,   TradeGrantPacket::new);
-        registerPacket(TRADE_CLOSE_ID,   TradeClosePacket.class,   TradeClosePacket::new);
-        registerPacket(CROSS_TRADE_SIGNAL_ID,
-                fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket.class,
-                fr.elias.oessentials.trade.internal.cross.CrossTradeSignalPacket::new);
+        registerPacket(CROSS_TRADE_SIGNAL_ID, CrossTradeSignalPacket.class, CrossTradeSignalPacket::new);
     }
 }

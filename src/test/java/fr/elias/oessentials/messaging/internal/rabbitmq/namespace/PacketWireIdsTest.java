@@ -101,12 +101,6 @@ class PacketWireIdsTest {
             2003=AfkStatusPacket
             2101=SafeZoneEnterPacket
             9101=CrossInvPacket
-            27000=TradeStartPacket
-            27001=TradeInvitePacket
-            27002=TradeStatePacket
-            27003=TradeConfirmPacket
-            27004=TradeCancelPacket
-            27005=TradeGrantPacket
             27006=CrossServerMsgPacket
             27007=VanishSyncPacket
             27008=PlayerWarpTeleportRequestPacket
@@ -115,7 +109,6 @@ class PacketWireIdsTest {
             27011=InvseeStatePacket
             27012=InvseeEditPacket
             27013=DeathMessagePacket
-            27014=TradeClosePacket
             27015=TpJumpPacket
             27016=BackTeleportPacket
             27017=TpaBringPacket

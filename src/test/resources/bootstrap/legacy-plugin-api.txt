@@ -39,7 +39,6 @@ getPlayervaultsService|fr.elias.oessentials.modules.playervaults.PlayerVaultsSer
 getInvseeService|fr.elias.oessentials.modules.invsee.InvseeService|
 getIcManager|fr.elias.oessentials.modules.ic.ICManager|
 getPlaytimeRewards|fr.elias.oessentials.modules.playtime.PlaytimeRewardsService|
-getTradeBroker|fr.elias.oessentials.modules.trade.rabbit.TradeCrossServerBroker|
 getTradeService|fr.elias.oessentials.modules.trade.service.TradeService|
 getAfkService|fr.elias.oessentials.modules.afk.AfkService|
 getAfkPoolService|fr.elias.oessentials.modules.afk.AfkPoolService|
