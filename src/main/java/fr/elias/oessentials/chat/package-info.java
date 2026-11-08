@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.chat.lifecycle.ChatModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "chat")
+@dev.oreo.modulith.core.ApplicationModule(id = "chat", uses = {"discord-integration::services", "inventories::services", "mod-gui::services", "notes::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "chat", lifecycle = fr.elias.oessentials.chat.lifecycle.ChatModule.class)
 package fr.elias.oessentials.chat;

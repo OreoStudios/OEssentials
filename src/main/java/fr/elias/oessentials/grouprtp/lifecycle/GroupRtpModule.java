@@ -1,6 +1,5 @@
 package fr.elias.oessentials.grouprtp.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
@@ -14,7 +13,8 @@ public final class GroupRtpModule extends ManagedModule implements GroupRtpServi
     protected void start() {
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpPacketNamespace());
         initGroupRtp();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
     }
 
     @Override public fr.elias.oessentials.grouprtp.internal.GroupRtpModule getGroupRtpModule() { return groupRtpModule; }
@@ -28,7 +28,6 @@ public final class GroupRtpModule extends ManagedModule implements GroupRtpServi
         }
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive() || groupRtpModule == null) return;
         new fr.elias.oessentials.grouprtp.internal.rabbit.GroupRtpCrossServerBroker(plugin, event.packets());

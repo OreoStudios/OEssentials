@@ -1,5 +1,6 @@
 plugins {
     java
+    id("dev.oreo.minecraft-modulith") version "0.6.0"
     // Maintained fork of the Shadow plugin (johnrengelman is unmaintained); supports Gradle 9.
     id("com.gradleup.shadow") version "9.0.0"
 }
@@ -54,7 +55,7 @@ configurations.testImplementation {
     extendsFrom(configurations.compileOnly.get())
 }
 
-val modulithVersion = "0.5.3"
+val modulithVersion = "0.6.0"
 
 dependencies {
     // ── MinecraftModulith (shaded + relocated) ──────────────────────────────
@@ -145,11 +146,22 @@ tasks.shadowJar {
 }
 
 tasks.build {
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.shadowJar, "modulithDocs")
 }
 
 tasks.test {
     useJUnitPlatform()
     // Mockito/ByteBuddy need this to instrument on the JDK 25 test runtime.
     jvmArgs("-Dnet.bytebuddy.experimental=true")
+}
+
+// Validate the generated module index on every verification build.
+tasks.check { dependsOn("verifyModulith") }
+
+// These 0.6.0 plugin tasks capture Project in their task actions.
+// Keep configuration caching for other tasks without failing report builds.
+listOf("verifyModulith", "modulithDocs").forEach { name ->
+    tasks.named(name) {
+        notCompatibleWithConfigurationCache("MinecraftModulith 0.6.0 report task accesses Project")
+    }
 }

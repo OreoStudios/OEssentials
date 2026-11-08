@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.punishment.lifecycle.PunishmentLoggerModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "punishment-logger")
+@dev.oreo.modulith.core.ApplicationModule(id = "punishment-logger", uses = {"discord-integration::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "punishment-logger", lifecycle = fr.elias.oessentials.punishment.lifecycle.PunishmentLoggerModule.class)
 package fr.elias.oessentials.punishment;

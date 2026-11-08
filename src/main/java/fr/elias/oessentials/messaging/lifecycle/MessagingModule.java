@@ -156,6 +156,11 @@ public final class MessagingModule extends ManagedModule implements MessagingSer
         catch (Throwable ignored) {}
 
         plugin.getLogger().info("[RABBIT] Connected and subscriptions active.");
-        publishEvent(new MessagingReady(bus));
+        publishEvent(new MessagingReady(bus)).whenComplete((result, failure) -> {
+            if (failure != null && isActive()) {
+                plugin.getLogger().log(java.util.logging.Level.WARNING,
+                        "[RABBIT] One or more module readiness handlers failed", failure);
+            }
+        });
     }
 }

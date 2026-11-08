@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Player Warps Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS","Segoe UI",sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(247,185,85,0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(104,217,200,0.07), transparent 22%),
+        linear-gradient(180deg,#0d1318 0%,#121a22 100%);
+      min-height: 100vh;
+    }
+    .shell { display:grid; grid-template-columns:300px minmax(0,1fr); min-height:100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position:sticky; top:0; align-self:start;
+      height:100vh; overflow-y:auto;
+      padding:28px 20px 30px;
+      background:rgba(12,18,23,0.92);
+      border-right:1px solid var(--line-soft);
+      backdrop-filter:blur(12px);
+    }
+    .brand { margin-bottom:22px; padding:18px; border:1px solid rgba(247,185,85,0.30); border-radius:var(--radius); background:linear-gradient(180deg,rgba(247,185,85,0.12),rgba(104,217,200,0.04)); box-shadow:var(--shadow); }
+    .brand h1 { margin:0; font-family:Georgia,serif; font-size:1.25rem; line-height:1.1; color:var(--amber); }
+    .brand p  { margin:10px 0 0; color:var(--muted); font-size:.88rem; line-height:1.5; }
+    .nav-group { margin-top:18px; }
+    .nav-group h2 { margin:0 0 8px; color:var(--soft); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em; }
+    .nav-group a { display:block; padding:10px 12px; margin:4px 0; color:var(--muted); text-decoration:none; border-radius:10px; border:1px solid transparent; transition:.18s ease; font-size:.9rem; }
+    .nav-group a:hover { color:var(--text); border-color:rgba(247,185,85,0.30); background:rgba(247,185,85,0.08); }
+
+    /* ── Content ── */
+    .content { padding:34px 36px 80px; }
+
+    .hero { padding:30px; border-radius:28px; background:linear-gradient(135deg,rgba(247,185,85,0.12),rgba(104,217,200,0.06)),rgba(16,22,29,0.78); border:1px solid rgba(247,185,85,0.30); box-shadow:var(--shadow); margin-bottom:28px; }
+    .hero .eyebrow { display:inline-block; margin-bottom:14px; padding:6px 10px; border-radius:999px; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:#fff5cc; background:rgba(247,185,85,0.12); border:1px solid rgba(247,185,85,0.30); }
+    .hero h1 { margin:0; font-family:Georgia,serif; font-size:clamp(2rem,4vw,3rem); line-height:1.05; }
+    .hero p  { max-width:920px; margin:16px 0 0; color:var(--muted); font-size:1rem; line-height:1.7; }
+    .hero-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:24px; }
+    .hero-card { padding:14px 16px; border-radius:var(--radius-sm); background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); }
+    .hero-card strong { display:block; color:var(--amber); margin-bottom:6px; }
+
+    section { margin-top:26px; padding:28px; border-radius:24px; background:var(--panel); border:1px solid var(--line-soft); box-shadow:var(--shadow); backdrop-filter:blur(8px); }
+    section h2 { margin:0 0 18px; font-family:Georgia,serif; font-size:1.65rem; color:var(--text); }
+    section h3 { margin:28px 0 12px; font-size:1.08rem; color:var(--amber); border-bottom:1px solid var(--line-soft); padding-bottom:6px; }
+    section h4 { margin:20px 0 8px; font-size:.97rem; color:var(--teal); }
+
+    p, li { color:var(--muted); line-height:1.75; }
+    strong { color:var(--text); }
+    ul, ol { padding-left:1.4em; }
+    li { margin-bottom:6px; }
+
+    code { font-family:Consolas,"Courier New",monospace; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:6px; color:#fff0cc; font-size:.9em; }
+    pre  { font-family:Consolas,"Courier New",monospace; background:var(--code); border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px 20px; margin:14px 0; overflow-x:auto; font-size:.88rem; line-height:1.65; }
+
+    .y-comment { color:#607d8b; }
+    .y-key     { color:#80cbc4; }
+    .y-str     { color:#a5d6a7; }
+    .y-section { color:var(--amber); font-weight:700; }
+    .y-bool    { color:#ef9a9a; }
+    .y-num     { color:#ffcc80; }
+
+    table { width:100%; border-collapse:collapse; margin-top:16px; overflow:hidden; border-radius:14px; border:1px solid var(--line); }
+    th, td { text-align:left; padding:13px 15px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+    th { background:rgba(255,255,255,0.04); color:var(--text); font-size:.92rem; font-weight:700; }
+    tr:last-child td { border-bottom:0; }
+    tr:hover td { background:rgba(255,255,255,0.015); }
+
+    .note { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(127,192,255,0.22); background:rgba(127,192,255,0.07); }
+    .warn { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(255,140,122,0.24); background:rgba(255,140,122,0.07); }
+    .tip  { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(143,226,143,0.24); background:rgba(143,226,143,0.07); }
+    .info { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(247,185,85,0.26); background:rgba(247,185,85,0.06); }
+    .note strong { color:var(--blue); }
+    .warn strong { color:var(--red); }
+    .tip  strong { color:var(--green); }
+    .info strong { color:var(--amber); }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-size:.82rem; font-family:Consolas,monospace; gap:6px; }
+    .pill.purple { border-color:rgba(196,168,247,0.28); background:rgba(196,168,247,0.07); color:var(--purple); }
+    .pill.green  { border-color:rgba(143,226,143,0.30); background:rgba(143,226,143,0.07); color:var(--green); }
+    .pill.red    { border-color:rgba(255,140,122,0.28); background:rgba(255,140,122,0.07); color:var(--red); }
+    .pill.blue   { border-color:rgba(127,192,255,0.28); background:rgba(127,192,255,0.07); color:var(--blue); }
+    .pill.amber  { border-color:var(--amber-border); background:var(--amber-dim); color:var(--amber); }
+    .pill.teal   { border-color:rgba(104,217,200,0.28); background:rgba(104,217,200,0.07); color:var(--teal); }
+
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { display:grid; grid-template-columns:48px minmax(0,1fr); gap:16px; align-items:start; padding:18px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .step-index { width:48px; height:48px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--amber),#ffe08a); color:#1a0e00; font-weight:800; font-size:1.1rem; flex-shrink:0; }
+    .step-body h4 { margin:0 0 6px; color:var(--text); font-size:1rem; }
+    .step-body p  { margin:0; color:var(--muted); }
+
+    .scenario { margin-top:20px; padding:20px; border-radius:16px; border:1px solid rgba(247,185,85,0.18); background:rgba(247,185,85,0.04); }
+    .scenario h4 { margin:0 0 12px; color:var(--amber); font-size:1rem; }
+
+    .player-tag { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.82rem; font-weight:700; font-family:Consolas,monospace; }
+    .pt-default { background:rgba(255,255,255,0.07); color:#ccc; }
+    .pt-vip     { background:rgba(247,185,85,0.15); color:var(--amber); }
+    .pt-mvp     { background:rgba(104,217,200,0.15); color:var(--teal); }
+    .pt-admin   { background:rgba(255,140,122,0.15); color:var(--red); }
+
+    .cmd-block { margin:10px 0; padding:12px 16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid var(--line-soft); font-family:Consolas,monospace; font-size:.88rem; color:#c5e8ff; }
+    .cmd-block .cmd-prompt { color:#607d8b; }
+    .cmd-block .cmd-note { display:block; color:#607d8b; font-size:.8rem; margin-top:4px; }
+    .cmd-block .cmd-result { display:block; color:var(--green); font-size:.82rem; margin-top:3px; }
+
+    .access-chain { display:grid; gap:10px; margin-top:14px; }
+    .ac-row { display:grid; grid-template-columns:28px 1fr; gap:12px; align-items:start; padding:12px; border-radius:12px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); }
+    .ac-num { width:28px; height:28px; display:grid; place-items:center; border-radius:50%; font-weight:800; font-size:.82rem; flex-shrink:0; }
+    .ac-green { background:rgba(143,226,143,0.2); color:var(--green); }
+    .ac-yellow { background:rgba(247,185,85,0.18); color:var(--amber); }
+    .ac-red { background:rgba(255,140,122,0.2); color:var(--red); }
+    .ac-body strong { color:var(--text); display:block; margin-bottom:2px; font-size:.9rem; }
+    .ac-body p { margin:0; color:var(--muted); font-size:.85rem; }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>OreoEssentials</h1>
+      <p>Player Warps — complete beginner reference</p>
+    </div>
+
+    <nav>
+      <div class="nav-group">
+        <h2>Getting Started</h2>
+        <a href="#what-is">What are Player Warps?</a>
+        <a href="#quickstart">Quick-start (4 steps)</a>
+        <a href="#config">config.yml explained</a>
+      </div>
+      <div class="nav-group">
+        <h2>Rank Limits</h2>
+        <a href="#rank-limits">How rank limits work</a>
+        <a href="#rank-examples">Example: Steve &amp; ranks</a>
+        <a href="#extra-slots">Admin extra slots</a>
+      </div>
+      <div class="nav-group">
+        <h2>All Commands</h2>
+        <a href="#cmd-create">Create &amp; delete</a>
+        <a href="#cmd-teleport">Teleport to warps</a>
+        <a href="#cmd-manage">Manage your warp</a>
+        <a href="#cmd-whitelist">Whitelist</a>
+        <a href="#cmd-admin">Admin commands</a>
+      </div>
+      <div class="nav-group">
+        <h2>Access Control</h2>
+        <a href="#access-how">How access works</a>
+        <a href="#lock">Lock system</a>
+        <a href="#whitelist-detail">Whitelist detail</a>
+        <a href="#password">Password protection</a>
+        <a href="#managers">Managers</a>
+      </div>
+      <div class="nav-group">
+        <h2>Storage &amp; Data</h2>
+        <a href="#storage-yaml">YAML storage</a>
+        <a href="#storage-mongo">MongoDB storage</a>
+        <a href="#warp-id">Warp ID format</a>
+        <a href="#restart">Warps after restart</a>
+      </div>
+      <div class="nav-group">
+        <h2>Cross-Server</h2>
+        <a href="#cross-server">Cross-server warps</a>
+        <a href="#directory">Directory system</a>
+      </div>
+      <div class="nav-group">
+        <h2>GUI</h2>
+        <a href="#gui-browse">Browse GUI (/pw gui)</a>
+        <a href="#gui-mywarps">My Warps GUI</a>
+      </div>
+      <div class="nav-group">
+        <h2>Reference</h2>
+        <a href="#permissions">All permissions</a>
+        <a href="#warp-fields">All warp fields</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <main class="content">
+
+    <!-- Hero -->
+    <div class="hero">
+      <span class="eyebrow">Module — Player Warps</span>
+      <h1>Player Warps</h1>
+      <p>
+        Player Warps let your players create their own public (or private) teleport points and share them with the rest of the server. Think of it like a player-run warp system — each player owns their warps, and other players can browse and teleport to them through a GUI or command. Warps survive server restarts and are stored in YAML or MongoDB.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card"><strong>Per-rank limits</strong>Control how many warps each rank can create. VIPs get more, admins get unlimited.</div>
+        <div class="hero-card"><strong>Full access control</strong>Lock, whitelist, password-protect, or make warps public. Managers can help manage them.</div>
+        <div class="hero-card"><strong>Cross-server</strong>Warps on other servers are routed automatically via RabbitMQ + BungeeCord.</div>
+      </div>
+    </div>
+
+    <!-- ─── WHAT IS ─── -->
+    <section id="what-is">
+      <h2>What are Player Warps?</h2>
+      <p>
+        A <strong>player warp</strong> is a named teleport location that a player creates at their current position. Once created, it can be found by other players through <code>/pw gui</code> (a browsable GUI) or used directly with <code>/pw &lt;warpname&gt;</code>.
+      </p>
+      <p>
+        This is <em>different</em> from admin warps (like <code>/warp spawn</code>) — player warps are owned by normal players, and each player can only create a limited number of them based on their rank.
+      </p>
+      <h3>Real-world examples</h3>
+      <ul>
+        <li><strong>Steve</strong> creates a warp called <code>steve_shop</code> at his player shop. Other players type <code>/pw steve_shop</code> to teleport there.</li>
+        <li><strong>Alex</strong> (VIP rank) creates up to 5 warps — her base, farm, and three shops. Default players can only create 3.</li>
+        <li><strong>Notch</strong> makes a private warp with a whitelist — only invited players can teleport to it.</li>
+        <li><strong>Herobrine</strong> locks his warp — nobody can use it except himself and his managers.</li>
+        <li><strong>Admin</strong> uses <code>/pw addwarps Notch 10</code> to permanently grant Notch 10 extra warp slots as a reward.</li>
+      </ul>
+
+      <div class="info">
+        <strong>Key concept:</strong> Warp names are <em>per-player</em>. Two different players can both have a warp named <code>shop</code> — they don't conflict because each warp is identified by both the owner's UUID and the name together.
+      </div>
+    </section>
+
+    <!-- ─── QUICKSTART ─── -->
+    <section id="quickstart">
+      <h2>Quick-start (4 steps)</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Check the config</h4>
+            <p>Open <code>plugins/OreoEssentials/playerwarps/config.yml</code>. Set the default warp limit and add per-rank overrides. See the <a href="#config">Config section</a> below.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Give permissions</h4>
+            <p>Give players <code>oe.pw.base</code> (required to use any pw command) and <code>oe.pw.set</code> (required to create warps). See the <a href="#permissions">full permissions table</a>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Create a warp in-game</h4>
+            <p>Stand at the location you want to warp to, then type <code>/pw set myshop</code>. The warp is created at your exact position (including facing direction).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">4</div>
+          <div class="step-body">
+            <h4>Use the warp</h4>
+            <p>Type <code>/pw myshop</code> to teleport directly, or <code>/pw gui</code> to open the browseable GUI and click the warp.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── CONFIG ─── -->
+    <section id="config">
+      <h2>config.yml — fully explained</h2>
+      <p>This is the only config file for Player Warps. It lives at <code>plugins/OreoEssentials/playerwarps/config.yml</code>.</p>
+
+      <pre><code><span class="y-comment"># ==================== Player Warps Configuration ====================</span>
+<span class="y-comment"># Controls how many warps each player / rank can create.</span>
+<span class="y-comment"># The plugin checks permissions in order and uses the highest value.</span>
+
+<span class="y-section">limit:</span>
+  <span class="y-key">default:</span> <span class="y-num">3</span>     <span class="y-comment"># All players who don't match any rank get 3 warps</span>
+
+  <span class="y-comment"># Add per-rank overrides using the rank name as key:</span>
+  <span class="y-key">vip:</span> <span class="y-num">5</span>
+  <span class="y-key">mvp:</span> <span class="y-num">10</span>
+  <span class="y-key">admin:</span> <span class="y-num">50</span></code></pre>
+
+      <h3>How the limit field works</h3>
+      <p>The <code>limit</code> section has one required key (<code>default</code>) and any number of rank names. Every key except <code>default</code> is treated as a rank name.</p>
+      <p>When a player tries to create a warp, the plugin does the following:</p>
+      <ol>
+        <li>Starts with <code>limit.default</code> as the base limit.</li>
+        <li>For every rank key (e.g. <code>vip</code>, <code>mvp</code>, <code>admin</code>), checks if the player has the permission <code>group.&lt;rankname&gt;</code>.</li>
+        <li>If they do, and that rank's limit is higher than the current value, the higher value wins.</li>
+        <li>The highest matching value becomes the player's effective limit.</li>
+      </ol>
+      <p>This means ranks are <strong>additive by highest value</strong>, not additive by sum. A player with both <code>group.vip</code> and <code>group.mvp</code> gets the <code>mvp</code> limit (10), not vip+mvp (15).</p>
+
+      <div class="note">
+        <strong>How does the plugin know a player's rank?</strong> It checks Bukkit permissions. LuckPerms automatically grants players the permission <code>group.&lt;primarygroup&gt;</code>. So if a player is in the <code>vip</code> group, they automatically have <code>group.vip</code> — no extra setup needed.
+      </div>
+
+      <h3>Full example config with all ranks</h3>
+      <pre><code><span class="y-section">limit:</span>
+  <span class="y-key">default:</span> <span class="y-num">3</span>      <span class="y-comment"># Regular players: 3 warps</span>
+  <span class="y-key">member:</span>  <span class="y-num">5</span>      <span class="y-comment"># /lp group member permission group.member → 5 warps</span>
+  <span class="y-key">vip:</span>     <span class="y-num">10</span>     <span class="y-comment"># VIP players: 10 warps</span>
+  <span class="y-key">mvp:</span>     <span class="y-num">20</span>     <span class="y-comment"># MVP players: 20 warps</span>
+  <span class="y-key">elite:</span>   <span class="y-num">30</span>     <span class="y-comment"># Elite players: 30 warps</span>
+  <span class="y-key">staff:</span>   <span class="y-num">50</span>     <span class="y-comment"># Staff: 50 warps</span>
+  <span class="y-key">admin:</span>   <span class="y-num">100</span>    <span class="y-comment"># Admins: 100 warps</span></code></pre>
+
+      <div class="tip">
+        <strong>Unlimited warps for admins:</strong> Give admins the permission <code>oe.pw.limit.bypass</code> — they can create unlimited warps regardless of the config value.
+      </div>
+    </section>
+
+    <!-- ─── RANK LIMITS ─── -->
+    <section id="rank-limits">
+      <h2>How rank limits work — step by step</h2>
+      <p>Let's trace exactly what happens when a player types <code>/pw set myshop</code>:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Does the player have <code>oe.pw.base</code> and <code>oe.pw.set</code>?</h4>
+            <p>If not, they get a "no permission" message and nothing happens.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Is the warp name already taken by this player?</h4>
+            <p>Warp names are unique per owner. If you already have a warp called <code>myshop</code>, the command fails. Different players can each have their own <code>myshop</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Calculate the effective limit</h4>
+            <p>Read <code>limit.default</code> from config. Scan all rank keys. For each rank key the player has <code>group.&lt;rank&gt;</code> permission for, take the higher value. Also add any admin-granted extra slots (from <code>/pw addwarps</code>).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">4</div>
+          <div class="step-body">
+            <h4>Count existing warps</h4>
+            <p>Query storage for all warps owned by this player's UUID. If the count is already at (or above) the effective limit, block creation.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">5</div>
+          <div class="step-body">
+            <h4>Create and save</h4>
+            <p>The warp is created with the player's current location (including yaw/pitch facing direction), saved to storage, and registered in the directory (if cross-server is enabled). Success message is sent.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── RANK EXAMPLES ─── -->
+    <section id="rank-examples">
+      <h2>Example: Steve, Alex, Notch, and Herobrine</h2>
+      <p>Let's say your <code>config.yml</code> looks like this:</p>
+      <pre><code><span class="y-section">limit:</span>
+  <span class="y-key">default:</span> <span class="y-num">3</span>
+  <span class="y-key">vip:</span>     <span class="y-num">10</span>
+  <span class="y-key">mvp:</span>     <span class="y-num">25</span>
+  <span class="y-key">admin:</span>   <span class="y-num">100</span></code></pre>
+
+      <table>
+        <thead>
+          <tr><th>Player</th><th>LuckPerms rank</th><th>Permissions held</th><th>Effective limit</th><th>Why?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="player-tag pt-default">Steve</span></td>
+            <td><em>default</em> (no rank)</td>
+            <td>—</td>
+            <td><strong>3</strong></td>
+            <td>No rank keys matched → uses <code>limit.default: 3</code></td>
+          </tr>
+          <tr>
+            <td><span class="player-tag pt-vip">Alex</span></td>
+            <td>vip</td>
+            <td><code>group.vip</code></td>
+            <td><strong>10</strong></td>
+            <td>Matches <code>vip: 10</code> → higher than default</td>
+          </tr>
+          <tr>
+            <td><span class="player-tag pt-mvp">Notch</span></td>
+            <td>mvp</td>
+            <td><code>group.mvp</code></td>
+            <td><strong>25</strong></td>
+            <td>Matches <code>mvp: 25</code> → highest value wins</td>
+          </tr>
+          <tr>
+            <td><span class="player-tag pt-admin">Herobrine</span></td>
+            <td>admin</td>
+            <td><code>group.admin</code> + <code>oe.pw.limit.bypass</code></td>
+            <td><strong>Unlimited</strong></td>
+            <td>Has <code>oe.pw.limit.bypass</code> → limit check skipped entirely</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>What Steve actually sees when he hits his limit</h3>
+      <div class="scenario">
+        <h4>Steve has 3 warps already and tries to create a 4th:</h4>
+        <div class="cmd-block">
+          <span class="cmd-prompt">Steve &gt; </span>/pw set myfarm
+          <span class="cmd-result">✗ You've reached your warp limit (3).</span>
+        </div>
+        <p style="margin-top:10px;">Steve would need to either delete an existing warp with <code>/pw remove &lt;warp&gt;</code>, or get a rank upgrade (VIP would give him 10 slots).</p>
+      </div>
+
+      <h3>What Alex sees with her VIP rank</h3>
+      <div class="scenario">
+        <h4>Alex currently has 3 warps. She creates 7 more (up to her limit of 10):</h4>
+        <div class="cmd-block">
+          <span class="cmd-prompt">Alex &gt; </span>/pw set alexshop
+          <span class="cmd-result">✓ Created warp alexshop.</span>
+          <span class="cmd-note">Alex now has 4/10 warps.</span>
+        </div>
+      </div>
+
+      <h3>What happens if Alex gets demoted from VIP?</h3>
+      <p>Her 10 existing warps are <strong>not deleted</strong>. However, she will no longer be able to create new warps until she removes some (since she'd be over the default limit of 3). Her current warps stay in storage and remain accessible to other players unless she removes them herself.</p>
+    </section>
+
+    <!-- ─── EXTRA SLOTS ─── -->
+    <section id="extra-slots">
+      <h2>Admin-granted extra slots</h2>
+      <p>
+        As an admin, you can grant individual players extra warp slots on top of their rank limit using <code>/pw addwarps &lt;player&gt; &lt;amount&gt;</code>. These extra slots are <strong>persisted to disk</strong> (in <code>plugins/OreoEssentials/playerwarps-extra.yml</code>) and survive server restarts.
+      </p>
+
+      <div class="cmd-block">
+        <span class="cmd-prompt">Admin &gt; </span>/pw addwarps Steve 5
+        <span class="cmd-result">✓ Added 5 extra warp slot(s) to Steve. Total extra: 5.</span>
+        <span class="cmd-note">Steve's effective limit is now: default(3) + extra(5) = 8 warps.</span>
+      </div>
+
+      <div class="cmd-block">
+        <span class="cmd-prompt">Admin &gt; </span>/pw addwarps Steve -3
+        <span class="cmd-result">✓ Added -3 extra warp slot(s) to Steve. Total extra: 2.</span>
+        <span class="cmd-note">You can reduce extra slots by adding a negative number.</span>
+      </div>
+
+      <div class="info">
+        <strong>Extra slots stack on top of rank limit, not replace it.</strong> If Alex (VIP, limit 10) gets 5 extra slots, her total is 15. The extra slots are independent of rank changes.
+      </div>
+
+      <h3>The extra slots file</h3>
+      <p>Extra slots are saved to <code>plugins/OreoEssentials/playerwarps-extra.yml</code>. It looks like this:</p>
+      <pre><code><span class="y-section">extra:</span>
+  <span class="y-key">069a79f4-44e9-4726-a5be-fca90e38aaf5:</span> <span class="y-num">5</span>   <span class="y-comment"># Notch UUID → 5 extra slots</span>
+  <span class="y-key">853c80ef-3c37-49fd-aa49-938b674adae6:</span> <span class="y-num">2</span>   <span class="y-comment"># Steve UUID → 2 extra slots</span></code></pre>
+      <p>You can edit this file manually (restart or reload required) or use the command.</p>
+    </section>
+
+    <!-- ─── CREATE / DELETE ─── -->
+    <section id="cmd-create">
+      <h2>Commands — Create &amp; Delete</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/pw set &lt;name&gt;</code></td>
+            <td><code>oe.pw.set</code></td>
+            <td>Creates a warp at your current location (including facing direction). Name is lowercased automatically. Fails if you already have a warp with that name or are at your limit.</td>
+          </tr>
+          <tr>
+            <td><code>/pw remove &lt;name&gt;</code></td>
+            <td><code>oe.pw.remove</code></td>
+            <td>Permanently deletes your warp. Cannot be undone. Also removes it from the cross-server directory.</td>
+          </tr>
+          <tr>
+            <td><code>/pw reset &lt;name&gt;</code></td>
+            <td><code>oe.pw.reset</code></td>
+            <td>Moves the warp to your current location. <strong>All other settings</strong> (description, icon, whitelist, etc.) are preserved.</td>
+          </tr>
+          <tr>
+            <td><code>/pw rename &lt;old&gt; &lt;new&gt;</code></td>
+            <td><code>oe.pw.rename</code></td>
+            <td>Renames your warp. All settings carry over. Fails if a warp with the new name already exists.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Example: Steve creates, moves, then deletes a warp</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw set stonefarm
+        <span class="cmd-result">✓ Created warp stonefarm.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw reset stonefarm
+        <span class="cmd-result">✓ Reset warp stonefarm to your current location.</span>
+        <span class="cmd-note">(moved the warp point, all other settings kept)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw remove stonefarm
+        <span class="cmd-result">✓ Removed warp stonefarm.</span>
+      </div>
+    </section>
+
+    <!-- ─── TELEPORT ─── -->
+    <section id="cmd-teleport">
+      <h2>Commands — Teleporting to Warps</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/pw &lt;warpname&gt;</code></td>
+            <td><code>oe.pw.base</code></td>
+            <td>Searches all warps for one matching that name. If multiple players have warps with the same name, the first alphabetical match is used. Teleports immediately if no password is required.</td>
+          </tr>
+          <tr>
+            <td><code>/pw use &lt;warpname&gt; [password]</code></td>
+            <td><code>oe.pw.use</code></td>
+            <td>Explicit teleport command. Required when a warp has a password — supply the password as the last argument.</td>
+          </tr>
+          <tr>
+            <td><code>/pw gui</code></td>
+            <td><code>oe.pw.gui</code></td>
+            <td>Opens the browse GUI showing all public warps sorted alphabetically with pagination. Click a warp to teleport.</td>
+          </tr>
+          <tr>
+            <td><code>/pw mywarps</code></td>
+            <td><code>oe.pw.mywarps</code></td>
+            <td>Opens a GUI showing only your own warps. Click to teleport to them or manage settings.</td>
+          </tr>
+          <tr>
+            <td><code>/pw rtp</code></td>
+            <td><code>oe.pw.rtp</code></td>
+            <td>Teleports you to a random accessible warp that has no password. Skips locked/whitelist warps you can't use.</td>
+          </tr>
+          <tr>
+            <td><code>/pw near [page]</code></td>
+            <td><code>oe.pw.near</code></td>
+            <td>Lists warps within 200 blocks of you, sorted by distance. Paginated, 10 per page.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Example: Alex teleports to Steve's warp</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Alex &gt; </span>/pw stonefarm
+        <span class="cmd-result">✓ Teleported to warp stonefarm.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Alex &gt; </span>/pw use secretbase secretpass123
+        <span class="cmd-result">✓ Teleported to warp secretbase.</span>
+        <span class="cmd-note">(warp required a password)</span>
+      </div>
+    </section>
+
+    <!-- ─── MANAGE ─── -->
+    <section id="cmd-manage">
+      <h2>Commands — Managing Your Warp</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/pw desc &lt;warp&gt; [text...]</code></td>
+            <td><code>oe.pw.meta.desc</code></td>
+            <td>Sets a description for your warp. Shown in the browse GUI lore. Omit the text to view the current description. Spaces are allowed.</td>
+          </tr>
+          <tr>
+            <td><code>/pw category &lt;warp&gt; [category]</code></td>
+            <td><code>oe.pw.meta.category</code></td>
+            <td>Tags your warp with a category (e.g. <code>shop</code>, <code>pvp</code>, <code>farm</code>). Use <code>none</code>, <code>clear</code>, or <code>-</code> to remove it.</td>
+          </tr>
+          <tr>
+            <td><code>/pw icon &lt;warp&gt; [clear]</code></td>
+            <td><code>oe.pw.meta.icon</code></td>
+            <td>Sets the GUI icon for your warp to whatever item you're holding in your main hand. Cloned and saved to storage. Use <code>clear</code> to reset to default (Ender Pearl).</td>
+          </tr>
+          <tr>
+            <td><code>/pw cost &lt;warp&gt; &lt;amount&gt;</code></td>
+            <td><code>oe.pw.meta.cost</code></td>
+            <td>Charges other players money to teleport to your warp (Vault required). The owner teleports for free. Set to 0 or a negative number to make it free again.</td>
+          </tr>
+          <tr>
+            <td><code>/pw lock &lt;warp&gt; [on|off|toggle]</code></td>
+            <td><code>oe.pw.meta.lock</code></td>
+            <td>Locks or unlocks your warp. Locked warps only allow the owner, managers, or players with <code>oe.pw.bypass.lock</code>. Omit the argument to toggle.</td>
+          </tr>
+          <tr>
+            <td><code>/pw password &lt;warp&gt; &lt;password|off&gt;</code></td>
+            <td><code>oe.pw.meta.password</code></td>
+            <td>Sets a password on your warp. Others must use <code>/pw use &lt;warp&gt; &lt;password&gt;</code>. Use <code>off</code>, <code>none</code>, or <code>clear</code> to remove it.</td>
+          </tr>
+          <tr>
+            <td><code>/pw managers &lt;warp&gt; [player]</code></td>
+            <td><code>oe.pw.meta.managers</code></td>
+            <td>Lists current managers (no player arg), or toggles a player as manager (adds if not present, removes if present).</td>
+          </tr>
+          <tr>
+            <td><code>/pw list [player]</code></td>
+            <td><code>oe.pw.list</code></td>
+            <td>Lists your own warps (or another player's if online). Console can use without a player to list ALL warps.</td>
+          </tr>
+          <tr>
+            <td><code>/pw amount [player]</code></td>
+            <td><code>oe.pw.amount</code></td>
+            <td>Shows how many warps you (or another player) currently have.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Example: Steve sets up his shop warp fully</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw set steveshop
+        <span class="cmd-result">✓ Created warp steveshop.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw desc steveshop Buy diamonds and iron for cheap! Open 24/7
+        <span class="cmd-result">✓ Set description of steveshop to: Buy diamonds and iron for cheap! Open 24/7</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw category steveshop shop
+        <span class="cmd-result">✓ Set category of steveshop to: shop</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw cost steveshop 10
+        <span class="cmd-result">✓ Set cost for steveshop to $10.00.</span>
+        <span class="cmd-note">(other players pay $10 to teleport; Steve teleports for free)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span><em>(hold a Diamond in hand)</em> /pw icon steveshop
+        <span class="cmd-result">✓ Set icon for steveshop.</span>
+        <span class="cmd-note">(steveshop now shows as a Diamond in /pw gui)</span>
+      </div>
+    </section>
+
+    <!-- ─── WHITELIST COMMANDS ─── -->
+    <section id="cmd-whitelist">
+      <h2>Commands — Whitelist</h2>
+      <p>The whitelist lets you restrict who can use your warp. When enabled, only the owner, managers, bypass-permission holders, and explicitly whitelisted players can teleport to the warp.</p>
+      <table>
+        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/pw whitelist enable &lt;warp&gt;</code></td>
+            <td>Enables whitelist mode on your warp. Everyone not on the list (except owner/managers) gets blocked.</td>
+          </tr>
+          <tr>
+            <td><code>/pw whitelist disable &lt;warp&gt;</code></td>
+            <td>Disables whitelist. Warp becomes public again (or respects lock if locked).</td>
+          </tr>
+          <tr>
+            <td><code>/pw whitelist set &lt;warp&gt; &lt;player&gt;</code></td>
+            <td>Adds a player to the whitelist. Also auto-enables the whitelist. The player does not need to be online.</td>
+          </tr>
+          <tr>
+            <td><code>/pw whitelist remove &lt;warp&gt; &lt;player&gt;</code></td>
+            <td>Removes a player from the whitelist.</td>
+          </tr>
+          <tr>
+            <td><code>/pw whitelist list &lt;warp&gt;</code></td>
+            <td>Shows all whitelisted players and whether whitelist is currently enabled.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>There is also a standalone command <code>/pwwhitelist &lt;add|remove&gt; &lt;warpname&gt; &lt;player&gt;</code> as a shortcut.</p>
+
+      <h3>Example: Notch makes his base invite-only</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Notch &gt; </span>/pw whitelist set notchbase Steve
+        <span class="cmd-result">✓ Added Steve to whitelist of notchbase. (Whitelist auto-enabled.)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Notch &gt; </span>/pw whitelist set notchbase Alex
+        <span class="cmd-result">✓ Added Alex to whitelist of notchbase.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Herobrine &gt; </span>/pw notchbase
+        <span class="cmd-result">✗ You don't have permission to use notchbase.</span>
+        <span class="cmd-note">(Herobrine is not on the whitelist)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw notchbase
+        <span class="cmd-result">✓ Teleported to warp notchbase.</span>
+        <span class="cmd-note">(Steve is on the whitelist)</span>
+      </div>
+    </section>
+
+    <!-- ─── ADMIN COMMANDS ─── -->
+    <section id="cmd-admin">
+      <h2>Commands — Admin</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/pw addwarps &lt;player&gt; &lt;amount&gt;</code></td>
+            <td><code>oe.pw.admin.addwarps</code></td>
+            <td>Grants a player extra warp slots permanently (saved to disk). Use negative numbers to reduce. Stacks on top of rank limit.</td>
+          </tr>
+          <tr>
+            <td><code>/pw removeall &lt;player&gt;</code></td>
+            <td><code>oe.pw.admin.removeall</code></td>
+            <td>Deletes every warp owned by the specified player. Irreversible.</td>
+          </tr>
+          <tr>
+            <td><code>/pw setowner &lt;warpname&gt; &lt;player&gt;</code></td>
+            <td><code>oe.pw.setowner</code></td>
+            <td>Transfers ownership of a warp to another player. The warp is re-created under the new owner's ID. All metadata is preserved. Fails if the new owner already has a warp with the same name.</td>
+          </tr>
+          <tr>
+            <td><code>/pw reload</code></td>
+            <td><code>oe.pw.admin.reload</code></td>
+            <td>Reloads the server config (not warp data — warp data is loaded from storage, not config).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─── ACCESS HOW ─── -->
+    <section id="access-how">
+      <h2>How access is decided — the check chain</h2>
+      <p>Every time a player tries to teleport to a warp, the following checks run in order. The first match wins and either grants or denies access.</p>
+
+      <div class="access-chain">
+        <div class="ac-row">
+          <div class="ac-num ac-green">1</div>
+          <div class="ac-body">
+            <strong>Required permission check</strong>
+            <p>If the warp has a required permission set in the directory (admin feature), the player must have it. If they don't, blocked immediately.</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-green">2</div>
+          <div class="ac-body">
+            <strong>Owner check — always allowed</strong>
+            <p>The warp's creator can always use their own warp, regardless of lock/whitelist/password settings.</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-green">3</div>
+          <div class="ac-body">
+            <strong>Manager check — always allowed</strong>
+            <p>Players listed as managers on the warp bypass lock and whitelist restrictions (but still need the password if one is set in the command, not in canUse).</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-green">4</div>
+          <div class="ac-body">
+            <strong>Staff bypass — <code>oe.pw.bypass.lock</code></strong>
+            <p>Players with this permission bypass all lock and whitelist restrictions for every warp on the server. Intended for admins and moderators.</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-red">5</div>
+          <div class="ac-body">
+            <strong>Lock check</strong>
+            <p>If the warp is locked (<code>/pw lock &lt;warp&gt; on</code>), all players not matched above are blocked. The GUI shows "You CANNOT use this warp."</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-yellow">6</div>
+          <div class="ac-body">
+            <strong>Whitelist check</strong>
+            <p>If whitelist is enabled, the player must be on the list. If not, blocked. The GUI shows "You are NOT whitelisted."</p>
+          </div>
+        </div>
+        <div class="ac-row">
+          <div class="ac-num ac-green">7</div>
+          <div class="ac-body">
+            <strong>Public — allowed</strong>
+            <p>If none of the blocking checks fired, the warp is public and anyone can use it.</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top:14px;">After the <code>canUse()</code> check passes, there is a separate cost check (Vault economy), and a separate password check before the actual teleport fires.</p>
+    </section>
+
+    <!-- ─── LOCK ─── -->
+    <section id="lock">
+      <h2>Lock system</h2>
+      <p>Locking a warp closes it entirely to the public. Only the owner, managers, and players with <code>oe.pw.bypass.lock</code> can use a locked warp.</p>
+      <pre><code><span class="y-comment"># Lock your warp (nobody can use it except you, managers, and admins):</span>
+/pw lock mywarp on
+
+<span class="y-comment"># Unlock it:</span>
+/pw lock mywarp off
+
+<span class="y-comment"># Toggle (switches between locked and unlocked):</span>
+/pw lock mywarp</code></pre>
+
+      <div class="info">
+        <strong>Lock vs Whitelist:</strong> Lock completely blocks everyone not explicitly allowed. Whitelist allows specific players you choose. Use lock when a warp is under construction or private. Use whitelist when you want to invite specific friends.
+      </div>
+    </section>
+
+    <!-- ─── WHITELIST DETAIL ─── -->
+    <section id="whitelist-detail">
+      <h2>Whitelist — detailed</h2>
+      <p>The whitelist stores a set of UUIDs. Players on the list can use the warp; others are blocked (when whitelist mode is enabled). The whitelist has a flag — <code>enabled/disabled</code> — that is separate from whether players are on the list.</p>
+      <ul>
+        <li>You can add players to the whitelist while it is disabled, and enable it later.</li>
+        <li>Disabling the whitelist does not clear it — re-enabling brings back all previously added players.</li>
+        <li>Adding a player with <code>/pw whitelist set</code> automatically enables the whitelist.</li>
+      </ul>
+
+      <div class="tip">
+        <strong>Offline players work.</strong> You can add players who are currently offline to the whitelist. The system only needs their name — it resolves the UUID from Bukkit's offline player cache.
+      </div>
+    </section>
+
+    <!-- ─── PASSWORD ─── -->
+    <section id="password">
+      <h2>Password protection</h2>
+      <p>A password-protected warp requires others to supply the correct password to enter. The owner, managers, and players with <code>oe.pw.bypass.password</code> are never asked for a password.</p>
+
+      <h3>Setting a password</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Herobrine &gt; </span>/pw password darkcave supersecret123
+        <span class="cmd-result">✓ Set password for darkcave.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Herobrine &gt; </span>/pw password darkcave off
+        <span class="cmd-result">✓ Cleared password for darkcave.</span>
+      </div>
+
+      <h3>Using a password-protected warp</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw darkcave
+        <span class="cmd-result">✗ Warp darkcave requires a password. Use: /pw use darkcave &lt;password&gt;</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw use darkcave supersecret123
+        <span class="cmd-result">✓ Teleported to warp darkcave.</span>
+      </div>
+
+      <h3>In the GUI</h3>
+      <p>When a player clicks a password-protected warp in <code>/pw gui</code>, the GUI closes and a chat prompt appears asking them to type the password. Typing <code>cancel</code> aborts. If they disconnect before typing, the prompt is automatically cleaned up.</p>
+
+      <div class="warn">
+        <strong>Passwords are stored in plain text.</strong> Do not use a password that is also used elsewhere. The password is visible in storage (YAML / MongoDB) to anyone with file/database access.
+      </div>
+    </section>
+
+    <!-- ─── MANAGERS ─── -->
+    <section id="managers">
+      <h2>Managers</h2>
+      <p>Managers are trusted players who can co-manage a warp. They bypass lock and whitelist restrictions just like the owner. They cannot delete the warp or transfer ownership.</p>
+
+      <h3>Adding and removing managers</h3>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw managers steveshop Alex
+        <span class="cmd-result">✓ Added Alex as manager of steveshop.</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw managers steveshop Alex
+        <span class="cmd-result">✓ Removed Alex as manager of steveshop.</span>
+        <span class="cmd-note">(running the command with the same player toggles them off)</span>
+      </div>
+      <div class="cmd-block">
+        <span class="cmd-prompt">Steve &gt; </span>/pw managers steveshop
+        <span class="cmd-result">Managers for warp steveshop: (none)</span>
+      </div>
+    </section>
+
+    <!-- ─── YAML STORAGE ─── -->
+    <section id="storage-yaml">
+      <h2>YAML storage</h2>
+      <p>
+        When storage is set to YAML (the default), all warps are saved in a single file: <code>plugins/OreoEssentials/playerwarps.yml</code>. This file is created automatically on first use.
+      </p>
+
+      <h3>File structure</h3>
+      <pre><code><span class="y-section">playerwarps:</span>
+  <span class="y-comment"># Each warp uses its ID as the key: "&lt;ownerUUID&gt;:&lt;warpname&gt;"</span>
+  <span class="y-key">"069a79f4-44e9-4726-a5be-fca90e38aaf5:stonefarm":</span>
+    <span class="y-key">owner:</span>       <span class="y-str">"069a79f4-44e9-4726-a5be-fca90e38aaf5"</span>
+    <span class="y-key">name:</span>        <span class="y-str">"stonefarm"</span>
+    <span class="y-key">world:</span>       <span class="y-str">"world"</span>
+    <span class="y-key">x:</span>           <span class="y-num">-420.5</span>
+    <span class="y-key">y:</span>           <span class="y-num">64.0</span>
+    <span class="y-key">z:</span>           <span class="y-num">88.0</span>
+    <span class="y-key">yaw:</span>         <span class="y-num">-90.0</span>   <span class="y-comment"># Facing direction (0=south, 90=west, -90=east, 180=north)</span>
+    <span class="y-key">pitch:</span>       <span class="y-num">0.0</span>
+    <span class="y-key">description:</span> <span class="y-str">"Free stone and cobblestone!"</span>
+    <span class="y-key">category:</span>    <span class="y-str">"farm"</span>
+    <span class="y-key">locked:</span>      <span class="y-bool">false</span>
+    <span class="y-key">cost:</span>        <span class="y-num">0.0</span>
+    <span class="y-key">icon:</span>        <span class="y-comment"># Bukkit ItemStack serialization (set by /pw icon)</span>
+      <span class="y-key">type:</span>      <span class="y-str">STONE</span>
+    <span class="y-key">whitelist:</span>
+      <span class="y-key">enabled:</span>   <span class="y-bool">false</span>
+      <span class="y-key">players:</span>   []
+    <span class="y-key">managers:</span>    []
+    <span class="y-key">password:</span>    <span class="y-comment"># null = no password</span></code></pre>
+
+      <h3>In-memory cache</h3>
+      <p>YAML storage keeps all warps in a <code>HashMap&lt;String, PlayerWarp&gt;</code> in memory after loading. Every <code>save()</code>, <code>delete()</code>, and read operation is <code>synchronized</code> to be thread-safe. The file is written to disk on every save call.</p>
+
+      <h3>Warps that fail to load</h3>
+      <p>If a warp references a world that is not currently loaded (e.g. a resource world that was deleted), it is skipped on startup with a warning in the console. The warp data stays in the YAML file — it will load again if the world comes back. It is not deleted.</p>
+    </section>
+
+    <!-- ─── MONGO ─── -->
+    <section id="storage-mongo">
+      <h2>MongoDB storage</h2>
+      <p>
+        When OreoEssentials is configured to use MongoDB, warps are stored in a collection (default: <code>&lt;prefix&gt;playerwarps</code>). Each warp is one document. Two indexes are created automatically at startup:
+      </p>
+      <ul>
+        <li>Unique index on <code>id</code> — prevents duplicate warps.</li>
+        <li>Compound index on <code>(owner, name)</code> — fast lookup by owner+name.</li>
+      </ul>
+
+      <h3>Document structure</h3>
+      <pre><code>{
+  "id":               "069a79f4-...:stonefarm",
+  "owner":            "069a79f4-44e9-4726-a5be-fca90e38aaf5",
+  "name":             "stonefarm",
+  "world":            "world",
+  "x": -420.5,  "y": 64.0,  "z": 88.0,
+  "yaw": -90.0, "pitch": 0.0,
+  "description":      "Free stone and cobblestone!",
+  "category":         "farm",
+  "locked":           false,
+  "cost":             0.0,
+  "icon":             { "type": "STONE" },   <span class="y-comment">// Bukkit ItemStack serialised as document</span>
+  "whitelist_enabled": false,
+  "whitelist_players": [],
+  "managers":         [],
+  "password":         null
+}</code></pre>
+
+      <p>Saves use <strong>upsert replaceOne</strong> — if the document with that <code>id</code> exists it is replaced, otherwise inserted. No partial updates.</p>
+
+      <h3>Directory collection</h3>
+      <p>When cross-server is enabled, a second collection (<code>&lt;prefix&gt;playerwarps_directory</code>) stores which server each warp lives on. This is separate from the warp data itself. Each document is:</p>
+      <pre><code>{ "id": "069a79f4-...:stonefarm",  "server": "survival-1" }</code></pre>
+    </section>
+
+    <!-- ─── WARP ID ─── -->
+    <section id="warp-id">
+      <h2>Warp ID format</h2>
+      <p>
+        Every warp has an internal ID built as: <code>&lt;ownerUUID&gt;:&lt;warpname&gt;</code> — for example:
+      </p>
+      <pre><code>069a79f4-44e9-4726-a5be-fca90e38aaf5:stonefarm</code></pre>
+      <p>
+        This ID is used as the primary key in both YAML and MongoDB. Because the UUID is part of the ID, two different players can both have a warp named <code>stonefarm</code> without conflict — their IDs are different.
+      </p>
+      <p>Warp names are always stored and compared in lowercase. Typing <code>/pw set StOneFaRm</code> creates a warp with name <code>stonefarm</code>.</p>
+    </section>
+
+    <!-- ─── RESTART ─── -->
+    <section id="restart">
+      <h2>Warps after a server restart</h2>
+      <p>This is one of the most common concerns. Here is what survives a restart:</p>
+
+      <table>
+        <thead><tr><th>Data</th><th>YAML</th><th>MongoDB</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Warp location (x/y/z/yaw/pitch)</td><td>✅</td><td>✅</td><td>Fully persisted.</td></tr>
+          <tr><td>Description, category, cost</td><td>✅</td><td>✅</td><td>Fully persisted.</td></tr>
+          <tr><td>Lock, whitelist, password</td><td>✅</td><td>✅</td><td>Fully persisted.</td></tr>
+          <tr><td>Icon (ItemStack)</td><td>✅</td><td>✅</td><td>Saved as Bukkit serialized map.</td></tr>
+          <tr><td>Managers, whitelist players</td><td>✅</td><td>✅</td><td>Stored as UUID lists.</td></tr>
+          <tr><td>Admin extra warp slots</td><td>✅</td><td>✅</td><td>Saved in <code>playerwarps-extra.yml</code>.</td></tr>
+          <tr><td>Warps in unloaded worlds</td><td>⚠️ Skipped</td><td>⚠️ Skipped</td><td>Not deleted, but won't load until world is available again.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>Everything is saved immediately.</strong> Every change (create, delete, rename, edit metadata, lock, whitelist) triggers a synchronous save to disk/database. There is no "save on shutdown" — data is never in a dirty state.
+      </div>
+    </section>
+
+    <!-- ─── CROSS SERVER ─── -->
+    <section id="cross-server">
+      <h2>Cross-server warps</h2>
+      <p>
+        If your network has multiple servers (e.g. <code>survival-1</code>, <code>survival-2</code>, <code>creative</code>), players can own warps on one server and have other players teleport to them from a different server.
+      </p>
+
+      <h3>How it works — step by step</h3>
+      <ol>
+        <li>Alex (on <code>survival-1</code>) types <code>/pw alexfarm</code> which lives on <code>survival-2</code>.</li>
+        <li>The plugin looks up which server <code>alexfarm</code> is on (from the directory).</li>
+        <li>It sends a <code>PlayerWarpTeleportRequestPacket</code> via RabbitMQ to <code>survival-2</code>.</li>
+        <li>Simultaneously, it uses BungeeCord plugin messaging to send Alex to <code>survival-2</code>.</li>
+        <li>When Alex arrives on <code>survival-2</code>, the broker sees the pending warp and teleports her to the warp location.</li>
+      </ol>
+
+      <div class="note">
+        <strong>Network requirement:</strong> Cross-server warps require RabbitMQ (for the teleport packet) AND BungeeCord/Velocity (for the server switch). If either is unavailable, it falls back to a local teleport attempt.
+      </div>
+
+      <div class="info">
+        <strong>Timing:</strong> The broker waits 3 ticks after the player arrives before teleporting them. If the player is not yet online when the packet arrives (because the server switch hasn't completed), the teleport is queued until the player's next join event.
+      </div>
+    </section>
+
+    <!-- ─── DIRECTORY ─── -->
+    <section id="directory">
+      <h2>Directory system</h2>
+      <p>
+        The <strong>PlayerWarpDirectory</strong> is a separate component from storage. While storage holds the warp data (location, metadata), the directory maps each warp ID to its server name. Think of it as a routing table.
+      </p>
+      <table>
+        <thead><tr><th>Operation</th><th>What happens</th></tr></thead>
+        <tbody>
+          <tr><td>Create warp</td><td>Registered in directory: <code>warpId → serverName</code></td></tr>
+          <tr><td>Delete warp</td><td>Removed from directory.</td></tr>
+          <tr><td>Rename warp</td><td>Old entry deleted, new entry created under new ID.</td></tr>
+          <tr><td>Transfer ownership</td><td>Old entry deleted, new entry created under new owner's UUID.</td></tr>
+          <tr><td>Teleport to warp</td><td>Directory queried for server name; compared to local server to decide local vs. cross-server.</td></tr>
+        </tbody>
+      </table>
+      <p>If cross-server is disabled or the directory is null, all teleports are treated as local.</p>
+    </section>
+
+    <!-- ─── GUI BROWSE ─── -->
+    <section id="gui-browse">
+      <h2>Browse GUI (/pw gui)</h2>
+      <p>
+        Opened with <code>/pw gui</code> (requires <code>oe.pw.gui</code>). Shows all warps on the server sorted alphabetically. Each warp is displayed as an item (either its custom icon, or an Ender Pearl by default).
+      </p>
+
+      <h3>What the item shows</h3>
+      <ul>
+        <li><strong>Name:</strong> The warp's name in green.</li>
+        <li><strong>Owner:</strong> The player who created it.</li>
+        <li><strong>Category:</strong> If set (e.g. <code>shop</code>, <code>pvp</code>).</li>
+        <li><strong>Description:</strong> Word-wrapped across multiple lore lines if set.</li>
+        <li><strong>Cost:</strong> If the warp charges money per teleport.</li>
+        <li><strong>Status:</strong> Shows <code>Locked</code>, <code>Whitelist</code>, or <code>Public</code> with an indicator of whether YOU can access it.</li>
+        <li><strong>Protection:</strong> Shows <code>Password</code> if a password is set.</li>
+      </ul>
+
+      <h3>Clicking a warp</h3>
+      <ul>
+        <li>If the warp has no password → teleports immediately (subject to canUse/lock/whitelist).</li>
+        <li>If the warp has a password and you're not the owner/manager → GUI closes, chat prompt appears asking you to type the password.</li>
+      </ul>
+
+      <h3>Navigation</h3>
+      <p>The GUI displays 36 warps per page (rows 1–4). Row 5 (row index 5) has Previous/Next arrow buttons at slots (5,2) and (5,6).</p>
+    </section>
+
+    <!-- ─── GUI MYWARPS ─── -->
+    <section id="gui-mywarps">
+      <h2>My Warps GUI (/pw mywarps)</h2>
+      <p>Opened with <code>/pw mywarps</code> (requires <code>oe.pw.mywarps</code>). Shows only your own warps. Clicking a warp opens an edit menu where you can manage settings directly from the GUI without commands.</p>
+    </section>
+
+    <!-- ─── PERMISSIONS ─── -->
+    <section id="permissions">
+      <h2>All permissions</h2>
+      <table>
+        <thead><tr><th>Permission</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>oe.pw.base</code></td><td>—</td><td><strong>Required for all /pw commands.</strong> Without this, nothing works.</td></tr>
+          <tr><td><code>oe.pw.set</code></td><td>—</td><td>Create warps with <code>/pw set</code>.</td></tr>
+          <tr><td><code>oe.pw.remove</code></td><td>—</td><td>Delete own warps with <code>/pw remove</code>.</td></tr>
+          <tr><td><code>oe.pw.reset</code></td><td>—</td><td>Move a warp location with <code>/pw reset</code>.</td></tr>
+          <tr><td><code>oe.pw.rename</code></td><td>—</td><td>Rename own warps with <code>/pw rename</code>.</td></tr>
+          <tr><td><code>oe.pw.gui</code></td><td>—</td><td>Open the browse GUI with <code>/pw gui</code>.</td></tr>
+          <tr><td><code>oe.pw.mywarps</code></td><td>—</td><td>Open personal warps GUI with <code>/pw mywarps</code>.</td></tr>
+          <tr><td><code>oe.pw.use</code></td><td>—</td><td>Use <code>/pw use &lt;warp&gt;</code> to teleport.</td></tr>
+          <tr><td><code>oe.pw.list</code></td><td>—</td><td>List warps with <code>/pw list</code>.</td></tr>
+          <tr><td><code>oe.pw.amount</code></td><td>—</td><td>Check warp counts with <code>/pw amount</code>.</td></tr>
+          <tr><td><code>oe.pw.rtp</code></td><td>—</td><td>Random teleport to a warp with <code>/pw rtp</code>.</td></tr>
+          <tr><td><code>oe.pw.near</code></td><td>—</td><td>List nearby warps with <code>/pw near</code>.</td></tr>
+          <tr><td><code>oe.pw.whitelist</code></td><td>—</td><td>Manage your own warp's whitelist.</td></tr>
+          <tr><td><code>oe.pw.meta.desc</code></td><td>—</td><td>Set description on own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.category</code></td><td>—</td><td>Set category on own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.icon</code></td><td>—</td><td>Set icon on own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.cost</code></td><td>—</td><td>Set teleport cost on own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.lock</code></td><td>—</td><td>Lock/unlock own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.password</code></td><td>—</td><td>Set password on own warps.</td></tr>
+          <tr><td><code>oe.pw.meta.managers</code></td><td>—</td><td>Manage managers on own warps.</td></tr>
+          <tr><td><code>oe.pw.limit.bypass</code></td><td>op</td><td>Bypass warp limit entirely — unlimited warp creation.</td></tr>
+          <tr><td><code>oe.pw.bypass.lock</code></td><td>op</td><td>Bypass all lock and whitelist restrictions on every warp.</td></tr>
+          <tr><td><code>oe.pw.bypass.password</code></td><td>op</td><td>Never prompted for a password on any warp.</td></tr>
+          <tr><td><code>oe.pw.bypass.cost</code></td><td>op</td><td>Never charged the teleport cost for any warp.</td></tr>
+          <tr><td><code>oe.pw.admin.removeall</code></td><td>op</td><td>Delete all warps of any player (<code>/pw removeall</code>).</td></tr>
+          <tr><td><code>oe.pw.admin.reload</code></td><td>op</td><td>Reload config with <code>/pw reload</code>.</td></tr>
+          <tr><td><code>oe.pw.admin.addwarps</code></td><td>op</td><td>Grant extra warp slots to players (<code>/pw addwarps</code>).</td></tr>
+          <tr><td><code>oe.pw.admin.whitelist</code></td><td>op</td><td>Manage whitelist on any player's warp.</td></tr>
+          <tr><td><code>oe.pw.admin.meta</code></td><td>op</td><td>Edit description/category/icon/cost/lock on any warp.</td></tr>
+          <tr><td><code>oe.pw.setowner</code></td><td>op</td><td>Transfer ownership of any warp.</td></tr>
+          <tr><td><code>oe.pw.admin.remove</code></td><td>op</td><td>Delete any player's warp (not just your own).</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Example LuckPerms setup</h3>
+      <pre><code><span class="y-comment"># Give default rank basic warp access:</span>
+/lp group default permission set oe.pw.base true
+/lp group default permission set oe.pw.set true
+/lp group default permission set oe.pw.remove true
+/lp group default permission set oe.pw.gui true
+/lp group default permission set oe.pw.mywarps true
+/lp group default permission set oe.pw.list true
+
+<span class="y-comment"># Give VIP the meta commands to customise their warps:</span>
+/lp group vip permission set oe.pw.meta.desc true
+/lp group vip permission set oe.pw.meta.category true
+/lp group vip permission set oe.pw.meta.icon true
+/lp group vip permission set oe.pw.meta.cost true
+/lp group vip permission set oe.pw.meta.lock true
+/lp group vip permission set oe.pw.meta.password true
+/lp group vip permission set oe.pw.meta.managers true
+/lp group vip permission set oe.pw.whitelist true
+
+<span class="y-comment"># Admin bypasses everything:</span>
+/lp group admin permission set oe.pw.bypass.lock true
+/lp group admin permission set oe.pw.bypass.password true
+/lp group admin permission set oe.pw.bypass.cost true
+/lp group admin permission set oe.pw.limit.bypass true</code></pre>
+    </section>
+
+    <!-- ─── WARP FIELDS ─── -->
+    <section id="warp-fields">
+      <h2>All warp fields</h2>
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Set by</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>String</td><td>auto</td><td>System (<code>&lt;uuid&gt;:&lt;name&gt;</code>)</td></tr>
+          <tr><td><code>owner</code></td><td>UUID</td><td>creator</td><td>System</td></tr>
+          <tr><td><code>name</code></td><td>String (lowercase)</td><td>from command</td><td><code>/pw set</code></td></tr>
+          <tr><td><code>location</code></td><td>Location</td><td>player position</td><td><code>/pw set</code>, <code>/pw reset</code></td></tr>
+          <tr><td><code>description</code></td><td>String</td><td><code>""</code></td><td><code>/pw desc</code></td></tr>
+          <tr><td><code>category</code></td><td>String</td><td><code>""</code></td><td><code>/pw category</code></td></tr>
+          <tr><td><code>locked</code></td><td>boolean</td><td><code>false</code></td><td><code>/pw lock</code></td></tr>
+          <tr><td><code>cost</code></td><td>double</td><td><code>0.0</code></td><td><code>/pw cost</code></td></tr>
+          <tr><td><code>icon</code></td><td>ItemStack</td><td><code>null</code> (uses Ender Pearl)</td><td><code>/pw icon</code></td></tr>
+          <tr><td><code>whitelistEnabled</code></td><td>boolean</td><td><code>false</code></td><td><code>/pw whitelist enable/set</code></td></tr>
+          <tr><td><code>whitelist</code></td><td>Set&lt;UUID&gt;</td><td>empty</td><td><code>/pw whitelist set/remove</code></td></tr>
+          <tr><td><code>managers</code></td><td>Set&lt;UUID&gt;</td><td>empty</td><td><code>/pw managers</code></td></tr>
+          <tr><td><code>password</code></td><td>String</td><td><code>null</code></td><td><code>/pw password</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─── FAQ ─── -->
+    <section id="faq">
+      <h2>Frequently asked questions</h2>
+
+      <h3>I created a warp but after a restart it's gone — what happened?</h3>
+      <p>Check the server console for warnings on startup. The most common cause is that the world the warp is in was not loaded at startup time. The warp data is still in the file/database but was skipped because Bukkit couldn't find the world. Once the world loads, the warp becomes available.</p>
+
+      <h3>Two players both have a warp named "shop" — which one does /pw shop go to?</h3>
+      <p><code>/pw shop</code> (without specifying an owner) calls <code>service.listAll()</code> and takes the <em>first</em> alphabetical match by name. This means one player's shop will "shadow" the other. To avoid this, use the GUI (<code>/pw gui</code>) where all warps are listed, or use the owner-specific lookup from within the service. Advise players to use unique names for public warps.</p>
+
+      <h3>Can players rename a warp without losing all its settings?</h3>
+      <p>Yes. <code>/pw rename &lt;old&gt; &lt;new&gt;</code> copies all metadata (description, category, icon, whitelist, managers, password, lock, cost) to the new warp object before deleting the old one. Nothing is lost.</p>
+
+      <h3>What happens if a player is on the whitelist but whitelist is disabled?</h3>
+      <p>The warp is public — everyone can use it. The whitelist entries are still stored but inactive. Re-enabling with <code>/pw whitelist enable</code> restores the restriction immediately.</p>
+
+      <h3>Can I use /pw set from console?</h3>
+      <p>No. All warp creation/management commands require a player context (they need to know your location, or you need to be online to be the owner). Admin commands like <code>/pw addwarps</code>, <code>/pw removeall</code>, and <code>/pw setowner</code> can be run from console.</p>
+
+      <h3>What happens to warp counts when I switch storage modes (YAML → MongoDB)?</h3>
+      <p>Switching storage modes requires a manual migration — warps in the old storage are not automatically copied. If you switch from YAML to MongoDB, you must manually import the data. Create a backup of <code>playerwarps.yml</code> before switching.</p>
+
+      <h3>Does /pw reset preserve the warp's description, icon, whitelist, etc.?</h3>
+      <p>Yes. <code>/pw reset</code> only updates the location (x/y/z/yaw/pitch). All other settings (description, category, icon, lock, whitelist, managers, password, cost) are kept exactly as they were.</p>
+
+      <h3>How do I make a "warp shop" where players pay per teleport?</h3>
+      <ol>
+        <li>Create the warp: <code>/pw set myshop</code></li>
+        <li>Set a cost: <code>/pw cost myshop 50</code> — visitors pay $50, you receive the money.</li>
+        <li>Optionally set a description: <code>/pw desc myshop Best prices on the server!</code></li>
+        <li>Optionally set an icon: hold a Gold Nugget, type <code>/pw icon myshop</code></li>
+      </ol>
+      <p>The payment goes directly from the visitor's Vault balance to your Vault balance. You (the owner) always teleport for free.</p>
+
+      <h3>What is the difference between /pw and /pw use?</h3>
+      <p><code>/pw &lt;warp&gt;</code> is a shortcut that works for any warp that doesn't require a password. If the warp has a password, it tells you to use <code>/pw use &lt;warp&gt; &lt;password&gt;</code> instead. The <code>use</code> subcommand is the explicit version that also accepts the password inline.</p>
+
+      <h3>Can a warp be on a different world to the player?</h3>
+      <p>Yes, absolutely. Warps store the world name. Local teleports handle cross-world teleportation automatically via Bukkit's teleport API. The world just needs to be loaded on the same server.</p>
+
+      <h3>Why don't warps have a "public/private" toggle?</h3>
+      <p>The lock system acts as the "private" flag. Lock your warp to make it private. Unlock it to make it public. The whitelist adds a middle ground: invite-only. These three states (public / whitelist / locked) cover all use cases.</p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

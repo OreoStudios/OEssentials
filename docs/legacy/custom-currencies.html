@@ -1,0 +1,1101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials - Custom Currencies Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16, 22, 29, 0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(247, 185, 85, 0.10), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(104, 217, 200, 0.07), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    /* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12,18,23,0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px; padding: 18px;
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--amber-dim), rgba(104,217,200,0.04));
+      box-shadow: var(--shadow);
+    }
+    .brand h1 { margin: 0; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.1; color: var(--amber); }
+    .brand p  { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+
+    .nav-group { margin-top: 18px; }
+    .nav-group h2 { margin: 0 0 8px; color: var(--soft); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+    .nav-group a { display: block; padding: 10px 12px; margin: 4px 0; color: var(--muted); text-decoration: none; border-radius: 10px; border: 1px solid transparent; transition: 0.18s ease; }
+    .nav-group a:hover, .nav-group a.active { color: var(--text); border-color: var(--amber-border); background: var(--amber-dim); }
+
+    /* â”€â”€ Main content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .content { padding: 34px 36px 80px; }
+
+    .hero {
+      padding: 30px; border-radius: 28px;
+      background: linear-gradient(135deg, rgba(247,185,85,0.10) 0%, rgba(104,217,200,0.06) 100%);
+      border: 1px solid var(--amber-border);
+      margin-bottom: 36px;
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 2.1rem; font-family: Georgia, serif; color: var(--amber); }
+    .hero p  { margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.7; }
+
+    /* sections */
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    section h2 {
+      font-size: 1.45rem; font-family: Georgia, serif;
+      color: var(--teal); margin: 0 0 18px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--line-soft);
+    }
+    section h3 { font-size: 1.1rem; color: var(--amber); margin: 24px 0 10px; }
+    section h4 { font-size: 0.96rem; color: var(--blue); margin: 18px 0 8px; }
+    section p  { color: var(--muted); line-height: 1.75; margin: 0 0 12px; }
+    section ul, section ol { color: var(--muted); line-height: 1.8; padding-left: 22px; margin: 0 0 12px; }
+    section li { margin: 4px 0; }
+    section li strong { color: var(--text); }
+
+    /* callout boxes */
+    .callout {
+      border-radius: var(--radius-sm); padding: 16px 18px; margin: 16px 0;
+      border-left: 4px solid;
+    }
+    .callout.tip   { background: rgba(143,226,143,0.07); border-color: var(--green); }
+    .callout.warn  { background: rgba(247,185,85,0.08);  border-color: var(--amber); }
+    .callout.info  { background: rgba(127,192,255,0.07); border-color: var(--blue); }
+    .callout.danger{ background: rgba(255,140,122,0.08); border-color: var(--red); }
+    .callout .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .callout.tip   .label { color: var(--green); }
+    .callout.warn  .label { color: var(--amber); }
+    .callout.info  .label { color: var(--blue); }
+    .callout.danger .label { color: var(--red); }
+    .callout p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+    /* code blocks */
+    pre {
+      background: var(--code); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 18px 20px;
+      overflow-x: auto; margin: 12px 0;
+      font-size: 0.89rem; line-height: 1.65;
+    }
+    code { font-family: "Fira Mono", "Cascadia Code", "Consolas", monospace; }
+    pre code { color: var(--text); }
+
+    /* inline code */
+    p code, li code, td code {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--line-soft);
+      padding: 1px 6px; border-radius: 5px; font-size: 0.88em; color: var(--teal);
+    }
+
+    /* yaml syntax highlight helpers (manual spans) */
+    .yk { color: #7fc0ff; }   /* yaml key */
+    .yv { color: #8fe28f; }   /* yaml value (bool/number) */
+    .ys { color: #f7c56a; }   /* yaml string value */
+    .yc { color: #566b7a; }   /* yaml comment */
+
+    /* command table */
+    .cmd-table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+    .cmd-table th { color: var(--soft); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    .cmd-table td { padding: 10px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--muted); font-size: 0.93rem; }
+    .cmd-table tr:last-child td { border-bottom: none; }
+    .cmd-table td:first-child { color: var(--teal); font-family: "Fira Mono","Consolas",monospace; white-space: nowrap; }
+    .cmd-table td:nth-child(2) { color: var(--purple); font-size: 0.85rem; }
+
+    /* perm table */
+    .perm-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    .perm-table th { color: var(--soft); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    .perm-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); color: var(--muted); font-size: 0.92rem; vertical-align: top; }
+    .perm-table td:first-child { color: var(--amber); font-family: "Fira Mono","Consolas",monospace; white-space: nowrap; }
+    .perm-table .def-true  { color: var(--green); font-weight: 600; }
+    .perm-table .def-op    { color: var(--amber); font-weight: 600; }
+    .perm-table .def-false { color: var(--red); font-weight: 600; }
+
+    /* placeholder table */
+    .ph-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    .ph-table th { color: var(--soft); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    .ph-table td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); color: var(--muted); font-size: 0.92rem; vertical-align: top; }
+    .ph-table td:first-child { color: var(--purple); font-family: "Fira Mono","Consolas",monospace; font-size: 0.85em; }
+    .ph-table td:nth-child(2) { color: var(--green); }
+
+    /* step cards */
+    .steps { display: flex; flex-direction: column; gap: 14px; margin: 16px 0; }
+    .step {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--line-soft);
+      border-radius: var(--radius-sm); padding: 16px 18px;
+    }
+    .step-num {
+      min-width: 34px; height: 34px; border-radius: 50%;
+      background: var(--amber-dim); border: 1px solid var(--amber-border);
+      color: var(--amber); font-weight: 700; font-size: 0.95rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body h4 { margin: 0 0 6px; color: var(--text); font-size: 0.98rem; }
+    .step-body p  { margin: 0; color: var(--muted); font-size: 0.93rem; line-height: 1.6; }
+
+    /* color swatch row */
+    .color-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    .swatch {
+      padding: 8px 14px; border-radius: 8px; font-size: 0.85rem;
+      font-family: "Fira Mono","Consolas",monospace; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* badge */
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .badge-green  { background: rgba(143,226,143,0.15); color: var(--green); border: 1px solid rgba(143,226,143,0.3); }
+    .badge-amber  { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+    .badge-blue   { background: rgba(127,192,255,0.10); color: var(--blue); border: 1px solid rgba(127,192,255,0.25); }
+    .badge-purple { background: rgba(196,168,247,0.10); color: var(--purple); border: 1px solid rgba(196,168,247,0.25); }
+    .badge-red    { background: rgba(255,140,122,0.10); color: var(--red);  border: 1px solid rgba(255,140,122,0.25); }
+
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; }
+      .content { padding: 20px 18px 60px; }
+    }
+  </style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <nav class="sidebar">
+    <div class="brand">
+      <h1>ðŸ’° Custom Currencies</h1>
+      <p>OreoEssentials â€” complete setup guide, beginner friendly</p>
+    </div>
+
+    <div class="nav-group">
+      <h2>Getting Started</h2>
+      <a href="#what-is-it">What is it?</a>
+      <a href="#file-locations">File Locations</a>
+      <a href="#quickstart">Quick Start (3 steps)</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Configuration</h2>
+      <a href="#currency-config">currency-config.yml</a>
+      <a href="#storage">Storage: JSON vs MongoDB</a>
+      <a href="#cross-server">Cross-Server Setup</a>
+      <a href="#transfer-settings">Transfer Settings</a>
+      <a href="#messages">Messages &amp; Colors</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Managing Currencies</h2>
+      <a href="#creating-currencies">Creating Currencies</a>
+      <a href="#admin-gui">Admin GUI</a>
+      <a href="#admin-commands">Admin Commands</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Players</h2>
+      <a href="#player-commands">Player Commands</a>
+      <a href="#permissions">Permissions</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Advanced</h2>
+      <a href="#placeholders">PlaceholderAPI</a>
+      <a href="#minimessage">MiniMessage Colors</a>
+      <a href="#data-files">Data Files (JSON)</a>
+      <a href="#faq">FAQ / Troubleshooting</a>
+    </div>
+  </nav>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONTENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <main class="content">
+
+    <div class="hero">
+      <h1>ðŸ’° Custom Currencies</h1>
+      <p>
+        OreoEssentials lets you create as many custom currencies as you want â€” Gems, Credits,
+        Tokens, Blood Points, you name it. Each currency has its own symbol, name, and settings.
+        Players can check their balance, send currency to others, and see leaderboards.
+        Admins can give, take, or set balances from the command line or a GUI.
+        This guide explains <strong>every single option</strong>, step by step, for beginners.
+      </p>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="what-is-it">
+      <h2>What is it?</h2>
+      <p>
+        Think of this like a virtual wallet system for your Minecraft server. You can have multiple
+        "types" of money at the same time. For example:
+      </p>
+      <ul>
+        <li><strong>$ Money</strong> â€” regular dollars, earned by selling things</li>
+        <li><strong>ðŸ’Ž Gems</strong> â€” premium currency, earned from challenges</li>
+        <li><strong>ðŸ©¸ Blood Points</strong> â€” PvP reward currency, not tradeable</li>
+      </ul>
+      <p>
+        Players can check how much they have with <code>/cbal</code>, send currency to friends with
+        <code>/csend</code>, and check who has the most with <code>/ctop</code>.
+        Admins control everything with <code>/oecurrency</code>.
+      </p>
+      <div class="callout tip">
+        <div class="label">Tip</div>
+        <p>If you just want one currency (like a normal economy plugin), that's totally fine! The system creates a default <strong>Money</strong> currency automatically when you first start the server.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="file-locations">
+      <h2>File Locations</h2>
+      <p>After the server starts with OreoEssentials installed, these files will be created:</p>
+      <pre><code>plugins/
+  OreoEssentials/
+    custom-currencies/
+      currency-config.yml    â† Main config: storage, messages, transfer rules
+    currencies.json          â† Where your currencies are stored (JSON mode)
+    currency_balances.json   â† Where player balances are stored (JSON mode)</code></pre>
+      <div class="callout info">
+        <div class="label">Info</div>
+        <p><code>currencies.json</code> and <code>currency_balances.json</code> are only used when storage is set to <code>json</code> (the default). If you use MongoDB, data is stored in your database instead.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="quickstart">
+      <h2>Quick Start (3 Steps)</h2>
+      <p>Want to get up and running as fast as possible? Follow these 3 steps:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Start your server</h4>
+            <p>OreoEssentials automatically creates <code>plugins/OreoEssentials/custom-currencies/currency-config.yml</code>
+            and a default <strong>Money ($)</strong> currency. You don't need to do anything for step 1 â€” it just works.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Create your currencies in-game</h4>
+            <p>Log in as admin and run: <code>/oecurrency create gems Gems ðŸ’Ž</code><br>
+            This creates a currency with ID <code>gems</code>, display name <code>Gems</code>, and symbol <code>ðŸ’Ž</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Give players some currency</h4>
+            <p>Run: <code>/oecurrency give Steve gems 100</code><br>
+            Steve now has ðŸ’Ž 100.00 in Gems. Steve can check with <code>/cbal gems</code>.</p>
+          </div>
+        </div>
+      </div>
+      <p>That's it! Read on for all the details and options.</p>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="currency-config">
+      <h2>currency-config.yml â€” Explained Line by Line</h2>
+      <p>
+        Open <code>plugins/OreoEssentials/custom-currencies/currency-config.yml</code>.
+        Here's what every single option means:
+      </p>
+
+      <h3>Top Section: Core Settings</h3>
+      <pre><code><span class="yk">currency</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>           <span class="yc"># true = currencies work. false = turns off the whole system.</span>
+
+  <span class="yk">storage</span><span class="yv">:</span> <span class="ys">json</span>          <span class="yc"># Where to save data. Options: json OR mongodb</span>
+                             <span class="yc"># json = saved to files on disk (easiest, single server only)</span>
+                             <span class="yc"># mongodb = saved to a MongoDB database (needed for cross-server)</span>
+
+  <span class="yk">default-currency</span><span class="yv">:</span> <span class="ys">money</span> <span class="yc"># The currency ID used for Vault compatibility.</span>
+                             <span class="yc"># This should match the ID of your "main" economy currency.</span>
+                             <span class="yc"># Leave it as "money" unless you renamed your main currency.</span>
+
+  <span class="yk">cross-server</span><span class="yv">:</span> <span class="yv">false</span>     <span class="yc"># true = sync balances across multiple servers via RabbitMQ</span>
+                             <span class="yc"># REQUIRES: storage=mongodb AND RabbitMQ configured in main config</span>
+                             <span class="yc"># false = balances are per-server only (fine for single server setups)</span></code></pre>
+
+      <div class="callout warn">
+        <div class="label">Important</div>
+        <p><strong>enabled: false</strong> completely turns off the currency system â€” no commands, no balances, nothing. Only set it to false if you genuinely don't want currencies at all.</p>
+      </div>
+
+      <h3>Transfer Settings</h3>
+      <pre><code>  <span class="yk">transfer</span><span class="yv">:</span>
+    <span class="yk">min-amount</span><span class="yv">:</span> <span class="yv">0.01</span>         <span class="yc"># Smallest amount a player can send to another player.</span>
+                               <span class="yc"># Example: 0.01 means the minimum is 1 cent.</span>
+                               <span class="yc"># Set to 1.0 if you don't want players sending tiny amounts.</span>
+
+    <span class="yk">max-amount</span><span class="yv">:</span> <span class="yv">1000000.0</span>    <span class="yc"># Biggest amount a player can send in one transaction.</span>
+                               <span class="yc"># Players with the "oreo.currency.send.unlimited" permission</span>
+                               <span class="yc"># can bypass this limit entirely.</span>
+
+    <span class="yk">cooldown</span><span class="yv">:</span> <span class="yv">0</span>              <span class="yc"># How many seconds a player must wait before sending again.</span>
+                               <span class="yc"># 0 = no cooldown (players can send as fast as they want)</span>
+                               <span class="yc"># 30 = players must wait 30 seconds between each /csend</span>
+                               <span class="yc"># Players with "oreo.currency.send.bypass" ignore the cooldown.</span></code></pre>
+
+      <h3>Messages Section</h3>
+      <p>
+        Every message the plugin sends to players can be customized here.
+        Messages support <strong>MiniMessage</strong> color formatting (explained in the
+        <a href="#minimessage">MiniMessage section</a> below) and several placeholders.
+      </p>
+      <p><strong>Available placeholders in messages:</strong></p>
+      <ul>
+        <li><code>{player}</code> â€” The player's name</li>
+        <li><code>{amount}</code> â€” The currency amount (formatted, e.g. <code>ðŸ’Ž 100.00</code>)</li>
+        <li><code>{currency}</code> â€” The currency's display name (e.g. <code>Gems</code>)</li>
+        <li><code>{id}</code> â€” The currency's internal ID (e.g. <code>gems</code>)</li>
+        <li><code>{name}</code> â€” The currency's name (same as display name)</li>
+        <li><code>{symbol}</code> â€” The currency's symbol (e.g. <code>ðŸ’Ž</code>)</li>
+        <li><code>{rank}</code> â€” Rank number (used in leaderboard entries)</li>
+      </ul>
+      <pre><code><span class="yk">messages</span><span class="yv">:</span>
+  <span class="yk">prefix</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;[Currency]&lt;/gradient&gt; '</span>
+  <span class="yc">  # This appears at the start of every currency message.</span>
+  <span class="yc">  # The gradient goes from gold to yellow color.</span>
+
+  <span class="yk">currency-created</span><span class="yv">:</span> <span class="ys">'&lt;green&gt;Created currency: &lt;white&gt;{name} {symbol}'</span>
+  <span class="yc">  # Shown to the admin when a new currency is successfully created.</span>
+
+  <span class="yk">currency-deleted</span><span class="yv">:</span> <span class="ys">'&lt;green&gt;Deleted currency: &lt;white&gt;{id}'</span>
+  <span class="yc">  # Shown to the admin when a currency is deleted.</span>
+
+  <span class="yk">currency-not-found</span><span class="yv">:</span> <span class="ys">'&lt;gradient:red:dark_red&gt;Currency not found: {id}&lt;/gradient&gt;'</span>
+  <span class="yc">  # Shown when someone tries to use a currency ID that doesn't exist.</span>
+
+  <span class="yk">insufficient-balance</span><span class="yv">:</span> <span class="ys">'&lt;gradient:red:dark_red&gt;&lt;b&gt;Insufficient balance!&lt;/b&gt;&lt;/gradient&gt;'</span>
+  <span class="yc">  # Shown when a player tries to send more than they have.</span>
+
+  <span class="yk">transfer-sent</span><span class="yv">:</span> <span class="ys">'&lt;gradient:green:dark_green&gt;âœ” Sent {amount} to &lt;white&gt;{player}&lt;/gradient&gt;'</span>
+  <span class="yc">  # Shown to the SENDER after a successful /csend.</span>
+  <span class="yc">  # {amount} = the formatted amount (e.g., "ðŸ’Ž 50.00"), {player} = recipient name</span>
+
+  <span class="yk">transfer-received</span><span class="yv">:</span> <span class="ys">'&lt;gradient:green:dark_green&gt;âœ” Received {amount} from &lt;white&gt;{player}&lt;/gradient&gt;'</span>
+  <span class="yc">  # Shown to the RECEIVER when someone sends them currency.</span>
+
+  <span class="yk">balance</span><span class="yv">:</span> <span class="ys">'&lt;yellow&gt;{currency}: &lt;green&gt;{amount}'</span>
+  <span class="yc">  # A single balance entry (used when checking one currency).</span>
+
+  <span class="yk">balance-all-header</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;â•â•â•â•â•â•â•â• Your Balances â•â•â•â•â•â•â•â•&lt;/gradient&gt;'</span>
+  <span class="yc">  # The header line shown at the top of /cbal (no args).</span>
+
+  <span class="yk">balance-all-entry</span><span class="yv">:</span> <span class="ys">'&lt;yellow&gt;â–ª &lt;white&gt;{currency}: &lt;green&gt;{amount}'</span>
+  <span class="yc">  # Each row in the /cbal list. Repeated once per currency.</span>
+
+  <span class="yk">balance-all-footer</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•&lt;/gradient&gt;'</span>
+  <span class="yc">  # The footer line at the bottom of /cbal.</span>
+
+  <span class="yk">top-header</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;â•â•â•â• &lt;white&gt;{currency}&lt;/white&gt; Top Balances â•â•â•â•&lt;/gradient&gt;'</span>
+  <span class="yc">  # Header for the /ctop leaderboard.</span>
+
+  <span class="yk">top-footer</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•&lt;/gradient&gt;'</span>
+  <span class="yc">  # Footer for the /ctop leaderboard.</span>
+
+  <span class="yk">top-entry</span><span class="yv">:</span> <span class="ys">'&lt;gold&gt;#{rank} &lt;white&gt;{player} &lt;dark_gray&gt;- &lt;green&gt;{amount}'</span>
+  <span class="yc">  # Regular leaderboard entry (ranks 4+).</span>
+
+  <span class="yk">top-entry-1</span><span class="yv">:</span> <span class="ys">'&lt;gradient:gold:yellow&gt;&lt;b&gt;ðŸ‘‘ #{rank}&lt;/b&gt;&lt;/gradient&gt; ...'</span>
+  <span class="yc">  # Special format for 1st place (gold crown).</span>
+
+  <span class="yk">top-entry-2</span><span class="yv">:</span> <span class="ys">'&lt;gray&gt;&lt;b&gt;ðŸ¥ˆ #{rank}&lt;/b&gt;&lt;/gray&gt; ...'</span>
+  <span class="yc">  # Special format for 2nd place (silver medal).</span>
+
+  <span class="yk">top-entry-3</span><span class="yv">:</span> <span class="ys">'&lt;#CD7F32&gt;&lt;b&gt;ðŸ¥‰ #{rank}&lt;/b&gt;&lt;/#CD7F32&gt; ...'</span>
+  <span class="yc">  # Special format for 3rd place (bronze medal, using hex color).</span></code></pre>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="storage">
+      <h2>Storage: JSON vs MongoDB</h2>
+
+      <h3>JSON Storage (Default â€” Easiest)</h3>
+      <pre><code><span class="yk">currency</span><span class="yv">:</span>
+  <span class="yk">storage</span><span class="yv">:</span> <span class="ys">json</span></code></pre>
+      <ul>
+        <li>Data is saved to plain text files on your server disk.</li>
+        <li>Requires <strong>zero extra setup</strong> â€” it just works out of the box.</li>
+        <li><strong>Only works on a single server.</strong> If you run multiple servers (a network), each server would have its own separate balance files â€” players' balances wouldn't carry over.</li>
+        <li>Files: <code>plugins/OreoEssentials/currencies.json</code> and <code>currency_balances.json</code></li>
+      </ul>
+      <div class="callout tip">
+        <div class="label">Tip</div>
+        <p>If you run a single Minecraft server (not a BungeeCord/Velocity network), JSON is the right choice. Keep it simple!</p>
+      </div>
+
+      <h3>MongoDB Storage</h3>
+      <pre><code><span class="yk">currency</span><span class="yv">:</span>
+  <span class="yk">storage</span><span class="yv">:</span> <span class="ys">mongodb</span></code></pre>
+      <ul>
+        <li>Data is saved to your MongoDB database (uses the same connection already configured in OreoEssentials' main <code>config.yml</code>).</li>
+        <li>Required if you want <strong>cross-server balance sync</strong>.</li>
+        <li>MongoDB must already be set up and working in your main OreoEssentials config.</li>
+      </ul>
+      <div class="callout warn">
+        <div class="label">Warning</div>
+        <p>If you switch from <code>json</code> to <code>mongodb</code> after players have already earned balances, their old JSON balances will NOT be automatically migrated. Back up your <code>currency_balances.json</code> first!</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="cross-server">
+      <h2>Cross-Server Setup</h2>
+      <p>
+        Cross-server currency sync lets players on <strong>Server A</strong> send currency to players on
+        <strong>Server B</strong>, and balances are shared across all servers in your network.
+      </p>
+      <h3>Requirements (all 3 must be true)</h3>
+      <ol>
+        <li>OreoEssentials is installed on <strong>all servers</strong> in the network</li>
+        <li>MongoDB is configured and working in OreoEssentials' main config</li>
+        <li>RabbitMQ is configured and working in OreoEssentials' main config</li>
+      </ol>
+      <h3>How to Enable</h3>
+      <pre><code><span class="yk">currency</span><span class="yv">:</span>
+  <span class="yk">storage</span><span class="yv">:</span> <span class="ys">mongodb</span>     <span class="yc"># MUST be mongodb for cross-server</span>
+  <span class="yk">cross-server</span><span class="yv">:</span> <span class="yv">true</span>  <span class="yc"># Enable cross-server balance sync</span></code></pre>
+      <div class="callout info">
+        <div class="label">How it works</div>
+        <p>
+          When a balance changes on any server, a <strong>RabbitMQ packet</strong> is broadcast to all other servers.
+          They refresh their local cache from MongoDB. Currency creation/deletion is also broadcast instantly â€”
+          create a currency on Server A and it appears on Server B within seconds.
+        </p>
+      </div>
+      <div class="callout danger">
+        <div class="label">Common Mistake</div>
+        <p>Setting <code>cross-server: true</code> but leaving <code>storage: json</code> does nothing â€” cross-server is silently disabled when storage is not MongoDB. You MUST use <code>storage: mongodb</code>.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="transfer-settings">
+      <h2>Transfer Settings</h2>
+      <p>These control how the <code>/csend</code> command works between players.</p>
+
+      <h3>Example Configurations</h3>
+      <h4>No restrictions (open economy)</h4>
+      <pre><code>  <span class="yk">transfer</span><span class="yv">:</span>
+    <span class="yk">min-amount</span><span class="yv">:</span> <span class="yv">0.01</span>
+    <span class="yk">max-amount</span><span class="yv">:</span> <span class="yv">999999999.0</span>
+    <span class="yk">cooldown</span><span class="yv">:</span> <span class="yv">0</span></code></pre>
+
+      <h4>Strict economy (anti-spam / anti-exploit)</h4>
+      <pre><code>  <span class="yk">transfer</span><span class="yv">:</span>
+    <span class="yk">min-amount</span><span class="yv">:</span> <span class="yv">1.0</span>          <span class="yc"># Must send at least 1 unit</span>
+    <span class="yk">max-amount</span><span class="yv">:</span> <span class="yv">10000.0</span>      <span class="yc"># No single transaction over 10,000</span>
+    <span class="yk">cooldown</span><span class="yv">:</span> <span class="yv">60</span>             <span class="yc"># 1 minute between sends</span></code></pre>
+
+      <div class="callout tip">
+        <div class="label">Permission Bypass</div>
+        <p>
+          Give trusted players/staff the permission <code>oreo.currency.send.unlimited</code> to bypass the <code>max-amount</code> limit.<br>
+          Give them <code>oreo.currency.send.bypass</code> to bypass the <code>cooldown</code>.
+        </p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="messages">
+      <h2>Customizing Messages</h2>
+      <p>
+        All messages use <strong>MiniMessage</strong> format (a modern text formatting system).
+        You can also use old-style <code>&amp;a</code>, <code>&amp;b</code> color codes â€” they work too.
+      </p>
+      <h3>Quick Reference: Common Formatting</h3>
+      <pre><code><span class="yc"># Simple colors:</span>
+<span class="ys">'&lt;red&gt;This is red&lt;/red&gt;'</span>
+<span class="ys">'&lt;green&gt;This is green&lt;/green&gt;'</span>
+<span class="ys">'&lt;gold&gt;This is gold&lt;/gold&gt;'</span>
+<span class="ys">'&lt;aqua&gt;This is aqua&lt;/aqua&gt;'</span>
+
+<span class="yc"># Bold / Italic / Underline:</span>
+<span class="ys">'&lt;b&gt;Bold text&lt;/b&gt;'</span>
+<span class="ys">'&lt;i&gt;Italic text&lt;/i&gt;'</span>
+<span class="ys">'&lt;u&gt;Underlined text&lt;/u&gt;'</span>
+
+<span class="yc"># Gradient (fade from one color to another):</span>
+<span class="ys">'&lt;gradient:gold:yellow&gt;Gold to Yellow&lt;/gradient&gt;'</span>
+<span class="ys">'&lt;gradient:red:blue&gt;Red to Blue&lt;/gradient&gt;'</span>
+<span class="ys">'&lt;gradient:#FF0000:#0000FF&gt;Using hex colors&lt;/gradient&gt;'</span>
+
+<span class="yc"># Rainbow:</span>
+<span class="ys">'&lt;rainbow&gt;This is rainbow text!&lt;/rainbow&gt;'</span>
+
+<span class="yc"># Hex color (custom color):</span>
+<span class="ys">'&lt;#FF8C00&gt;Dark Orange&lt;/#FF8C00&gt;'</span>
+
+<span class="yc"># Old-style codes (also work):</span>
+<span class="ys">'&amp;aGreen text'</span>
+<span class="ys">'&amp;6Gold text'</span>
+<span class="ys">'&amp;lBold text'</span></code></pre>
+
+      <h3>Example: Custom Transfer Messages</h3>
+      <pre><code><span class="yk">messages</span><span class="yv">:</span>
+  <span class="yk">transfer-sent</span><span class="yv">:</span> <span class="ys">'&lt;rainbow&gt;ðŸ’¸ You sent {amount} to {player}!&lt;/rainbow&gt;'</span>
+  <span class="yk">transfer-received</span><span class="yv">:</span> <span class="ys">'&lt;gradient:green:aqua&gt;ðŸŽ‰ {player} sent you {amount}!&lt;/gradient&gt;'</span>
+  <span class="yk">insufficient-balance</span><span class="yv">:</span> <span class="ys">'&lt;red&gt;&lt;b&gt;âŒ You don''t have enough {currency}!&lt;/b&gt;&lt;/red&gt;'</span></code></pre>
+      <div class="callout warn">
+        <div class="label">YAML Warning</div>
+        <p>In YAML, single quotes <code>'</code> inside a single-quoted string must be written as two single quotes <code>''</code>. For example: <code>'You don''t have enough'</code>. Alternatively, wrap the whole message in double quotes <code>"..."</code>.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="creating-currencies">
+      <h2>Creating Currencies</h2>
+      <p>There are two ways to create currencies: via command (recommended for beginners) or via the GUI.</p>
+
+      <h3>Via Command</h3>
+      <pre><code>/oecurrency create &lt;id&gt; &lt;name&gt; &lt;symbol&gt; [tradeable] [defaultBalance]</code></pre>
+      <ul>
+        <li><strong>&lt;id&gt;</strong> â€” A unique internal name, lowercase, no spaces. Example: <code>gems</code>, <code>blood_points</code>, <code>credits</code></li>
+        <li><strong>&lt;name&gt;</strong> â€” The display name shown to players. Example: <code>Gems</code>, <code>Credits</code></li>
+        <li><strong>&lt;symbol&gt;</strong> â€” A symbol or emoji shown next to amounts. Example: <code>ðŸ’Ž</code>, <code>$</code>, <code>â˜…</code>, <code>BP</code></li>
+        <li><strong>[tradeable]</strong> â€” Optional. <code>true</code> = players can send it to others. <code>false</code> = non-transferable. Default: <code>true</code></li>
+        <li><strong>[defaultBalance]</strong> â€” Optional. How much new players start with. Default: <code>0</code></li>
+      </ul>
+
+      <h3>Examples</h3>
+      <pre><code><span class="yc"># Create a Gems currency with ðŸ’Ž symbol</span>
+/oecurrency create gems Gems ðŸ’Ž
+
+<span class="yc"># Create a Blood Points currency, NOT tradeable (can't send to others)</span>
+/oecurrency create bp BloodPoints ðŸ©¸ false
+
+<span class="yc"># Create Credits that everyone starts with 500 of</span>
+/oecurrency create credits Credits â˜… true 500
+
+<span class="yc"># Create a simple dollar currency</span>
+/oecurrency create money Money $ true 0</code></pre>
+
+      <div class="callout info">
+        <div class="label">Currency ID Rules</div>
+        <p>
+          The <strong>ID</strong> is how the system identifies the currency internally. Rules:
+          <br>â€” Must be <strong>lowercase</strong> (the plugin forces it automatically)
+          <br>â€” No spaces (use underscores: <code>blood_points</code>)
+          <br>â€” Must be <strong>unique</strong> â€” you can't have two currencies with the same ID
+          <br>â€” Used in all commands: <code>/csend Steve gems 100</code>, <code>/ctop gems</code>, etc.
+        </p>
+      </div>
+
+      <h3>Deleting a Currency</h3>
+      <pre><code>/oecurrency delete &lt;id&gt;
+
+<span class="yc"># Example:</span>
+/oecurrency delete gems</code></pre>
+      <div class="callout danger">
+        <div class="label">Careful!</div>
+        <p>Deleting a currency removes ALL player balances for that currency too. There is no undo. Make sure you want to do this before confirming.</p>
+      </div>
+
+      <h3>Listing All Currencies</h3>
+      <pre><code>/oecurrency list</code></pre>
+      <p>Shows all currencies with their ID, name, symbol, and whether they're tradeable.</p>
+
+      <h3>Viewing Currency Info</h3>
+      <pre><code>/oecurrency info &lt;id&gt;
+
+<span class="yc"># Example:</span>
+/oecurrency info gems</code></pre>
+      <p>Shows all details about a specific currency: ID, name, display name, symbol, tradeable status, cross-server status, and default balance.</p>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="admin-gui">
+      <h2>Admin GUI</h2>
+      <p>
+        If you prefer clicking over typing commands, you can use the in-game GUI to manage currencies.
+      </p>
+      <pre><code>/currencyadmin
+<span class="yc"># Aliases: /cadmin, /currencygui</span></code></pre>
+      <p>
+        This opens an inventory-based GUI where you can:
+      </p>
+      <ul>
+        <li>View all existing currencies</li>
+        <li>Create new currencies by clicking through prompts</li>
+        <li>Edit existing currencies</li>
+        <li>Delete currencies</li>
+      </ul>
+      <div class="callout info">
+        <div class="label">Permission Required</div>
+        <p>The GUI requires the <code>oreo.currency.admin</code> permission.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="admin-commands">
+      <h2>Admin Commands</h2>
+      <p>These commands require the <code>oreo.currency.admin</code> permission. They can also be run from console.</p>
+
+      <table class="cmd-table">
+        <tr>
+          <th>Command</th>
+          <th>Permission</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>/oecurrency create &lt;id&gt; &lt;name&gt; &lt;symbol&gt; [tradeable] [default]</td>
+          <td>oreo.currency.admin</td>
+          <td>Create a new currency</td>
+        </tr>
+        <tr>
+          <td>/oecurrency delete &lt;id&gt;</td>
+          <td>oreo.currency.admin</td>
+          <td>Delete a currency (removes all balances)</td>
+        </tr>
+        <tr>
+          <td>/oecurrency list</td>
+          <td>oreo.currency.admin</td>
+          <td>List all currencies</td>
+        </tr>
+        <tr>
+          <td>/oecurrency info &lt;id&gt;</td>
+          <td>oreo.currency.admin</td>
+          <td>View details of a specific currency</td>
+        </tr>
+        <tr>
+          <td>/oecurrency give &lt;player&gt; &lt;currency&gt; &lt;amount&gt;</td>
+          <td>oreo.currency.admin</td>
+          <td>Add currency to a player's balance. Works on offline players.</td>
+        </tr>
+        <tr>
+          <td>/oecurrency take &lt;player&gt; &lt;currency&gt; &lt;amount&gt;</td>
+          <td>oreo.currency.admin</td>
+          <td>Remove currency from a player's balance. Works on offline players.</td>
+        </tr>
+        <tr>
+          <td>/oecurrency set &lt;player&gt; &lt;currency&gt; &lt;amount&gt;</td>
+          <td>oreo.currency.admin</td>
+          <td>Set a player's exact balance. Works on offline players.</td>
+        </tr>
+        <tr>
+          <td>/oecurrency reload</td>
+          <td>oreo.currency.admin</td>
+          <td>Reload currency-config.yml without restarting</td>
+        </tr>
+        <tr>
+          <td>/currencyadmin</td>
+          <td>oreo.currency.admin</td>
+          <td>Open the GUI (aliases: /cadmin, /currencygui)</td>
+        </tr>
+      </table>
+
+      <h3>Working with Offline Players</h3>
+      <p>The <code>give</code>, <code>take</code>, and <code>set</code> commands support offline players. You can use either:</p>
+      <ul>
+        <li>Player name: <code>/oecurrency give Steve gems 100</code></li>
+        <li>Player UUID: <code>/oecurrency give 069a79f4-44e9-4726-a5be-fca90e38aaf5 gems 100</code></li>
+      </ul>
+      <p>The plugin looks up the player in this order: online player â†’ internal cache â†’ PlayerDirectory (MongoDB) â†’ Bukkit offline player data.</p>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="player-commands">
+      <h2>Player Commands</h2>
+      <p>These are the commands regular players use. They have their own separate permissions.</p>
+
+      <h3>Check Your Balance</h3>
+      <pre><code>/currencybalance           <span class="yc"># Show ALL your balances</span>
+/currencybalance &lt;id&gt;     <span class="yc"># Show balance for one specific currency</span>
+
+<span class="yc"># Aliases: /cbal, /cbalance, /currbal</span>
+<span class="yc"># Examples:</span>
+/cbal                     <span class="yc"># Shows all currencies</span>
+/cbal gems                <span class="yc"># Shows only your Gems balance</span></code></pre>
+
+      <h3>Send Currency to Another Player</h3>
+      <pre><code>/currencysend &lt;player&gt; &lt;currency&gt; &lt;amount&gt;
+
+<span class="yc"># Aliases: /csend, /sendcurrency, /paycurrency</span>
+<span class="yc"># Examples:</span>
+/csend Nabil gems 100      <span class="yc"># Send Nabil 100 Gems</span>
+/csend Steve money 50.75   <span class="yc"># Send Steve $50.75</span></code></pre>
+      <ul>
+        <li>The currency must have <code>tradeable: true</code> (set when you created it)</li>
+        <li>Subject to min/max amount and cooldown settings from the config</li>
+        <li>You can't send to yourself</li>
+        <li>Works cross-server if cross-server is enabled</li>
+      </ul>
+
+      <h3>View Leaderboard</h3>
+      <pre><code>/currencytop &lt;currency&gt; [page]
+
+<span class="yc"># Aliases: /ctop, /currencyleaderboard, /cbalancetop</span>
+<span class="yc"># Examples:</span>
+/ctop gems        <span class="yc"># Page 1 of Gems leaderboard</span>
+/ctop gems 2      <span class="yc"># Page 2</span>
+/ctop money 1     <span class="yc"># Top Money holders</span></code></pre>
+      <p>Shows 10 entries per page. Top 3 have special gold/silver/bronze formatting.</p>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="permissions">
+      <h2>Permissions</h2>
+      <p>All OreoEssentials permissions are children of <code>oreo.*</code> (which is op-only by default).</p>
+
+      <h3>Admin Permissions</h3>
+      <table class="perm-table">
+        <tr>
+          <th>Permission</th>
+          <th>Default</th>
+          <th>What it does</th>
+        </tr>
+        <tr>
+          <td>oreo.currency.admin</td>
+          <td class="def-op">op</td>
+          <td>Access to all admin commands: create, delete, give, take, set, list, info, reload, and the admin GUI</td>
+        </tr>
+      </table>
+
+      <h3>Player Permissions</h3>
+      <table class="perm-table">
+        <tr>
+          <th>Permission</th>
+          <th>Default</th>
+          <th>What it does</th>
+        </tr>
+        <tr>
+          <td>oreo.currency.balance</td>
+          <td class="def-true">true</td>
+          <td>Use <code>/cbal</code> to check balances</td>
+        </tr>
+        <tr>
+          <td>oreo.currency.send</td>
+          <td class="def-true">true</td>
+          <td>Use <code>/csend</code> to send currency to others</td>
+        </tr>
+        <tr>
+          <td>oreo.currency.top</td>
+          <td class="def-true">true</td>
+          <td>Use <code>/ctop</code> to view leaderboards</td>
+        </tr>
+      </table>
+
+      <h3>Special Bypass Permissions</h3>
+      <table class="perm-table">
+        <tr>
+          <th>Permission</th>
+          <th>Default</th>
+          <th>What it does</th>
+        </tr>
+        <tr>
+          <td>oreo.currency.send.unlimited</td>
+          <td class="def-false">false</td>
+          <td>Bypass the <code>max-amount</code> transfer limit</td>
+        </tr>
+        <tr>
+          <td>oreo.currency.send.bypass</td>
+          <td class="def-false">false</td>
+          <td>Bypass the transfer <code>cooldown</code></td>
+        </tr>
+      </table>
+
+      <div class="callout tip">
+        <div class="label">LuckPerms Example</div>
+        <p>To give a group unlimited transfer amounts:<br>
+        <code>lp group vip permission set oreo.currency.send.unlimited true</code></p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="placeholders">
+      <h2>PlaceholderAPI Placeholders</h2>
+      <p>
+        If you have <strong>PlaceholderAPI</strong> installed, you can use these placeholders in scoreboards,
+        tab lists, chat formats, holograms, etc. Replace <code>&lt;id&gt;</code> with your currency's ID (e.g., <code>gems</code>).
+      </p>
+      <div class="callout info">
+        <div class="label">Identifier</div>
+        <p>The PlaceholderAPI identifier is <code>oreocurrency</code>. All placeholders start with <code>%oreocurrency_</code></p>
+      </div>
+
+      <table class="ph-table">
+        <tr>
+          <th>Placeholder</th>
+          <th>Returns</th>
+          <th>Example Output</th>
+        </tr>
+        <tr>
+          <td>%oreocurrency_balance_&lt;id&gt;%</td>
+          <td>Raw balance number</td>
+          <td><code>1234.56</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_balance_formatted_&lt;id&gt;%</td>
+          <td>Balance with symbol and commas</td>
+          <td><code>ðŸ’Ž 1,234.56</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_symbol_&lt;id&gt;%</td>
+          <td>Currency symbol</td>
+          <td><code>ðŸ’Ž</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_name_&lt;id&gt;%</td>
+          <td>Currency display name</td>
+          <td><code>Gems</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_rank_&lt;id&gt;%</td>
+          <td>Player's leaderboard rank</td>
+          <td><code>3</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_top_&lt;id&gt;_&lt;rank&gt;_name%</td>
+          <td>Name of player at rank #N</td>
+          <td><code>Notch</code></td>
+        </tr>
+        <tr>
+          <td>%oreocurrency_top_&lt;id&gt;_&lt;rank&gt;_balance%</td>
+          <td>Balance of player at rank #N (with symbol)</td>
+          <td><code>ðŸ’Ž 10,000.00</code></td>
+        </tr>
+      </table>
+
+      <h3>Examples</h3>
+      <pre><code><span class="yc"># Show the player's Gems balance (formatted):</span>
+%oreocurrency_balance_formatted_gems%
+
+<span class="yc"># Show the player's rank on the Gems leaderboard:</span>
+%oreocurrency_rank_gems%
+
+<span class="yc"># Show the #1 player's name on the Money leaderboard:</span>
+%oreocurrency_top_money_1_name%
+
+<span class="yc"># Show the #1 player's balance on the Gems leaderboard:</span>
+%oreocurrency_top_gems_1_balance%
+
+<span class="yc"># Show just the symbol (for fancy displays):</span>
+%oreocurrency_symbol_gems%</code></pre>
+
+      <div class="callout tip">
+        <div class="label">Caching</div>
+        <p>Balance placeholders are cached for <strong>5 seconds</strong> to keep the server fast. This means a placeholder might be up to 5 seconds behind after a transaction â€” this is normal and expected.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="minimessage">
+      <h2>MiniMessage Color Reference</h2>
+      <p>All messages in <code>currency-config.yml</code> use MiniMessage format. Here's a full reference:</p>
+
+      <h3>Named Colors</h3>
+      <div class="color-grid">
+        <div class="swatch" style="background:#ff5555;color:#fff;">&lt;red&gt;</div>
+        <div class="swatch" style="background:#ff8800;color:#fff;">&lt;gold&gt;</div>
+        <div class="swatch" style="background:#ffff55;color:#333;">&lt;yellow&gt;</div>
+        <div class="swatch" style="background:#55ff55;color:#333;">&lt;green&gt;</div>
+        <div class="swatch" style="background:#55ffff;color:#333;">&lt;aqua&gt;</div>
+        <div class="swatch" style="background:#5555ff;color:#fff;">&lt;blue&gt;</div>
+        <div class="swatch" style="background:#ff55ff;color:#fff;">&lt;light_purple&gt;</div>
+        <div class="swatch" style="background:#aaaaaa;color:#333;">&lt;gray&gt;</div>
+        <div class="swatch" style="background:#555555;color:#fff;">&lt;dark_gray&gt;</div>
+        <div class="swatch" style="background:#00aa00;color:#fff;">&lt;dark_green&gt;</div>
+        <div class="swatch" style="background:#00aaaa;color:#fff;">&lt;dark_aqua&gt;</div>
+        <div class="swatch" style="background:#0000aa;color:#fff;">&lt;dark_blue&gt;</div>
+        <div class="swatch" style="background:#aa0000;color:#fff;">&lt;dark_red&gt;</div>
+        <div class="swatch" style="background:#aa00aa;color:#fff;">&lt;dark_purple&gt;</div>
+        <div class="swatch" style="background:#ffffff;color:#333;border:1px solid #aaa;">&lt;white&gt;</div>
+        <div class="swatch" style="background:#000000;color:#fff;">&lt;black&gt;</div>
+      </div>
+
+      <h3>Formatting Tags</h3>
+      <pre><code>&lt;b&gt;Bold text&lt;/b&gt;
+&lt;i&gt;Italic text&lt;/i&gt;
+&lt;u&gt;Underlined text&lt;/u&gt;
+&lt;st&gt;Strikethrough text&lt;/st&gt;
+&lt;obf&gt;Obfuscated (matrix text)&lt;/obf&gt;
+&lt;reset&gt;  â† Clears all formatting</code></pre>
+
+      <h3>Gradients</h3>
+      <pre><code><span class="yc"># Two colors:</span>
+&lt;gradient:red:blue&gt;Red to Blue&lt;/gradient&gt;
+
+<span class="yc"># Three colors:</span>
+&lt;gradient:gold:yellow:white&gt;Gold to Yellow to White&lt;/gradient&gt;
+
+<span class="yc"># Using hex colors:</span>
+&lt;gradient:#FF0000:#00FF00&gt;Red to Green&lt;/gradient&gt;</code></pre>
+
+      <h3>Hex Colors</h3>
+      <pre><code>&lt;#FF8C00&gt;Dark Orange&lt;/#FF8C00&gt;
+&lt;#CD7F32&gt;Bronze&lt;/#CD7F32&gt;
+&lt;#C0C0C0&gt;Silver&lt;/#C0C0C0&gt;
+&lt;#FFD700&gt;Bright Gold&lt;/#FFD700&gt;</code></pre>
+
+      <h3>Rainbow</h3>
+      <pre><code>&lt;rainbow&gt;Rainbow text!&lt;/rainbow&gt;
+&lt;rainbow&gt;&lt;b&gt;Bold rainbow!&lt;/b&gt;&lt;/rainbow&gt;</code></pre>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="data-files">
+      <h2>Data Files (JSON Mode)</h2>
+      <p>When using <code>storage: json</code>, all data is stored in two files. You generally shouldn't edit these by hand, but it's useful to know what they look like.</p>
+
+      <h3>currencies.json</h3>
+      <p>Stores the definitions of all your currencies.</p>
+      <pre><code>{
+  "money": {
+    "name": "Money",
+    "symbol": "$",
+    "displayName": "Money",
+    "defaultBalance": 0.0,
+    "tradeable": true,
+    "crossServer": false,
+    "allowNegative": false
+  },
+  "gems": {
+    "name": "Gems",
+    "symbol": "ðŸ’Ž",
+    "displayName": "Gems",
+    "defaultBalance": 0.0,
+    "tradeable": true,
+    "crossServer": false,
+    "allowNegative": false
+  }
+}</code></pre>
+
+      <h3>currency_balances.json</h3>
+      <p>Stores every player's balance for every currency, indexed by UUID.</p>
+      <pre><code>{
+  "069a79f4-44e9-4726-a5be-fca90e38aaf5": {
+    "money": 1500.0,
+    "gems": 250.0
+  },
+  "853c80ef-3c37-49fd-aa49-938b674adae6": {
+    "money": 75.50,
+    "gems": 10.0
+  }
+}</code></pre>
+      <div class="callout warn">
+        <div class="label">Warning</div>
+        <p>If you edit these files manually while the server is running, your changes will be overwritten. Always stop the server first, or use <code>/oecurrency reload</code> after editing.</p>
+      </div>
+    </section>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <section id="faq">
+      <h2>FAQ / Troubleshooting</h2>
+
+      <h3>Q: I created a currency but players start with 0 even though I set a default balance. Why?</h3>
+      <p>
+        The default balance only applies to players who have <strong>never had a balance recorded</strong> for that currency.
+        If a player logged in before you changed the default, their stored balance (0) takes priority.
+        Use <code>/oecurrency set &lt;player&gt; &lt;currency&gt; &lt;amount&gt;</code> to update existing players.
+      </p>
+
+      <h3>Q: I set cross-server to true but balances aren't syncing.</h3>
+      <p>Check these things in order:</p>
+      <ol>
+        <li>Is <code>storage: mongodb</code> set? (Cross-server is silently disabled if you use <code>json</code>)</li>
+        <li>Is MongoDB connected and working? Check your server console for MongoDB errors.</li>
+        <li>Is RabbitMQ configured and connected? Check for RabbitMQ connection errors in the console.</li>
+        <li>Is OreoEssentials installed on ALL servers in your network?</li>
+      </ol>
+
+      <h3>Q: /csend says "Currency not tradeable!" but I set tradeable to true.</h3>
+      <p>
+        The <code>tradeable</code> flag is set <strong>when you create the currency</strong> via command.
+        If you created it before adding <code>tradeable: true</code>, you'll need to delete and recreate it,
+        or edit it via the Admin GUI (<code>/cadmin</code>).
+      </p>
+
+      <h3>Q: A player says they sent currency but the recipient didn't receive it.</h3>
+      <p>Check the server console â€” look for lines starting with <code>[Currency]</code>. Successful transfers log:
+      <code>[Currency] PlayerA sent ðŸ’Ž 100.00 to PlayerB</code>. If you see a transfer log but the recipient
+      is complaining, it's likely they were on another server and the notification message didn't reach them
+      (their balance IS correct â€” they can verify with <code>/cbal</code>).</p>
+
+      <h3>Q: How do I reload the config without restarting?</h3>
+      <pre><code>/oecurrency reload</code></pre>
+      <p>This reloads <code>currency-config.yml</code> (messages, transfer limits, etc.). It does NOT reload currency definitions â€” those are stored in the database/JSON files and always loaded fresh.</p>
+
+      <h3>Q: Can a currency go negative (debt system)?</h3>
+      <p>
+        Yes! When creating a currency, the <code>allowNegative</code> flag exists in the storage data.
+        Currently this is set via the GUI or direct database edit. When enabled, players can go below 0
+        (useful for a debt/loan system). By default, balances are clamped to 0 minimum.
+      </p>
+
+      <h3>Q: My /ctop shows "Unknown" for some players. Why?</h3>
+      <p>
+        The leaderboard resolves player names from: PlayerDirectory (MongoDB) â†’ Bukkit's offline player cache.
+        If a player has never joined your specific server (only played on other servers in the network) and
+        PlayerDirectory isn't set up, their name won't be resolvable and shows as "Unknown (xxxxxxxx)".
+        This is a display-only issue â€” their balance is tracked correctly.
+      </p>
+
+      <h3>Q: I deleted a currency by accident. Can I restore it?</h3>
+      <p>
+        If you use JSON storage: check if you have a backup of <code>currency_balances.json</code> and <code>currencies.json</code>.
+        If not, the data is gone. Going forward, consider keeping backups!
+        If you use MongoDB: you might be able to recover from a database backup. The collections used are
+        <code>currencies</code> and <code>currency_balances</code>.
+      </p>
+
+      <h3>Q: PlaceholderAPI placeholders show "Invalid Currency".</h3>
+      <p>
+        This means the currency ID you put in the placeholder doesn't exist. Double-check by running
+        <code>/oecurrency list</code> in-game. The ID is case-sensitive in placeholders â€” use lowercase.
+        Example: <code>%oreocurrency_balance_gems%</code> not <code>%oreocurrency_balance_Gems%</code>.
+      </p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>
+

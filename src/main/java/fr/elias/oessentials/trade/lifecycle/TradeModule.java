@@ -1,6 +1,5 @@
 package fr.elias.oessentials.trade.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
@@ -12,7 +11,7 @@ import fr.elias.oessentials.trade.internal.command.TradeCommand;
 import fr.elias.oessentials.trade.internal.config.TradeConfig;
 import fr.elias.oessentials.trade.internal.service.TradeService;
 
-@PluginModule(value = "trade", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"inventory-sync::services"}, after = {"notes"})
+@PluginModule(value = "trade", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"notes"})
 public final class TradeModule extends ManagedModule implements TradeServices {
     private TradeConfig tradeConfig;
     private TradeService tradeService;
@@ -23,7 +22,8 @@ public final class TradeModule extends ManagedModule implements TradeServices {
         cleanup("tradeService", () -> { if (tradeService != null) tradeService.cancelAll(); });
         initTrade();
         initCrossServerPackets();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         providePublicApi(fr.elias.oessentials.api.ITradeAPI.class, this::getTradeApi);
     }
 
@@ -36,7 +36,6 @@ public final class TradeModule extends ManagedModule implements TradeServices {
         });
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
         // Cross-server trades keep the trade record (and the offered items) in MongoDB. The packet-based

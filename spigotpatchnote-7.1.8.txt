@@ -1,0 +1,15 @@
+[B]OEssentials 7.1.8 - Module Lifecycle & Diagnostics[/B]
+
+This update improves internal module coordination and adds diagnostic tools for server administrators.
+
+[LIST]
+[*]Upgraded the module framework to MinecraftModulith 0.6.0, with typed module creation and instance-aware service registration.
+[*]Updated messaging-ready handlers to use explicit global scheduler routing for Paper/Folia coordination.
+[*]Module events now dispatch asynchronously, avoiding blocking while waiting for scheduled handlers. Messaging readiness failures are logged when delivery completes.
+[*]Improved lifecycle handling so module-owned scheduled work and service registrations are cleaned up with their owning module.
+[*]Added /modulith diagnostics, protected by the minecraftmodulith.admin permission (operators by default).
+[*]Added architecture reports generated at startup in the plugin data folder under modulith/.
+[*]Expanded automated checks for module dependencies, service isolation, asynchronous events, reports, and lifecycle rollback.
+[/LIST]
+
+Existing gameplay configuration and public OEssentials interfaces are preserved.

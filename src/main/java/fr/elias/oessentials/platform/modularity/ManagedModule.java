@@ -13,6 +13,15 @@ import org.bukkit.plugin.RegisteredListener;
 public abstract class ManagedModule implements MinecraftModule {
     protected OEssentials plugin;
     private ModuleContext context;
+    private ModuleEnvironment environment;
+    private dev.oreo.modulith.paper.PaperEventRoutes eventRoutes;
+
+    final void configure(ModuleEnvironment environment) {
+        if (this.context != null || this.environment != null) {
+            throw new IllegalStateException("Module instance has already been configured");
+        }
+        this.environment = java.util.Objects.requireNonNull(environment);
+    }
     private volatile boolean active;
     private ModuleTaskScope tasks;
 
@@ -20,13 +29,14 @@ public abstract class ManagedModule implements MinecraftModule {
     public final void enable(ModuleContext context) {
         this.context = context;
         this.plugin = (OEssentials) context.platform(JavaPlugin.class);
+        if (environment == null) environment = ModuleEnvironment.of(plugin);
+        if (environment.plugin() != plugin) throw new IllegalStateException("Module belongs to another plugin");
         this.active = true;
         this.tasks = new ModuleTaskScope(plugin);
         Class<?> api = java.util.Arrays.stream(getClass().getInterfaces())
                 .filter(type -> type.isAnnotationPresent(ModuleApi.class))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Module must expose a named service API"));
         publish(api);
-        context.lifecycle().onClose(() -> plugin.getModuleRegistry().unbind(api, this));
         // Registered before start so resources from partially initialized modules are released too.
         context.lifecycle().onClose(() -> active = false);
         context.lifecycle().onClose(tasks::close);
@@ -56,7 +66,9 @@ public abstract class ManagedModule implements MinecraftModule {
     private <T> void publish(Class<T> api) {
         T service = api.cast(this);
         context.services().publish(api, service);
-        plugin.getModuleRegistry().bind(api, service);
+        var key = new dev.oreo.modulith.core.ServiceKey<>(context.instanceIdentity().value(), api);
+        environment.registry().bind(key, service);
+        context.lifecycle().onClose(() -> environment.registry().unbind(key, service));
     }
 
     protected abstract void start();
@@ -77,7 +89,57 @@ public abstract class ManagedModule implements MinecraftModule {
 
     protected final <T> T services(Class<T> api) { return context.services().require(api); }
 
-    protected final void publishEvent(Object event) { context.events().publish(event); }
+    /** A routed listener may need this scheduler: never block it with publish(). */
+    protected final java.util.concurrent.CompletionStage<dev.oreo.modulith.core.EventDispatchResult>
+            publishEvent(Object event) {
+        return context.events().publishAsync(event);
+    }
+
+    protected final <T> T services(dev.oreo.modulith.core.ServiceKey<T> key) {
+        return context.services().require(key);
+    }
+
+    protected final dev.oreo.modulith.core.ModuleInstanceId instanceIdentity() {
+        return context.instanceIdentity();
+    }
+
+    private dev.oreo.modulith.paper.PaperEventRoutes eventRoutes() {
+        if (eventRoutes == null) {
+            eventRoutes = context.platform(dev.oreo.modulith.paper.PaperPlatform.class).eventRoutes(context);
+        }
+        return eventRoutes;
+    }
+
+    private <E> java.util.function.Consumer<E> owned(java.util.function.Consumer<? super E> listener) {
+        return event -> {
+            if (isActive()) tasks.run(() -> listener.accept(event));
+        };
+    }
+
+    /** Global coordination only; entity and world work needs an owning route. */
+    protected final <E> void listenForGlobalEvent(Class<E> type, String id,
+            java.util.function.Consumer<? super E> listener) {
+        eventRoutes().global(type, id, owned(listener));
+    }
+
+    /** Capture the location on its owning thread before publishing the event. */
+    protected final <E> void listenForRegionEvent(Class<E> type, String id,
+            java.util.function.Function<? super E, org.bukkit.Location> target,
+            java.util.function.Consumer<? super E> listener) {
+        eventRoutes().region(type, id, target, owned(listener));
+    }
+
+    protected final <E> void listenForEntityEvent(Class<E> type, String id,
+            java.util.function.Function<? super E, org.bukkit.entity.Entity> target,
+            java.util.function.Consumer<? super E> listener) {
+        eventRoutes().entity(type, id, target, owned(listener));
+    }
+
+    /** Background work must not read or mutate entity/region-owned state. */
+    protected final <E> void listenForAsyncEvent(Class<E> type, String id,
+            java.util.function.Consumer<? super E> listener) {
+        eventRoutes().async(type, id, owned(listener));
+    }
 
     /** Answers %oreo_...% placeholders for this module until it stops. */
     protected final void registerPlaceholders(fr.elias.oessentials.configuration.api.Placeholders.Resolver resolver) {

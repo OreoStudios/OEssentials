@@ -214,6 +214,10 @@ public final class OEssentials extends JavaPlugin {
         getLogger().info("OEssentials disabled.");
     }
 
+    public dev.oreo.modulith.core.ModuleCatalog getModuleCatalog() {
+        return modulith == null ? null : modulith.runtime().catalog();
+    }
+
     public dev.oreo.modulith.core.RuntimeDiagnostics getModuleDiagnostics() {
         return modulith == null ? null : modulith.runtime().diagnostics();
     }

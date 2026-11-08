@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Custom Nameplates Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #1e3040;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.13);
+      --amber-border: rgba(247,185,85,0.27);
+      --teal-dim: rgba(104,217,200,0.10);
+      --teal-border: rgba(104,217,200,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #090e13;
+    }
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family:"Trebuchet MS","Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(104,217,200,0.09), transparent 28%),
+        radial-gradient(circle at 20% 85%, rgba(247,185,85,0.07), transparent 24%),
+        linear-gradient(180deg,#0a1018 0%,#0f1820 100%);
+      min-height:100vh;
+    }
+    .shell{ display:grid; grid-template-columns:305px minmax(0,1fr); min-height:100vh; }
+
+    /* ── sidebar ── */
+    .sidebar{
+      position:sticky; top:0; align-self:start;
+      height:100vh; overflow-y:auto;
+      padding:26px 18px 32px;
+      background:rgba(8,13,19,0.93);
+      border-right:1px solid var(--line-soft);
+      backdrop-filter:blur(12px);
+    }
+    .brand{
+      margin-bottom:20px; padding:16px 18px;
+      border:1px solid var(--teal-border);
+      border-radius:var(--radius);
+      background:linear-gradient(160deg,var(--teal-dim),var(--amber-dim));
+      box-shadow:var(--shadow);
+    }
+    .brand h1{ margin:0; font-family:Georgia,serif; font-size:1.2rem; color:var(--teal); }
+    .brand p { margin:8px 0 0; color:var(--muted); font-size:0.86rem; line-height:1.5; }
+
+    .nav-group{ margin-top:16px; }
+    .nav-group h2{ margin:0 0 7px; color:var(--soft); font-size:0.76rem; font-weight:700; text-transform:uppercase; letter-spacing:.13em; }
+    .nav-group a{ display:block; padding:9px 11px; margin:3px 0; color:var(--muted); text-decoration:none; border-radius:9px; border:1px solid transparent; transition:.16s; font-size:.93rem; }
+    .nav-group a:hover{ color:var(--text); border-color:var(--teal-border); background:var(--teal-dim); }
+
+    /* ── main ── */
+    .content{ padding:34px 38px 90px; max-width:960px; }
+
+    .hero{
+      padding:28px 32px; border-radius:26px;
+      background:linear-gradient(135deg,rgba(104,217,200,0.10) 0%,rgba(247,185,85,0.07) 100%);
+      border:1px solid var(--teal-border); margin-bottom:38px;
+    }
+    .hero h1{ margin:0 0 10px; font-size:2rem; font-family:Georgia,serif; color:var(--teal); }
+    .hero p { margin:0; color:var(--muted); font-size:1.04rem; line-height:1.75; }
+
+    /* ── feature pills ── */
+    .feature-grid{ display:flex; flex-wrap:wrap; gap:12px; margin:18px 0 28px; }
+    .feat{
+      flex:1 1 180px; padding:16px 18px; border-radius:14px;
+      border:1px solid var(--line-soft);
+      background:rgba(255,255,255,0.03);
+    }
+    .feat .icon{ font-size:1.6rem; margin-bottom:8px; }
+    .feat h3{ margin:0 0 5px; color:var(--text); font-size:.95rem; }
+    .feat p { margin:0; color:var(--muted); font-size:.86rem; line-height:1.55; }
+
+    section{ margin-bottom:52px; scroll-margin-top:22px; }
+    section h2{
+      font-size:1.42rem; font-family:Georgia,serif;
+      color:var(--teal); margin:0 0 18px;
+      padding-bottom:9px; border-bottom:1px solid var(--line-soft);
+    }
+    section h3{ font-size:1.08rem; color:var(--amber); margin:24px 0 10px; }
+    section h4{ font-size:.94rem; color:var(--blue); margin:18px 0 7px; }
+    section p { color:var(--muted); line-height:1.78; margin:0 0 13px; }
+    section ul,section ol{ color:var(--muted); line-height:1.82; padding-left:22px; margin:0 0 13px; }
+    section li{ margin:4px 0; }
+    section li strong{ color:var(--text); }
+
+    /* callouts */
+    .callout{ border-radius:var(--radius-sm); padding:14px 18px; margin:16px 0; border-left:4px solid; }
+    .callout.tip   { background:rgba(143,226,143,.07); border-color:var(--green); }
+    .callout.warn  { background:rgba(247,185,85,.08);  border-color:var(--amber); }
+    .callout.info  { background:rgba(127,192,255,.07); border-color:var(--blue); }
+    .callout.danger{ background:rgba(255,140,122,.08); border-color:var(--red); }
+    .callout .label{ font-size:.73rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; }
+    .callout.tip   .label{ color:var(--green); }
+    .callout.warn  .label{ color:var(--amber); }
+    .callout.info  .label{ color:var(--blue); }
+    .callout.danger .label{ color:var(--red); }
+    .callout p{ margin:0; color:var(--muted); font-size:.93rem; }
+
+    /* code */
+    pre{
+      background:var(--code); border:1px solid var(--line);
+      border-radius:var(--radius-sm); padding:16px 20px;
+      overflow-x:auto; margin:12px 0;
+      font-size:.875rem; line-height:1.68;
+    }
+    code{ font-family:"Fira Mono","Cascadia Code","Consolas",monospace; }
+    pre code{ color:var(--text); }
+    p code,li code,td code{
+      background:rgba(255,255,255,.06); border:1px solid var(--line-soft);
+      padding:1px 6px; border-radius:5px; font-size:.87em; color:var(--teal);
+    }
+
+    /* yaml */
+    .yk{ color:#7fc0ff; }
+    .yv{ color:#8fe28f; }
+    .ys{ color:#f7c56a; }
+    .yc{ color:#4a6475; font-style:italic; }
+
+    /* tables */
+    table{ width:100%; border-collapse:collapse; margin:12px 0 26px; }
+    th{ color:var(--soft); font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; padding:8px 12px; border-bottom:1px solid var(--line); text-align:left; }
+    td{ padding:9px 12px; border-bottom:1px solid var(--line-soft); color:var(--muted); font-size:.91rem; vertical-align:top; }
+    tr:last-child td{ border-bottom:none; }
+    .mono{ color:var(--teal); font-family:"Fira Mono","Consolas",monospace; white-space:nowrap; }
+    .perm{ color:var(--amber); font-family:"Fira Mono","Consolas",monospace; }
+    .def-true { color:var(--green); font-weight:600; }
+    .def-op   { color:var(--amber); font-weight:600; }
+    .def-false{ color:var(--red);   font-weight:600; }
+
+    /* condition type pills */
+    .ct{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:.78rem; font-weight:700;
+         font-family:"Fira Mono","Consolas",monospace; margin:2px; }
+    .ct-perm{ background:rgba(196,168,247,.13); color:var(--purple); border:1px solid rgba(196,168,247,.3); }
+    .ct-gm  { background:rgba(104,217,200,.12); color:var(--teal);   border:1px solid var(--teal-border); }
+    .ct-papi{ background:rgba(127,192,255,.12); color:var(--blue);   border:1px solid rgba(127,192,255,.3); }
+    .ct-wrld{ background:rgba(143,226,143,.11); color:var(--green);  border:1px solid rgba(143,226,143,.3); }
+    .ct-reg { background:rgba(247,185,85,.12);  color:var(--amber);  border:1px solid var(--amber-border); }
+
+    /* steps */
+    .steps{ display:flex; flex-direction:column; gap:14px; margin:16px 0; }
+    .step{ display:flex; gap:16px; align-items:flex-start;
+           background:rgba(255,255,255,.03); border:1px solid var(--line-soft);
+           border-radius:var(--radius-sm); padding:15px 18px; }
+    .step-num{ min-width:32px; height:32px; border-radius:50%;
+               background:var(--teal-dim); border:1px solid var(--teal-border);
+               color:var(--teal); font-weight:700; font-size:.9rem;
+               display:flex; align-items:center; justify-content:center; }
+    .step-body h4{ margin:0 0 5px; color:var(--text); font-size:.96rem; }
+    .step-body p { margin:0; color:var(--muted); font-size:.91rem; line-height:1.6; }
+
+    @media(max-width:860px){
+      .shell{ grid-template-columns:1fr; }
+      .sidebar{ position:relative; height:auto; }
+      .content{ padding:20px 16px 60px; }
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<nav class="sidebar">
+  <div class="brand">
+    <h1>🏷️ Custom Nameplates</h1>
+    <p>OreoEssentials — step-by-step setup guide for beginners</p>
+  </div>
+
+  <div class="nav-group">
+    <h2>Start Here</h2>
+    <a href="#overview">What does it do?</a>
+    <a href="#file-location">File Location</a>
+    <a href="#quickstart">Quick Start</a>
+  </div>
+
+  <div class="nav-group">
+    <h2>Nametags</h2>
+    <a href="#nametag-settings">Global Settings</a>
+    <a href="#nametag-layers">Layers (text lines)</a>
+    <a href="#layer-properties">Layer Properties</a>
+    <a href="#conditions">Conditions System</a>
+    <a href="#condition-types">All Condition Types</a>
+    <a href="#condition-examples">Condition Examples</a>
+  </div>
+
+  <div class="nav-group">
+    <h2>Chat Bubbles</h2>
+    <a href="#bubbles-overview">Overview</a>
+    <a href="#bubbles-settings">All Settings</a>
+    <a href="#bubbles-icon">Background Icon</a>
+    <a href="#bubbles-color">/bubblecolor Command</a>
+  </div>
+
+  <div class="nav-group">
+    <h2>Boss Bars</h2>
+    <a href="#bossbars-overview">Overview</a>
+    <a href="#bossbars-settings">Bar Settings</a>
+    <a href="#bossbars-examples">Ready-to-use Examples</a>
+  </div>
+
+  <div class="nav-group">
+    <h2>Action Bar</h2>
+    <a href="#actionbar-overview">Overview</a>
+    <a href="#actionbar-settings">Entries &amp; Priority</a>
+    <a href="#actionbar-examples">Examples</a>
+  </div>
+
+  <div class="nav-group">
+    <h2>Reference</h2>
+    <a href="#commands">All Commands</a>
+    <a href="#permissions">Permissions</a>
+    <a href="#performance">Performance Tips</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════ CONTENT ═══════════════════════════════ -->
+<main class="content">
+
+  <div class="hero">
+    <h1>🏷️ Custom Nameplates</h1>
+    <p>
+      Four display systems in a single config file —
+      <strong>Nametags</strong> above players' heads,
+      <strong>Chat Bubbles</strong> that float when someone types,
+      <strong>Boss Bars</strong> at the top of the screen, and
+      an <strong>Action Bar</strong> message above the hotbar.
+      All support MiniMessage colors, PlaceholderAPI, and a powerful
+      condition system to show different content to different players.
+    </p>
+  </div>
+
+  <!-- ───────────────────────── OVERVIEW ───────────────────────── -->
+  <section id="overview">
+    <h2>What does it do?</h2>
+
+    <div class="feature-grid">
+      <div class="feat">
+        <div class="icon">🏷️</div>
+        <h3>Nametags</h3>
+        <p>Custom text lines floating above player heads using TextDisplay entities. Stack multiple lines, each with its own y-offset and conditions.</p>
+      </div>
+      <div class="feat">
+        <div class="icon">💬</div>
+        <h3>Chat Bubbles</h3>
+        <p>When a player sends a chat message, a floating text bubble appears above their head. Fades in, stays, then fades out.</p>
+      </div>
+      <div class="feat">
+        <div class="icon">📊</div>
+        <h3>Boss Bars</h3>
+        <p>Multiple boss bars shown at the top of the screen. Each bar has its own conditions so different players see different bars.</p>
+      </div>
+      <div class="feat">
+        <div class="icon">⚡</div>
+        <h3>Action Bar</h3>
+        <p>Priority-based text above the hotbar. Rotating carousel support — multiple lines cycle automatically.</p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="label">Requires Paper 1.21+</div>
+      <p>Nametags and Chat Bubbles use <strong>TextDisplay</strong> entities which were added in Minecraft 1.19.4. The plugin targets Paper 1.21. Folia is also supported.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── FILE LOCATION ───────────────────────── -->
+  <section id="file-location">
+    <h2>File Location</h2>
+    <p>There is only <strong>one config file</strong> for all four systems:</p>
+    <pre><code>plugins/
+  OreoEssentials/
+    custom-nameplates/
+      config.yml    ← Everything is here</code></pre>
+    <p>
+      The file is created automatically with defaults the first time the server starts.
+      To apply changes, either restart the server or run <code>/cnp reload</code>.
+    </p>
+  </section>
+
+  <!-- ───────────────────────── QUICKSTART ───────────────────────── -->
+  <section id="quickstart">
+    <h2>Quick Start (5 Minutes)</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Start the server</h4>
+          <p>The default config is created at <code>plugins/OreoEssentials/custom-nameplates/config.yml</code> with two nametag layers (player name + LuckPerms prefix), chat bubbles, a welcome boss bar, and an action bar already set up. You don't need to do anything — it works immediately.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Edit the config to your liking</h4>
+          <p>Open <code>plugins/OreoEssentials/custom-nameplates/config.yml</code> in a text editor. Change the nametag text, the boss bar message, etc. See all options explained below.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Reload without restarting</h4>
+          <p>Run <code>/cnp reload</code> in-game or in console. All four systems restart with the new config. Changes are live in seconds.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Toggle your own nametag</h4>
+          <p>Players can run <code>/nametag toggle</code> to hide their nametag from others (vanish-style). Admins can run <code>/nametag toggle &lt;player&gt;</code> to toggle anyone.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Set a custom bubble color</h4>
+          <p>Players can run <code>/bubblecolor red</code> or <code>/bubblecolor gradient:gold:yellow</code> to set a personal color for their chat bubbles. Run <code>/bubblecolor reset</code> to go back to server default.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  NAMETAGS                                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="nametag-settings">
+    <h2>Nametags — Global Settings</h2>
+    <p>
+      These settings at the top of the <code>nametag:</code> section control how the whole
+      nametag system behaves. You normally won't need to change the technical ones, but
+      they're explained here so you understand what they do.
+    </p>
+    <pre><code><span class="yk">nametag</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yc">  # true = nametags work. false = turns off nametags completely.</span>
+
+  <span class="yk">update-interval-ticks</span><span class="yv">:</span> <span class="yv">100</span>
+  <span class="yc">  # How often (in server ticks) the nametag TEXT is refreshed.</span>
+  <span class="yc">  # 20 ticks = 1 second. 100 ticks = 5 seconds.</span>
+  <span class="yc">  # Lower = more responsive placeholders, higher = less server work.</span>
+  <span class="yc">  # Recommended: 40–100 ticks. Don't go below 10.</span>
+
+  <span class="yk">position-interval-ticks</span><span class="yv">:</span> <span class="yv">2</span>
+  <span class="yc">  # How often the TextDisplay ENTITY follows the player's movement.</span>
+  <span class="yc">  # 2 ticks = every 100ms = very smooth. Higher = slightly laggy movement.</span>
+  <span class="yc">  # Recommended: 1–3 ticks.</span>
+
+  <span class="yk">visibility-sweep-batch-owners</span><span class="yv">:</span> <span class="yv">8</span>
+  <span class="yc">  # How many players' nametag visibility is rechecked per update cycle.</span>
+  <span class="yc">  # Higher = faster response but more work per tick.</span>
+  <span class="yc">  # Recommended: 4–16 depending on player count.</span>
+
+  <span class="yk">move-visibility-cooldown-ticks</span><span class="yv">:</span> <span class="yv">5</span>
+  <span class="yc">  # Minimum ticks between visibility recalculations triggered by movement.</span>
+  <span class="yc">  # Prevents spam-recalculating when many players move at once.</span>
+  <span class="yc">  # Recommended: 3–10 ticks.</span>
+
+  <span class="yk">show-to-self</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yc">  # true  = players can see their OWN nametag above their head</span>
+  <span class="yc">  # false = players only see other players' nametags (more common)</span>
+
+  <span class="yk">view-range</span><span class="yv">:</span> <span class="yv">48.0</span>
+  <span class="yc">  # Max distance in blocks at which a nametag is visible.</span>
+  <span class="yc">  # 48 blocks = about 3 chunk edges. Use 32 for less visibility, 64 for more.</span></code></pre>
+  </section>
+
+  <!-- ───────────────────────── LAYERS ───────────────────────── -->
+  <section id="nametag-layers">
+    <h2>Nametag Layers — Multiple Lines Above the Head</h2>
+    <p>
+      A <strong>layer</strong> is one line of text floating above a player's head.
+      You can have <strong>as many layers as you want</strong> — each at a different height.
+      Think of them as rows of a custom nameplate.
+    </p>
+    <p>
+      Layers are defined under <code>nametag.layers</code>. Each key is a name you choose
+      (it doesn't appear in-game, it's just for you to identify them).
+    </p>
+
+    <h3>Default Example — Two Layers</h3>
+    <pre><code><span class="yk">nametag</span><span class="yv">:</span>
+  <span class="yk">layers</span><span class="yv">:</span>
+
+    <span class="yk">name</span><span class="yv">:</span>                        <span class="yc"># You can call this anything</span>
+      <span class="yk">text</span><span class="yv">:</span> <span class="ys">"&lt;white&gt;%player_name%&lt;/white&gt;"</span>
+      <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.1</span>               <span class="yc"># Just above the head</span>
+      <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+      <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+      <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+      <span class="yk">alignment</span><span class="yv">:</span> <span class="ys">CENTER</span>
+      <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">200</span>
+      <span class="yk">owner-conditions</span><span class="yv">:</span> []
+      <span class="yk">viewer-conditions</span><span class="yv">:</span> []
+
+    <span class="yk">rank</span><span class="yv">:</span>                         <span class="yc"># Second layer — HIGHER than the name</span>
+      <span class="yk">text</span><span class="yv">:</span> <span class="ys">"%luckperms_prefix%"</span>
+      <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.5</span>               <span class="yc"># 0.4 blocks higher than the name layer</span>
+      <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+      <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+      <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+      <span class="yk">alignment</span><span class="yv">:</span> <span class="ys">CENTER</span>
+      <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">200</span>
+      <span class="yk">owner-conditions</span><span class="yv">:</span> []
+      <span class="yk">viewer-conditions</span><span class="yv">:</span> []</code></pre>
+
+    <div class="callout tip">
+      <div class="label">Layer Ordering</div>
+      <p>
+        Layers are ordered by <strong>y-offset</strong>. Higher y-offset = higher above the head.
+        The player's head is at about y-offset 1.8–2.0. Use 2.1 for the name, 2.5 for the rank above it,
+        2.9 for a guild tag above that, etc.
+      </p>
+    </div>
+
+    <h3>Three-Layer Example</h3>
+    <pre><code><span class="yk">layers</span><span class="yv">:</span>
+  <span class="yk">name</span><span class="yv">:</span>
+    <span class="yk">text</span><span class="yv">:</span> <span class="ys">"&lt;white&gt;%player_name%&lt;/white&gt;"</span>
+    <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.1</span>
+    <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+    <span class="yk">alignment</span><span class="yv">:</span> <span class="ys">CENTER</span>
+    <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">200</span>
+    <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">owner-conditions</span><span class="yv">:</span> []
+    <span class="yk">viewer-conditions</span><span class="yv">:</span> []
+
+  <span class="yk">rank</span><span class="yv">:</span>
+    <span class="yk">text</span><span class="yv">:</span> <span class="ys">"%luckperms_prefix%"</span>
+    <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.5</span>
+    <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+    <span class="yk">alignment</span><span class="yv">:</span> <span class="ys">CENTER</span>
+    <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">200</span>
+    <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">owner-conditions</span><span class="yv">:</span> []
+    <span class="yk">viewer-conditions</span><span class="yv">:</span> []
+
+  <span class="yk">guild</span><span class="yv">:</span>
+    <span class="yk">text</span><span class="yv">:</span> <span class="ys">"&lt;dark_gray&gt;[%someguild_tag%]"</span>
+    <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.9</span>
+    <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+    <span class="yk">alignment</span><span class="yv">:</span> <span class="ys">CENTER</span>
+    <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">200</span>
+    <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yk">owner-conditions</span><span class="yv">:</span> []
+    <span class="yk">viewer-conditions</span><span class="yv">:</span> []</code></pre>
+  </section>
+
+  <!-- ───────────────────────── LAYER PROPERTIES ───────────────────────── -->
+  <section id="layer-properties">
+    <h2>Layer Properties — Explained</h2>
+
+    <table>
+      <tr><th>Property</th><th>Type</th><th>Explanation</th></tr>
+      <tr>
+        <td class="mono">text</td>
+        <td>string</td>
+        <td>The text shown for this layer. Supports <strong>MiniMessage</strong> (e.g. <code>&lt;red&gt;text&lt;/red&gt;</code>), <strong>PlaceholderAPI</strong> (e.g. <code>%player_name%</code>), and legacy <code>&amp;a</code> color codes. All color formats are auto-translated.</td>
+      </tr>
+      <tr>
+        <td class="mono">y-offset</td>
+        <td>number</td>
+        <td>How many blocks above the player's feet this layer is placed. The player's head is at ~1.8–2.0. Use 2.1 for a nameplate, 2.5 for a line above that, etc. Decimals allowed (e.g. 2.35).</td>
+      </tr>
+      <tr>
+        <td class="mono">shadow</td>
+        <td>true/false</td>
+        <td><strong>true</strong> adds a drop shadow behind each character (like in chat). Looks cleaner against busy backgrounds. Default: false.</td>
+      </tr>
+      <tr>
+        <td class="mono">see-through</td>
+        <td>true/false</td>
+        <td><strong>true</strong> makes the text visible even through walls and blocks. Useful for spectator/staff modes. Default: false.</td>
+      </tr>
+      <tr>
+        <td class="mono">background</td>
+        <td>string</td>
+        <td>
+          Background panel behind the text:<br>
+          <code>transparent</code> — no background at all (most common for nameplates)<br>
+          <code>default</code> — the vanilla dark grey panel<br>
+          <code>#AARRGGBB</code> — custom color with alpha. <strong>AA</strong> = opacity hex (00=invisible, FF=solid), <strong>RRGGBB</strong> = color.<br>
+          Example: <code>#80FF0000</code> = 50% transparent red.
+        </td>
+      </tr>
+      <tr>
+        <td class="mono">alignment</td>
+        <td>string</td>
+        <td>Text alignment within the line: <code>CENTER</code>, <code>LEFT</code>, or <code>RIGHT</code>. CENTER looks best for nameplates.</td>
+      </tr>
+      <tr>
+        <td class="mono">line-width</td>
+        <td>number</td>
+        <td>Maximum pixel width before text wraps to a new line. 200 = default Minecraft chat width. Increase for longer prefixes. 0 = no wrapping.</td>
+      </tr>
+      <tr>
+        <td class="mono">owner-conditions</td>
+        <td>list</td>
+        <td>Conditions about the <strong>player whose head this nametag is on</strong>. If any condition fails, this layer doesn't exist at all (not spawned). <code>[]</code> = no conditions = always show.</td>
+      </tr>
+      <tr>
+        <td class="mono">viewer-conditions</td>
+        <td>list</td>
+        <td>Conditions about the <strong>player looking at the nametag</strong>. If any condition fails, that specific viewer can't see this layer. <code>[]</code> = everyone can see it.</td>
+      </tr>
+    </table>
+
+    <h3>Background Color Examples</h3>
+    <pre><code><span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>     <span class="yc"># Fully see-through (recommended for nameplates)</span>
+<span class="yk">background</span><span class="yv">:</span> <span class="ys">default</span>          <span class="yc"># Vanilla dark-grey panel</span>
+<span class="yk">background</span><span class="yv">:</span> <span class="ys">"#60000000"</span>      <span class="yc"># 37% opaque black (subtle dark panel)</span>
+<span class="yk">background</span><span class="yv">:</span> <span class="ys">"#80FF0000"</span>      <span class="yc"># 50% opaque red (for a "danger" effect)</span>
+<span class="yk">background</span><span class="yv">:</span> <span class="ys">"#FF1a1a2e"</span>      <span class="yc"># Fully opaque dark navy</span></code></pre>
+    <div class="callout info">
+      <div class="label">ARGB vs RGBA</div>
+      <p>The format is <strong>#AARRGGBB</strong> (Alpha first, then Red, Green, Blue). This is different from CSS which uses #RRGGBBAA. Don't mix them up! <code>AA=00</code> = fully transparent, <code>AA=FF</code> = fully opaque.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── CONDITIONS ───────────────────────── -->
+  <section id="conditions">
+    <h2>The Conditions System</h2>
+    <p>
+      Conditions are <strong>rules</strong> that must all be true for something to show.
+      You can use them on nametag layers, chat bubbles, boss bars, and action bar entries.
+    </p>
+    <p>
+      There are two places conditions can go on a nametag layer:
+    </p>
+    <ul>
+      <li><strong>owner-conditions</strong> — Checks the player who <em>owns</em> the nametag. Example: "only show this layer if the player is in survival mode"</li>
+      <li><strong>viewer-conditions</strong> — Checks the player who is <em>looking at</em> the nametag. Example: "only staff can see this layer"</li>
+    </ul>
+    <div class="callout tip">
+      <div class="label">All conditions are AND logic</div>
+      <p>If you list multiple conditions, ALL of them must be true. There is no built-in OR logic — to achieve OR, create two separate layers with different conditions.</p>
+    </div>
+    <div class="callout info">
+      <div class="label">negate: true</div>
+      <p>Add <code>negate: true</code> to any condition to flip it. For example: "show ONLY if the player does NOT have this permission".</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── CONDITION TYPES ───────────────────────── -->
+  <section id="condition-types">
+    <h2>All Condition Types</h2>
+
+    <h3><span class="ct ct-perm">PERMISSION</span> — Player has a permission</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.staff</span>
+  <span class="yc">  # True if the player has the node "oreo.staff".</span>
+  <span class="yc">  # negate: true → True if the player does NOT have it.</span></code></pre>
+
+    <h3><span class="ct ct-gm">GAMEMODE</span> — Player is in a specific game mode</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">GAMEMODE</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">SURVIVAL</span>
+  <span class="yc">  # Valid values: SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR</span></code></pre>
+
+    <h3><span class="ct ct-wrld">WORLD</span> — Player is in a specific world</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">WORLD</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">survie</span>
+  <span class="yc">  # Use the exact world folder name. Case-insensitive.</span></code></pre>
+
+    <h3><span class="ct ct-reg">REGION</span> — Player is inside a WorldGuard region</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">REGION</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">spawn</span>
+  <span class="yc">  # Requires WorldGuard plugin. Use the region name exactly.</span></code></pre>
+
+    <h3><span class="ct ct-papi">PAPI_EQUALS</span> — Placeholder output equals a value</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_EQUALS</span>
+  <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%luckperms_primary_group%"</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">"admin"</span>
+  <span class="yc">  # True if the placeholder output exactly equals "admin" (case-insensitive).</span>
+  <span class="yc">  # Requires PlaceholderAPI.</span></code></pre>
+
+    <h3><span class="ct ct-papi">PAPI_CONTAINS</span> — Placeholder output contains a substring</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_CONTAINS</span>
+  <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%luckperms_prefix%"</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">"VIP"</span>
+  <span class="yc">  # True if the prefix contains the text "VIP" anywhere in it.</span></code></pre>
+
+    <h3><span class="ct ct-papi">PAPI_GREATER</span> — Placeholder number is greater than a value</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_GREATER</span>
+  <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%player_level%"</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">"30"</span>
+  <span class="yc">  # True if %player_level% is greater than 30.</span>
+  <span class="yc">  # The placeholder output must be a number (integer or decimal).</span></code></pre>
+
+    <h3><span class="ct ct-papi">PAPI_LESS</span> — Placeholder number is less than a value</h3>
+    <pre><code>- <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_LESS</span>
+  <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%player_level%"</span>
+  <span class="yk">value</span><span class="yv">:</span> <span class="ys">"10"</span>
+  <span class="yc">  # True if %player_level% is less than 10.</span>
+  <span class="yc">  # Great for "beginner" states.</span></code></pre>
+  </section>
+
+  <!-- ───────────────────────── CONDITION EXAMPLES ───────────────────────── -->
+  <section id="condition-examples">
+    <h2>Condition Examples — Real Scenarios</h2>
+
+    <h3>Show a layer only to staff members (viewer must be staff)</h3>
+    <pre><code><span class="yk">viewer-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.staff</span>
+<span class="yc">  # Only players with oreo.staff see this layer — useful for a "real UUID" debug layer.</span></code></pre>
+
+    <h3>Only show a layer when the owner (tagged player) is in survival</h3>
+    <pre><code><span class="yk">owner-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">GAMEMODE</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">SURVIVAL</span>
+<span class="yc">  # Layer disappears when owner enters creative/spectator mode.</span></code></pre>
+
+    <h3>Show a VIP tag only for VIP players</h3>
+    <pre><code><span class="yk">owner-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.vip</span>
+<span class="yc">  # The layer only exists if the owner has oreo.vip.</span></code></pre>
+
+    <h3>Show a layer only in a specific world AND only to admins</h3>
+    <pre><code><span class="yk">owner-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">WORLD</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">pvp_world</span>
+<span class="yk">viewer-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.admin</span>
+<span class="yc">  # Owner must be in pvp_world AND viewer must be admin.</span></code></pre>
+
+    <h3>Show a layer to everyone EXCEPT players with a permission (negate)</h3>
+    <pre><code><span class="yk">viewer-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.nametag.hide</span>
+    <span class="yk">negate</span><span class="yv">:</span> <span class="yv">true</span>
+<span class="yc">  # Everyone sees this layer UNLESS they have oreo.nametag.hide.</span></code></pre>
+
+    <h3>Show a "High Balance" tag to players with over 10,000 money</h3>
+    <pre><code><span class="yk">owner-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_GREATER</span>
+    <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%vault_eco_balance%"</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">"10000"</span>
+<span class="yc">  # Layer only appears if the player's Vault balance is over 10,000.</span></code></pre>
+
+    <h3>Show a layer only inside a WorldGuard spawn region</h3>
+    <pre><code><span class="yk">owner-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">REGION</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">spawn</span>
+<span class="yc">  # Requires WorldGuard. The region name must match exactly.</span></code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  CHAT BUBBLES                                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="bubbles-overview">
+    <h2>Chat Bubbles — Overview</h2>
+    <p>
+      When a player types in chat, a text bubble floats above their head showing what they said.
+      It fades in, stays visible for a bit, then fades out. Other players nearby can see it.
+    </p>
+    <p>
+      The system uses a <strong>TextDisplay entity</strong> just like nametags. Opacity is animated
+      using the entity's transformation/brightness API. You can control exactly how long it takes to
+      appear, how long it stays, and how long it takes to disappear.
+    </p>
+  </section>
+
+  <section id="bubbles-settings">
+    <h2>Chat Bubbles — All Settings Explained</h2>
+    <pre><code><span class="yk">chat-bubbles</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yc">  # true = chat bubbles work. false = no bubbles at all.</span>
+
+  <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.6</span>
+  <span class="yc">  # Height above the player's feet where the bubble appears.</span>
+  <span class="yc">  # 2.6 = just above the head's highest point. Increase to push it higher.</span>
+
+  <span class="yk">view-range</span><span class="yv">:</span> <span class="yv">32.0</span>
+  <span class="yc">  # Max distance in blocks at which nearby players can see the bubble.</span>
+  <span class="yc">  # 32 blocks = 2 chunks. 16 is tighter, 48 is wider.</span>
+
+  <span class="yk">stay-duration</span><span class="yv">:</span> <span class="yv">80</span>
+  <span class="yc">  # Ticks the bubble stays fully visible BEFORE fading out.</span>
+  <span class="yc">  # 80 ticks = 4 seconds. 200 ticks = 10 seconds.</span>
+
+  <span class="yk">appear-duration</span><span class="yv">:</span> <span class="yv">5</span>
+  <span class="yc">  # Ticks for the fade-IN animation (opacity 0 → full).</span>
+  <span class="yc">  # 5 ticks = 0.25 seconds. Use 1 for instant, or 10–20 for a slower pop-in.</span>
+
+  <span class="yk">disappear-duration</span><span class="yv">:</span> <span class="yv">10</span>
+  <span class="yc">  # Ticks for the fade-OUT animation (opacity full → 0).</span>
+  <span class="yc">  # 10 ticks = 0.5 seconds. Use 20–30 for a longer, smoother fade.</span>
+
+  <span class="yk">max-lines</span><span class="yv">:</span> <span class="yv">3</span>
+  <span class="yc">  # If a message is too long and wraps, it is truncated to this many lines.</span>
+  <span class="yc">  # Set to 1 for single-line only, 5 for more generous bubbles.</span>
+
+  <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">160</span>
+  <span class="yc">  # Pixel width before text wraps to the next line.</span>
+  <span class="yc">  # 160 is a bit narrower than chat (200). Use 120 for tighter bubbles.</span>
+
+  <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+  <span class="yc">  # true = text has a drop shadow. false = clean text.</span>
+
+  <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+  <span class="yc">  # true = bubble visible through walls. Normally keep this false.</span>
+
+  <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+  <span class="yc">  # transparent | default | #AARRGGBB — same as nametag background.</span>
+
+  <span class="yk">text-prefix</span><span class="yv">:</span> <span class="ys">""</span>
+  <span class="yc">  # MiniMessage text added BEFORE every bubble message.</span>
+  <span class="yc">  # Example: "&lt;dark_gray&gt;💬 " will add a speech bubble icon.</span>
+
+  <span class="yk">text-suffix</span><span class="yv">:</span> <span class="ys">""</span>
+  <span class="yc">  # MiniMessage text added AFTER every bubble message.</span>
+
+  <span class="yk">sender-conditions</span><span class="yv">:</span> []
+  <span class="yc">  # Conditions on the SENDER. If these fail, their message creates no bubble.</span>
+  <span class="yc">  # Example: restrict to survival mode only.</span>
+
+  <span class="yk">viewer-conditions</span><span class="yv">:</span> []
+  <span class="yc">  # Conditions on the VIEWER. If these fail, that player doesn't see any bubble.</span></code></pre>
+
+    <h3>Example — Compact, Quick Bubbles</h3>
+    <pre><code><span class="yk">chat-bubbles</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yk">y-offset</span><span class="yv">:</span> <span class="yv">2.7</span>
+  <span class="yk">view-range</span><span class="yv">:</span> <span class="yv">20.0</span>
+  <span class="yk">stay-duration</span><span class="yv">:</span> <span class="yv">60</span>
+  <span class="yk">appear-duration</span><span class="yv">:</span> <span class="yv">3</span>
+  <span class="yk">disappear-duration</span><span class="yv">:</span> <span class="yv">8</span>
+  <span class="yk">max-lines</span><span class="yv">:</span> <span class="yv">2</span>
+  <span class="yk">line-width</span><span class="yv">:</span> <span class="yv">140</span>
+  <span class="yk">shadow</span><span class="yv">:</span> <span class="yv">false</span>
+  <span class="yk">see-through</span><span class="yv">:</span> <span class="yv">false</span>
+  <span class="yk">background</span><span class="yv">:</span> <span class="ys">transparent</span>
+  <span class="yk">text-prefix</span><span class="yv">:</span> <span class="ys">"&lt;dark_gray&gt;💬 "</span>
+  <span class="yk">text-suffix</span><span class="yv">:</span> <span class="ys">""</span>
+  <span class="yk">sender-conditions</span><span class="yv">:</span> []
+  <span class="yk">viewer-conditions</span><span class="yv">:</span> []</code></pre>
+  </section>
+
+  <!-- ───────────────────────── BACKGROUND ICON ───────────────────────── -->
+  <section id="bubbles-icon">
+    <h2>Chat Bubbles — Background Icon</h2>
+    <p>
+      You can add a custom graphic <em>behind</em> each chat bubble — a separate TextDisplay entity
+      containing a custom font glyph. This is mainly used with <strong>ItemsAdder</strong> or
+      <strong>Nexo</strong> to show a speech bubble panel or other decorative image.
+    </p>
+    <pre><code>  <span class="yk">background-icon</span><span class="yv">:</span>
+    <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">false</span>
+    <span class="yc">  # Set to true to enable the background entity.</span>
+
+    <span class="yk">text</span><span class="yv">:</span> <span class="ys">''</span>
+    <span class="yc">  # The MiniMessage string for the background. Usually a &lt;font:&gt; glyph.</span>
+    <span class="yc">  # ItemsAdder example: '&lt;font:default&gt;\uE001&lt;/font&gt;'</span>
+    <span class="yc">  # Nexo example:       '&lt;font:nexo:your_namespace&gt;\uE001&lt;/font&gt;'</span>
+    <span class="yc">  # The \uE001 is the unicode character — find it in your resource pack.</span>
+
+    <span class="yk">scale</span><span class="yv">:</span> <span class="yv">1.0</span>
+    <span class="yc">  # Entity scale multiplier. 1.0 = normal size. 1.5 = 50% bigger. 0.8 = 80%.</span>
+    <span class="yc">  # Increase this if the glyph is too small relative to the text bubble.</span>
+
+    <span class="yk">offset-x</span><span class="yv">:</span> <span class="yv">0.0</span>
+    <span class="yc">  # Horizontal offset in blocks (0 = centered on player, positive = shift right).</span>
+
+    <span class="yk">offset-y</span><span class="yv">:</span> <span class="yv">0.0</span>
+    <span class="yc">  # Extra vertical offset ON TOP of y-offset. 0.0 = same height as text bubble.</span>
+    <span class="yc">  # Negative values push it lower, positive push it higher.</span></code></pre>
+
+    <div class="callout tip">
+      <div class="label">How the background renders behind the text</div>
+      <p>
+        The background icon entity is spawned first (lower entity ID) so the game renders it behind the
+        text bubble. It fades in and out at the same speed as the text bubble. If your glyph is clipping
+        over the text, try increasing <code>offset-y</code> slightly or decreasing <code>scale</code>.
+      </p>
+    </div>
+    <div class="callout info">
+      <div class="label">Finding the unicode character in ItemsAdder</div>
+      <p>
+        Open your ItemsAdder resource pack → <code>assets/minecraft/font/default.json</code> (or your custom namespace).
+        Find your image entry. The <code>chars</code> field contains the unicode character to use.
+        Copy that character and paste it as the <code>text</code> value.
+      </p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── BUBBLECOLOR ───────────────────────── -->
+  <section id="bubbles-color">
+    <h2>/bubblecolor — Personal Bubble Colors</h2>
+    <p>
+      Players can choose their own text color for chat bubbles. The color is stored per-player
+      in memory and applied to all their future bubbles until they change or reset it.
+    </p>
+    <pre><code>/bubblecolor &lt;color&gt;     <span class="yc"># Set a color</span>
+/bubblecolor reset       <span class="yc"># Go back to server default</span>
+
+<span class="yc"># Aliases: /bccolor, /chatbubblecolor</span></code></pre>
+    <h3>What colors can be used?</h3>
+    <pre><code><span class="yc"># Simple named colors:</span>
+/bubblecolor red
+/bubblecolor gold
+/bubblecolor aqua
+/bubblecolor white
+/bubblecolor dark_gray
+
+<span class="yc"># Formatting:</span>
+/bubblecolor bold
+/bubblecolor italic
+
+<span class="yc"># Combined (bold + color):</span>
+/bubblecolor bold:red
+/bubblecolor bold:gold
+
+<span class="yc"># Hex color:</span>
+/bubblecolor #FF5500
+
+<span class="yc"># Gradient:</span>
+/bubblecolor gradient:red:gold
+/bubblecolor gradient:aqua:light_purple
+/bubblecolor gradient:green:aqua</code></pre>
+    <div class="callout tip">
+      <div class="label">Tab Completion</div>
+      <p>The command has full tab completion — players just press Tab to see all preset options.</p>
+    </div>
+    <div class="callout info">
+      <div class="label">Permission</div>
+      <p>Requires <code>oe.chatbubble.color</code>. Give it to whatever groups should be able to customize their bubble color.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  BOSS BARS                                                     -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="bossbars-overview">
+    <h2>Boss Bars — Overview</h2>
+    <p>
+      Boss bars are the colored bars at the top of the screen. OreoEssentials lets you define
+      <strong>multiple boss bars</strong>, each shown only to players who meet specific conditions.
+      Each bar can rotate through multiple texts (carousel) automatically.
+    </p>
+    <pre><code><span class="yk">bossbars</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yc">  # true = boss bars enabled. false = none shown.</span>
+
+  <span class="yk">refresh-interval-ticks</span><span class="yv">:</span> <span class="yv">40</span>
+  <span class="yc">  # How often conditions and text are re-evaluated for every player.</span>
+  <span class="yc">  # 40 ticks = 2 seconds. Lower = more responsive but more server work.</span>
+  <span class="yc">  # Recommended: 20–60 ticks.</span>
+
+  <span class="yk">bars</span><span class="yv">:</span>
+    <span class="yc">  # Each key here is a bar you define — name them whatever you want.</span></code></pre>
+  </section>
+
+  <section id="bossbars-settings">
+    <h2>Boss Bars — Bar Settings</h2>
+    <p>Each bar under <code>bossbars.bars</code> has these properties:</p>
+    <table>
+      <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+      <tr>
+        <td class="mono">texts</td>
+        <td>list</td>
+        <td>One or more MiniMessage strings. If there's more than one, they rotate. PlaceholderAPI is supported.</td>
+      </tr>
+      <tr>
+        <td class="mono">carousel-interval-ticks</td>
+        <td>number</td>
+        <td>How many ticks between text rotations. Ignored if there's only one text. 100 ticks = 5 seconds between each text.</td>
+      </tr>
+      <tr>
+        <td class="mono">color</td>
+        <td>string</td>
+        <td>Bar color: <code>BLUE</code>, <code>GREEN</code>, <code>PINK</code>, <code>PURPLE</code>, <code>RED</code>, <code>WHITE</code>, <code>YELLOW</code></td>
+      </tr>
+      <tr>
+        <td class="mono">style</td>
+        <td>string</td>
+        <td>Visual style: <code>SOLID</code> (one continuous bar), <code>SEGMENTED_6</code>, <code>SEGMENTED_10</code>, <code>SEGMENTED_12</code>, <code>SEGMENTED_20</code> (divided into notches)</td>
+      </tr>
+      <tr>
+        <td class="mono">progress</td>
+        <td>0.0 – 1.0</td>
+        <td>How full the bar is. 1.0 = completely full, 0.5 = half full, 0.0 = empty.</td>
+      </tr>
+      <tr>
+        <td class="mono">conditions</td>
+        <td>list</td>
+        <td>Conditions the player must meet to see this bar. <code>[]</code> = show to everyone. Uses the same condition format as nametags.</td>
+      </tr>
+    </table>
+
+    <h3>Default Example Bars</h3>
+    <pre><code>  <span class="yk">bars</span><span class="yv">:</span>
+    <span class="yk">welcome</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;gradient:#ff6b6b:#ffd93d&gt;Welcome to the server!&lt;/gradient&gt;"</span>
+        - <span class="ys">"&lt;gray&gt;Type /help for a list of commands"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">100</span>    <span class="yc"># Switch every 5 seconds</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">PURPLE</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SOLID</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span> []               <span class="yc"># Show to everyone</span>
+
+    <span class="yk">staff-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;red&gt;⚑ Staff Mode Active"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">60</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">RED</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SEGMENTED_10</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.staff</span>   <span class="yc"># Only players with oreo.staff see this</span></code></pre>
+  </section>
+
+  <section id="bossbars-examples">
+    <h2>Boss Bars — Ready-to-use Examples</h2>
+
+    <h3>VIP bar (only VIP players)</h3>
+    <pre><code>    <span class="yk">vip-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;gold&gt;⭐ VIP — Thank you for your support!"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">80</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">YELLOW</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SOLID</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.vip</span></code></pre>
+
+    <h3>World-specific bar (survival world only)</h3>
+    <pre><code>    <span class="yk">survival-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;green&gt;🌿 Survival World"</span>
+        - <span class="ys">"&lt;gray&gt;Type /help for commands"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">100</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">GREEN</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SEGMENTED_10</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">WORLD</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">survie</span></code></pre>
+
+    <h3>PvP arena bar (WorldGuard region)</h3>
+    <pre><code>    <span class="yk">arena-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;red&gt;⚔ You are in the PvP Arena!"</span>
+        - <span class="ys">"&lt;gray&gt;PvP is enabled in this region"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">60</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">RED</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SEGMENTED_6</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">REGION</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">pvp_arena</span></code></pre>
+
+    <h3>Beginner tip bar (players below level 10)</h3>
+    <pre><code>    <span class="yk">beginner-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;aqua&gt;💡 Tip: Type /help to see all commands!"</span>
+        - <span class="ys">"&lt;aqua&gt;💡 Tip: Right-click to interact with blocks!"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">120</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">BLUE</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SOLID</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PAPI_LESS</span>
+          <span class="yk">placeholder</span><span class="yv">:</span> <span class="ys">"%player_level%"</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">"10"</span></code></pre>
+
+    <h3>Admin in creative (two conditions stacked)</h3>
+    <pre><code>    <span class="yk">admin-creative-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;dark_red&gt;Admin Creative Mode"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">60</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">RED</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SEGMENTED_20</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.admin</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">GAMEMODE</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">CREATIVE</span>   <span class="yc"># BOTH must be true</span></code></pre>
+
+    <h3>Bar with live PlaceholderAPI text</h3>
+    <pre><code>    <span class="yk">health-bar</span><span class="yv">:</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;red&gt;❤ Health: %player_health% / %player_max_health%"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">40</span>
+      <span class="yk">color</span><span class="yv">:</span> <span class="ys">RED</span>
+      <span class="yk">style</span><span class="yv">:</span> <span class="ys">SOLID</span>
+      <span class="yk">progress</span><span class="yv">:</span> <span class="yv">1.0</span>
+      <span class="yk">conditions</span><span class="yv">:</span> []</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  ACTION BAR                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="actionbar-overview">
+    <h2>Action Bar — Overview</h2>
+    <p>
+      The action bar is the line of text just above the player's hotbar. OreoEssentials
+      replaces it with a <strong>priority-based, multi-entry system</strong>:
+    </p>
+    <ul>
+      <li>You define multiple entries, each with a <strong>priority number</strong></li>
+      <li>On every refresh, the system checks each entry in priority order (highest first)</li>
+      <li>The <strong>first</strong> entry whose conditions all pass is displayed — others are skipped</li>
+      <li>Each entry can have multiple texts that rotate automatically (carousel)</li>
+    </ul>
+  </section>
+
+  <section id="actionbar-settings">
+    <h2>Action Bar — Entries &amp; Priority</h2>
+    <pre><code><span class="yk">actionbar</span><span class="yv">:</span>
+  <span class="yk">enabled</span><span class="yv">:</span> <span class="yv">true</span>
+  <span class="yc">  # true = custom action bar is sent. false = no action bar from this plugin.</span>
+
+  <span class="yk">refresh-interval-ticks</span><span class="yv">:</span> <span class="yv">20</span>
+  <span class="yc">  # How often the action bar is re-evaluated and resent to each player.</span>
+  <span class="yc">  # 20 ticks = once per second. Minecraft clears the action bar after ~60 ticks</span>
+  <span class="yc">  # of no update, so don't go above 40–50 ticks unless you want flickering.</span>
+
+  <span class="yk">entries</span><span class="yv">:</span>
+    <span class="yc">  # Each entry is a named block. The name is just for you — it doesn't appear in-game.</span>
+
+    <span class="yk">info</span><span class="yv">:</span>                                 <span class="yc"># Just a label</span>
+      <span class="yk">priority</span><span class="yv">:</span> <span class="yv">10</span>                         <span class="yc"># Higher number = checked first</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;gray&gt;❤ &lt;red&gt;%player_health%&lt;/red&gt;  ✦ &lt;gold&gt;%player_level%&lt;/gold&gt;"</span>
+        - <span class="ys">"&lt;gray&gt;⚡ &lt;yellow&gt;%player_ping%ms&lt;/yellow&gt;"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">60</span>          <span class="yc"># Switch text every 3 seconds</span>
+      <span class="yk">conditions</span><span class="yv">:</span> []                       <span class="yc"># Show to everyone</span></code></pre>
+
+    <div class="callout info">
+      <div class="label">Priority Logic</div>
+      <p>
+        Entries are sorted by priority and evaluated top-down. The <strong>first one whose conditions pass</strong> is shown.
+        So if you have a "combat" entry with priority 50 and a "default info" entry with priority 10,
+        and a player is in combat, they'll see the combat bar instead of the info bar.
+        As soon as they leave combat, the conditions fail and they fall through to the info bar.
+      </p>
+    </div>
+  </section>
+
+  <section id="actionbar-examples">
+    <h2>Action Bar — Examples</h2>
+
+    <h3>Health + Ping carousel (show to everyone)</h3>
+    <pre><code>    <span class="yk">status</span><span class="yv">:</span>
+      <span class="yk">priority</span><span class="yv">:</span> <span class="yv">10</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;gray&gt;❤ &lt;red&gt;%player_health%&lt;/red&gt;  🍗 &lt;green&gt;%player_food_level%&lt;/green&gt;"</span>
+        - <span class="ys">"&lt;gray&gt;⚡ &lt;yellow&gt;%player_ping%ms&lt;/yellow&gt;  📍 &lt;aqua&gt;%player_world%&lt;/aqua&gt;"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">80</span>
+      <span class="yk">conditions</span><span class="yv">:</span> []</code></pre>
+
+    <h3>Staff-only message at higher priority</h3>
+    <pre><code>    <span class="yk">staff-alert</span><span class="yv">:</span>
+      <span class="yk">priority</span><span class="yv">:</span> <span class="yv">100</span>        <span class="yc"># Very high — overrides everything for staff</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;red&gt;⚑ STAFF MODE  &lt;gray&gt;%player_online%&lt;/gray&gt; online"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">40</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">PERMISSION</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">oreo.staff</span>
+
+    <span class="yk">default</span><span class="yv">:</span>
+      <span class="yk">priority</span><span class="yv">:</span> <span class="yv">10</span>         <span class="yc"># Lower — shown when staff entry doesn't match</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;gray&gt;❤ &lt;red&gt;%player_health%&lt;/red&gt;"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">20</span>
+      <span class="yk">conditions</span><span class="yv">:</span> []</code></pre>
+
+    <h3>World-specific message at medium priority</h3>
+    <pre><code>    <span class="yk">pvp-world-info</span><span class="yv">:</span>
+      <span class="yk">priority</span><span class="yv">:</span> <span class="yv">50</span>
+      <span class="yk">texts</span><span class="yv">:</span>
+        - <span class="ys">"&lt;red&gt;⚔ PvP is enabled in this world!"</span>
+        - <span class="ys">"&lt;gray&gt;Kill players to earn &lt;gold&gt;BP&lt;/gold&gt; currency!"</span>
+      <span class="yk">carousel-interval-ticks</span><span class="yv">:</span> <span class="yv">100</span>
+      <span class="yk">conditions</span><span class="yv">:</span>
+        - <span class="yk">type</span><span class="yv">:</span> <span class="ys">WORLD</span>
+          <span class="yk">value</span><span class="yv">:</span> <span class="ys">pvp_world</span></code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  COMMANDS                                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="commands">
+    <h2>All Commands</h2>
+
+    <h3>Admin Commands</h3>
+    <table>
+      <tr><th>Command</th><th>Permission</th><th>Description</th></tr>
+      <tr>
+        <td class="mono">/customnameplates reload</td>
+        <td class="perm">oe.customnameplates.admin</td>
+        <td>Reload <code>custom-nameplates/config.yml</code> without restarting. All four systems (nametags, bubbles, bossbars, actionbar) restart with the new settings. Alias: <code>/cnp reload</code></td>
+      </tr>
+      <tr>
+        <td class="mono">/customnameplates help</td>
+        <td class="perm">oe.customnameplates.admin</td>
+        <td>Show admin help. Alias: <code>/cnp help</code></td>
+      </tr>
+      <tr>
+        <td class="mono">/nametag toggle &lt;player&gt;</td>
+        <td class="perm">oe.nametag.admin</td>
+        <td>Toggle another player's nametag visibility on/off. Works while they're online.</td>
+      </tr>
+    </table>
+
+    <h3>Player Commands</h3>
+    <table>
+      <tr><th>Command</th><th>Permission</th><th>Description</th></tr>
+      <tr>
+        <td class="mono">/nametag toggle</td>
+        <td class="perm">oe.nametag.use</td>
+        <td>Toggle your own nametag visibility — hides it from all other players until you toggle it back on. Alias: <code>/nt toggle</code></td>
+      </tr>
+      <tr>
+        <td class="mono">/bubblecolor &lt;color&gt;</td>
+        <td class="perm">oe.chatbubble.color</td>
+        <td>Set a personal color for your chat bubbles. Accepts color names, <code>#hex</code>, <code>gradient:a:b</code>, etc. Tab-complete shows presets. Aliases: <code>/bccolor</code>, <code>/chatbubblecolor</code></td>
+      </tr>
+      <tr>
+        <td class="mono">/bubblecolor reset</td>
+        <td class="perm">oe.chatbubble.color</td>
+        <td>Reset your bubble color to the server default.</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  PERMISSIONS                                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="permissions">
+    <h2>Permissions</h2>
+    <table>
+      <tr><th>Permission</th><th>Default</th><th>What it allows</th></tr>
+      <tr>
+        <td class="perm">oe.customnameplates.admin</td>
+        <td class="def-op">op</td>
+        <td>Use <code>/cnp reload</code> and <code>/cnp help</code></td>
+      </tr>
+      <tr>
+        <td class="perm">oe.nametag.admin</td>
+        <td class="def-op">op</td>
+        <td>Toggle other players' nametags with <code>/nametag toggle &lt;player&gt;</code></td>
+      </tr>
+      <tr>
+        <td class="perm">oe.nametag.use</td>
+        <td class="def-true">true</td>
+        <td>Toggle your own nametag with <code>/nametag toggle</code></td>
+      </tr>
+      <tr>
+        <td class="perm">oe.chatbubble.color</td>
+        <td class="def-true">true</td>
+        <td>Use <code>/bubblecolor</code> to set a personal bubble color</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  PERFORMANCE TIPS                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="performance">
+    <h2>Performance Tips</h2>
+    <ul>
+      <li><strong>Increase <code>update-interval-ticks</code></strong> — If you have many players online, set this to 60–100 ticks. The text refresh runs less often but the plugin does less work per second.</li>
+      <li><strong>Reduce <code>visibility-sweep-batch-owners</code></strong> — Lower this if you notice lag spikes. It spreads the visibility work across more ticks rather than doing it all at once.</li>
+      <li><strong>Use transparent background on nametags</strong> — The <code>default</code> background creates a grey panel that's drawn for every viewer. <code>transparent</code> skips this rendering step.</li>
+      <li><strong>Reduce <code>view-range</code></strong> — A smaller view range means fewer players need to track each other's nametag entities. 32 blocks is usually enough; 64+ is heavy on large servers.</li>
+      <li><strong>Limit PlaceholderAPI calls in fast entries</strong> — Action bar has a <code>refresh-interval-ticks</code> of 20 by default (once per second). If your placeholders are slow to resolve, bump this to 40.</li>
+      <li><strong>Disable unused features</strong> — If you don't use chat bubbles, set <code>chat-bubbles.enabled: false</code>. Each disabled feature is zero overhead.</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!--  FAQ                                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section id="faq">
+    <h2>FAQ / Troubleshooting</h2>
+
+    <h3>Q: Nametags don't appear at all.</h3>
+    <p>Check these in order:</p>
+    <ol>
+      <li>Is <code>nametag.enabled: true</code> in the config?</li>
+      <li>Do you have at least one entry under <code>nametag.layers</code>?</li>
+      <li>Check the server console for any <code>[Nametag]</code> error messages during startup.</li>
+      <li>If you're testing on yourself, make sure <code>show-to-self: true</code> or look at another player.</li>
+      <li>Run <code>/cnp reload</code> and check the console for "Nametag] TextDisplay nametags enabled (X layer(s))."</li>
+    </ol>
+
+    <h3>Q: Nametags are showing but the text is wrong / placeholders aren't working.</h3>
+    <ul>
+      <li>Make sure <strong>PlaceholderAPI</strong> is installed if you're using <code>%placeholder%</code> syntax.</li>
+      <li>Make sure the specific expansion is installed. For <code>%luckperms_prefix%</code>, you need the LuckPerms expansion (<code>/papi ecloud download LuckPerms</code>).</li>
+      <li>Check the placeholder name — most are lowercase and use underscores.</li>
+    </ul>
+
+    <h3>Q: I changed the config but nothing updated in-game.</h3>
+    <p>You need to reload: run <code>/cnp reload</code>. The config is not watched automatically.</p>
+
+    <h3>Q: The LuckPerms prefix has weird <code>&amp;</code> codes instead of colors.</h3>
+    <p>
+      This is handled automatically — the plugin translates <code>&amp;a</code>, <code>&amp;6</code>,
+      <code>&#RRGGBB</code>, and Spigot hex codes to MiniMessage format before rendering.
+      If you still see raw codes, make sure the text is going through the nametag system and not
+      being intercepted by another plugin.
+    </p>
+
+    <h3>Q: Chat bubbles show for everyone, but I want to restrict them to a certain world.</h3>
+    <pre><code>  <span class="yk">sender-conditions</span><span class="yv">:</span>
+    - <span class="yk">type</span><span class="yv">:</span> <span class="ys">WORLD</span>
+      <span class="yk">value</span><span class="yv">:</span> <span class="ys">survie</span>
+<span class="yc">  # Only players in the "survie" world will create bubbles.</span></code></pre>
+
+    <h3>Q: I want a nametag layer that's only visible to the player looking at someone in creative mode.</h3>
+    <pre><code><span class="yk">viewer-conditions</span><span class="yv">:</span>
+  - <span class="yk">type</span><span class="yv">:</span> <span class="ys">GAMEMODE</span>
+    <span class="yk">value</span><span class="yv">:</span> <span class="ys">CREATIVE</span>
+<span class="yc">  # Only viewers in creative mode can see this layer.</span></code></pre>
+
+    <h3>Q: Can I have conditions on boss bars that use PlaceholderAPI?</h3>
+    <p>
+      Yes! Boss bar conditions use the exact same system as nametag conditions.
+      All condition types including <code>PAPI_EQUALS</code>, <code>PAPI_GREATER</code>, etc. work for boss bars.
+    </p>
+
+    <h3>Q: After toggling my nametag off with /nametag toggle, it still shows. Why?</h3>
+    <p>
+      The toggle state is stored in memory only. If the server restarts or <code>/cnp reload</code>
+      is run, the toggle resets. The toggle state is not persisted to disk between restarts.
+    </p>
+
+    <h3>Q: Can two boss bars be shown at the same time?</h3>
+    <p>
+      Yes! Unlike the action bar (which only shows the highest-priority match), <strong>all boss bars
+      whose conditions pass are shown simultaneously</strong>. A player can see multiple boss bars at once
+      if they meet the conditions for multiple bars.
+    </p>
+
+    <h3>Q: The background icon for chat bubbles is showing in front of the text, not behind.</h3>
+    <p>
+      The rendering order depends on entity spawn order — the background icon must spawn first.
+      This is handled automatically. If you're still seeing it in front, try reducing <code>scale</code>
+      slightly or adjusting <code>offset-y</code> so it sits further behind.
+    </p>
+  </section>
+
+</main>
+</div>
+</body>
+</html>

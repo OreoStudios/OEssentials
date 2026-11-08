@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.afk.lifecycle.AfkModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "afk")
+@dev.oreo.modulith.core.ApplicationModule(id = "afk", uses = {"player-services::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "afk", lifecycle = fr.elias.oessentials.afk.lifecycle.AfkModule.class)
 package fr.elias.oessentials.afk;

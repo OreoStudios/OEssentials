@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.commands.lifecycle.CommandsModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "commands")
+@dev.oreo.modulith.core.ApplicationModule(id = "commands", uses = {"discord-integration::services", "inventory-sync::services", "mod-gui::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "commands", lifecycle = fr.elias.oessentials.commands.lifecycle.CommandsModule.class)
 package fr.elias.oessentials.commands;

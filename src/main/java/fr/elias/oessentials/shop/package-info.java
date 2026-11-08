@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.shop.lifecycle.ShopModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "shop")
+@dev.oreo.modulith.core.ApplicationModule(id = "shop", uses = {"currency-system::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "shop", lifecycle = fr.elias.oessentials.shop.lifecycle.ShopModule.class)
 package fr.elias.oessentials.shop;

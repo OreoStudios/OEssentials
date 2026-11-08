@@ -1,6 +1,5 @@
 package fr.elias.oessentials.afk.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.afk.internal.rabbit.namespace.AfkPacketNamespace;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
@@ -10,7 +9,7 @@ import fr.elias.oessentials.afk.internal.AfkListener;
 import fr.elias.oessentials.afk.internal.AfkPoolService;
 import fr.elias.oessentials.afk.internal.AfkService;
 
-@PluginModule(value = "afk", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, uses = {"player-services::services"}, after = {"proxy-messaging"})
+@PluginModule(value = "afk", dependencies = {"configuration::services", "messaging::events", "messaging::services"}, after = {"proxy-messaging"})
 public final class AfkModule extends ManagedModule implements AfkServices {
     private AfkService afkService;
     private AfkPoolService afkPoolService;
@@ -21,13 +20,13 @@ public final class AfkModule extends ManagedModule implements AfkServices {
         cleanup("afkPoolService", () -> { if (afkPoolService != null) afkPoolService.cleanupAll(); });
         services(MessagingServices.class).registerNamespace(new AfkPacketNamespace());
         initAfk();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.IAfkAPI.class, this::getAfkApi);
         registerConfigFile("afk.yml", () -> afkService.getAfkConfig().reload());
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
         try { if (afkPoolService != null) afkPoolService.tryHookCrossServerNow(); }

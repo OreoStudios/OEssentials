@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.trade.lifecycle.TradeModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "trade")
+@dev.oreo.modulith.core.ApplicationModule(id = "trade", uses = {"inventory-sync::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "trade", lifecycle = fr.elias.oessentials.trade.lifecycle.TradeModule.class)
 package fr.elias.oessentials.trade;

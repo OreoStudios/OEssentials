@@ -46,6 +46,27 @@ class OreoModuleArchitectureTest {
     }
 
     @Test
+    void packageUsesReachBothRuntimeCatalogAndProcessorMetadata() throws Exception {
+        var catalog = ModuleRuntime.builder().modules(OreoModules.TYPES).build().catalog();
+        var lines = java.nio.file.Files.readAllLines(java.nio.file.Path.of(
+                "build/classes/java/main/META-INF/minecraft-modulith/modules.idx"));
+        int withUses = 0;
+        for (var type : OreoModules.TYPES) {
+            var boundary = dev.oreo.modulith.core.ModuleBoundary.declaration(type).orElseThrow().annotation();
+            var expected = new java.util.HashSet<>(java.util.List.of(boundary.uses()));
+            if (!expected.isEmpty()) withUses++;
+            assertEquals(expected, new java.util.HashSet<>(catalog.find(boundary.id()).orElseThrow().uses()));
+            String[] columns = lines.stream().filter(line -> line.startsWith(boundary.id() + "|"))
+                    .findFirst().orElseThrow().split("\\|", -1);
+            var indexed = columns.length > 4 && !columns[4].isBlank()
+                    ? new java.util.HashSet<>(java.util.List.of(columns[4].split(",")))
+                    : java.util.Set.<String>of();
+            assertEquals(expected, indexed, boundary.id());
+        }
+        assertTrue(withUses > 0, "Late API access must remain represented in the reports");
+    }
+
+    @Test
     void eachFeatureHasItsOwnPackageAndOnePublicNamedServiceApi() {
         var packages = new HashSet<String>();
         for (var module : OreoModules.TYPES) {

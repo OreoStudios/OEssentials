@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials - Scoreboard, Tab, and BossBar Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --bg-soft: #16202a;
+      --panel: rgba(16, 22, 29, 0.84);
+      --panel-strong: #192531;
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(247, 185, 85, 0.12), transparent 24%),
+        radial-gradient(circle at top left, rgba(104, 217, 200, 0.14), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12, 18, 23, 0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding: 18px;
+      border: 1px solid rgba(247, 185, 85, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(247, 185, 85, 0.08), rgba(104, 217, 200, 0.05));
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+      line-height: 1.1;
+      color: var(--gold);
+    }
+
+    .brand p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .nav-group {
+      margin-top: 18px;
+    }
+
+    .nav-group h2 {
+      margin: 0 0 8px;
+      color: var(--soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-group a {
+      display: block;
+      padding: 10px 12px;
+      margin: 4px 0;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: 0.18s ease;
+    }
+
+    .nav-group a:hover,
+    .nav-group a.active {
+      color: var(--text);
+      border-color: rgba(104, 217, 200, 0.26);
+      background: rgba(104, 217, 200, 0.08);
+    }
+
+    .content {
+      padding: 34px 36px 80px;
+    }
+
+    .hero {
+      padding: 30px;
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(247, 185, 85, 0.12), rgba(104, 217, 200, 0.1)),
+        rgba(16, 22, 29, 0.78);
+      border: 1px solid rgba(247, 185, 85, 0.22);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .hero .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff0d2;
+      background: rgba(247, 185, 85, 0.18);
+      border: 1px solid rgba(247, 185, 85, 0.28);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      max-width: 920px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .hero-card {
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .hero-card strong {
+      display: block;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    section {
+      margin-top: 26px;
+      padding: 24px;
+      border-radius: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    section h2 {
+      margin: 0 0 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      color: var(--text);
+    }
+
+    section h3 {
+      margin: 22px 0 10px;
+      font-size: 1.04rem;
+      color: var(--teal);
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    strong {
+      color: var(--text);
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #fff4d0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .note,
+    .warn,
+    .tip {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid;
+    }
+
+    .note {
+      background: rgba(127, 192, 255, 0.08);
+      border-color: rgba(127, 192, 255, 0.22);
+    }
+
+    .warn {
+      background: rgba(255, 140, 122, 0.08);
+      border-color: rgba(255, 140, 122, 0.24);
+    }
+
+    .tip {
+      background: rgba(143, 226, 143, 0.08);
+      border-color: rgba(143, 226, 143, 0.24);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 0.82rem;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .step-index {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #ffde8d);
+      color: #1a1610;
+      font-weight: 800;
+    }
+
+    .code-block {
+      position: relative;
+      margin-top: 14px;
+      border: 1px solid #253646;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--code);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 700;
+      color: #132029;
+      background: linear-gradient(135deg, var(--gold), #ffd89c);
+      cursor: pointer;
+    }
+
+    .copy-btn.done {
+      background: linear-gradient(135deg, var(--green), #c5f2c5);
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      color: #e8f3fa;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .footer-box {
+      margin-top: 26px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      color: var(--soft);
+    }
+
+    .muted {
+      color: var(--soft);
+    }
+
+    .accent {
+      color: var(--gold);
+    }
+
+    @media (max-width: 1080px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .hero-grid,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .content {
+        padding: 20px 14px 60px;
+      }
+
+      .hero,
+      section {
+        padding: 18px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>OreoEssentials UI Guide</h1>
+        <p>Verified against the current scoreboard, tab, bossbar, multi-bossbar, and condition code paths.</p>
+      </div>
+
+      <nav>
+        <div class="nav-group">
+          <h2>Start Here</h2>
+          <a href="#overview">Overview</a>
+          <a href="#before-you-start">Before You Start</a>
+          <a href="#formatting">Formatting and Placeholders</a>
+        </div>
+
+        <div class="nav-group">
+          <h2>Scoreboard</h2>
+          <a href="#scoreboard">Scoreboard Basics</a>
+          <a href="#scoreboard-animation">Title and Line Animation</a>
+          <a href="#scoreboard-worlds">World Filters</a>
+        </div>
+
+        <div class="nav-group">
+          <h2>Tab</h2>
+          <a href="#tab-overview">Tab Overview</a>
+          <a href="#tab-title">Join Title</a>
+          <a href="#tab-classic">Classic Mode</a>
+          <a href="#tab-custom">Custom Mode</a>
+          <a href="#tab-network">Cross-Server Behavior</a>
+          <a href="#tab-per-world">Per-World Overrides</a>
+          <a href="#conditions">Conditions System</a>
+        </div>
+
+        <div class="nav-group">
+          <h2>BossBars</h2>
+          <a href="#bossbar-overview">BossBar Overview</a>
+          <a href="#bossbar-simple">Simple BossBar</a>
+          <a href="#bossbar-multi">Multi BossBar</a>
+          <a href="#bossbar-carousel">Carousel and Examples</a>
+        </div>
+
+        <div class="nav-group">
+          <h2>Last Notes</h2>
+          <a href="#troubleshooting">Troubleshooting</a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="hero">
+        <span class="eyebrow">Step by step / exact behavior</span>
+        <h1>Scoreboard, Tab, and BossBar</h1>
+        <p>
+          This page explains the current OreoEssentials UI systems the way the code actually reads them today.
+          It covers the right-side scoreboard, the TAB list, the simple boss bar, and the multi-bossbar system from
+          <code>custom-nameplates/config.yml</code>. Where the code has limits or caveats, they are called out directly.
+        </p>
+        <div class="hero-grid">
+          <div class="hero-card">
+            <strong>Best reload command</strong>
+            Use <code>/oer</code> or <code>/oereload</code> after config changes unless you are reloading a smaller module on purpose.
+          </div>
+          <div class="hero-card">
+            <strong>BossBar recommendation</strong>
+            The multi-bossbar system is the main one now. The simple bossbar still exists, but it is disabled by default in <code>settings.yml</code>.
+          </div>
+          <div class="hero-card">
+            <strong>Important condition limit</strong>
+            Current code supports world, region, permission, gamemode, and PAPI checks. It does <span class="accent">not</span> support regex world matching.
+          </div>
+        </div>
+      </header>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>There are four different UI pieces involved here. They do not all live in the same file.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>What players see</th>
+              <th>Main config file</th>
+              <th>Toggle / command</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Scoreboard</td>
+              <td>Sidebar on the right side of the screen</td>
+              <td><code>plugins/OreoEssentials/scoreboard-tab/scoreboard.yml</code></td>
+              <td><code>/scoreboard</code>, alias <code>/sb</code>, permission <code>oreo.scoreboard.toggle</code></td>
+            </tr>
+            <tr>
+              <td>Tab list</td>
+              <td>Player list shown when TAB is pressed</td>
+              <td><code>plugins/OreoEssentials/scoreboard-tab/tab.yml</code></td>
+              <td>Feature toggle only: <code>settings.yml -&gt; features.tab.enabled</code></td>
+            </tr>
+            <tr>
+              <td>Simple BossBar</td>
+              <td>One global bar at the top of the screen</td>
+              <td><code>plugins/OreoEssentials/config.yml</code> under <code>bossbar:</code></td>
+              <td><code>/bossbar toggle</code>, permission <code>oreo.bossbar.toggle</code>, plus <code>settings.yml -&gt; features.bossbar.enabled</code></td>
+            </tr>
+            <tr>
+              <td>Multi BossBar</td>
+              <td>Multiple named bars, each with its own conditions</td>
+              <td><code>plugins/OreoEssentials/custom-nameplates/config.yml</code> under <code>bossbars:</code></td>
+              <td>Enabled from that file; also affected by UI safeguards</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="before-you-start">
+        <h2>Before You Start</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-index">1</div>
+            <div>
+              <strong>Turn the module on in <code>settings.yml</code>.</strong>
+              <p>The code respects feature toggles first. If a feature is off there, editing the YAML for that feature will not do anything.</p>
+              <div class="code-block">
+                <button class="copy-btn" type="button">Copy</button>
+                <pre><code>features:
+  scoreboard:
+    enabled: true
+
+  tab:
+    enabled: true
+
+  bossbar:
+    enabled: false   # simple legacy bossbar, off by default in your file</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-index">2</div>
+            <div>
+              <strong>Know which bossbar system you want.</strong>
+              <p>
+                If you want one simple bar for everybody, use <code>config.yml -&gt; bossbar:</code>.
+                If you want different bars for different players, worlds, ranks, or regions, use
+                <code>custom-nameplates/config.yml -&gt; bossbars:</code>.
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-index">3</div>
+            <div>
+              <strong>Reload after edits.</strong>
+              <p>Use <code>/oer</code> or <code>/oereload</code>. That is the safest general command for these files.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="warn">
+          <strong>Important:</strong> if you enable both the simple bossbar and the multi-bossbar system, players can receive both. Usually that is not what you want.
+        </div>
+      </section>
+
+      <section id="formatting">
+        <h2>Formatting and Placeholders</h2>
+        <p>These UI systems support normal text, legacy <code>&amp;</code> color codes, MiniMessage tags, and PlaceholderAPI values where the code path resolves them.</p>
+
+        <div class="two-col">
+          <div>
+            <h3>Legacy color codes</h3>
+            <div class="code-block">
+              <button class="copy-btn" type="button">Copy</button>
+              <pre><code>&amp;aGreen text
+&amp;6Gold text
+&amp;lBold text
+&amp;7Gray text</code></pre>
+            </div>
+          </div>
+          <div>
+            <h3>MiniMessage</h3>
+            <div class="code-block">
+              <button class="copy-btn" type="button">Copy</button>
+              <pre><code>&lt;red&gt;Red text
+&lt;bold&gt;Bold text
+&lt;gradient:#ff7a18:#ffd35a&gt;Gradient text&lt;/gradient&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <h3>PlaceholderAPI examples</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>%player_name%
+%luckperms_prefix%
+%luckperms_primary_group%
+%vault_eco_balance_formatted%
+%player_ping%</code></pre>
+        </div>
+
+        <div class="note">
+          <strong>Classic TAB manager built-in placeholders from OreoEssentials:</strong>
+          <div class="pill-row">
+            <span class="pill">%oe_local_online%</span>
+            <span class="pill">%oe_network_online%</span>
+            <span class="pill">%oe_network_list%</span>
+            <span class="pill">%oe_server_tag%</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="scoreboard">
+        <h2>Scoreboard Basics</h2>
+        <p>The scoreboard is loaded from <code>plugins/OreoEssentials/scoreboard-tab/scoreboard.yml</code>. The parser reads exactly these keys:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>Type</th>
+              <th>What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>scoreboard.default-enabled</code></td>
+              <td>boolean</td>
+              <td>Default state for players who have never toggled the scoreboard yet</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.update-ticks</code></td>
+              <td>number</td>
+              <td>Refresh cadence. Minimum is 1 tick in code.</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.title.frame-ticks</code></td>
+              <td>number</td>
+              <td>How often the title animation advances</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.title.frames</code></td>
+              <td>list</td>
+              <td>Animated title frames</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.worlds.whitelist</code></td>
+              <td>list</td>
+              <td>If not empty, only those worlds may show the scoreboard</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.worlds.blacklist</code></td>
+              <td>list</td>
+              <td>If a world appears here, the scoreboard is blocked there</td>
+            </tr>
+            <tr>
+              <td><code>scoreboard.lines</code></td>
+              <td>list</td>
+              <td>Every visible row in the sidebar</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Minimal working example</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>scoreboard:
+  default-enabled: true
+  update-ticks: 20
+
+  title:
+    frame-ticks: 10
+    frames:
+      - "&amp;9&amp;lOreo&amp;b&amp;lEssentials"
+
+  worlds:
+    whitelist: []
+    blacklist: []
+
+  lines:
+    - "&amp;7Player: &amp;b{player}"
+    - "&amp;7Rank: %luckperms_prefix%%luckperms_primary_group%"
+    - "&amp;7Money: &amp;e%vault_eco_balance_formatted%"</code></pre>
+        </div>
+
+        <div class="tip">
+          <strong>Player command:</strong> players toggle this with <code>/scoreboard</code> or <code>/sb</code>. The permission is <code>oreo.scoreboard.toggle</code>, and the chosen state is persisted for that player.
+        </div>
+      </section>
+
+      <section id="scoreboard-animation">
+        <h2>Scoreboard Title and Line Animation</h2>
+        <p>The title animates from <code>scoreboard.title.frames</code>. The lines can also animate with the built-in tag parser.</p>
+
+        <h3>Animated title</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>scoreboard:
+  title:
+    frame-ticks: 10
+    frames:
+      - "&amp;9&amp;lOreo&amp;b&amp;lEssentials"
+      - "&amp;b&amp;lOreo&amp;9&amp;lEssentials"
+      - "&amp;f&amp;lOreo&amp;3&amp;lEssentials"</code></pre>
+        </div>
+
+        <h3>Animated line syntax</h3>
+        <p>The parser looks for this exact pattern:</p>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>%animations_&lt;tag interval=5&gt;
+Frame one
+|
+Frame two
+|
+Frame three
+&lt;/tag&gt;%</code></pre>
+        </div>
+
+        <p>That means:</p>
+        <ul>
+          <li><code>interval=5</code> means each frame lasts 5 ticks. If you omit the <code>interval=</code> part entirely (e.g. <code>%animations_&lt;tag&gt;</code>), the code defaults to <strong>20 ticks</strong>.</li>
+          <li>A line that only contains <code>|</code> separates frames.</li>
+          <li>The whole block must start with <code>%animations_&lt;tag ...&gt;</code> and end with <code>&lt;/tag&gt;%</code>.</li>
+        </ul>
+
+        <h3>Real example</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>- |-
+  %animations_&lt;tag interval=10&gt;
+  &lt;gradient:#FFD700:#FFA500&gt;Balance:&lt;/gradient&gt; &amp;e%vault_eco_balance_formatted%
+  |
+  &lt;gradient:#FFA500:#FFD700&gt;Balance:&lt;/gradient&gt; &amp;6%vault_eco_balance_formatted%
+  |
+  &lt;gradient:#FFFF00:#FFD700&gt;Balance:&lt;/gradient&gt; &amp;e%vault_eco_balance_formatted%
+  &lt;/tag&gt;%</code></pre>
+        </div>
+      </section>
+
+      <section id="scoreboard-worlds">
+        <h2>Scoreboard World Filters</h2>
+        <p>The scoreboard code checks the current world name against both lists.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>scoreboard:
+  worlds:
+    whitelist:
+      - world
+      - survie
+    blacklist:
+      - event_world</code></pre>
+        </div>
+
+        <ul>
+          <li>If <code>whitelist</code> is not empty, only those worlds can show the scoreboard.</li>
+          <li>If <code>blacklist</code> contains the current world, the scoreboard is blocked there.</li>
+          <li>The world names are compared as exact strings here, so use the real Bukkit world names.</li>
+        </ul>
+
+        <div class="warn">
+          If a player tries to turn the scoreboard on in a blocked world, the code sends the "scoreboard is disabled in this world" message instead of forcing it on.
+        </div>
+      </section>
+
+      <section id="tab-overview">
+        <h2>Tab Overview</h2>
+        <p>Tab is loaded from <code>plugins/OreoEssentials/scoreboard-tab/tab.yml</code>. The top-level choices that matter first are:</p>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  enabled: true
+  use-placeholderapi: true
+  interval-ticks: 20
+  layout-mode: CLASSIC   # or CUSTOM</code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Meaning</th>
+              <th>Important code note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>enabled</code></td>
+              <td>Legacy file-local toggle</td>
+              <td>The real master switch is still <code>settings.yml -&gt; features.tab.enabled</code>.</td>
+            </tr>
+            <tr>
+              <td><code>use-placeholderapi</code></td>
+              <td>Allows PlaceholderAPI resolution in TAB strings</td>
+              <td>Only works if PlaceholderAPI is installed</td>
+            </tr>
+            <tr>
+              <td><code>interval-ticks</code></td>
+              <td>Refresh cadence</td>
+              <td>Code clamps this to a minimum of <strong>20</strong>, even if the file says 2</td>
+            </tr>
+            <tr>
+              <td><code>layout-mode</code></td>
+              <td><code>CLASSIC</code> or <code>CUSTOM</code></td>
+              <td><code>CUSTOM</code> requires ProtocolLib or the code falls back to classic</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="tab-title">
+        <h2>Tab Join Title</h2>
+        <p>The tab system also has a join-title block in <code>tab.title</code>. This is separate from the tab header/footer itself.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  title:
+    enabled: true
+    show-on-join: true
+    text: "&amp;9&amp;lOREO&amp;b&amp;lESSENTIALS"
+    subtitle: "&amp;7Welcome &amp;b%player_displayname%&amp;7!"
+    fade-in: 10
+    stay: 60
+    fade-out: 10</code></pre>
+        </div>
+
+        <ul>
+          <li><code>enabled</code> must be true or nothing is sent.</li>
+          <li><code>show-on-join</code> must also be true for automatic join display.</li>
+          <li><code>text</code> and <code>subtitle</code> support the same normal color/PAPI processing path as the rest of the tab manager.</li>
+          <li><code>fade-in</code>, <code>stay</code>, and <code>fade-out</code> are passed directly to the title send call.</li>
+        </ul>
+      </section>
+
+      <section id="tab-classic">
+        <h2>Classic Tab Mode</h2>
+        <p>Classic mode uses the normal Minecraft player list and only changes the header, footer, and player list names.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  layout-mode: CLASSIC
+  header: "&amp;6Welcome &amp;e%player_name%"
+  footer: "&amp;7Players online: &amp;b%oe_local_online%"
+
+  name-format:
+    enabled: true
+    use-rank-formats: true
+    rank-key: "%luckperms_primary_group%"
+    server-tag: " &amp;8(&amp;7%server_name%&amp;8)"
+    pattern: "%luckperms_prefix%%player_name%%oe_server_tag%"
+    rank-formats:
+      default: "&amp;7%nick_or_name%"
+      admin: "&amp;c[Admin] &amp;f%nick_or_name%"
+    enforce-max-length: false
+    max-length: 64
+    overflow: TRIM</code></pre>
+        </div>
+
+        <h3>Name format fields</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>enabled</code></td>
+              <td>Turns player list name formatting on or off</td>
+            </tr>
+            <tr>
+              <td><code>use-rank-formats</code></td>
+              <td>If true, the code first tries <code>rank-formats</code> using the value resolved from <code>rank-key</code></td>
+            </tr>
+            <tr>
+              <td><code>rank-key</code></td>
+              <td>Usually a PAPI placeholder such as <code>%luckperms_primary_group%</code></td>
+            </tr>
+            <tr>
+              <td><code>pattern</code></td>
+              <td>Fallback format if no rank-specific format matches</td>
+            </tr>
+            <tr>
+              <td><code>server-tag</code></td>
+              <td>Used by the built-in placeholder <code>%oe_server_tag%</code></td>
+            </tr>
+            <tr>
+              <td><code>enforce-max-length</code>, <code>max-length</code>, <code>overflow</code></td>
+              <td>Length control for the final rendered player list name</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Classic header/footer animations</h3>
+        <p>The classic header and footer also support the built-in animation tag parser.</p>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  layout-mode: CLASSIC
+  header: |-
+    %animations_&lt;tag interval=20&gt;
+    &amp;6Welcome
+    |
+    &amp;eWelcome
+    &lt;/tag&gt;%
+  footer: "&amp;7Players online: &amp;b%oe_local_online%"</code></pre>
+        </div>
+      </section>
+
+      <section id="tab-custom">
+        <h2>Custom Tab Mode</h2>
+        <p>Custom mode builds a packet-based layout with a top section, a player section, and a bottom section.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  layout-mode: CUSTOM
+
+  custom-layout:
+    change-interval: 80
+
+    top-section:
+      texts:
+        - "&amp;6Welcome"
+        - "&amp;eWelcome"
+
+    player-section:
+      enabled: true
+      player-format:
+        format: "%luckperms_prefix%%player_displayname%%afk_indicator%"
+        rank-colors:
+          admin: "&amp;b"
+          default: "&amp;f"
+        show-afk: true
+        afk-format: " &amp;7AFK"
+
+    bottom-section:
+      texts:
+        - "&amp;7Players: &amp;b%oe_network_online%"
+        - "&amp;7Website: &amp;dexample.com"
+
+    sorting:
+      rank-priority:
+        admin: 100
+        mod: 80
+        default: 10</code></pre>
+        </div>
+
+        <h3>How the code reads custom mode</h3>
+        <ul>
+          <li><code>change-interval</code> is the frame-change speed for animated top and bottom text.</li>
+          <li>If <code>top-section.texts</code> exists, those frames are used.</li>
+          <li>If <code>top-section.texts</code> does not exist, the code falls back to <code>line-1</code>, <code>line-2</code>, and <code>line-3</code>.</li>
+          <li>The same fallback exists for <code>bottom-section</code>.</li>
+          <li><code>player-section.enabled: false</code> disables the custom player rows. When that happens, <code>name-format</code> is used to format names instead.</li>
+          <li>The live sort key in code is the resolved rank priority from <code>sorting.rank-priority</code>.</li>
+        </ul>
+
+        <div class="warn">
+          The sample YAML may contain extra keys such as <code>sorting.method: RANK</code>, <code>custom-layout.enabled</code>, or <code>show-ping-bars</code>, but the current tab code does not read them. The meaningful custom-layout keys today are the ones documented here, especially <code>change-interval</code>, top/bottom text blocks, player-format, and <code>sorting.rank-priority</code>.
+        </div>
+      </section>
+
+      <section id="tab-network">
+        <h2>Tab Cross-Server Behavior</h2>
+        <p>The classic TAB manager supports a network block:</p>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  network:
+    all-servers: true
+    excluded-servers:
+      - hub</code></pre>
+        </div>
+
+        <p>When classic mode builds header/footer strings, it can fill these internal placeholders:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Placeholder</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>%oe_local_online%</code></td>
+              <td>Current local Bukkit online count</td>
+            </tr>
+            <tr>
+              <td><code>%oe_network_online%</code></td>
+              <td>Network player count if <code>PlayerDirectory</code> data exists; otherwise local count</td>
+            </tr>
+            <tr>
+              <td><code>%oe_network_list%</code></td>
+              <td>One line per player in the form <code>Name (server)</code></td>
+            </tr>
+            <tr>
+              <td><code>%oe_server_tag%</code></td>
+              <td>The text from <code>tab.name-format.server-tag</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Custom layout placeholder scope</h3>
+        <p>The custom layout renderer does not use the same internal placeholder resolver as classic mode. The direct built-ins it injects itself are narrower:</p>
+        <div class="pill-row">
+          <span class="pill">%player_displayname%</span>
+          <span class="pill">%player_name%</span>
+          <span class="pill">%player_world%</span>
+          <span class="pill">%player_ping%</span>
+          <span class="pill">%oe_network_online%</span>
+        </div>
+
+        <div class="warn">
+          <strong>Exact code caveat:</strong> in custom layout, <code>%oe_network_online%</code> is filled from the current local online count in that renderer path, and the classic built-ins like <code>%oe_local_online%</code>, <code>%oe_network_list%</code>, and <code>%oe_server_tag%</code> do not go through the same classic placeholder resolver there. So if you want the most accurate cross-server placeholder behavior, classic header/footer is the safer path today.
+        </div>
+      </section>
+
+      <section id="tab-per-world">
+        <h2>Per-World Overrides</h2>
+        <p>Per-world entries are read from <code>tab.per-world</code>. The world key lookup is case-insensitive here.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>tab:
+  per-world:
+    survie:
+      header: "&lt;green&gt;Survival World"
+      footer: "&lt;gray&gt;Type /help for commands"
+      use-placeholderapi: true
+
+      name-format:
+        enabled: true
+        pattern: "&amp;a%nick_or_name%"
+
+      conditions:
+        - type: PERMISSION
+          value: oreo.vip</code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Field inside one world entry</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>header</code></td>
+              <td>Overrides the normal classic header for that world</td>
+            </tr>
+            <tr>
+              <td><code>footer</code></td>
+              <td>Overrides the normal classic footer for that world</td>
+            </tr>
+            <tr>
+              <td><code>use-placeholderapi</code></td>
+              <td>World-level PAPI toggle override</td>
+            </tr>
+            <tr>
+              <td><code>name-format</code></td>
+              <td>World-level override of the normal name-format block</td>
+            </tr>
+            <tr>
+              <td><code>conditions</code></td>
+              <td>All of these must pass or the whole world override is ignored</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          Header and footer overrides are for classic mode. The <code>name-format</code> override can still matter in custom mode if <code>player-section.enabled: false</code> and the code falls back to <code>name-format</code>.
+        </div>
+      </section>
+
+      <section id="conditions">
+        <h2>Conditions System</h2>
+        <p>The same condition model is reused by tab overrides, holograms, and bossbars. Every listed condition must pass. If one fails, the entry fails.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Needs</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>PERMISSION</code></td>
+              <td>Nothing extra</td>
+              <td><code>value: oreo.vip</code></td>
+            </tr>
+            <tr>
+              <td><code>GAMEMODE</code></td>
+              <td>Nothing extra</td>
+              <td><code>value: CREATIVE</code></td>
+            </tr>
+            <tr>
+              <td><code>WORLD</code></td>
+              <td>Nothing extra</td>
+              <td><code>value: survie</code> — comparison is case-insensitive</td>
+            </tr>
+            <tr>
+              <td><code>REGION</code></td>
+              <td>WorldGuard</td>
+              <td><code>value: spawn</code></td>
+            </tr>
+            <tr>
+              <td><code>PAPI_EQUALS</code></td>
+              <td>PlaceholderAPI</td>
+              <td><code>placeholder: "%luckperms_primary_group%"</code> and <code>value: vip</code></td>
+            </tr>
+            <tr>
+              <td><code>PAPI_CONTAINS</code></td>
+              <td>PlaceholderAPI</td>
+              <td><code>value: staff</code></td>
+            </tr>
+            <tr>
+              <td><code>PAPI_GREATER</code></td>
+              <td>PlaceholderAPI</td>
+              <td><code>value: "1000"</code></td>
+            </tr>
+            <tr>
+              <td><code>PAPI_LESS</code></td>
+              <td>PlaceholderAPI</td>
+              <td><code>value: "10"</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Condition syntax</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>conditions:
+  - type: PERMISSION
+    value: oreo.vip
+
+  - type: PAPI_EQUALS
+    placeholder: "%luckperms_primary_group%"
+    value: "vip"</code></pre>
+        </div>
+
+        <h3>Negation</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>conditions:
+  - type: PERMISSION
+    value: oreo.staff
+    negate: true   # passes only if the player does NOT have that permission</code></pre>
+        </div>
+
+        <div class="warn">
+          <strong>No regex world support:</strong> the current code does not have a regex world condition. World matching is a direct world-name equality check.
+        </div>
+      </section>
+
+      <section id="bossbar-overview">
+        <h2>BossBar Overview</h2>
+        <p>You have two bossbar systems in this codebase.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Where it lives</th>
+              <th>Best use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Simple BossBar</td>
+              <td><code>config.yml -&gt; bossbar:</code></td>
+              <td>One global bar for everybody, with optional conditions</td>
+            </tr>
+            <tr>
+              <td>Multi BossBar</td>
+              <td><code>custom-nameplates/config.yml -&gt; bossbars:</code></td>
+              <td>Several named bars with different target audiences and carousel text</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          The code comments and default settings clearly push the plugin toward the multi-bossbar system. Use the simple bossbar only if you really want one legacy global bar.
+        </div>
+      </section>
+
+      <section id="bossbar-simple">
+        <h2>Simple BossBar</h2>
+        <p>The simple bossbar is still read by <code>BossBarService</code>. It pulls from <code>config.yml -&gt; bossbar:</code> and respects <code>settings.yml -&gt; features.bossbar.enabled</code>.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>bossbar:
+  text: "&lt;gradient:#FF1493:#00FF7F&gt;Welcome&lt;/gradient&gt; {player}"
+  color: PURPLE
+  style: SEGMENTED_10
+  progress: 1.0
+  update-ticks: 40
+  conditions: []</code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>text</code></td>
+              <td>Single rendered message. Supports <code>{player}</code> and PlaceholderAPI.</td>
+            </tr>
+            <tr>
+              <td><code>color</code></td>
+              <td><code>BLUE</code>, <code>GREEN</code>, <code>PINK</code>, <code>PURPLE</code>, <code>RED</code>, <code>WHITE</code>, <code>YELLOW</code></td>
+            </tr>
+            <tr>
+              <td><code>style</code></td>
+              <td><code>SOLID</code>, <code>SEGMENTED_6</code>, <code>SEGMENTED_10</code>, <code>SEGMENTED_12</code>, <code>SEGMENTED_20</code></td>
+            </tr>
+            <tr>
+              <td><code>progress</code></td>
+              <td>Clamped from 0.0 to 1.0 by code</td>
+            </tr>
+            <tr>
+              <td><code>update-ticks</code></td>
+              <td>Refresh cadence. Minimum is 1 tick in code.</td>
+            </tr>
+            <tr>
+              <td><code>conditions</code></td>
+              <td>Optional condition list. If present, all must pass for the player to see the bar.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          Players can toggle this bar with <code>/bossbar toggle</code>. The permission is <code>oreo.bossbar.toggle</code>.
+        </div>
+      </section>
+
+      <section id="bossbar-multi">
+        <h2>Multi BossBar</h2>
+        <p>The multi-bossbar system is loaded from <code>custom-nameplates/config.yml</code> under <code>bossbars:</code>. Each bar has its own ID and conditions.</p>
+
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>bossbars:
+  enabled: true
+  refresh-interval-ticks: 40
+
+  bars:
+    welcome:
+      texts:
+        - "&lt;gradient:#ff6b6b:#ffd93d&gt;Welcome to the server!&lt;/gradient&gt;"
+        - "&lt;gray&gt;Type /help for a list of commands"
+      carousel-interval-ticks: 100
+      color: PURPLE
+      style: SOLID
+      progress: 1.0
+      conditions: []
+
+    staff-bar:
+      text: "&lt;red&gt;Staff mode active"
+      color: RED
+      style: SEGMENTED_10
+      progress: 1.0
+      conditions:
+        - type: PERMISSION
+          value: oreo.staff</code></pre>
+        </div>
+
+        <h3>What the parser accepts</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>bossbars.enabled</code></td>
+              <td>Turns the multi-bossbar service on or off</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.refresh-interval-ticks</code></td>
+              <td>How often all bar conditions and titles are refreshed</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.bars.&lt;id&gt;.texts</code></td>
+              <td>List of rotating titles</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.bars.&lt;id&gt;.text</code></td>
+              <td>Single fallback title if you do not want a list</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.bars.&lt;id&gt;.carousel-interval-ticks</code></td>
+              <td>Frame speed for that one bar</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.bars.&lt;id&gt;.color</code>, <code>style</code>, <code>progress</code></td>
+              <td>Visual settings for that one bar</td>
+            </tr>
+            <tr>
+              <td><code>bossbars.bars.&lt;id&gt;.conditions</code></td>
+              <td>Who gets that bar</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          The code creates and removes each named bar independently. That means one player can satisfy several bars and see several bossbars stacked.
+        </div>
+      </section>
+
+      <section id="bossbar-carousel">
+        <h2>Carousel and Real Examples</h2>
+        <p>Carousel support exists only when you provide multiple text frames.</p>
+
+        <h3>VIP world bar</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>vip-world:
+  texts:
+    - "&lt;gold&gt;VIP zone"
+    - "&lt;yellow&gt;Welcome back, %player_name%"
+  carousel-interval-ticks: 80
+  color: YELLOW
+  style: SOLID
+  progress: 1.0
+  conditions:
+    - type: WORLD
+      value: survie
+    - type: PAPI_EQUALS
+      placeholder: "%luckperms_primary_group%"
+      value: "vip"</code></pre>
+        </div>
+
+        <h3>Region-only arena bar</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>arena-warning:
+  text: "&lt;red&gt;You are in the PvP arena"
+  color: RED
+  style: SEGMENTED_6
+  progress: 1.0
+  conditions:
+    - type: REGION
+      value: pvp_arena</code></pre>
+        </div>
+
+        <h3>Players below level 10</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>beginner-help:
+  text: "&lt;aqua&gt;Tip: Type /help"
+  color: BLUE
+  style: SOLID
+  progress: 1.0
+  conditions:
+    - type: PAPI_LESS
+      placeholder: "%player_level%"
+      value: "10"</code></pre>
+        </div>
+
+        <h3>Everybody except staff</h3>
+        <div class="code-block">
+          <button class="copy-btn" type="button">Copy</button>
+          <pre><code>non-staff-news:
+  text: "&lt;green&gt;Season reset this weekend"
+  color: GREEN
+  style: SOLID
+  progress: 1.0
+  conditions:
+    - type: PERMISSION
+      value: oreo.staff
+      negate: true</code></pre>
+        </div>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Problem</th>
+              <th>What to check</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Custom TAB does not activate</td>
+              <td>ProtocolLib is required. Without it, the code falls back to classic mode.</td>
+            </tr>
+            <tr>
+              <td><code>interval-ticks</code> below 20 does not feel faster in TAB</td>
+              <td>The tab manager clamps it to a minimum of 20.</td>
+            </tr>
+            <tr>
+              <td>WorldGuard region condition never matches</td>
+              <td>Make sure WorldGuard is installed and the region ID is exact.</td>
+            </tr>
+            <tr>
+              <td>PAPI conditions do nothing</td>
+              <td>PlaceholderAPI must be installed, and the placeholder must return a value for that player.</td>
+            </tr>
+            <tr>
+              <td>Cross-server count looks right in classic TAB but not in custom TAB</td>
+              <td>That is current code behavior. Custom layout does not use the full network placeholder resolver.</td>
+            </tr>
+            <tr>
+              <td>Simple bossbar and multi-bossbar overlap</td>
+              <td>Disable the simple bossbar in <code>settings.yml</code> if you only want the multi system.</td>
+            </tr>
+            <tr>
+              <td>Regex world matching requested by a client</td>
+              <td>Not supported in the current condition code. Only direct world-name equality exists today.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="footer-box">
+          After changing these files, reload with <code>/oer</code> or <code>/oereload</code>.<br />
+          For the most predictable setup today: use <strong>scoreboard.yml</strong> for the sidebar, <strong>tab.yml</strong> for TAB, and <strong>custom-nameplates/config.yml -&gt; bossbars</strong> for modern bossbars.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const codeBlocks = document.querySelectorAll(".code-block");
+    codeBlocks.forEach(block => {
+      const btn = block.querySelector(".copy-btn");
+      const pre = block.querySelector("pre");
+      btn.addEventListener("click", async () => {
+        const text = pre.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          const old = btn.textContent;
+          btn.textContent = "Copied";
+          btn.classList.add("done");
+          setTimeout(() => {
+            btn.textContent = old;
+            btn.classList.remove("done");
+          }, 1400);
+        } catch (err) {
+          btn.textContent = "Copy failed";
+          setTimeout(() => {
+            btn.textContent = "Copy";
+          }, 1400);
+        }
+      });
+    });
+
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-group a");
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(link => link.classList.remove("active"));
+        const current = document.querySelector(`.nav-group a[href="#${entry.target.id}"]`);
+        if (current) current.classList.add("active");
+      });
+    }, {
+      rootMargin: "-22% 0px -65% 0px",
+      threshold: 0.01
+    });
+
+    sections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>

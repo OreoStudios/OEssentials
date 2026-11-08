@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.currency.lifecycle.CurrencySystemModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "currency-system")
+@dev.oreo.modulith.core.ApplicationModule(id = "currency-system", uses = {"economy::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "currency-system", lifecycle = fr.elias.oessentials.currency.lifecycle.CurrencySystemModule.class)
 package fr.elias.oessentials.currency;

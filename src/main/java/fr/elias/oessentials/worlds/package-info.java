@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.worlds.lifecycle.CustomWorldsModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "custom-worlds")
+@dev.oreo.modulith.core.ApplicationModule(id = "custom-worlds", uses = {"mod-gui::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "custom-worlds", lifecycle = fr.elias.oessentials.worlds.lifecycle.CustomWorldsModule.class)
 package fr.elias.oessentials.worlds;

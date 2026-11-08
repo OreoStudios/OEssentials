@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Playtime Rewards Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0a1a2e 0%, #0e2640 40%, #0b1d2e 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 72px 24px 56px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(104,217,200,0.12);
+      border: 1px solid rgba(104,217,200,0.28);
+      border-radius: 999px;
+      padding: 4px 18px;
+      font-size: 0.78rem;
+      color: var(--teal);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      margin: 0 0 16px;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .tag {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ── Layout ── */
+    .layout {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+    .sidebar h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--soft);
+      margin: 0 0 12px;
+    }
+    .sidebar ul { list-style: none; margin: 0; padding: 0; }
+    .sidebar ul li { margin-bottom: 2px; }
+    .sidebar ul a {
+      display: block;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .sidebar ul a:hover { background: rgba(104,217,200,0.09); color: var(--teal); text-decoration: none; }
+    .sidebar .sub { padding-left: 18px; }
+
+    /* ── Sections ── */
+    section { margin-bottom: 60px; }
+    section h2 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin: 0 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .ico { font-size: 1.3rem; }
+    section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 32px 0 12px;
+    }
+    p { margin: 0 0 14px; color: var(--muted); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 22px 26px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(8px);
+    }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+    /* ── Alert boxes ── */
+    .alert {
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-left: 4px solid;
+      font-size: 0.93rem;
+    }
+    .alert-tip  { background: rgba(104,217,200,0.08); border-color: var(--teal); color: var(--teal); }
+    .alert-warn { background: rgba(247,185,85,0.10); border-color: var(--amber); color: var(--amber); }
+    .alert-info { background: rgba(127,192,255,0.09); border-color: var(--blue); color: var(--blue); }
+    .alert-danger { background: rgba(255,140,122,0.09); border-color: var(--red); color: var(--red); }
+    .alert b { display: block; margin-bottom: 4px; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.87rem;
+      line-height: 1.65;
+      margin: 12px 0;
+    }
+    code {
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.87em;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .c-key    { color: #7fc0ff; }
+    .c-val    { color: #f7b955; }
+    .c-str    { color: #8fe28f; }
+    .c-cmt    { color: #556070; font-style: italic; }
+    .c-teal   { color: var(--teal); }
+    .c-red    { color: var(--red); }
+    .c-purple { color: var(--purple); }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th {
+      background: rgba(104,217,200,0.10);
+      color: var(--teal);
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--muted);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.025); }
+    td code { font-size: 0.85em; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green  { background: rgba(143,226,143,0.15); color: var(--green); border: 1px solid rgba(143,226,143,0.3); }
+    .badge-amber  { background: rgba(247,185,85,0.15);  color: var(--amber); border: 1px solid rgba(247,185,85,0.3); }
+    .badge-red    { background: rgba(255,140,122,0.15); color: var(--red);   border: 1px solid rgba(255,140,122,0.3); }
+    .badge-blue   { background: rgba(127,192,255,0.15); color: var(--blue);  border: 1px solid rgba(127,192,255,0.3); }
+    .badge-purple { background: rgba(196,168,247,0.15); color: var(--purple);border: 1px solid rgba(196,168,247,0.3); }
+
+    /* ── Step list ── */
+    .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    .steps li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .steps li::before {
+      content: counter(step);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(104,217,200,0.14);
+      border: 1px solid rgba(104,217,200,0.3);
+      color: var(--teal);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .steps li .content { padding-top: 6px; }
+    .steps li .content strong { color: var(--text); display: block; margin-bottom: 4px; }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      align-items: center;
+      margin: 18px 0;
+      font-size: 0.88rem;
+    }
+    .flow-node {
+      background: rgba(104,217,200,0.10);
+      border: 1px solid rgba(104,217,200,0.25);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+    .flow-arrow {
+      color: var(--soft);
+      padding: 0 10px;
+      font-size: 1.1rem;
+    }
+
+    /* ── Player example boxes ── */
+    .player-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    .player-box .player-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .player-avatar {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      font-size: 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(104,217,200,0.12);
+      border: 1px solid var(--line);
+    }
+    .player-name { font-weight: 700; color: var(--text); }
+    .player-rank { font-size: 0.8rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── State pills ── */
+    .state-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .state-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .state-locked   { background: rgba(255,140,122,0.10); color: var(--red);    border-color: rgba(255,140,122,0.25); }
+    .state-ready    { background: rgba(143,226,143,0.10); color: var(--green);  border-color: rgba(143,226,143,0.25); }
+    .state-claimed  { background: rgba(247,185,85,0.10);  color: var(--amber);  border-color: rgba(247,185,85,0.25); }
+    .state-repeating{ background: rgba(127,192,255,0.10); color: var(--blue);   border-color: rgba(127,192,255,0.25); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--line);
+      color: var(--soft);
+      font-size: 0.88rem;
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+
+<!-- ══════════════════════════════════════════════════════ HERO -->
+<div class="hero">
+  <div class="hero-badge">OreoEssentials Module</div>
+  <h1>Playtime Rewards</h1>
+  <p>
+    Reward your players automatically for time they spend on the server —
+    milestones, hourly stipends, VIP bonuses, and a beautiful GUI.
+    No other plugin required.
+  </p>
+  <div class="hero-tags">
+    <span class="tag">Paper 1.21+</span>
+    <span class="tag">SmartInventory GUI</span>
+    <span class="tag">One-time &amp; Repeating</span>
+    <span class="tag">AutoClaim</span>
+    <span class="tag">Permission-Gated</span>
+    <span class="tag">Folia Compatible</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ LAYOUT -->
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#what-is">What is Playtime Rewards?</a></li>
+      <li><a href="#quickstart">Quick-Start (5 steps)</a></li>
+      <li><a href="#config">Config File Explained</a></li>
+      <li><a href="#reward-types">Reward Types</a>
+        <ul>
+          <li><a href="#one-time" class="sub">One-Time Milestones</a></li>
+          <li><a href="#repeating" class="sub">Repeating Rewards</a></li>
+          <li><a href="#autoclaim" class="sub">AutoClaim vs Manual</a></li>
+        </ul>
+      </li>
+      <li><a href="#directives">Command Directives</a></li>
+      <li><a href="#gui">GUI &amp; Skins</a></li>
+      <li><a href="#states">Reward States</a></li>
+      <li><a href="#stacking">Stacking Offline Rewards</a></li>
+      <li><a href="#playtime-source">Playtime Source</a></li>
+      <li><a href="#permissions">Permission-Gated Rewards</a></li>
+      <li><a href="#perm-table">Permissions Table</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#player-examples">Player Examples</a></li>
+      <li><a href="#data-files">Data Files</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main>
+
+    <!-- ══════════════════════════════════════════════ WHAT IS -->
+    <section id="what-is">
+      <h2><span class="ico">🎁</span> What is Playtime Rewards?</h2>
+      <p>
+        Playtime Rewards is a built-in module in OreoEssentials that automatically
+        gives players rewards based on how long they have played on your server.
+        Think of it as a loyalty programme — the more hours a player puts in,
+        the more they earn.
+      </p>
+      <p>There are two reward flavours:</p>
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--amber)">⭐ One-Time Milestones</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Trigger <strong>once</strong> when a player's total playtime reaches a
+            threshold — for example a big cash bonus at 24 hours. Once claimed, it
+            never fires again for that player.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--teal)">🔄 Repeating Rewards</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Fire <strong>every N seconds</strong> of playtime — for example
+            a small payment every hour. They keep coming back as long as the player
+            keeps playing.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        Both types support <strong>AutoClaim</strong> (reward fires silently in the
+        background) or <strong>Manual Claim</strong> (reward shows in a GUI and the
+        player must click it to collect).
+      </p>
+      <p>
+        The plugin tracks each player's playtime internally and saves it to disk so
+        progress is never lost across restarts.
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ QUICKSTART -->
+    <section id="quickstart">
+      <h2><span class="ico">🚀</span> Quick-Start (5 steps)</h2>
+
+      <div class="alert alert-tip">
+        <b>New to this module?</b>
+        Follow these 5 steps and you'll have working rewards in under 5 minutes.
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div class="content">
+            <strong>Install OreoEssentials</strong>
+            Drop <code>OreoEssentials.jar</code> into your <code>plugins/</code>
+            folder and start the server once. The module creates
+            <code>plugins/OreoEssentials/playtime-rewards/playtime_rewards.yml</code>
+            automatically.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Open the config</strong>
+            Edit <code>playtime-rewards/playtime_rewards.yml</code>. You'll see
+            example rewards already there — you can use those or replace them
+            with your own (see the <a href="#config">Config File</a> section).
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Give players access</strong>
+            By default all "public" rewards (those without <code>requires-permission: true</code>)
+            are visible to <strong>every player</strong> — no permission needed.
+            If you want rank-only VIP rewards, add <code>requires-permission: true</code>
+            and assign <code>oreo.prewards.&lt;reward-id&gt;</code> via LuckPerms.
+            <br>Give players the <code>oreo.prewards.notify</code> permission so they
+            get a reminder message when a reward is ready to collect.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Reload or restart</strong>
+            Either restart your server or run <code>/prewards reload</code>
+            (requires <code>oreo.prewards.admin</code>).
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Test it</strong>
+            As a player (or use <code>/prewards claim &lt;id&gt; &lt;player&gt;</code>
+            as admin) run <code>/prewards</code> to open the GUI.
+            Rewards that are ready show in green/glowing and can be clicked to claim.
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ CONFIG -->
+    <section id="config">
+      <h2><span class="ico">⚙️</span> Config File Explained</h2>
+      <p>
+        Everything lives in one file:
+        <code>plugins/OreoEssentials/playtime-rewards/playtime_rewards.yml</code>.
+        Here is a fully annotated version of the <code>settings</code> section:
+      </p>
+
+<pre><span class="c-key">settings:</span>
+
+  <span class="c-cmt"># ── How playtime is measured ──────────────────────────────────────</span>
+  <span class="c-key">source:</span> <span class="c-str">internal</span>
+  <span class="c-cmt"># "internal" = OreoEssentials tracks time itself (recommended)</span>
+  <span class="c-cmt"># "bukkit"   = uses Minecraft's vanilla statistic (counts ALL servers)</span>
+
+  <span class="c-key">baseline-from-bukkit-on-first-seen:</span> <span class="c-val">true</span>
+  <span class="c-cmt"># true  = first time a player is seen, copy their existing Bukkit</span>
+  <span class="c-cmt">#         playtime into the internal tracker so long-time players</span>
+  <span class="c-cmt">#         don't suddenly "lose" progress when you switch to internal.</span>
+  <span class="c-cmt"># false = start counting from zero when first seen.</span>
+
+  <span class="c-key">baseline-on-first-seen:</span> <span class="c-val">true</span>
+  <span class="c-cmt"># true  = when first seen, mark all repeating rewards as already</span>
+  <span class="c-cmt">#         paid-up to current playtime (prevents a burst of back-pay).</span>
+  <span class="c-cmt"># false = player gets all missed repeating rewards on first login.</span>
+
+  <span class="c-key">notify-every-minutes:</span> <span class="c-val">10</span>
+  <span class="c-cmt"># How often (in real-time minutes) online players are reminded</span>
+  <span class="c-cmt"># if they have unclaimed manual rewards. 0 = notifications off.</span>
+
+  <span class="c-key">stack-rewards:</span> <span class="c-val">true</span>
+  <span class="c-cmt"># Global default for repeating rewards.</span>
+  <span class="c-cmt"># true  = if a player missed 3 cycles while offline, they get 3 payouts.</span>
+  <span class="c-cmt"># false = at most 1 payout per claim, no catch-up.</span>
+
+  <span class="c-cmt"># ── GUI appearance ────────────────────────────────────────────────</span>
+  <span class="c-key">gui:</span>
+    <span class="c-key">title:</span> <span class="c-str">"&amp;bPlaytime Rewards"</span>     <span class="c-cmt"># inventory title (&amp;b = aqua)</span>
+    <span class="c-key">rows:</span> <span class="c-val">5</span>                        <span class="c-cmt"># 1 to 6 rows tall</span>
+    <span class="c-key">fill-empty:</span> <span class="c-val">true</span>             <span class="c-cmt"># fill unused slots with the filler item</span>
+
+    <span class="c-key">filler:</span>                        <span class="c-cmt"># the background glass pane</span>
+      <span class="c-key">material:</span> <span class="c-str">GRAY_STAINED_GLASS_PANE</span>
+      <span class="c-key">name:</span> <span class="c-str">"&amp;7"</span>                   <span class="c-cmt"># blank name (just a space)</span>
+      <span class="c-key">custom-model-data:</span> <span class="c-val">0</span>        <span class="c-cmt"># 0 = none</span>
+
+    <span class="c-key">states:</span>                        <span class="c-cmt"># how each reward state looks in the GUI</span>
+      <span class="c-key">LOCKED:</span>
+        <span class="c-key">material:</span> <span class="c-str">BARRIER</span>         <span class="c-cmt"># red X — not earned yet</span>
+        <span class="c-key">name:</span>     <span class="c-str">"&amp;cLocked"</span>
+        <span class="c-key">glow:</span>     <span class="c-val">false</span>
+      <span class="c-key">READY:</span>
+        <span class="c-key">material:</span> <span class="c-str">LIME_DYE</span>         <span class="c-cmt"># glowing green — click to collect!</span>
+        <span class="c-key">name:</span>     <span class="c-str">"&amp;aClick to claim"</span>
+        <span class="c-key">glow:</span>     <span class="c-val">true</span>
+      <span class="c-key">CLAIMED:</span>
+        <span class="c-key">material:</span> <span class="c-str">SUNFLOWER</span>        <span class="c-cmt"># one-time rewards, already collected</span>
+        <span class="c-key">name:</span>     <span class="c-str">"&amp;eClaimed"</span>
+        <span class="c-key">glow:</span>     <span class="c-val">false</span>
+      <span class="c-key">REPEATING:</span>
+        <span class="c-key">material:</span> <span class="c-str">CLOCK</span>            <span class="c-cmt"># repeating reward, ticking but not ready</span>
+        <span class="c-key">name:</span>     <span class="c-str">"&amp;6Repeating"</span>
+        <span class="c-key">glow:</span>     <span class="c-val">true</span></pre>
+
+      <h3>All settings keys at a glance</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>source</code></td><td>string</td><td><code>internal</code></td><td><code>internal</code> or <code>bukkit</code> — see <a href="#playtime-source">Playtime Source</a></td></tr>
+            <tr><td><code>baseline-from-bukkit-on-first-seen</code></td><td>boolean</td><td><code>true</code></td><td>Copy vanilla playtime into internal tracker on first join</td></tr>
+            <tr><td><code>baseline-on-first-seen</code></td><td>boolean</td><td><code>true</code></td><td>Don't back-pay repeating rewards on first login</td></tr>
+            <tr><td><code>notify-every-minutes</code></td><td>integer</td><td><code>10</code></td><td>Reminder interval for unclaimed rewards (0 = off)</td></tr>
+            <tr><td><code>stack-rewards</code></td><td>boolean</td><td><code>true</code></td><td>Global default: pay all missed cycles when player comes back online</td></tr>
+            <tr><td><code>gui.title</code></td><td>string</td><td><code>&amp;bPlaytime Rewards</code></td><td>Inventory title (supports <code>&amp;X</code> color codes)</td></tr>
+            <tr><td><code>gui.rows</code></td><td>integer</td><td><code>5</code></td><td>Inventory height (1–6)</td></tr>
+            <tr><td><code>gui.fill-empty</code></td><td>boolean</td><td><code>true</code></td><td>Fill unused slots with filler item</td></tr>
+            <tr><td><code>gui.filler.material</code></td><td>string</td><td><code>GRAY_STAINED_GLASS_PANE</code></td><td>Material name for background filler</td></tr>
+            <tr><td><code>gui.states.LOCKED.*</code></td><td>section</td><td>BARRIER</td><td>Icon for a reward not yet earned</td></tr>
+            <tr><td><code>gui.states.READY.*</code></td><td>section</td><td>LIME_DYE</td><td>Icon for a reward ready to claim</td></tr>
+            <tr><td><code>gui.states.CLAIMED.*</code></td><td>section</td><td>SUNFLOWER</td><td>Icon for an already-claimed one-time reward</td></tr>
+            <tr><td><code>gui.states.REPEATING.*</code></td><td>section</td><td>CLOCK</td><td>Icon for a repeating reward that is ticking but not due yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ REWARD TYPES -->
+    <section id="reward-types">
+      <h2><span class="ico">📋</span> Reward Types</h2>
+
+      <h3 id="one-time">⭐ One-Time Milestones (<code>PayFor</code>)</h3>
+      <p>
+        Use <code>PayFor</code> to define a <strong>playtime threshold in seconds</strong>.
+        When the player's total playtime reaches that number, the reward becomes
+        claimable. It can only be claimed <strong>once per player, ever</strong>.
+        Once collected it shows as <span class="badge badge-amber">CLAIMED</span> in the GUI.
+      </p>
+
+<pre><span class="c-cmt"># Example: one-time reward at exactly 1 hour (3600 seconds)</span>
+<span class="c-key">"1hour":</span>
+  <span class="c-key">DisplayName:</span> <span class="c-str">"&amp;fOne Hour Milestone"</span>
+  <span class="c-key">AutoClaim:</span> <span class="c-val">false</span>
+  <span class="c-key">PayFor:</span> <span class="c-val">3600</span>          <span class="c-cmt"># 3600 sec = 1 hour</span>
+  <span class="c-key">Commands:</span>
+    - <span class="c-str">"asConsole! money give [playerName] 500"</span>
+  <span class="c-key">gui:</span>
+    <span class="c-key">slot:</span> <span class="c-val">14</span>
+    <span class="c-key">icon:</span>
+      <span class="c-key">material:</span> <span class="c-str">IRON_INGOT</span>
+      <span class="c-key">name:</span> <span class="c-str">"&amp;f1h Milestone"</span></pre>
+
+      <div class="alert alert-info">
+        <b>Seconds reference</b>
+        1 hour = 3 600 &nbsp;|&nbsp; 6 hours = 21 600 &nbsp;|&nbsp; 12 hours = 43 200 &nbsp;|&nbsp;
+        24 hours = 86 400 &nbsp;|&nbsp; 7 days = 604 800 &nbsp;|&nbsp; 30 days = 2 592 000
+      </div>
+
+      <h3 id="repeating">🔄 Repeating Rewards (<code>PayEvery</code>)</h3>
+      <p>
+        Use <code>PayEvery</code> instead of <code>PayFor</code> to define a
+        <strong>cycle length in seconds</strong>. Every time the player accumulates
+        another full cycle of playtime, the reward fires again — indefinitely.
+      </p>
+      <p>
+        For example, <code>PayEvery: 3600</code> pays every hour. After 5 hours of
+        total playtime the player will have been paid 5 times.
+      </p>
+
+<pre><span class="c-cmt"># Example: pay every hour of playtime, auto-claimed</span>
+<span class="c-key">hourly1:</span>
+  <span class="c-key">DisplayName:</span> <span class="c-str">"&amp;7Hourly Reward"</span>
+  <span class="c-key">AutoClaim:</span> <span class="c-val">true</span>
+  <span class="c-key">PayEvery:</span> <span class="c-val">3600</span>        <span class="c-cmt"># trigger once per hour of playtime</span>
+  <span class="c-key">StackRewards:</span> <span class="c-val">true</span>    <span class="c-cmt"># catch up missed hours when player logs back in</span>
+  <span class="c-key">Commands:</span>
+    - <span class="c-str">"asConsole! money give [playerName] 20"</span>
+  <span class="c-key">gui:</span>
+    <span class="c-key">slot:</span> <span class="c-val">10</span>
+    <span class="c-key">icon:</span>
+      <span class="c-key">material:</span> <span class="c-str">GOLD_NUGGET</span>
+      <span class="c-key">name:</span> <span class="c-str">"&amp;eHourly Reward"</span></pre>
+
+      <div class="alert alert-warn">
+        <b>Don't use both PayFor and PayEvery on the same reward.</b>
+        Use one or the other. If both are set, <code>PayFor</code> wins
+        (the reward behaves as one-time).
+      </div>
+
+      <h3 id="autoclaim">🤖 AutoClaim vs Manual Claim</h3>
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--green)">AutoClaim: true</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            The plugin claims the reward <em>automatically</em> in the background
+            the next time the periodic check runs (every 30 seconds) or when the
+            player joins. The player just gets the reward — no clicking needed.
+            Great for passive income.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--amber)">AutoClaim: false</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            The reward waits in the GUI as
+            <span class="badge badge-green">READY</span>. The player must open
+            <code>/prewards</code> and click the item to collect it. The item
+            glows to draw attention. Good for milestone moments you want players
+            to experience.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ DIRECTIVES -->
+    <section id="directives">
+      <h2><span class="ico">📜</span> Command Directives</h2>
+      <p>
+        Each command line in a reward's <code>Commands:</code> list can start with
+        a <strong>directive</strong> that controls how and when it runs.
+        Without a directive, commands default to running as the <em>console</em>
+        immediately.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Directive</th><th>Format</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>asConsole!</code></td>
+              <td><code>asConsole! &lt;command&gt;</code></td>
+              <td>Run the command as the <strong>server console</strong> (OP-level). This is the default if you write no directive.</td>
+            </tr>
+            <tr>
+              <td><code>asPlayer!</code></td>
+              <td><code>asPlayer! &lt;command&gt;</code></td>
+              <td>Run the command <strong>as the player</strong> themselves. The player needs permission for whatever command you run.</td>
+            </tr>
+            <tr>
+              <td><code>delay!</code></td>
+              <td><code>delay! &lt;seconds&gt; &lt;command&gt;</code></td>
+              <td>Wait the given number of seconds, then run the command. Pair with <code>asConsole!</code> or <code>asPlayer!</code> by writing them after the delay portion.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Placeholder</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Placeholder</th><th>Replaced with</th></tr></thead>
+          <tbody>
+            <tr><td><code>[playerName]</code></td><td>The exact in-game name of the player who earned the reward</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Examples</h3>
+<pre><span class="c-key">Commands:</span>
+  <span class="c-cmt"># Give money via console (most common)</span>
+  - <span class="c-str">"asConsole! money give [playerName] 500"</span>
+
+  <span class="c-cmt"># Give a kit as the player (player must have kit permission)</span>
+  - <span class="c-str">"asPlayer! kit starter"</span>
+
+  <span class="c-cmt"># Add a 5-second delay then heal them</span>
+  - <span class="c-str">"delay! 5 asConsole! heal [playerName]"</span>
+
+  <span class="c-cmt"># Broadcast an announcement immediately</span>
+  - <span class="c-str">"asConsole! broadcast &amp;6[playerName] &amp;ejust earned a milestone reward!"</span>
+
+  <span class="c-cmt"># Give a custom item after 2 seconds</span>
+  - <span class="c-str">"delay! 2 asConsole! give [playerName] diamond 3"</span></pre>
+
+      <div class="alert alert-warn">
+        <b>Directive order matters.</b>
+        Always put <code>delay!</code> first if combining with <code>asConsole!</code>
+        or <code>asPlayer!</code>. Example: <code>"delay! 3 asConsole! say hi"</code>.
+        Writing <code>asConsole!</code> before <code>delay!</code> will not work as expected.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ GUI -->
+    <section id="gui">
+      <h2><span class="ico">🖼️</span> GUI &amp; Skins</h2>
+      <p>
+        When a player runs <code>/prewards</code>, they see a SmartInventory GUI
+        showing all rewards they have access to. Here's what each part means:
+      </p>
+
+      <h3>Slot layout (rows × 9 columns)</h3>
+      <p>
+        Slots are numbered <strong>0-based, left-to-right, top-to-bottom</strong>.
+        Row 0 = first row, Row 1 = second row, etc.
+        Each row has 9 columns (0–8). So:
+      </p>
+<pre><span class="c-cmt">Slot = (row × 9) + column
+
+Row 0:  slots  0  1  2  3  4  5  6  7  8
+Row 1:  slots  9 10 11 12 13 14 15 16 17
+Row 2:  slots 18 19 20 21 22 23 24 25 26
+Row 3:  slots 27 28 29 30 31 32 33 34 35
+Row 4:  slots 36 37 38 39 40 41 42 43 44  ← last row of a 5-row GUI</span></pre>
+
+      <div class="alert alert-tip">
+        If you do NOT set a <code>gui.slot</code> for a reward, it auto-fills
+        left-to-right starting from slot 10 (row 1, col 1). This means if you
+        mix explicit slots and auto-flow rewards, make sure they don't overlap.
+        Best practice: either give every reward an explicit slot, or give none of them one.
+      </div>
+
+      <h3>Per-reward icon configuration</h3>
+<pre><span class="c-key">gui:</span>
+  <span class="c-key">slot:</span> <span class="c-val">14</span>                  <span class="c-cmt"># row 1, col 5 (optional)</span>
+  <span class="c-key">icon:</span>
+    <span class="c-key">material:</span> <span class="c-str">IRON_INGOT</span>     <span class="c-cmt"># Bukkit material name</span>
+    <span class="c-key">custom-model-data:</span> <span class="c-val">0</span>  <span class="c-cmt"># 0 = none; set for custom resource pack items</span>
+    <span class="c-key">name:</span> <span class="c-str">"&amp;f1h Milestone"</span>   <span class="c-cmt"># display name in GUI (supports &amp;X colors)</span>
+    <span class="c-key">lore:</span>
+      - <span class="c-str">"&amp;7One-time reward at &amp;f1h&amp;7 total."</span>
+      - <span class="c-str">"&amp;7Status shows &amp;aREADY &amp;7when claimable."</span></pre>
+
+      <p>
+        The icon is then <em>overlaid</em> by the global state skin. For example,
+        when a reward is <span class="badge badge-red">LOCKED</span> the item is
+        replaced by a <code>BARRIER</code> and the name changes to
+        <code>&amp;cLocked</code>. When it becomes
+        <span class="badge badge-green">READY</span> it switches to
+        <code>LIME_DYE</code> with a glow enchant.
+      </p>
+      <p>
+        You can override the state skins globally under <code>settings.gui.states</code>
+        to match your server's resource pack.
+      </p>
+
+      <h3>Admin toggle in GUI</h3>
+      <p>
+        If you have the <code>oreo.prewards.admin</code> permission, a
+        <strong>Lever item</strong> appears in the bottom-center slot.
+        Clicking it toggles the entire Playtime Rewards module on or off live,
+        without restarting the server.
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ STATES -->
+    <section id="states">
+      <h2><span class="ico">🚦</span> Reward States</h2>
+      <p>
+        Every reward is always in one of four states. The GUI uses different
+        icons/colors for each so players instantly understand their progress.
+      </p>
+
+      <div class="state-row">
+        <div class="state-pill state-locked">🔒 LOCKED</div>
+        <div class="state-pill state-ready">✅ READY</div>
+        <div class="state-pill state-claimed">⭐ CLAIMED</div>
+        <div class="state-pill state-repeating">🔁 REPEATING</div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:16px">
+        <table>
+          <thead><tr><th>State</th><th>When it applies</th><th>What the player sees</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">LOCKED</span></td>
+              <td>Playtime hasn't reached the threshold yet (one-time), or the next cycle isn't complete (repeating)</td>
+              <td>A red BARRIER item. Cannot be clicked.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">READY</span></td>
+              <td>Threshold reached and not yet claimed (one-time), or at least one new cycle completed (repeating)</td>
+              <td>A glowing LIME_DYE (or the reward's own icon with glow). Click to collect.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-amber">CLAIMED</span></td>
+              <td>One-time reward already collected</td>
+              <td>A SUNFLOWER. Can never be collected again.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">REPEATING</span></td>
+              <td>Repeating reward that is up-to-date — no new cycle due yet</td>
+              <td>A CLOCK (ticking). Normal state between pay-outs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-info">
+        <b>AutoClaim rewards skip the GUI entirely.</b>
+        When <code>AutoClaim: true</code>, the plugin claims the reward automatically
+        the moment it becomes READY — the player never has to click anything.
+        They will still see the reward in the GUI, but it transitions
+        straight from LOCKED → (auto-claimed) → REPEATING or CLAIMED.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ STACKING -->
+    <section id="stacking">
+      <h2><span class="ico">📦</span> Stacking Offline Rewards</h2>
+      <p>
+        What happens when a player earns 3 hourly rewards while offline?
+        The answer depends on <code>StackRewards</code>.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--green)">StackRewards: true</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            All missed cycles are paid out at once when the player logs back in.
+            If they missed 3 hours, they get 3× the reward automatically
+            (for AutoClaim) or see "3 ready" in the GUI (for manual).
+          </p>
+          <p style="font-size:0.9rem">Good for economy servers where every hour genuinely earns money.</p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--red)">StackRewards: false</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            No matter how many cycles were missed, at most
+            <strong>1 payout</strong> is given per claim.
+            Prevents large cash injections from AFK farming or coming back after a long break.
+          </p>
+          <p style="font-size:0.9rem">Good for rare/valuable items.</p>
+        </div>
+      </div>
+
+      <p>
+        You can set <code>StackRewards</code> globally in <code>settings.stack-rewards</code>
+        and then override it per reward with the <code>StackRewards</code> key on
+        that individual reward entry.
+      </p>
+
+<pre><span class="c-cmt"># Global default (applies to all rewards unless overridden)</span>
+<span class="c-key">settings:</span>
+  <span class="c-key">stack-rewards:</span> <span class="c-val">true</span>
+
+<span class="c-key">rewards:</span>
+  <span class="c-key">hourly1:</span>
+    <span class="c-key">StackRewards:</span> <span class="c-val">true</span>   <span class="c-cmt"># ← per-reward override</span>
+    <span class="c-cmt"># ...</span>
+  <span class="c-key">rare_kit:</span>
+    <span class="c-key">StackRewards:</span> <span class="c-val">false</span>  <span class="c-cmt"># only 1 at a time for rare kits</span>
+    <span class="c-cmt"># ...</span></pre>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PLAYTIME SOURCE -->
+    <section id="playtime-source">
+      <h2><span class="ico">⏱️</span> Playtime Source</h2>
+      <p>
+        There are two ways the plugin can measure how long a player has played:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source</th><th>Where it reads from</th><th>Pros / Cons</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>internal</code> <span class="badge badge-green">Recommended</span></td>
+              <td>OreoEssentials tracks login/logout times itself in <code>playtime_data.yml</code></td>
+              <td>
+                ✅ Per-server tracking<br>
+                ✅ Survives AFK plugins (plugin sees raw connection time)<br>
+                ✅ Saved on quit + autosave every 60s<br>
+                ⚠️ Starts at 0 for new players unless baseline is enabled
+              </td>
+            </tr>
+            <tr>
+              <td><code>bukkit</code></td>
+              <td>Minecraft's built-in <code>PLAY_ONE_MINUTE</code> statistic</td>
+              <td>
+                ✅ No extra data file<br>
+                ⚠️ Counts ALL servers (BungeeCord)<br>
+                ⚠️ Ticks / 20 = seconds (rounding)<br>
+                ⚠️ Can be reset by vanilla stat wipes
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Baseline: preventing back-pay on switch</h3>
+      <p>
+        If you switch from <code>bukkit</code> to <code>internal</code> (or install
+        the plugin on an existing server), long-time players would suddenly appear
+        to have 0 playtime in the internal tracker — meaning they'd hit every
+        milestone reward the moment they log in.
+      </p>
+      <p>
+        To prevent this, set both baseline options to <code>true</code>:
+      </p>
+<pre><span class="c-key">settings:</span>
+  <span class="c-key">source:</span> <span class="c-str">internal</span>
+  <span class="c-key">baseline-from-bukkit-on-first-seen:</span> <span class="c-val">true</span>   <span class="c-cmt"># ← copies existing vanilla time</span>
+  <span class="c-key">baseline-on-first-seen:</span> <span class="c-val">true</span>               <span class="c-cmt"># ← marks repeating rewards as caught-up</span></pre>
+      <p>
+        With this config, the <strong>first time</strong> each player logs in after
+        installing the plugin:
+      </p>
+      <ol style="color:var(--muted);padding-left:20px">
+        <li>Their existing vanilla playtime is copied into the internal tracker.</li>
+        <li>All repeating rewards are marked as "paid up to now" so no burst payout happens.</li>
+        <li>One-time milestone rewards they already "earned" by time will be immediately claimable — that's intentional.</li>
+      </ol>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PERMISSION-GATED -->
+    <section id="permissions">
+      <h2><span class="ico">🔑</span> Permission-Gated Rewards</h2>
+      <p>
+        You can make certain rewards only available to specific ranks (VIP, MVP, etc.)
+        using the <code>requires-permission</code> flag.
+      </p>
+
+      <h3>How it works</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Config setting</th><th>Who sees the reward?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>requires-permission: false</code> (or omitted)</td>
+              <td><strong>Everyone</strong> — no permission needed. This is the default for all standard rewards.</td>
+            </tr>
+            <tr>
+              <td><code>requires-permission: true</code></td>
+              <td>Only players who have <code>oreo.prewards.&lt;reward-id&gt;</code> or <code>oreo.prewards.*</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-tip">
+        <b>Rewards with <code>requires-permission: false</code> are truly public.</b>
+        You do NOT need to give players any special permission to see them.
+        The GUI shows them automatically to every player on the server.
+      </div>
+
+      <h3>Setting up VIP/MVP rewards with LuckPerms</h3>
+      <p>
+        First, define the rank reward in the config with
+        <code>requires-permission: true</code>:
+      </p>
+<pre><span class="c-key">rewards:</span>
+  <span class="c-key">vip_hourly:</span>
+    <span class="c-key">DisplayName:</span> <span class="c-str">"&amp;6VIP Hourly"</span>
+    <span class="c-key">AutoClaim:</span> <span class="c-val">true</span>
+    <span class="c-key">requires-permission:</span> <span class="c-val">true</span>    <span class="c-cmt"># ← only VIPs see this</span>
+    <span class="c-key">PayEvery:</span> <span class="c-val">3600</span>
+    <span class="c-key">Commands:</span>
+      - <span class="c-str">"asConsole! money give [playerName] 75"</span></pre>
+
+      <p>Then give the permission to the VIP group via LuckPerms:</p>
+<pre><span class="c-cmt"># In the Minecraft console or LuckPerms editor:</span>
+/lp group vip permission set oreo.prewards.vip_hourly true
+/lp group mvp permission set oreo.prewards.mvp_daily true</pre>
+
+      <p>
+        Members of the VIP group will now see <code>vip_hourly</code> in their GUI
+        while regular players will not.
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PERM TABLE -->
+    <section id="perm-table">
+      <h2><span class="ico">🛡️</span> Permissions Table</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Permission</th><th>Default</th><th>What it grants</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>oreo.prewards.notify</code></td>
+              <td><span class="badge badge-green">true</span></td>
+              <td>Receive the reminder chat message every N minutes when rewards are ready</td>
+            </tr>
+            <tr>
+              <td><code>oreo.prewards.admin</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Use <code>/prewards reload</code>, <code>/prewards toggle</code>, <code>/prewards claim &lt;id&gt; &lt;player&gt;</code>, and the toggle lever in the GUI</td>
+            </tr>
+            <tr>
+              <td><code>oreo.prewards.claim.others</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Use <code>/prewards claim &lt;id&gt; &lt;player&gt;</code> to force-claim a reward for another player</td>
+            </tr>
+            <tr>
+              <td><code>oreo.prewards.&lt;reward-id&gt;</code></td>
+              <td><span class="badge badge-amber">none</span></td>
+              <td>Access a specific reward when that reward has <code>requires-permission: true</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.prewards.*</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Access ALL permission-gated rewards (wildcard)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ COMMANDS -->
+    <section id="commands">
+      <h2><span class="ico">💬</span> Commands</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>/prewards</code></td>
+              <td><em>none</em></td>
+              <td>Open the Playtime Rewards GUI (players only). Shows all rewards you have access to and their current state.</td>
+            </tr>
+            <tr>
+              <td><code>/prewards claim &lt;id&gt;</code></td>
+              <td><em>none (self-claim)</em></td>
+              <td>Claim a specific reward by its config ID (e.g. <code>/prewards claim 1hour</code>). Only works if the reward is in READY state for you.</td>
+            </tr>
+            <tr>
+              <td><code>/prewards claim &lt;id&gt; &lt;player&gt;</code></td>
+              <td><code>oreo.prewards.claim.others</code></td>
+              <td>Force-claim a reward for another online player. Useful for compensation or testing.</td>
+            </tr>
+            <tr>
+              <td><code>/prewards reload</code></td>
+              <td><code>oreo.prewards.admin</code></td>
+              <td>Reload <code>playtime_rewards.yml</code> from disk and restart the reward checker. Online players' reminder timers restart too.</td>
+            </tr>
+            <tr>
+              <td><code>/prewards toggle</code></td>
+              <td><code>oreo.prewards.admin</code></td>
+              <td>Enable or disable the entire Playtime Rewards module live. The state is saved to the config file so it persists across restarts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-info">
+        <b>Reward IDs are the config keys.</b>
+        In the example config, the IDs are: <code>hourly1</code>, <code>daily1</code>,
+        <code>1hour</code>, <code>6hour</code>, <code>12hour</code>, <code>24hour</code>,
+        <code>7days</code>, <code>30days</code>, <code>vip_hourly</code>, <code>mvp_daily</code>.
+        Use these exact strings with <code>/prewards claim</code>.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PLAYER EXAMPLES -->
+    <section id="player-examples">
+      <h2><span class="ico">👥</span> Player Examples</h2>
+      <p>
+        Let's walk through real scenarios for four players to make everything concrete.
+        The server uses the default example config.
+      </p>
+
+      <!-- Steve -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">🧱</div>
+          <div>
+            <div class="player-name">Steve</div>
+            <div class="player-rank">Rank: Default player, 2.5 hours of playtime</div>
+          </div>
+        </div>
+        <p style="margin:0 0 8px;font-size:0.9rem">
+          Steve has played for 2.5 hours (9 000 seconds) total. Here is what his
+          <code>/prewards</code> GUI shows:
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reward</th><th>Type</th><th>Threshold</th><th>Steve's state</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>hourly1</td><td>Repeating</td><td>every 1h</td><td><span class="badge badge-blue">REPEATING</span></td><td>AutoClaim already paid 2× (hours 1 and 2). Next payout at 3h.</td></tr>
+              <tr><td>1hour</td><td>One-time</td><td>1h</td><td><span class="badge badge-amber">CLAIMED</span></td><td>Steve hit 1h and clicked it already.</td></tr>
+              <tr><td>6hour</td><td>One-time</td><td>6h</td><td><span class="badge badge-red">LOCKED</span></td><td>Needs 6h; Steve only has 2.5h.</td></tr>
+              <tr><td>12hour / 24hour</td><td>One-time</td><td>12h / 24h</td><td><span class="badge badge-red">LOCKED</span></td><td>Not enough playtime yet.</td></tr>
+              <tr><td>vip_hourly</td><td>Repeating (VIP)</td><td>every 1h</td><td><em>Not visible</em></td><td>Steve doesn't have the VIP permission.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.88rem;color:var(--muted);margin:8px 0 0">
+          Steve also receives a chat reminder every 10 minutes if he has unclaimed ready rewards,
+          as long as he has <code>oreo.prewards.notify</code>.
+        </p>
+      </div>
+
+      <!-- Alex -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">🌿</div>
+          <div>
+            <div class="player-name">Alex</div>
+            <div class="player-rank">Rank: VIP, 7 hours of playtime</div>
+          </div>
+        </div>
+        <p style="margin:0 0 8px;font-size:0.9rem">
+          Alex has VIP rank and <code>oreo.prewards.vip_hourly</code> permission.
+          She's played 7 hours (25 200 seconds) — but was offline for 4 of those hours and
+          just logged back in.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reward</th><th>State</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>hourly1 (AutoClaim)</td><td><span class="badge badge-blue">REPEATING</span></td><td>AutoClaim fired 7× (once per hour). All caught up.</td></tr>
+              <tr><td>daily1 (AutoClaim)</td><td><span class="badge badge-blue">REPEATING</span></td><td>Not at 24h yet. Still ticking.</td></tr>
+              <tr><td>1hour</td><td><span class="badge badge-amber">CLAIMED</span></td><td>Already claimed.</td></tr>
+              <tr><td>6hour</td><td><span class="badge badge-green">READY</span> ✨</td><td>Alex hit 6h but hasn't clicked it yet! GUI shows glowing LIME_DYE.</td></tr>
+              <tr><td>vip_hourly (AutoClaim)</td><td><span class="badge badge-blue">REPEATING</span></td><td>AutoClaim + StackRewards: true — all 7 missed hourly VIP bonuses were paid on login. All caught up.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.88rem;color:var(--muted);margin:8px 0 0">
+          When Alex logged in, the plugin auto-claimed both <code>hourly1</code> and
+          <code>vip_hourly</code> for all 7 hours at once (since <code>StackRewards: true</code>).
+          She got 7 × $20 = $140 from hourly1 and 7 × $75 = $525 from vip_hourly on that one login.
+        </p>
+      </div>
+
+      <!-- Notch -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">⛏️</div>
+          <div>
+            <div class="player-name">Notch</div>
+            <div class="player-rank">Rank: Default, brand-new player (first login)</div>
+          </div>
+        </div>
+        <p style="margin:0 0 8px;font-size:0.9rem">
+          Notch joins for the very first time. With
+          <code>baseline-on-first-seen: true</code>, repeating rewards are
+          pre-marked as paid-up so he doesn't get a burst of instant payouts.
+          But Notch has 0 playtime, so everything starts at 0 anyway.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reward</th><th>State</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>All one-time rewards</td><td><span class="badge badge-red">LOCKED</span></td><td>0 seconds playtime. Nothing earned yet.</td></tr>
+              <tr><td>hourly1, daily1</td><td><span class="badge badge-blue">REPEATING</span></td><td>Baseline sets paid count to 0 (since current time / payEvery = 0). Nothing to back-pay.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.88rem;color:var(--muted);margin:8px 0 0">
+          After Notch plays 1 hour, <code>hourly1</code> AutoClaims automatically
+          and he gets $20. After another 30 minutes the periodic check (every 30s)
+          won't fire yet — repeating rewards only pay in full-cycle increments.
+        </p>
+      </div>
+
+      <!-- Herobrine -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">👁️</div>
+          <div>
+            <div class="player-name">Herobrine</div>
+            <div class="player-rank">Rank: MVP (has oreo.prewards.mvp_daily), 30 days played</div>
+          </div>
+        </div>
+        <p style="margin:0 0 8px;font-size:0.9rem">
+          Herobrine is a legend — 30 days of total playtime (2 592 000 seconds).
+          He has MVP rank.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reward</th><th>State</th><th>Payout so far</th></tr></thead>
+            <tbody>
+              <tr><td>hourly1</td><td><span class="badge badge-blue">REPEATING</span></td><td>720× $20 = $14,400 earned over 30 days</td></tr>
+              <tr><td>daily1</td><td><span class="badge badge-blue">REPEATING</span></td><td>30× $2,000 = $60,000</td></tr>
+              <tr><td>1hour → 24hour</td><td><span class="badge badge-amber">CLAIMED</span></td><td>All claimed long ago</td></tr>
+              <tr><td>7days</td><td><span class="badge badge-amber">CLAIMED</span></td><td>$50,000 bonus</td></tr>
+              <tr><td>30days</td><td><span class="badge badge-green">READY</span> ✨</td><td>$500,000 waiting to be claimed! Shows glowing item in GUI.</td></tr>
+              <tr><td>mvp_daily</td><td><span class="badge badge-blue">REPEATING</span></td><td>30× $5,000 = $150,000 MVP bonus</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.88rem;color:var(--muted);margin:8px 0 0">
+          Herobrine needs to open <code>/prewards</code> and click the <code>30days</code>
+          reward (it's manual <code>AutoClaim: false</code>) to collect his $500,000.
+          The reminder message fires every 10 minutes while he's online.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ DATA FILES -->
+    <section id="data-files">
+      <h2><span class="ico">💾</span> Data Files</h2>
+      <p>
+        The plugin creates these files inside <code>plugins/OreoEssentials/</code>:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>Contents</th><th>When saved</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>playtime-rewards/playtime_rewards.yml</code></td>
+              <td>All configuration: settings, GUI skin, reward definitions</td>
+              <td>Generated on first boot; updated only when toggling enable/disable</td>
+            </tr>
+            <tr>
+              <td><code>playtime_data.yml</code></td>
+              <td>Per-player total playtime in seconds (internal tracker)</td>
+              <td>Every 60 seconds (autosave) + on each player quit</td>
+            </tr>
+            <tr>
+              <td><code>prewards_data.yml</code></td>
+              <td>Per-player claimed rewards (one-time IDs) + repeating pay counts</td>
+              <td>Async after every claim event</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>playtime_data.yml structure</h3>
+<pre><span class="c-cmt"># plugins/OreoEssentials/playtime_data.yml</span>
+<span class="c-key">totals:</span>
+  <span class="c-teal">069a79f4-44e9-4726-a5be-fca90e38aaf5:</span> <span class="c-val">9000</span>   <span class="c-cmt"># Notch: 9000 sec (2.5 hours)</span>
+  <span class="c-teal">8667ba71-b85a-4004-af54-457a9734efa7:</span> <span class="c-val">25200</span>  <span class="c-cmt"># Alex: 7 hours</span>
+
+<span class="c-key">baselined:</span>
+  - <span class="c-str">"069a79f4-44e9-4726-a5be-fca90e38aaf5"</span>  <span class="c-cmt"># players who have been baseline-copied</span>
+  - <span class="c-str">"8667ba71-b85a-4004-af54-457a9734efa7"</span></pre>
+
+      <div class="alert alert-info">
+        <b>The tracker is live — it accounts for the current session.</b>
+        Even if a player has 3 600 seconds saved in the file, if they have been
+        online for another 300 seconds in this session, <code>getSeconds()</code>
+        returns 3 900. The session delta is added on-the-fly without writing to disk.
+      </div>
+
+      <h3>prewards_data.yml structure</h3>
+<pre><span class="c-cmt"># plugins/OreoEssentials/prewards_data.yml</span>
+<span class="c-teal">069a79f4-44e9-4726-a5be-fca90e38aaf5:</span>    <span class="c-cmt"># Notch's UUID</span>
+  <span class="c-key">claimedOnce:</span>
+    - <span class="c-str">1hour</span>          <span class="c-cmt"># one-time rewards he has claimed</span>
+    - <span class="c-str">6hour</span>
+  <span class="c-key">paidCounts:</span>
+    <span class="c-key">hourly1:</span> <span class="c-val">7</span>       <span class="c-cmt"># repeating: paid 7 times so far</span>
+    <span class="c-key">daily1:</span> <span class="c-val">0</span>        <span class="c-cmt"># repeating: 0 full days yet</span>
+    <span class="c-key">__baseline__:</span> <span class="c-val">1</span>  <span class="c-cmt"># internal sentinel: baseline was applied</span></pre>
+
+      <div class="alert alert-warn">
+        <b>Don't manually edit prewards_data.yml while the server is running.</b>
+        The file is loaded into memory on startup. Changes made to the file while
+        the server is running will be overwritten the next time a player claims something.
+        Stop the server, edit, then restart.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ FAQ -->
+    <section id="faq">
+      <h2><span class="ico">❓</span> FAQ</h2>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Players open /prewards and see an empty GUI with no rewards. Why?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          This usually means all rewards in your config have <code>requires-permission: true</code>.
+          Rewards with this flag are hidden from players who don't have the
+          <code>oreo.prewards.&lt;id&gt;</code> permission. For rewards you want everyone
+          to see, make sure <code>requires-permission</code> is either <code>false</code>
+          or simply not present (it defaults to false).
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: A player just joined for the first time and instantly got a flood of reward payouts. How do I stop that?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Enable the baseline settings:
+        </p>
+<pre style="margin:6px 0"><span class="c-key">settings:</span>
+  <span class="c-key">baseline-from-bukkit-on-first-seen:</span> <span class="c-val">true</span>
+  <span class="c-key">baseline-on-first-seen:</span> <span class="c-val">true</span></pre>
+        <p style="font-size:0.9rem">
+          With both enabled, the plugin copies the player's existing playtime from
+          Bukkit on first login, and marks all repeating rewards as paid-up to that
+          point. No back-pay burst occurs.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: I changed a reward's PayEvery value in the config. Do existing players get back-pay?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          No — the plugin compares <em>paid count</em> vs <em>should-have-been-paid count</em>
+          at the moment of the next check. Changing a cycle length can make
+          <code>should = secs / newPayEvery</code> suddenly larger than the saved count,
+          which would trigger a catch-up. If that's a concern, run
+          <code>/prewards reload</code> when no players are online, or set
+          <code>StackRewards: false</code> on that reward to cap catch-up at 1.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can I have a reward that runs multiple commands?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. The <code>Commands:</code> list accepts as many lines as you want.
+          They all run in sequence when the reward triggers.
+        </p>
+<pre style="margin:6px 0"><span class="c-key">Commands:</span>
+  - <span class="c-str">"asConsole! money give [playerName] 500"</span>
+  - <span class="c-str">"asConsole! give [playerName] diamond 3"</span>
+  - <span class="c-str">"asConsole! broadcast &amp;6[playerName] claimed the 1h milestone!"</span>
+  - <span class="c-str">"delay! 2 asPlayer! kit starter"</span></pre>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can I disable the whole module without removing it?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes, two ways:
+          <br>1. Run <code>/prewards toggle</code> — takes effect immediately and saves to config.
+          <br>2. Add <code>settings.enable: false</code> to <code>playtime_rewards.yml</code>
+          and run <code>/prewards reload</code>.
+          <br>When disabled, players see a "Playtime Rewards are disabled" message and the GUI
+          grays out.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Will playtime data survive a server restart?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. The internal tracker saves to <code>playtime_data.yml</code> on every
+          player quit AND every 60 seconds while the server is running.
+          Even if the server crashes, players lose at most ~60 seconds of tracked
+          playtime. Claim records (<code>prewards_data.yml</code>) are saved
+          asynchronously after every claim.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: How do I grant bonus claim checks? Can I force-claim a reward for a player?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Use <code>/prewards claim &lt;reward-id&gt; &lt;player-name&gt;</code>.
+          This requires <code>oreo.prewards.claim.others</code>. It triggers the reward
+          for the target player as if they'd clicked it in the GUI — commands run,
+          data is saved, state updates.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can I use PAPI / PlaceholderAPI in commands?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Directly in the reward <code>Commands:</code> list, only <code>[playerName]</code>
+          is replaced. If the command you're running (e.g. a custom plugin command) already
+          processes PAPI placeholders itself, those will work. But the reward runner
+          itself does not call PAPI.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: I removed a reward from the config. What happens to players who had it claimed?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          The claim record stays in <code>prewards_data.yml</code> under that reward's
+          ID, but since the reward no longer exists in config it is simply ignored.
+          No error occurs. If you add the reward back later with the same ID, those
+          players will still show it as CLAIMED.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Is this compatible with Folia?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. The module uses <code>OreScheduler</code> for all tasks, which is
+          OreoEssentials' Folia-compatible scheduler wrapper. No direct
+          <code>BukkitScheduler</code> calls are made.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can a reward be both one-time AND repeating at the same time?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          No. Use either <code>PayFor</code> (one-time) or <code>PayEvery</code> (repeating).
+          If both are set, <code>PayFor</code> takes precedence and the reward behaves
+          as a one-time milestone.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  OreoEssentials — Playtime Rewards module &nbsp;·&nbsp;
+  Paper 1.21+ &nbsp;·&nbsp;
+  Config: <code>plugins/OreoEssentials/playtime-rewards/playtime_rewards.yml</code>
+</footer>
+
+</body>
+</html>

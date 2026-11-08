@@ -1,7 +1,6 @@
 package fr.elias.oessentials.storage.lifecycle;
 
 import com.mongodb.client.MongoClient;
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
@@ -68,7 +67,8 @@ public final class StorageModule extends ManagedModule implements StorageService
         publishContracts();
         registerImportCommands();
         registerCommands();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         providePublicApi(fr.elias.oessentials.api.ISpawnAPI.class, this::getSpawnApi);
         providePublicApi(fr.elias.oessentials.api.IWarpsAPI.class, this::getWarpsApi);
         providePublicApi(fr.elias.oessentials.api.IPlayerWarpsAPI.class, this::getPlayerWarpsApi);
@@ -77,7 +77,6 @@ public final class StorageModule extends ManagedModule implements StorageService
     }
 
     /** Cross-server homes and player warps, once RabbitMQ is connected. */
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
         final var cs = plugin.getCrossServerFeatures();

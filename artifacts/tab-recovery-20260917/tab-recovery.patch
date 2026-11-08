@@ -1,0 +1,699 @@
+--- a/src/main/java/fr/elias/oreoEssentials/modules/tab/CustomTablistLayout.java
++++ b/src/main/java/fr/elias/oreoEssentials/modules/tab/CustomTablistLayout.java
+@@ -111,12 +111,9 @@
+     /** Number of consecutive content-refresh cycles the target column count must be stable before we apply it. */
+     private static final int COL_DEBOUNCE_CYCLES = 3;
+ 
+-    // Vanilla PLAYER_INFO_UPDATE interceptor (fix #2) — cancels re-broadcasts of real players
++    // Hide vanilla list entries while retaining their profile and chat data.
+     private PacketListenerAbstract vanillaTabInterceptor;
+-    // Periodic re-delist counter (fix #3)
+-    // Timer fires every 4 ticks, so 10 fires = 40 ticks = ~2 s wall-clock.
+-    private int reDelistCounter = 0;
+-    private static final int RE_DELIST_INTERVAL_TICKS = 10;
++    private Listener joinQuitListener;
+ 
+     /** MSB range used by all our fake tab UUIDs — anything outside this is a real player UUID. */
+     private static final long FAKE_UUID_HIGH_MIN = 0x4F72656F54616201L;
+@@ -146,23 +143,23 @@
+             packetTablistManager = new PacketTablistManager();
+             registerJoinQuitListener();
+             registerVanillaTabInterceptor();
+-            plugin.getLogger().info("[CustomTab] Packet-based tab list active (PacketEvents mode).");
+-        }
+-
+-        // Run every 4 ticks (200 ms / 5 Hz) instead of every tick.
+-        // Firing UPDATE_DISPLAY_NAME at 20 Hz collided with the client's Tab key-repeat
+-        // (~30 Hz), causing the client to visually re-process the list mid-render → flicker.
+-        // At 5 Hz the two rates no longer overlap and the flicker disappears.
++            plugin.getLogger().info("[CustomTab] Animated column layout active (TAB recovery 2026-09-17).");
++        }
++
+         updateTask = OreScheduler.runTimer(plugin, () -> {
+             try { updateCustomTablist(); }
+             catch (Exception e) {
+                 plugin.getLogger().warning("[CustomTab] Error: " + e.getMessage());
+             }
+-        }, 20L, 4L);
++        }, 20L, 1L);
+     }
+ 
+     public void stop() {
+         if (updateTask != null) { updateTask.cancel(); updateTask = null; }
++        if (joinQuitListener != null) {
++            org.bukkit.event.HandlerList.unregisterAll(joinQuitListener);
++            joinQuitListener = null;
++        }
+         headerCache.clear();
+         footerCache.clear();
+         playerListNameCache.clear();
+@@ -179,7 +176,6 @@
+         lastRenderedNumCols = -1;
+         targetNumCols = -1;
+         targetNumColsStableCount = 0;
+-        reDelistCounter = 0;
+         if (vanillaTabInterceptor != null) {
+             try {
+                 com.github.retrooper.packetevents.PacketEvents.getAPI()
+@@ -194,7 +190,7 @@
+     }
+ 
+     private void registerJoinQuitListener() {
+-        Bukkit.getPluginManager().registerEvents(new Listener() {
++        joinQuitListener = new Listener() {
+ 
+             @EventHandler(priority = EventPriority.MONITOR)
+             public void onJoin(PlayerJoinEvent e) {
+@@ -224,12 +220,32 @@
+                 packetTablistManager.removePlayerFakeEntry(e.getPlayer());
+             }
+ 
+-        }, plugin);
++        };
++        Bukkit.getPluginManager().registerEvents(joinQuitListener, plugin);
++    }
++
++    /** Returns whether the packet changed; profile/chat actions must still reach the client. */
++    static boolean hideRealPlayerListings(WrapperPlayServerPlayerInfoUpdate wrapper) {
++        if (!wrapper.getActions().contains(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED)) {
++            return false;
++        }
++        boolean changed = false;
++        List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> entries = new ArrayList<>();
++        for (WrapperPlayServerPlayerInfoUpdate.PlayerInfo entry : wrapper.getEntries()) {
++            if (!isFakeUuid(entry.getProfileId()) && entry.isListed()) {
++                entry = new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(entry);
++                entry.setListed(false);
++                changed = true;
++            }
++            entries.add(entry);
++        }
++        if (changed) wrapper.setEntries(entries);
++        return changed;
+     }
+ 
+     private void registerVanillaTabInterceptor() {
+         final PacketTablistManager ptm = packetTablistManager;
+-        vanillaTabInterceptor = new PacketListenerAbstract(PacketListenerPriority.NORMAL) {
++        vanillaTabInterceptor = new PacketListenerAbstract(PacketListenerPriority.HIGH) {
+             @Override
+             public void onPacketSend(PacketSendEvent event) {
+                 if (event.getPacketType() != PacketType.Play.Server.PLAYER_INFO_UPDATE) return;
+@@ -241,33 +257,11 @@
+ 
+                 try {
+                     WrapperPlayServerPlayerInfoUpdate wrapper = new WrapperPlayServerPlayerInfoUpdate(event);
+-                    java.util.EnumSet<WrapperPlayServerPlayerInfoUpdate.Action> actions = wrapper.getActions();
+-                    List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> entries = wrapper.getEntries();
+-
+-                    boolean hasOurEntries = entries.stream()
+-                            .anyMatch(info -> isFakeUuid(info.getProfileId()));
+-
+-                    plugin.getLogger().info("[TAB-DEBUG] INTERCEPT viewer=" + user.getUUID()
+-                            + " actions=" + actions
+-                            + " entries=" + entries.size()
+-                            + " hasOurEntries=" + hasOurEntries
+-                            + " sample=" + (entries.isEmpty() ? "none" : entries.get(0).getProfileId())
+-                    );
+-
+-                    if (hasOurEntries) return;
+-
+-                    // Only cancel packets that are *listing* real players (ADD_PLAYER or UPDATE_LISTED=true).
+-                    // Allow UPDATE_LISTED=false packets through — those are our own delistRealPlayers calls.
+-                    boolean isAddPlayer = actions.contains(WrapperPlayServerPlayerInfoUpdate.Action.ADD_PLAYER);
+-                    boolean isListingPlayers = isAddPlayer
+-                            || (actions.contains(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED)
+-                                && entries.stream().anyMatch(WrapperPlayServerPlayerInfoUpdate.PlayerInfo::isListed));
+-                    plugin.getLogger().info("[TAB-DEBUG] isListingPlayers=" + isListingPlayers + " -> " + (isListingPlayers ? "CANCELLED" : "ALLOWED"));
+-                    if (isListingPlayers) {
+-                        event.setCancelled(true);
++                    if (hideRealPlayerListings(wrapper)) {
++                        event.markForReEncode(true);
+                     }
+                 } catch (Throwable t) {
+-                    plugin.getLogger().warning("[TAB-DEBUG] Interceptor error: " + t.getMessage());
++                    plugin.getLogger().warning("[CustomTab] Interceptor error: " + t.getMessage());
+                 }
+             }
+         };
+@@ -321,6 +315,7 @@
+         // ── 1. Rebuild sorted entries only when dirty or on schedule ──────────
+         contentRefreshCounter++;
+         boolean contentDue = contentRefreshCounter >= updateCadenceTicks;
++        boolean membershipChanged = entriesDirty;
+         if (contentDue || entriesDirty || cachedSortedEntries.isEmpty()) {
+             if (contentDue) contentRefreshCounter = 0;
+             entriesDirty = false;
+@@ -329,24 +324,11 @@
+ 
+         // ── 2. When content or frame changes, queue all viewers for re-send ───
+         boolean frameChanged = (currentFrame != cachedFrameAtLastSend);
+-        if (contentDue || frameChanged) {
++        if (contentDue || frameChanged || membershipChanged) {
+             cachedFrameAtLastSend = currentFrame;
+             // Queue all viewers — the batch loop below drains them over N ticks
+             pendingViewerUpdates = players.size();
+             viewerBatchCursor = 0;
+-        }
+-
+-        // Fix #3: periodic re-delist — runs every tick so vanilla re-broadcasts are undone
+-        // even when no content updates are pending (pendingViewerUpdates == 0).
+-        reDelistCounter++;
+-        if (reDelistCounter >= RE_DELIST_INTERVAL_TICKS) {
+-            reDelistCounter = 0;
+-            plugin.getLogger().info("[TAB-DEBUG] Periodic re-delist firing for " + players.size() + " players");
+-            for (Player viewer : players) {
+-                if (packetTablistManager.isInitialized(viewer.getUniqueId())) {
+-                    packetTablistManager.delistRealPlayers(viewer);
+-                }
+-            }
+         }
+ 
+         // ── 3. Nothing pending — nothing to do ───────────────────────────────
+@@ -385,12 +367,9 @@
+             numCols = 0;
+         }
+ 
+-        // ── 5. Process a batch of viewers this timer fire ────────────────────
+-        // Timer fires every 4 ticks, so multiply by 4 to drain all viewers in the
+-        // same wall-clock window as the old 1-tick timer.
+-        // e.g. 20 viewers / 200 cadence * 4 = 1 viewer per fire (unchanged throughput).
++        // Spread viewer updates across the configured interval in server ticks.
+         int total = players.size();
+-        int batchSize = Math.max(1, (int) Math.ceil((double) total * 4 / updateCadenceTicks));
++        int batchSize = Math.max(1, (int) Math.ceil((double) total / updateCadenceTicks));
+ 
+         for (int i = 0; i < batchSize && pendingViewerUpdates > 0; i++) {
+             int idx = viewerBatchCursor % total;
+@@ -404,8 +383,6 @@
+             packetTablistManager.updateViewer(viewer, slots);
+             if (twoCol) {
+                 // Header/footer are built per-viewer (ping placeholder is viewer-specific).
+-                // sendPlayerListHeaderAndFooter uses TAB_LIST packet — safe for animation,
+-                // never triggers a tab list re-render while the client holds Tab.
+                 viewer.sendPlayerListHeaderAndFooter(
+                         buildTwoColHeader(viewer, cfg, onlineCount),
+                         buildTwoColFooter(viewer, cfg, onlineCount));
+@@ -650,7 +627,7 @@
+      * and growing up to maxCols as the server fills up.
+      *
+      * Each column has COL_ROWS (20) rows. The decoration rows (top/bottom sections)
+-     * are estimated from the left column's section line count, leaving the rest for players.
++     * reserve enough space for every frame in every active column.
+      *
+      * Example with 2 top rows + 2 bottom rows → 16 player rows per column:
+      *   0–16  players → 1 column
+@@ -660,11 +637,34 @@
+     private int computeDynamicColumns(FileConfiguration cfg,
+                                       List<PlayerTabEntry> sortedEntries,
+                                       int minCols, int maxCols) {
+-        // Decoration is now in header/footer — all COL_ROWS slots are available for players.
+-        int playerCount = sortedEntries.size();
+-        int needed = playerCount == 0 ? minCols
+-                : (int) Math.ceil((double) playerCount / COL_ROWS);
+-        return Math.max(minCols, Math.min(maxCols, needed));
++        int playerCount = cfg.getBoolean("tab.custom-layout.player-section.enabled", true)
++                ? sortedEntries.size() : 0;
++        for (int columns = minCols; columns <= maxCols; columns++) {
++            int[] rows = decorationRows(cfg, columns);
++            if (playerCount <= columns * (COL_ROWS - rows[0] - rows[1])) return columns;
++        }
++        return maxCols;
++    }
++
++    private static int maxSectionLines(FileConfiguration cfg, String path) {
++        int count = 0;
++        for (String frame : cfg.getStringList(path)) {
++            count = Math.max(count, frame.split("\n", -1).length);
++        }
++        return count;
++    }
++
++    private static int[] decorationRows(FileConfiguration cfg, int columns) {
++        int top = 0, bottom = 0;
++        for (String key : TOP_KEYS[columns - 1]) {
++            top = Math.max(top, maxSectionLines(cfg, "tab.two-column-layout." + key + ".texts"));
++        }
++        for (String key : BOT_KEYS[columns - 1]) {
++            bottom = Math.max(bottom, maxSectionLines(cfg, "tab.two-column-layout." + key + ".texts"));
++        }
++        top = Math.min(top, COL_ROWS - 2);
++        bottom = Math.min(bottom, COL_ROWS - top - 1);
++        return new int[]{top, bottom};
+     }
+ 
+     /**
+@@ -691,34 +691,73 @@
+         PacketTablistManager.TabSlot[][] cols =
+                 (PacketTablistManager.TabSlot[][]) new PacketTablistManager.TabSlot[numCols][COL_ROWS];
+ 
+-        // Decoration (top/bottom sections) is sent via sendPlayerListHeaderAndFooter —
+-        // the TAB_LIST packet never triggers a client tab-list re-render.
+-        // All COL_ROWS slots are therefore used exclusively for player rows.
++        String[] topKeys = TOP_KEYS[numCols - 1];
++        String[] botKeys = BOT_KEYS[numCols - 1];
++
++        // ── Resolve decoration lines for each column ───────────────────────
++        String[][] topLines = new String[numCols][];
++        String[][] botLines = new String[numCols][];
++
++        for (int c = 0; c < numCols; c++) {
++            topLines[c] = getTwoColSectionLines(cfg,
++                    "tab.two-column-layout." + topKeys[c] + ".texts", viewer, onlineCount);
++            botLines[c] = getTwoColSectionLines(cfg,
++                    "tab.two-column-layout." + botKeys[c] + ".texts", viewer, onlineCount);
++        }
++
++        int[] reservedRows = decorationRows(cfg, numCols);
++        int topRows = reservedRows[0];
++        int botRows = reservedRows[1];
++        int botStart = COL_ROWS - botRows;
++
++        // ── Fill top and bottom decoration rows ────────────────────────────
++        for (int c = 0; c < numCols; c++) {
++            String prefix = COL_PREFIXES[c];
++            for (int i = 0; i < topRows; i++) {
++                String text = i < topLines[c].length ? topLines[c][i] : "";
++                cols[c][i] = makeDecorSlot(PacketTablistManager.colSlotUuid(c, i),
++                        prefix + fmt2(i), text, TAB_COL2_PX);
++            }
++            for (int i = 0; i < botRows; i++) {
++                int row = botStart + i;
++                String text = i < botLines[c].length ? botLines[c][i] : "";
++                cols[c][row] = makeDecorSlot(PacketTablistManager.colSlotUuid(c, row),
++                        prefix + fmt2(row), text, TAB_COL2_PX);
++            }
++        }
++
++        // ── Fill player rows ───────────────────────────────────────────────
++        // Players are distributed evenly across columns:
++        //   numCols=1 → all players in col 0
++        //   numCols=2 → first ⌈N/2⌉ in col 0, rest in col 1
++        //   numCols=3 → first ⌈N/3⌉ in col 0, next ⌈N/3⌉ in col 1, rest in col 2
+         boolean playerSectionEnabled = cfg.getBoolean("tab.custom-layout.player-section.enabled", true);
+         if (playerSectionEnabled) {
+-            int total     = sortedEntries.size();
++            int total = Math.min(sortedEntries.size(), numCols * (botStart - topRows));
++            int availRows = botStart - topRows;        // player rows available per column
+             int chunkSize = (total + numCols - 1) / numCols; // ⌈total/numCols⌉
+ 
+             for (int c = 0; c < numCols; c++) {
+-                String prefix = COL_PREFIXES[c];
+-                int startIdx  = c * chunkSize;
+-                for (int slot = 0; slot < COL_ROWS; slot++) {
++                String prefix   = COL_PREFIXES[c];
++                int startIdx    = c * chunkSize;
++                for (int slot = 0; slot < Math.min(availRows, chunkSize); slot++) {
+                     int pIdx = startIdx + slot;
+                     if (pIdx >= total) break;
++                    int row = topRows + slot;
+                     PlayerTabEntry e = sortedEntries.get(pIdx);
+                     Player target = e.player();
+                     List<TextureProperty> skin = packetTablistManager.getPlayerSkin(target);
+                     if (skin == null) skin = PacketTablistManager.NO_SKIN;
+                     boolean skinChanged = packetTablistManager.checkAndUpdateSkinVersion(target.getUniqueId(), skin);
+-                    cols[c][slot] = new PacketTablistManager.TabSlot(
+-                            PacketTablistManager.colSlotUuid(c, slot), prefix + fmt2(slot),
++                    cols[c][row] = new PacketTablistManager.TabSlot(
++                            PacketTablistManager.colSlotUuid(c, row), prefix + fmt2(row),
+                             parseToComponent(e.displayName(), TAB_COL2_PX),
+                             skin, target.getPing(), skinChanged);
+                 }
+             }
+         }
+ 
+-        // Collect all slots — empty slots fill unused rows (stable UUIDs, text never changes)
++        // ── Collect all slots (empty slots fill unused rows) ───────────────
+         List<PacketTablistManager.TabSlot> slots = new ArrayList<>(numCols * COL_ROWS);
+         for (int c = 0; c < numCols; c++) {
+             String prefix = COL_PREFIXES[c];
+@@ -732,64 +771,23 @@
+         return slots;
+     }
+ 
+-    /**
+-     * Build the tab-list HEADER for two-column mode.
+-     * Contains: border + animated title + top-left section + top-right section.
+-     * Sent via sendPlayerListHeaderAndFooter (TAB_LIST packet) — safe for animation.
+-     */
+     private Component buildTwoColHeader(Player viewer, FileConfiguration cfg, int onlineCount) {
+-        StringBuilder sb = new StringBuilder();
+-
+-        String borderStr = cfg.getString("tab.two-column-layout.border", "");
+-        if (!borderStr.isBlank()) {
+-            sb.append(applyPlaceholders(viewer, borderStr, onlineCount));
+-        }
+-
+-        List<String> titleTexts = cfg.getStringList("tab.two-column-layout.header-title-texts");
+-        if (!titleTexts.isEmpty()) {
+-            String title = titleTexts.get(currentFrame % titleTexts.size());
+-            sb.append("\n").append(applyPlaceholders(viewer, title, onlineCount));
+-        } else {
+-            String headerStr = cfg.getString("tab.two-column-layout.header", "");
+-            if (!headerStr.isBlank())
+-                sb.append("\n").append(applyPlaceholders(viewer, headerStr, onlineCount));
+-        }
+-
+-        for (String line : getTwoColSectionLines(cfg, "tab.two-column-layout.top-left.texts", viewer, onlineCount)) {
+-            sb.append("\n").append(line);
+-        }
+-        for (String line : getTwoColSectionLines(cfg, "tab.two-column-layout.top-right.texts", viewer, onlineCount)) {
+-            sb.append("\n").append(line);
+-        }
+-
+-        return sb.length() == 0 ? Component.empty() : parseToComponent(sb.toString(), TAB_COL_PX);
+-    }
+-
+-    /**
+-     * Build the tab-list FOOTER for two-column mode.
+-     * Contains: bottom-left section + bottom-right section + footer border.
+-     * Sent via sendPlayerListHeaderAndFooter (TAB_LIST packet) — safe for animation.
+-     */
++        String borderText = cfg.getString("tab.two-column-layout.border", "");
++        Component border = borderText.isBlank() ? Component.empty()
++                : parseToComponent(applyPlaceholders(viewer, borderText, onlineCount));
++        List<String> titles = cfg.getStringList("tab.two-column-layout.header-title-texts");
++        if (!titles.isEmpty()) {
++            Component title = parseToComponent(applyPlaceholders(
++                    viewer, titles.get(currentFrame % titles.size()), onlineCount));
++            return border.equals(Component.empty()) ? title : border.append(Component.newline()).append(title);
++        }
++        return parseToComponent(applyPlaceholders(viewer,
++                cfg.getString("tab.two-column-layout.header", ""), onlineCount));
++    }
++
+     private Component buildTwoColFooter(Player viewer, FileConfiguration cfg, int onlineCount) {
+-        StringBuilder sb = new StringBuilder();
+-
+-        boolean first = true;
+-        for (String line : getTwoColSectionLines(cfg, "tab.two-column-layout.bottom-left.texts", viewer, onlineCount)) {
+-            if (!first) sb.append("\n");
+-            sb.append(line);
+-            first = false;
+-        }
+-        for (String line : getTwoColSectionLines(cfg, "tab.two-column-layout.bottom-right.texts", viewer, onlineCount)) {
+-            sb.append("\n").append(line);
+-        }
+-
+-        String footerStr = cfg.getString("tab.two-column-layout.footer", "");
+-        if (!footerStr.isBlank()) {
+-            if (sb.length() > 0) sb.append("\n");
+-            sb.append(applyPlaceholders(viewer, footerStr, onlineCount));
+-        }
+-
+-        return sb.length() == 0 ? Component.empty() : parseToComponent(sb.toString(), TAB_COL_PX);
++        return parseToComponent(applyPlaceholders(viewer,
++                cfg.getString("tab.two-column-layout.footer", ""), onlineCount));
+     }
+ 
+     /** Build a decoration slot (no skin). */
+--- a/src/main/java/fr/elias/oreoEssentials/modules/tab/PacketTablistManager.java
++++ b/src/main/java/fr/elias/oreoEssentials/modules/tab/PacketTablistManager.java
+@@ -7,7 +7,6 @@
+ import com.github.retrooper.packetevents.protocol.player.UserProfile;
+ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoRemove;
+ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
+-import fr.elias.oreoEssentials.OreoEssentials;
+ import net.kyori.adventure.text.Component;
+ import org.bukkit.Bukkit;
+ import org.bukkit.entity.Player;
+@@ -152,8 +151,6 @@
+                 cache.put(slot.uuid(), text);
+             } else if (slot.skinChanged()) {
+                 // Skin changed — must re-send ADD_PLAYER to push new texture
+-                OreoEssentials.get().getLogger().info("[TAB-DEBUG] skinChanged for slot=" + slot.uuid()
+-                        + " viewer=" + viewer.getName());
+                 toReinit.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(
+                         buildProfile(slot), true, slot.latency(), GameMode.SURVIVAL, slot.displayName(), null
+                 ));
+@@ -182,21 +179,11 @@
+             } catch (Exception ignored) {}
+         }
+ 
+-        // Use ADD_PLAYER (full re-add) instead of UPDATE_DISPLAY_NAME for incremental text
+-        // changes. UPDATE_DISPLAY_NAME triggers a full list re-sort/re-render on the client
+-        // while the tab overlay is open, causing a visible flash on every animation frame
+-        // change. ADD_PLAYER for an already-known UUID is treated as an atomic slot replace
+-        // and does not trigger the re-render.
+         if (!toUpdateText.isEmpty()) {
+             try {
+                 PacketEvents.getAPI().getPlayerManager().sendPacket(viewer,
+                         new WrapperPlayServerPlayerInfoUpdate(
+-                                EnumSet.of(
+-                                        WrapperPlayServerPlayerInfoUpdate.Action.ADD_PLAYER,
+-                                        WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED,
+-                                        WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME,
+-                                        WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LATENCY
+-                                ),
++                                EnumSet.of(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME),
+                                 toUpdateText));
+             } catch (Exception ignored) {}
+         }
+@@ -215,32 +202,41 @@
+     }
+ 
+     /**
+-     * Remove all real players from this viewer's client tab cache entirely.
+-     * Using REMOVE_PLAYER (instead of UPDATE_LISTED=false) means the client has
+-     * no real entries to fall back to during a Tab key-repeat render reset — the
+-     * primary cause of visible tab-list flicker while holding the Tab key.
++     * Hide all real players from their vanilla tab positions for this viewer.
++     * Must be called before (or alongside) initViewer so real entries don't
++     * bleed through alongside fake ones.
+      */
+     public void delistRealPlayers(Player viewer) {
+-        List<UUID> uuids = new ArrayList<>();
++        List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> infos = new ArrayList<>();
+         for (Player real : Bukkit.getOnlinePlayers()) {
+             if (!real.isOnline()) continue;
+-            uuids.add(real.getUniqueId());
+-        }
+-        if (!uuids.isEmpty()) {
++            UserProfile profile = getRealProfile(real);
++            infos.add(new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(
++                    profile, false, 0, GameMode.SURVIVAL, null, null
++            ));
++        }
++        if (!infos.isEmpty()) {
+             try {
+                 PacketEvents.getAPI().getPlayerManager().sendPacket(viewer,
+-                        new WrapperPlayServerPlayerInfoRemove(uuids));
+-            } catch (Exception ignored) {}
+-        }
+-    }
+-
+-    /**
+-     * Remove a specific real player from all other viewers' client tab cache.
++                        new WrapperPlayServerPlayerInfoUpdate(
++                                EnumSet.of(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED), infos));
++            } catch (Exception ignored) {}
++        }
++    }
++
++    /**
++     * De-list a specific real player from all other viewers' vanilla tab.
+      * Call when a new player joins so they don't appear in other viewers' vanilla list.
+      */
+     public void delistPlayerForAll(Player newPlayer) {
+-        WrapperPlayServerPlayerInfoRemove packet =
+-                new WrapperPlayServerPlayerInfoRemove(List.of(newPlayer.getUniqueId()));
++        UserProfile profile = getRealProfile(newPlayer);
++        List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> infos = List.of(
++                new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(
++                        profile, false, 0, GameMode.SURVIVAL, null, null)
++        );
++        WrapperPlayServerPlayerInfoUpdate packet = new WrapperPlayServerPlayerInfoUpdate(
++                EnumSet.of(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_LISTED), infos
++        );
+         for (Player viewer : Bukkit.getOnlinePlayers()) {
+             if (viewer.equals(newPlayer)) continue;
+             if (!viewer.isOnline()) continue;
+--- a/src/main/resources/scoreboard-tab/tab.yml
++++ b/src/main/resources/scoreboard-tab/tab.yml
+@@ -54,8 +54,7 @@
+     footer: '<#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶'
+ 
+     # ── Col1 top: player count + separator
+-    # These sections are now sent via sendPlayerListHeaderAndFooter (TAB_LIST packet)
+-    # which is safe for animation — it never triggers a tab list re-render on the client.
++    # Animated decoration stays inside its column; only the title/border spans the list.
+     top-left:
+       texts:
+         - |-
+--- /dev/null
++++ b/src/test/java/fr/elias/oreoEssentials/modules/tab/CustomTablistLayoutTest.java
+@@ -0,0 +1,174 @@
++package fr.elias.oreoEssentials.modules.tab;
++
++import com.github.retrooper.packetevents.protocol.player.UserProfile;
++import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
++import org.bukkit.World;
++import org.bukkit.configuration.file.FileConfiguration;
++import org.bukkit.configuration.file.YamlConfiguration;
++import org.bukkit.entity.Player;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import org.mockito.ArgumentCaptor;
++
++import java.lang.reflect.Field;
++import java.lang.reflect.Method;
++import java.util.ArrayList;
++import java.util.EnumSet;
++import java.util.List;
++import java.util.UUID;
++
++import static com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate.Action.*;
++import static org.junit.jupiter.api.Assertions.*;
++import static org.mockito.Mockito.*;
++
++class CustomTablistLayoutTest {
++    private final CustomTablistLayout layout = new CustomTablistLayout(null, null);
++    private final YamlConfiguration cfg = new YamlConfiguration();
++    private Player viewer;
++
++    @BeforeEach
++    void setup() throws Exception {
++        field("packetTablistManager", new PacketTablistManager());
++        field("papiLookupAttempted", true);
++        viewer = player(0);
++        for (String column : List.of("left", "center", "right")) {
++            cfg.set("tab.two-column-layout.top-" + column + ".texts",
++                    List.of("<red>Top " + column + "</red>\nseparator", "<blue>Top " + column + "</blue>\nseparator"));
++            cfg.set("tab.two-column-layout.bottom-" + column + ".texts", List.of("separator\nBottom " + column));
++        }
++    }
++
++    @Test
++    void animationKeepsDecorationsInsideColumnsAndSlotIdsStable() throws Exception {
++        var first = slots(2, 2);
++        field("currentFrame", 1);
++        var second = slots(2, 2);
++        assertEquals(40, first.size());
++        assertEquals("Top left", text(first.get(0)));
++        assertEquals("Top right", text(first.get(20)));
++        assertEquals("Bottom left", text(first.get(19)));
++        assertEquals("Bottom right", text(first.get(39)));
++        assertEquals(first.stream().map(PacketTablistManager.TabSlot::uuid).toList(),
++                second.stream().map(PacketTablistManager.TabSlot::uuid).toList());
++        assertNotEquals(first.get(0).displayName(), second.get(0).displayName());
++        assertEquals(first.get(2).displayName(), second.get(2).displayName());
++    }
++
++    @Test
++    void playersAppearOnceWithoutGapsOrDuplicatesAtColumnBoundaries() throws Exception {
++        for (int columns = 1; columns <= 3; columns++) {
++            for (int count : List.of(1, 2, 17, 31, 33, 48, 55)) {
++                List<String> names = slots(count, columns).stream().map(CustomTablistLayoutTest::text)
++                        .filter(s -> s.startsWith("Player")).toList();
++                assertEquals(Math.min(count, columns * 16), names.size());
++                assertEquals(names.size(), names.stream().distinct().count());
++                for (int i = 0; i < names.size(); i++) assertEquals("Player" + i, names.get(i));
++            }
++        }
++    }
++
++    @Test
++    void expansionIncludesEveryColumnsDecorationSpace() throws Exception {
++        assertEquals(1, columns(16));
++        assertEquals(2, columns(17));
++        assertEquals(2, columns(32));
++        assertEquals(3, columns(33));
++        cfg.set("tab.two-column-layout.top-right.texts", List.of("1\n2\n3\n4\n5\n6"));
++        assertEquals(3, columns(25));
++    }
++
++    @Test
++    void differentFrameHeightsDoNotMovePlayers() throws Exception {
++        cfg.set("tab.two-column-layout.top-left.texts", List.of("short", "one\ntwo\nthree"));
++        assertEquals("Player0", text(slots(1, 1).get(3)));
++        field("currentFrame", 1);
++        assertEquals("Player0", text(slots(1, 1).get(3)));
++    }
++
++    @Test
++    void headerDoesNotStackColumnDecorations() throws Exception {
++        cfg.set("tab.two-column-layout.border", "Border");
++        cfg.set("tab.two-column-layout.header-title-texts", List.of("Title"));
++        cfg.set("tab.two-column-layout.footer", "Footer");
++        var types = new Class<?>[]{Player.class, FileConfiguration.class, int.class};
++        assertEquals("Border\nTitle", plain((Component) invoke("buildTwoColHeader", types, viewer, cfg, 2)));
++        assertEquals("Footer", plain((Component) invoke("buildTwoColFooter", types, viewer, cfg, 2)));
++    }
++
++    @Test
++    @SuppressWarnings({"unchecked", "rawtypes"})
++    void delistingRetainsProfilesAndActionsInMixedPackets() {
++        var real = new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(new UserProfile(UUID.randomUUID(), "Real"));
++        var fake = new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(new UserProfile(PacketTablistManager.colSlotUuid(0, 0), "Fake"));
++        var packet = mock(WrapperPlayServerPlayerInfoUpdate.class);
++        when(packet.getActions()).thenReturn(EnumSet.of(ADD_PLAYER, INITIALIZE_CHAT, UPDATE_LISTED));
++        when(packet.getEntries()).thenReturn(List.of(real, fake));
++        assertTrue(CustomTablistLayout.hideRealPlayerListings(packet));
++        ArgumentCaptor<List> entries = ArgumentCaptor.forClass(List.class);
++        verify(packet).setEntries(entries.capture());
++        var hidden = (WrapperPlayServerPlayerInfoUpdate.PlayerInfo) entries.getValue().get(0);
++        assertFalse(hidden.isListed());
++        assertTrue(real.isListed(), "shared original must not be mutated");
++        assertSame(real.getGameProfile(), hidden.getGameProfile());
++        assertSame(fake, entries.getValue().get(1));
++        assertTrue(fake.isListed());
++        verify(packet, never()).setActions(any());
++    }
++
++    @Test
++    void textAndChatUpdatesPassThrough() {
++        var packet = mock(WrapperPlayServerPlayerInfoUpdate.class);
++        when(packet.getActions()).thenReturn(EnumSet.of(UPDATE_DISPLAY_NAME, INITIALIZE_CHAT));
++        assertFalse(CustomTablistLayout.hideRealPlayerListings(packet));
++        verify(packet, never()).setEntries(any());
++    }
++
++    private Player player(int i) {
++        Player player = mock(Player.class);
++        World world = mock(World.class);
++        when(world.getName()).thenReturn("world");
++        when(player.getWorld()).thenReturn(world);
++        when(player.getUniqueId()).thenReturn(new UUID(0, i + 1));
++        when(player.getName()).thenReturn("Player" + i);
++        when(player.getDisplayName()).thenReturn("Player" + i);
++        return player;
++    }
++
++    private List<Object> players(int count) throws Exception {
++        var type = Class.forName(CustomTablistLayout.class.getName() + "$PlayerTabEntry");
++        var constructor = type.getDeclaredConstructor(Player.class, int.class, String.class);
++        constructor.setAccessible(true);
++        List<Object> result = new ArrayList<>();
++        for (int i = 0; i < count; i++) result.add(constructor.newInstance(player(i), 0, "Player" + i));
++        return result;
++    }
++
++    @SuppressWarnings("unchecked")
++    private List<PacketTablistManager.TabSlot> slots(int count, int columns) throws Exception {
++        return (List<PacketTablistManager.TabSlot>) invoke("buildMultiColumnTabSlots",
++                new Class<?>[]{Player.class, FileConfiguration.class, List.class, int.class, int.class},
++                viewer, cfg, players(count), count, columns);
++    }
++
++    private int columns(int count) throws Exception {
++        return (int) invoke("computeDynamicColumns",
++                new Class<?>[]{FileConfiguration.class, List.class, int.class, int.class}, cfg, players(count), 1, 3);
++    }
++
++    private Object invoke(String name, Class<?>[] types, Object... args) throws Exception {
++        Method method = CustomTablistLayout.class.getDeclaredMethod(name, types);
++        method.setAccessible(true);
++        return method.invoke(layout, args);
++    }
++
++    private void field(String name, Object value) throws Exception {
++        Field field = CustomTablistLayout.class.getDeclaredField(name);
++        field.setAccessible(true);
++        field.set(layout, value);
++    }
++
++    private static String plain(Component component) { return PlainTextComponentSerializer.plainText().serialize(component); }
++    private static String text(PacketTablistManager.TabSlot slot) { return plain(slot.displayName()).trim(); }
++}

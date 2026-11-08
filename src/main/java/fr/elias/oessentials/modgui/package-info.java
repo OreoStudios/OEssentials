@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.modgui.lifecycle.ModGuiModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "mod-gui")
+@dev.oreo.modulith.core.ApplicationModule(id = "mod-gui", uses = {"chat::services", "ender-chest::services", "freeze::services", "inventory-sync::services", "mute-system::services", "notes::services", "player-services::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "mod-gui", lifecycle = fr.elias.oessentials.modgui.lifecycle.ModGuiModule.class)
 package fr.elias.oessentials.modgui;

@@ -1,0 +1,806 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials - AFK System Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16, 22, 29, 0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(196, 168, 247, 0.10), transparent 24%),
+        radial-gradient(circle at top left,  rgba(104, 217, 200, 0.08), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12,18,23,0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px; padding: 18px;
+      border: 1px solid rgba(196,168,247,0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(196,168,247,0.08), rgba(104,217,200,0.04));
+      box-shadow: var(--shadow);
+    }
+    .brand h1 { margin: 0; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.1; color: var(--purple); }
+    .brand p  { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+
+    .nav-group { margin-top: 18px; }
+    .nav-group h2 { margin: 0 0 8px; color: var(--soft); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+    .nav-group a { display: block; padding: 10px 12px; margin: 4px 0; color: var(--muted); text-decoration: none; border-radius: 10px; border: 1px solid transparent; transition: 0.18s ease; }
+    .nav-group a:hover, .nav-group a.active { color: var(--text); border-color: rgba(196,168,247,0.26); background: rgba(196,168,247,0.08); }
+
+    .content { padding: 34px 36px 80px; }
+
+    .hero {
+      padding: 30px; border-radius: 28px;
+      background: linear-gradient(135deg, rgba(196,168,247,0.10), rgba(104,217,200,0.07)), rgba(16,22,29,0.78);
+      border: 1px solid rgba(196,168,247,0.22);
+      box-shadow: var(--shadow); margin-bottom: 28px;
+    }
+    .hero .eyebrow { display: inline-block; margin-bottom: 14px; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #ede0ff; background: rgba(196,168,247,0.18); border: 1px solid rgba(196,168,247,0.28); }
+    .hero h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2rem,4vw,3rem); line-height: 1.05; }
+    .hero p  { max-width: 920px; margin: 16px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
+    .hero-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 24px; }
+    .hero-card { padding: 14px 16px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+    .hero-card strong { display: block; color: var(--purple); margin-bottom: 6px; }
+
+    section { margin-top: 26px; padding: 24px; border-radius: 24px; background: var(--panel); border: 1px solid var(--line-soft); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+    section h2 { margin: 0 0 14px; font-family: Georgia, serif; font-size: 1.65rem; color: var(--text); }
+    section h3 { margin: 22px 0 10px; font-size: 1.04rem; color: var(--purple); }
+
+    p, li { color: var(--muted); line-height: 1.7; }
+    strong { color: var(--text); }
+
+    code { font-family: Consolas,"Courier New",monospace; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; color: #ede0ff; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    th { background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.92rem; }
+    tr:last-child td { border-bottom: 0; }
+
+    .note { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(127,192,255,0.22); background:rgba(127,192,255,0.08); }
+    .warn { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,140,122,0.24); background:rgba(255,140,122,0.08); }
+    .tip  { margin-top:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(143,226,143,0.24); background:rgba(143,226,143,0.08); }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.82rem; font-family:Consolas,monospace; }
+    .pill.purple { border-color:rgba(196,168,247,0.30); background:rgba(196,168,247,0.07); color:var(--purple); }
+    .pill.green  { border-color:rgba(143,226,143,0.30); background:rgba(143,226,143,0.07); color:var(--green); }
+
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { display:grid; grid-template-columns:44px minmax(0,1fr); gap:14px; align-items:start; padding:16px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .step-index { width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--purple),#e0d0ff); color:#1a0e2e; font-weight:800; }
+
+    .code-block { position:relative; margin-top:14px; border:1px solid #253646; border-radius:16px; overflow:hidden; background:var(--code); }
+    .copy-btn { position:absolute; top:12px; right:12px; border:0; border-radius:10px; padding:8px 12px; font-weight:700; color:#1a0e2e; background:linear-gradient(135deg,var(--purple),#e0d0ff); cursor:pointer; }
+    .copy-btn.done { background:linear-gradient(135deg,var(--green),#c5f2c5); }
+    pre { margin:0; padding:18px; overflow-x:auto; color:#e8f3fa; font-size:0.92rem; line-height:1.55; font-family:Consolas,"Courier New",monospace; white-space:pre; }
+
+    .flow-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:14px; }
+    .flow-box { padding:10px 14px; border-radius:12px; border:1px solid rgba(196,168,247,0.2); background:rgba(196,168,247,0.05); font-size:0.88rem; color:var(--text); font-family:Consolas,monospace; }
+    .flow-arrow { color:var(--soft); font-size:1.1rem; }
+
+    .two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+
+    .footer-box { margin-top:26px; padding:18px; border-radius:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center; color:var(--soft); }
+
+    @media (max-width:1080px) {
+      .shell { grid-template-columns:1fr; }
+      .sidebar { position:static; height:auto; border-right:0; border-bottom:1px solid var(--line-soft); }
+      .hero-grid, .two-col { grid-template-columns:1fr; }
+    }
+    @media (max-width:720px) {
+      .content { padding:20px 14px 60px; }
+      .hero, section { padding:18px; }
+    }
+  </style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>OreoEssentials AFK Guide</h1>
+      <p>Verified against <code>afk/config.yml</code>, <code>AfkService</code>, <code>AfkListener</code>, <code>AfkPoolService</code>, and <code>AfkWebServer</code>.</p>
+    </div>
+    <nav>
+      <div class="nav-group">
+        <h2>Start Here</h2>
+        <a href="#overview">Overview &amp; Config File</a>
+        <a href="#activity">What Counts as Activity</a>
+      </div>
+      <div class="nav-group">
+        <h2>Auto-AFK</h2>
+        <a href="#auto">Auto-AFK Timer</a>
+        <a href="#permission-tiers">Permission Tiers</a>
+      </div>
+      <div class="nav-group">
+        <h2>Messages &amp; UI</h2>
+        <a href="#messages">AFK Messages</a>
+        <a href="#custom-messages">Custom Messages Per Permission</a>
+        <a href="#actionbar">Action Bar Timer</a>
+        <a href="#tablist">Tab List Name</a>
+      </div>
+      <div class="nav-group">
+        <h2>AFK Pool</h2>
+        <a href="#pool-overview">Pool Overview</a>
+        <a href="#pool-local">Local Pool Setup</a>
+        <a href="#pool-cross">Cross-Server Pool</a>
+      </div>
+      <div class="nav-group">
+        <h2>Cross-Server &amp; Web UI</h2>
+        <a href="#cross-server">Cross-Server Status Sync</a>
+        <a href="#webui">Web UI &amp; JSON API</a>
+      </div>
+      <div class="nav-group">
+        <h2>Last Notes</h2>
+        <a href="#command">Command &amp; Permission</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- â”€â”€ Main content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <main class="content">
+    <header class="hero">
+      <span class="eyebrow">Full reference / exact code behavior</span>
+      <h1>AFK System</h1>
+      <p>
+        This page covers the entire AFK module: how inactivity is detected, the auto-AFK timer and permission tiers,
+        all messages players receive, the action bar live timer, tab name changes, the AFK pool (local and cross-server),
+        the RabbitMQ status broadcast, and the embedded web dashboard.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card">
+          <strong>Config file</strong>
+          <code>plugins/OreoEssentials/afk/config.yml</code> â€” every AFK setting lives here.
+        </div>
+        <div class="hero-card">
+          <strong>Auto-AFK is off by default</strong>
+          Set <code>auto.enabled: true</code> to start flagging inactive players. The default timeout is 300 seconds (5 minutes).
+        </div>
+        <div class="hero-card">
+          <strong>Looking around does not reset the timer</strong>
+          Only real block-position changes trigger activity. Pure mouse rotation (head movement) is ignored.
+        </div>
+      </div>
+    </header>
+
+    <!-- â”€â”€ Overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="overview">
+      <h2>Overview &amp; Config File</h2>
+      <p>The AFK module is a self-contained service (<code>AfkService</code>) that is registered as a Bukkit event listener and runs two background tasks: the inactivity checker and the action bar updater. The config is read from <code>plugins/OreoEssentials/afk/config.yml</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code># plugins/OreoEssentials/afk/config.yml â€” full skeleton
+
+auto:
+  enabled: false
+  seconds: 300
+  check-interval-seconds: 5
+  permission-tiers:
+    - permission: oreo.afk.tier.farm
+      seconds: 600
+    - permission: oreo.afk.tier.vip
+      seconds: 450
+
+actionbar:
+  enabled: true
+
+back-message:
+  enabled: true
+
+custom-messages:
+  - permission: oreo.afk.vip
+    now-afk: "&lt;gold&gt;[VIP] You are now AFK.&lt;/gold&gt;"
+    no-longer-afk: "&lt;gold&gt;[VIP] Welcome back!&lt;/gold&gt;"
+    back: "&lt;gold&gt;[VIP] You were AFK for &lt;white&gt;%time%&lt;/white&gt;.&lt;/gold&gt;"
+
+web:
+  enabled: false
+  port: 8765
+
+pool:
+  enabled: false
+  region-name: "afk_pool"
+  world-name: "world"
+  server: ""
+  cross-server: false</code></pre>
+      </div>
+
+      <p>After editing the file, reload with <code>/oer</code> or <code>/oereload</code>. <code>AfkConfig</code> auto-merges any missing keys from the bundled defaults on every reload â€” existing values are never overwritten.</p>
+    </section>
+
+    <!-- â”€â”€ Activity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="activity">
+      <h2>What Counts as Activity</h2>
+      <p>Both <code>AfkService</code> and <code>AfkListener</code> register the same event set. Any of these resets the inactivity clock and, if the player is already AFK, returns them from AFK:</p>
+
+      <table>
+        <thead>
+          <tr><th>Event</th><th>Condition checked</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PlayerMoveEvent</code></td>
+            <td>Only fires activity if the block position actually changed (<code>blockX/Y/Z</code> comparison). Looking around without moving does <strong>not</strong> count.</td>
+          </tr>
+          <tr>
+            <td><code>PlayerInteractEvent</code></td>
+            <td>Any interaction (right-click, left-click, etc.).</td>
+          </tr>
+          <tr>
+            <td><code>AsyncPlayerChatEvent</code> (legacy)</td>
+            <td>Dispatched to the sync scheduler before touching the AFK state.</td>
+          </tr>
+          <tr>
+            <td><code>AsyncChatEvent</code> (Paper 1.21+)</td>
+            <td>Registered with <code>ignoreCancelled=false</code> so it always fires even when the chat system cancels the event.</td>
+          </tr>
+          <tr>
+            <td><code>PlayerCommandPreprocessEvent</code></td>
+            <td>Counts as activity <strong>except</strong> for <code>/afk</code> itself. The check is a case-insensitive prefix match on the first four characters.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>AFK pool exemption:</strong> while a player is inside the AFK pool region, movement events do not feed back into the inactivity clock. The pool has its own movement handler that returns the player when they actually walk out of the pool.
+      </div>
+
+      <div class="note">
+        <strong>Grace window:</strong> when a player is teleported into or out of the AFK pool, movement is suppressed for <strong>1 500 ms</strong> (1.5 seconds) to prevent the teleport itself from immediately triggering an AFK return or re-entry.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Auto-AFK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="auto">
+      <h2>Auto-AFK Timer</h2>
+      <p>When <code>auto.enabled: true</code>, a repeating task checks all online players every <code>check-interval-seconds</code> seconds. If a player has not triggered any activity for at least <code>seconds</code> seconds, they are automatically flagged AFK.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>auto:
+  enabled: true        # false = auto-AFK disabled; players can still /afk manually
+  seconds: 300         # default timeout â€” 300 s = 5 minutes (minimum 0, clamped by code)
+  check-interval-seconds: 5   # poll rate (minimum 1 second, clamped by code)</code></pre>
+      </div>
+
+      <p>The task runs on the main server thread at <code>20 Ã— check-interval-seconds</code> ticks. Each iteration only checks players who are not already AFK. If a player with no recorded activity yet joins, their clock starts from join time.</p>
+
+      <div class="warn">
+        Setting <code>seconds: 0</code> disables the auto timeout (the code clamps the value to <code>max(0, ...)</code>). A value of 0 is treated as "no auto timeout" because the check condition is <code>inactiveSeconds &gt;= timeout &amp;&amp; timeout &gt; 0</code>.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Permission tiers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="permission-tiers">
+      <h2>Permission Tiers</h2>
+      <p>Permission tiers let you give specific groups a longer timeout before being auto-flagged. The list is checked top-to-bottom; the first matching permission wins.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>auto:
+  seconds: 300   # default for anyone with no matching tier
+
+  permission-tiers:
+    - permission: oreo.afk.tier.farm   # checked FIRST
+      seconds: 600                      # 10 minutes for farmers
+    - permission: oreo.afk.tier.vip
+      seconds: 450                      # 7.5 minutes for VIPs
+    # Players with neither permission use the default 300 s above</code></pre>
+      </div>
+
+      <p>If a player has multiple tier permissions, only the first match in the list is used. Order your list from most-specific / longest timeout to least-specific.</p>
+
+      <div class="tip">
+        To give a rank an <em>infinite</em> timeout (never auto-AFK), give them a tier with a very large <code>seconds</code> value, or simply do not put them in any tier and set the global <code>seconds</code> to 0 (which disables auto-AFK for everyone).
+      </div>
+    </section>
+
+    <!-- â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="messages">
+      <h2>AFK Messages</h2>
+      <p>Three messages are sent to the player at different points in the AFK lifecycle. All use MiniMessage format. The text comes from the lang file unless overridden by a custom-message entry (see next section).</p>
+
+      <table>
+        <thead>
+          <tr><th>When</th><th>Lang key</th><th>Hardcoded fallback</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Player enters AFK</td>
+            <td><code>afk.now-afk</code></td>
+            <td><code>&lt;yellow&gt;You are now AFK.&lt;/yellow&gt;</code></td>
+          </tr>
+          <tr>
+            <td>Player leaves AFK</td>
+            <td><code>afk.no-longer-afk</code></td>
+            <td><code>&lt;green&gt;You are no longer AFK.&lt;/green&gt;</code></td>
+          </tr>
+          <tr>
+            <td>Player leaves AFK (duration report)</td>
+            <td><code>afk.back-message</code></td>
+            <td><code>&lt;green&gt;You were AFK for &lt;white&gt;%time%&lt;/white&gt;.&lt;/green&gt;</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The <strong>back-message</strong> (duration report) is only sent if <code>back-message.enabled: true</code> and the player was AFK for at least 1 second. <code>%time%</code> is replaced with a human-readable duration like <code>5m 12s</code> or <code>1h 3m 40s</code>.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>back-message:
+  enabled: true   # set false to suppress the duration report entirely</code></pre>
+      </div>
+    </section>
+
+    <!-- â”€â”€ Custom messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="custom-messages">
+      <h2>Custom Messages Per Permission</h2>
+      <p>You can override any or all three AFK messages for specific permission groups. The list is checked top-to-bottom; the first permission the player has wins. If a key is omitted, the default lang message is used for that key.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>custom-messages:
+  - permission: oreo.afk.admin
+    now-afk:     "&lt;red&gt;[Admin] You are now AFK.&lt;/red&gt;"
+    no-longer-afk: "&lt;red&gt;[Admin] Back.&lt;/red&gt;"
+    back:        "&lt;red&gt;[Admin] Away for &lt;white&gt;%time%&lt;/white&gt;.&lt;/red&gt;"
+
+  - permission: oreo.afk.vip
+    now-afk: "&lt;gold&gt;[VIP] You are now AFK.&lt;/gold&gt;"
+    no-longer-afk: "&lt;gold&gt;[VIP] Welcome back!&lt;/gold&gt;"
+    back: "&lt;gold&gt;[VIP] You were AFK for &lt;white&gt;%time%&lt;/white&gt;.&lt;/gold&gt;"
+    # If you omit "back" here, the default lang message is sent instead</code></pre>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Key</th><th>Placeholder</th><th>When sent</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>now-afk</code></td><td>â€”</td><td>Player enters AFK state.</td></tr>
+          <tr><td><code>no-longer-afk</code></td><td>â€”</td><td>Player leaves AFK state.</td></tr>
+          <tr><td><code>back</code></td><td><code>%time%</code></td><td>After returning, if <code>back-message.enabled: true</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        All custom message strings are parsed as MiniMessage. The <code>%time%</code> replacement is applied <em>before</em> MiniMessage deserialization, so you can style the time value with tags: <code>&lt;aqua&gt;%time%&lt;/aqua&gt;</code>.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Action bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="actionbar">
+      <h2>Action Bar Timer</h2>
+      <p>When <code>actionbar.enabled: true</code>, AFK players receive a live action bar message every second showing how long they have been AFK.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>actionbar:
+  enabled: true   # set false to disable the live timer action bar</code></pre>
+      </div>
+
+      <p>The text comes from the lang key <code>afk.actionbar</code>. The hardcoded fallback is:</p>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>&lt;gray&gt;AFK for &lt;white&gt;%time%&lt;/white&gt;&lt;/gray&gt;</code></pre>
+      </div>
+
+      <p><code>%time%</code> is replaced with the same human-readable duration format used by the back-message. The action bar updates exactly every 20 ticks (1 second) using an entity-safe scheduler compatible with Folia.</p>
+    </section>
+
+    <!-- â”€â”€ Tab list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="tablist">
+      <h2>Tab List Name</h2>
+      <p>When a player goes AFK, their tab list name is changed to prefix their original name with <code>Â§7[AFK] Â§r</code>. The original tab name is captured before the change and restored exactly when they return.</p>
+
+      <div class="two-col">
+        <div>
+          <h3>AFK state tab name format</h3>
+          <div class="code-block">
+            <button class="copy-btn" type="button">Copy</button>
+            <pre><code>Â§7[AFK] Â§r&lt;original_tab_name&gt;</code></pre>
+          </div>
+          <p>This is set via Bukkit's <code>player.setPlayerListName()</code>. There is no config option to change this format â€” edit the source if you need a different prefix.</p>
+        </div>
+        <div>
+          <h3>Restore on return</h3>
+          <p>The original name is stored in memory when AFK begins (<code>originalTabNames</code> map). On return, the stored name is restored. On player quit, all AFK state including the stored name is cleaned up.</p>
+        </div>
+      </div>
+
+      <div class="warn">
+        If a third-party tab plugin (like TAB or FeatherBoard) also sets the player list name, it may conflict. The AFK module calls <code>setPlayerListName()</code> directly on the Bukkit API without coordinating with external plugins.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Pool overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="pool-overview">
+      <h2>AFK Pool â€” Overview</h2>
+      <p>The AFK pool teleports players into a dedicated safe area (a WorldGuard region) when they go AFK, and returns them to their original location the moment they move again.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div>
+            <strong>Create a WorldGuard region</strong> named <code>afk_pool</code> (or whatever you set in <code>pool.region-name</code>) in the world specified by <code>pool.world-name</code>.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div>
+            <strong>Enable the pool</strong> in the config: <code>pool.enabled: true</code>. Reload with <code>/oer</code>.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div>
+            <strong>Test it:</strong> go AFK with <code>/afk</code>. You should be teleported to the center of the region. Any movement while inside will return you to your original position.
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        The teleport destination is calculated as the <strong>center</strong> of the WorldGuard region's bounding box: <code>x = (min.x + max.x) / 2 + 0.5</code>, <code>z = (min.z + max.z) / 2 + 0.5</code>, <code>y = min.y + 1</code>. Make sure there is at least 2 blocks of vertical clearance at that point.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Local pool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="pool-local">
+      <h2>Local Pool Setup</h2>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>pool:
+  enabled: true
+  region-name: "afk_pool"   # exact WorldGuard region ID
+  world-name: "world"       # Bukkit world name where the region lives
+  server: ""                # leave empty for local-only pool
+  cross-server: false</code></pre>
+      </div>
+
+      <h3>Pool messages</h3>
+      <p>These are sent to the player and read from the lang system (with hardcoded fallbacks):</p>
+      <table>
+        <thead>
+          <tr><th>Lang key</th><th>Fallback text</th><th>When</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>afk.pool.entered</code></td><td><code>&lt;gray&gt;You've been moved to the AFK pool. Move to return...&lt;/gray&gt;</code></td><td>On teleport into the pool.</td></tr>
+          <tr><td><code>afk.pool.exited</code></td><td><code>&lt;green&gt;You've been returned to your original location.&lt;/green&gt;</code></td><td>On return from the pool.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>How return detection works</h3>
+      <p>The pool service registers its own <code>PlayerMoveEvent</code> listener at <code>MONITOR</code> priority. If the player is marked as "in pool" and their block position changes outside the 1 500 ms grace window, they are immediately returned. The sequence is:</p>
+      <div class="flow-row">
+        <div class="flow-box">Player moves in pool</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">Grace check (1 500 ms)</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">AfkService.clearAfk()</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">Teleport to saved BackLocation</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">Cleanup pool state</div>
+      </div>
+    </section>
+
+    <!-- â”€â”€ Cross-server pool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="pool-cross">
+      <h2>Cross-Server Pool</h2>
+      <p>Set <code>pool.cross-server: true</code> and <code>pool.server: "pool_server_name"</code> to move AFK players to a dedicated pool server in your BungeeCord/Velocity network.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>pool:
+  enabled: true
+  region-name: "afk_pool"
+  world-name: "world"
+  server: "lobby"      # BungeeCord server name where the pool region is
+  cross-server: true</code></pre>
+      </div>
+
+      <h3>Cross-server enter flow</h3>
+      <div class="flow-row">
+        <div class="flow-box">Player goes AFK on server A</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">BackLocation saved (server A coords)</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">AfkPoolEnterPacket via RabbitMQ â†’ server B</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">BungeeCord sends player to server B</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">Server B teleports player to pool region on join</div>
+      </div>
+
+      <h3>Cross-server return flow</h3>
+      <div class="flow-row" style="margin-top:12px">
+        <div class="flow-box">Player moves in pool on server B</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">AfkPoolExitPacket via RabbitMQ â†’ server A</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">BungeeCord sends player back to server A</div>
+        <span class="flow-arrow">â†’</span>
+        <div class="flow-box">Server A teleports player to original coords on join</div>
+      </div>
+
+      <h3>Cross-server pool messages</h3>
+      <table>
+        <thead>
+          <tr><th>Lang key</th><th>Fallback</th><th>Placeholder</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>afk.pool.cross-server</code></td><td><code>&lt;gray&gt;You've been moved to the AFK pool on &lt;aqua&gt;%server%&lt;/aqua&gt;.&lt;/gray&gt;</code></td><td><code>%server%</code> = target server name</td></tr>
+          <tr><td><code>afk.pool.cross-server-return</code></td><td><code>&lt;gray&gt;Returning you to &lt;aqua&gt;%server%&lt;/aqua&gt;...&lt;/gray&gt;</code></td><td><code>%server%</code> = origin server name</td></tr>
+          <tr><td><code>afk.pool.not-ready</code></td><td><code>&lt;red&gt;AFK Pool is not ready yet. Please try again in a few seconds.&lt;/red&gt;</code></td><td>â€”</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn">
+        <strong>PacketManager retry:</strong> if RabbitMQ is not yet ready when a player goes AFK, the pool service waits 40 ticks (2 seconds) and retries once. If it is still not ready, the player receives the <code>afk.pool.not-ready</code> message and is not teleported. Ensure RabbitMQ is connected before the first player goes AFK.
+      </div>
+
+      <div class="note">
+        <strong>Pending teleports on disconnect:</strong> if a player disconnects while a cross-server pool teleport is in flight, the return location is saved in the <code>pendingReturnTeleports</code> map. When they reconnect to the origin server, they are automatically teleported to their original location 1 second (20 ticks) after join.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Cross-server status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="cross-server">
+      <h2>Cross-Server Status Sync</h2>
+      <p>Independently of the pool, AFK enter/exit events are broadcast to all other servers via <code>AfkStatusPacket</code> over RabbitMQ whenever RabbitMQ is initialized. This powers the global view in the web dashboard.</p>
+
+      <h3>AfkStatusPacket payload</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>playerId</code></td><td>UUID</td><td>The AFK player's UUID.</td></tr>
+          <tr><td><code>playerName</code></td><td>String</td><td>The player's username.</td></tr>
+          <tr><td><code>server</code></td><td>String</td><td>The server name from <code>config.yml</code>.</td></tr>
+          <tr><td><code>worldName</code></td><td>String</td><td>The Bukkit world name the player is in.</td></tr>
+          <tr><td><code>x / y / z</code></td><td>double</td><td>Player coordinates at the moment of AFK entry.</td></tr>
+          <tr><td><code>afkSinceMs</code></td><td>long</td><td>Unix epoch milliseconds when AFK started.</td></tr>
+          <tr><td><code>entering</code></td><td>boolean</td><td><code>true</code> = player went AFK, <code>false</code> = player returned.</td></tr>
+        </tbody>
+      </table>
+
+      <p>Receiving servers store incoming data in their own <code>globalAfkData</code> map (keyed as <code>"server:uuid"</code>) and use it to populate the web dashboard. A server ignores packets from itself using a case-insensitive server-name comparison.</p>
+
+      <div class="tip">
+        No configuration is required for cross-server status sync â€” it activates automatically whenever the <code>PacketManager</code> (RabbitMQ) is initialized. If RabbitMQ is not configured, status sync is silently skipped.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Web UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="webui">
+      <h2>Web UI &amp; JSON API</h2>
+      <p>An optional embedded HTTP server exposes AFK data as both a human-readable dashboard and a machine-readable JSON endpoint.</p>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>web:
+  enabled: true
+  port: 8765   # the HTTP server binds to 0.0.0.0:&lt;port&gt;</code></pre>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h3>Dashboard â€” <code>GET /</code></h3>
+          <p>HTML page showing a table of all currently AFK players (local + cross-server). Auto-refreshes every 10 seconds. Displays: player name, server badge, world, coordinates, and live AFK duration.</p>
+        </div>
+        <div>
+          <h3>JSON API â€” <code>GET /api/afk</code></h3>
+          <p>Returns a JSON array. Each element has the fields below. The <code>Access-Control-Allow-Origin: *</code> header is set, so it can be consumed from any origin.</p>
+        </div>
+      </div>
+
+      <h3>JSON response fields</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>uuid</code></td><td>string</td><td>Player UUID.</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>Player username.</td></tr>
+          <tr><td><code>server</code></td><td>string</td><td>Server the player is on.</td></tr>
+          <tr><td><code>world</code></td><td>string</td><td>Bukkit world name.</td></tr>
+          <tr><td><code>x</code> / <code>y</code> / <code>z</code></td><td>number</td><td>Coordinates (1 decimal place).</td></tr>
+          <tr><td><code>afkSinceMs</code></td><td>number</td><td>Unix epoch ms when AFK started.</td></tr>
+          <tr><td><code>afkSeconds</code></td><td>number</td><td>Whole seconds since AFK started, calculated server-side at request time.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <pre><code>[
+  {
+    "uuid": "a1b2c3d4-...",
+    "name": "Steve",
+    "server": "survival",
+    "world": "world",
+    "x": 142.5,
+    "y": 64.0,
+    "z": -300.0,
+    "afkSinceMs": 1715000000000,
+    "afkSeconds": 312
+  }
+]</code></pre>
+      </div>
+
+      <div class="warn">
+        The web server binds to all interfaces (<code>0.0.0.0</code>). If this port is publicly accessible, anyone can see who is AFK and their coordinates. Firewall the port or use a reverse proxy with auth if that is a concern.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Command â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="command">
+      <h2>Command &amp; Permission</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Permission</th><th>Behavior</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/afk</code></td>
+            <td><code>oreo.afk</code></td>
+            <td>Toggles AFK state. Running it while AFK returns the player. Running it while active marks the player AFK. Player-only â€” cannot be run from console.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Other permissions used by the module</h3>
+      <table>
+        <thead>
+          <tr><th>Permission</th><th>Used by</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>oreo.afk.tier.*</code></td><td>Auto-AFK permission tiers (any tier permission you define in config).</td></tr>
+          <tr><td><code>oreo.afk.vip</code> (example)</td><td>Custom message overrides â€” any permission you define in <code>custom-messages</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        Typing <code>/afk</code> while already AFK does <strong>not</strong> reset the inactivity clock. The command is explicitly excluded in <code>AfkListener.isAfkCommand()</code> â€” it matches any message that starts with <code>/afk</code> (case-insensitive) followed by a space or end of input.
+      </div>
+    </section>
+
+    <!-- â”€â”€ Troubleshooting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>What to check</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Players are never auto-flagged AFK</td>
+            <td>Confirm <code>auto.enabled: true</code> and <code>auto.seconds &gt; 0</code>. Also verify they do not have a permission-tier that sets their timeout very high.</td>
+          </tr>
+          <tr>
+            <td>Looking around resets the AFK timer</td>
+            <td>It should not â€” the code compares <code>blockX/Y/Z</code> only. If it is resetting, another plugin may be re-dispatching a move event with a modified position.</td>
+          </tr>
+          <tr>
+            <td>AFK timer resets when typing <code>/afk</code></td>
+            <td>It should not â€” <code>/afk</code> is excluded in <code>AfkListener</code>. Any other command counts as activity.</td>
+          </tr>
+          <tr>
+            <td>Tab name not changing</td>
+            <td>A third-party tab plugin may be overwriting <code>setPlayerListName()</code>. The AFK module does not hook into external tab managers.</td>
+          </tr>
+          <tr>
+            <td>Action bar not showing</td>
+            <td>Check <code>actionbar.enabled: true</code>. If that is fine, the lang key <code>afk.actionbar</code> may be returning an empty string.</td>
+          </tr>
+          <tr>
+            <td>Pool teleport target is wrong (inside a block, offset)</td>
+            <td>The target is <code>(min + max) / 2</code> centered at block center, <code>y = min.y + 1</code>. Make the region at least 1 wide and 2 tall at its center point.</td>
+          </tr>
+          <tr>
+            <td>Pool immediately returns the player</td>
+            <td>The 1 500 ms grace window may be expiring too fast for laggy players. The window starts when the teleport is issued, not when the player arrives. Increase it in the source if needed.</td>
+          </tr>
+          <tr>
+            <td>Cross-server pool never sends the player</td>
+            <td>RabbitMQ must be initialized first. The pool retries once after 2 seconds. Check that <code>pool.server</code> exactly matches the BungeeCord server name and that RabbitMQ is running.</td>
+          </tr>
+          <tr>
+            <td>Web dashboard shows only local players</td>
+            <td>Cross-server data requires RabbitMQ. Without it the <code>globalAfkData</code> map only contains local entries. The dashboard shows all entries in that map.</td>
+          </tr>
+          <tr>
+            <td>Web server port conflict on startup</td>
+            <td>Another process is already using the port. Change <code>web.port</code> to a free port and reload.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer-box">
+        After editing <code>plugins/OreoEssentials/afk/config.yml</code>, reload with <code>/oer</code> or <code>/oereload</code>.<br />
+        The web server and auto-AFK task are restarted on reload if their enabled state has changed.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll(".code-block").forEach(block => {
+    const btn = block.querySelector(".copy-btn");
+    const pre = block.querySelector("pre");
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        const old = btn.textContent;
+        btn.textContent = "Copied";
+        btn.classList.add("done");
+        setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 1400);
+      } catch {
+        btn.textContent = "Copy failed";
+        setTimeout(() => { btn.textContent = "Copy"; }, 1400);
+      }
+    });
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      document.querySelectorAll(".nav-group a").forEach(l => l.classList.remove("active"));
+      const cur = document.querySelector(`.nav-group a[href="#${entry.target.id}"]`);
+      if (cur) cur.classList.add("active");
+    });
+  }, { rootMargin: "-22% 0px -65% 0px", threshold: 0.01 });
+
+  document.querySelectorAll("section[id]").forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
+

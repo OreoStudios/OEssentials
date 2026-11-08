@@ -1,0 +1,23 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  OEssentials — Version 7.1
+  Minecraft 1.21 | Paper / Folia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bug Fixes
+---------
+- Fixed startup warnings about commands already registered by other plugins
+  (WorldGuard, GriefDefender, vanilla server). Commands such as /heal, /god,
+  /ban, /kick, /tp, /gamemode, /sell, /msg, /tell, /enchant, /ping, /clear,
+  /clone, /kill, /bc and more now properly override conflicting registrations
+  and take full control of those labels on startup. They will no longer silently
+  fall back to the vanilla or third-party equivalent.
+
+Internal
+--------
+- Removed leftover source files from the old fr.elias.oreoEssentials package
+  that were causing build failures after the 7.0 refactor to fr.elias.oessentials.
+- Cleaned up duplicate CMI migration classes and AdminHomesGUI stubs.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Full changelog / source: https://github.com/el211/OEssentials
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

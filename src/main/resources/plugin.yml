@@ -18,6 +18,9 @@ loadbefore: [EconomyShopGUI, VendingMachines, PerfRankNPCs, ajLeaderboards, Shop
 # Commands are registered programmatically via CommandsAPI — no commands block needed.
 
 permissions:
+  minecraftmodulith.admin:
+    description: Inspect OEssentials modules, events, and dependency graphs
+    default: op
   oreo.*:
     description: All OEssentials features
     default: op

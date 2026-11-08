@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Portals Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16,22,29,0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0a1a2e 0%, #0d2038 50%, #091522 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 72px 24px 56px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(104,217,200,0.12);
+      border: 1px solid rgba(104,217,200,0.28);
+      border-radius: 999px;
+      padding: 4px 18px;
+      font-size: 0.78rem;
+      color: var(--teal);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      margin: 0 0 16px;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .tag {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ── Layout ── */
+    .layout {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+    .sidebar h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--soft);
+      margin: 0 0 12px;
+    }
+    .sidebar ul { list-style: none; margin: 0; padding: 0; }
+    .sidebar ul li { margin-bottom: 2px; }
+    .sidebar ul a {
+      display: block;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .sidebar ul a:hover { background: rgba(104,217,200,0.09); color: var(--teal); text-decoration: none; }
+    .sidebar .sub { padding-left: 18px; }
+
+    /* ── Sections ── */
+    section { margin-bottom: 60px; }
+    section h2 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin: 0 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .ico { font-size: 1.3rem; }
+    section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 32px 0 12px;
+    }
+    p { margin: 0 0 14px; color: var(--muted); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 22px 26px;
+      margin-bottom: 18px;
+    }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+
+    /* ── Alert boxes ── */
+    .alert {
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-left: 4px solid;
+      font-size: 0.93rem;
+    }
+    .alert-tip    { background: rgba(104,217,200,0.08); border-color: var(--teal); color: var(--teal); }
+    .alert-warn   { background: rgba(247,185,85,0.10);  border-color: var(--amber); color: var(--amber); }
+    .alert-info   { background: rgba(127,192,255,0.09); border-color: var(--blue); color: var(--blue); }
+    .alert-danger { background: rgba(255,140,122,0.09); border-color: var(--red); color: var(--red); }
+    .alert b { display: block; margin-bottom: 4px; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.87rem;
+      line-height: 1.65;
+      margin: 12px 0;
+    }
+    code {
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.87em;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .c-key    { color: #7fc0ff; }
+    .c-val    { color: #f7b955; }
+    .c-str    { color: #8fe28f; }
+    .c-cmt    { color: #556070; font-style: italic; }
+    .c-teal   { color: var(--teal); }
+    .c-red    { color: var(--red); }
+    .c-purple { color: var(--purple); }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th {
+      background: rgba(104,217,200,0.10);
+      color: var(--teal);
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--muted);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.025); }
+    td code { font-size: 0.85em; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.77rem;
+      font-weight: 600;
+    }
+    .badge-green  { background: rgba(143,226,143,0.15); color: var(--green);  border: 1px solid rgba(143,226,143,0.3); }
+    .badge-amber  { background: rgba(247,185,85,0.15);  color: var(--amber);  border: 1px solid rgba(247,185,85,0.3); }
+    .badge-red    { background: rgba(255,140,122,0.15); color: var(--red);    border: 1px solid rgba(255,140,122,0.3); }
+    .badge-blue   { background: rgba(127,192,255,0.15); color: var(--blue);   border: 1px solid rgba(127,192,255,0.3); }
+    .badge-purple { background: rgba(196,168,247,0.15); color: var(--purple); border: 1px solid rgba(196,168,247,0.3); }
+
+    /* ── Steps ── */
+    .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    .steps li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .steps li::before {
+      content: counter(step);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(104,217,200,0.14);
+      border: 1px solid rgba(104,217,200,0.3);
+      color: var(--teal);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .steps li .content { padding-top: 6px; }
+    .steps li .content strong { color: var(--text); display: block; margin-bottom: 4px; }
+
+    /* ── Flow ── */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+      margin: 18px 0;
+      font-size: 0.88rem;
+    }
+    .flow-node {
+      background: rgba(104,217,200,0.10);
+      border: 1px solid rgba(104,217,200,0.25);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+    .flow-arrow { color: var(--soft); padding: 0 10px; font-size: 1.1rem; }
+
+    /* ── Player examples ── */
+    .player-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    .player-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .player-avatar {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      font-size: 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(104,217,200,0.12);
+      border: 1px solid var(--line);
+    }
+    .player-name { font-weight: 700; color: var(--text); }
+    .player-rank { font-size: 0.8rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--line);
+      color: var(--soft);
+      font-size: 0.88rem;
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+
+<!-- ══════════════════════════════════════════════════════ HERO -->
+<div class="hero">
+  <div class="hero-badge">OreoEssentials Module</div>
+  <h1>Portals</h1>
+  <p>
+    Create invisible teleportation zones anywhere in your world.
+    Walk through a portal region and be instantly sent to another location —
+    or even to another server entirely.
+  </p>
+  <div class="hero-tags">
+    <span class="tag">Paper 1.21+</span>
+    <span class="tag">Folia Compatible</span>
+    <span class="tag">Cross-Server</span>
+    <span class="tag">SmartInventory GUI</span>
+    <span class="tag">Custom Particles</span>
+    <span class="tag">Permission-Gated</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ LAYOUT -->
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#what-is">What are Portals?</a></li>
+      <li><a href="#quickstart">Quick-Start (5 steps)</a></li>
+      <li><a href="#config">config.yml Explained</a></li>
+      <li><a href="#creating">Creating a Portal</a>
+        <ul>
+          <li><a href="#wand-method" class="sub">Wand method</a></li>
+          <li><a href="#command-method" class="sub">Command method</a></li>
+        </ul>
+      </li>
+      <li><a href="#portals-yml">portals.yml Structure</a></li>
+      <li><a href="#permissions-portals">Permission-Locked Portals</a></li>
+      <li><a href="#yaw-pitch">Keep Yaw/Pitch</a></li>
+      <li><a href="#particles">Particles</a></li>
+      <li><a href="#cross-server">Cross-Server Portals</a></li>
+      <li><a href="#warp-dest">Warp Destination</a></li>
+      <li><a href="#gui">GUI Editor</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#perm-table">Permissions Table</a></li>
+      <li><a href="#player-examples">Player Examples</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main>
+
+    <!-- ══════════════════════════════════════════════ WHAT IS -->
+    <section id="what-is">
+      <h2><span class="ico">🌀</span> What are Portals?</h2>
+      <p>
+        A portal is an <strong>invisible 3D region</strong> in your world.
+        When a player walks into the region, they are immediately teleported
+        to a destination you configured. Portals look like nothing from the
+        outside — they're defined by two corner positions (POS1 and POS2)
+        forming a bounding box. Any block in between is part of the portal.
+      </p>
+      <p>You can use portals for:</p>
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--teal)">🏠 Hub shortcuts</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Teleport players from spawn to a minigame lobby or resource world
+            by walking through a doorway.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--purple)">🌍 World gates</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Connect different worlds — walk through an arch and arrive at
+            an adventure map, skyblock island, etc.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--amber)">🔗 Cross-server links</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Send players to a completely different server in your
+            BungeeCord/Velocity network automatically.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--green)">🔒 VIP areas</strong>
+          <p style="margin-top:8px;font-size:0.9rem">
+            Block non-VIP players from entering a portal region using
+            a permission node — they get a message instead of teleporting.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ QUICKSTART -->
+    <section id="quickstart">
+      <h2><span class="ico">🚀</span> Quick-Start (5 steps)</h2>
+
+      <div class="alert alert-tip">
+        <b>Just want a basic portal in 2 minutes?</b> Follow these steps and you'll
+        have a working teleport zone before you know it.
+      </div>
+
+      <ol class="steps">
+        <li>
+          <div class="content">
+            <strong>Install OreoEssentials</strong>
+            Drop the jar into <code>plugins/</code> and start the server once.
+            The plugin creates <code>plugins/OreoEssentials/portals/config.yml</code>
+            and <code>portals/portals.yml</code> automatically.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Get the wand</strong>
+            Run <code>/portal wand</code> in-game. You receive a
+            <strong>Blaze Rod</strong> with a special name — this is your selection tool.
+            (You need <code>oreo.portals.create</code> permission, or be OP.)
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Select the portal region</strong>
+            Stand at one corner of the area you want to be the portal and
+            <strong>left-click</strong> a block — this sets POS1.
+            Go to the opposite corner and <strong>right-click</strong> a block — this sets POS2.
+            The region between POS1 and POS2 will become the portal.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Create the portal</strong>
+            Stand at the location where you want the portal to <em>teleport players to</em>
+            and run:
+<pre>/portal create myportal &lt;destWorld&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</pre>
+            Replace <code>&lt;destWorld&gt;</code>, <code>&lt;x&gt;</code>, <code>&lt;y&gt;</code>,
+            <code>&lt;z&gt;</code> with the actual destination coordinates.
+            Example: <code>/portal create lobby world 0 64 0</code>
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Walk through it!</strong>
+            Step into the region you just defined and you should be teleported
+            immediately. If something goes wrong, check the
+            <a href="#faq">FAQ</a> section at the bottom.
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ CONFIG -->
+    <section id="config">
+      <h2><span class="ico">⚙️</span> config.yml Explained</h2>
+      <p>Location: <code>plugins/OreoEssentials/portals/config.yml</code></p>
+
+<pre><span class="c-cmt"># ── Which server this is (for cross-server portals) ───────────────</span>
+<span class="c-key">server-name:</span> <span class="c-str">""</span>
+<span class="c-cmt"># Set this to the server's name as registered in your proxy.</span>
+<span class="c-cmt"># Example: server-name: "survival"</span>
+<span class="c-cmt"># Leave empty on single-server setups.</span>
+
+<span class="c-cmt"># ── Cooldown ──────────────────────────────────────────────────────</span>
+<span class="c-key">cooldown-ms:</span> <span class="c-val">1000</span>
+<span class="c-cmt"># Milliseconds before the same player can use ANY portal again.</span>
+<span class="c-cmt"># 1000ms = 1 second. Prevents players from rapidly re-entering.</span>
+
+<span class="c-cmt"># ── Volume limit ──────────────────────────────────────────────────</span>
+<span class="c-key">max-portal-volume:</span> <span class="c-val">100000</span>
+<span class="c-cmt"># Maximum blocks a portal bounding box can span.</span>
+<span class="c-cmt"># Prevents admins from accidentally defining 1-million-block zones.</span>
+
+<span class="c-cmt"># ── Yaw/Pitch ─────────────────────────────────────────────────────</span>
+<span class="c-key">allow-keep-yaw-pitch:</span> <span class="c-val">true</span>
+<span class="c-cmt"># Master switch for the per-portal "keepYawPitch" feature.</span>
+<span class="c-cmt"># When false, yaw/pitch is NEVER preserved regardless of portal settings.</span>
+
+<span class="c-cmt"># ── Teleportation ─────────────────────────────────────────────────</span>
+<span class="c-key">teleport-async:</span> <span class="c-val">false</span>
+<span class="c-cmt"># true  = use Paper's async teleportation (required for Folia).</span>
+<span class="c-cmt"># false = use standard synchronous teleportation (fine for Paper).</span>
+<span class="c-cmt"># The plugin auto-detects Folia and forces async mode when running on it.</span>
+
+<span class="c-cmt"># ── Default teleport effects ──────────────────────────────────────</span>
+<span class="c-key">default-sound:</span> <span class="c-str">"ENTITY_ENDERMAN_TELEPORT"</span>
+<span class="c-cmt"># Sound played when ANY portal teleports a player (global default).</span>
+<span class="c-cmt"># Use Bukkit sound names (ENTITY_ENDERMAN_TELEPORT, BLOCK_PORTAL_TRIGGER, etc.)</span>
+<span class="c-cmt"># or namespaced keys (minecraft:entity.enderman.teleport).</span>
+
+<span class="c-key">default-particles:</span>
+  <span class="c-key">type:</span>  <span class="c-str">"PORTAL"</span>     <span class="c-cmt"># Particle name (e.g. PORTAL, FLAME, END_ROD)</span>
+  <span class="c-key">count:</span> <span class="c-val">20</span>          <span class="c-cmt"># How many particles to spawn on teleport</span>
+
+<span class="c-cmt"># ── Ambient particles ─────────────────────────────────────────────</span>
+<span class="c-key">ambient-particles:</span>
+  <span class="c-key">enabled:</span>        <span class="c-val">false</span>
+  <span class="c-cmt"># true = all portals with ambient enabled get continuous particles.</span>
+  <span class="c-key">type:</span>           <span class="c-str">"PORTAL"</span>
+  <span class="c-key">count:</span>          <span class="c-val">3</span>
+  <span class="c-key">interval-ticks:</span> <span class="c-val">10</span>
+  <span class="c-cmt"># Spawn ambient particles every N ticks (20 ticks = 1 second).</span>
+
+<span class="c-cmt"># ── Selection wand ────────────────────────────────────────────────</span>
+<span class="c-key">wand:</span>
+  <span class="c-key">material:</span> <span class="c-str">BLAZE_ROD</span>
+  <span class="c-key">name:</span>     <span class="c-str">"&amp;6&amp;lPortal Wand"</span>
+  <span class="c-key">lore:</span>
+    - <span class="c-str">"&amp;7Left-click a block &amp;e→ &amp;7set &amp;aPOS1"</span>
+    - <span class="c-str">"&amp;7Right-click a block &amp;e→ &amp;7set &amp;cPOS2"</span></pre>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>server-name</code></td><td><code>""</code></td><td>This server's proxy name; required for cross-server portals</td></tr>
+            <tr><td><code>cooldown-ms</code></td><td><code>1000</code></td><td>Per-player portal cooldown in milliseconds</td></tr>
+            <tr><td><code>max-portal-volume</code></td><td><code>100000</code></td><td>Maximum bounding box volume in blocks</td></tr>
+            <tr><td><code>allow-keep-yaw-pitch</code></td><td><code>true</code></td><td>Global toggle for the keepYawPitch feature</td></tr>
+            <tr><td><code>teleport-async</code></td><td><code>false</code></td><td>Force async teleportation (auto-enabled on Folia)</td></tr>
+            <tr><td><code>default-sound</code></td><td><code>ENTITY_ENDERMAN_TELEPORT</code></td><td>Sound played on all portal teleports</td></tr>
+            <tr><td><code>default-particles.type</code></td><td><code>PORTAL</code></td><td>Default teleport particle type</td></tr>
+            <tr><td><code>default-particles.count</code></td><td><code>20</code></td><td>Default teleport particle count</td></tr>
+            <tr><td><code>ambient-particles.enabled</code></td><td><code>false</code></td><td>Enable continuous floating particles inside portals</td></tr>
+            <tr><td><code>ambient-particles.type</code></td><td><code>PORTAL</code></td><td>Global ambient particle type</td></tr>
+            <tr><td><code>ambient-particles.count</code></td><td><code>3</code></td><td>Particles per ambient tick per portal</td></tr>
+            <tr><td><code>ambient-particles.interval-ticks</code></td><td><code>10</code></td><td>Ticks between ambient particle spawns</td></tr>
+            <tr><td><code>wand.material</code></td><td><code>BLAZE_ROD</code></td><td>Item used as the selection wand</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ CREATING -->
+    <section id="creating">
+      <h2><span class="ico">🔨</span> Creating a Portal</h2>
+      <p>
+        Every portal needs two things: a <strong>region</strong> (the area players
+        walk through) and a <strong>destination</strong> (where they arrive).
+        There are two ways to define the region.
+      </p>
+
+      <h3 id="wand-method">Method 1: The Wand (Recommended for Beginners)</h3>
+      <p>The wand is the easiest way. Here's a step-by-step:</p>
+
+      <ol class="steps">
+        <li>
+          <div class="content">
+            <strong>Get the wand</strong>
+            Type <code>/portal wand</code>. A Blaze Rod appears in your inventory.
+            Hold it in your hand.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Set POS1 (first corner)</strong>
+            Walk to the first corner of your portal area. This should be the
+            <strong>bottom corner</strong> of the region.
+            While holding the wand, <strong>left-click any block</strong> in that area.
+            You'll see a message: <em>"POS1 set → world (x, y, z)"</em>.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Set POS2 (opposite corner)</strong>
+            Walk to the diagonally opposite corner — the <strong>top corner</strong>
+            of the region. <strong>Right-click any block</strong> there.
+            You'll see: <em>"POS2 set → world (x, y, z)"</em>.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Create the portal</strong>
+            Now decide where you want players to end up. Run:
+<pre>/portal create &lt;name&gt; &lt;world&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</pre>
+            Example: you want a portal named "spawn" that sends players to
+            world "world" at coordinates 100, 65, 200:
+<pre>/portal create spawn world 100 65 200</pre>
+          </div>
+        </li>
+      </ol>
+
+      <div class="alert alert-info">
+        <b>How big should the region be?</b>
+        The region only needs to be as big as the area players will walk through.
+        For a doorway portal, select 2 blocks wide × 3 blocks tall (just the door opening).
+        The portal is invisible — players won't see anything unless you add ambient particles.
+      </div>
+
+      <h3 id="command-method">Method 2: Command-Only (pos1 / pos2 subcommands)</h3>
+      <p>
+        If you prefer not to use the wand item, you can set positions by standing
+        at each corner and running commands:
+      </p>
+
+<pre><span class="c-cmt"># Stand at your first corner, then:</span>
+/portal pos1
+
+<span class="c-cmt"># Walk to the opposite corner, then:</span>
+/portal pos2
+
+<span class="c-cmt"># Create the portal (both methods use the same create command):</span>
+/portal create mygate world 50 64 50</pre>
+
+      <h3>Full create syntax</h3>
+<pre>/portal create &lt;name&gt; &lt;destWorld&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt; [keepYaw] [destServer] [permission]</pre>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Argument</th><th>Required?</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;name&gt;</code></td><td><span class="badge badge-red">required</span></td><td>Unique name for this portal (e.g. <code>hub_gate</code>). Stored lowercase.</td></tr>
+            <tr><td><code>&lt;destWorld&gt;</code></td><td><span class="badge badge-red">required</span></td><td>Destination world name (must be loaded on this server)</td></tr>
+            <tr><td><code>&lt;x&gt; &lt;y&gt; &lt;z&gt;</code></td><td><span class="badge badge-red">required</span></td><td>Destination coordinates (decimal numbers)</td></tr>
+            <tr><td><code>[keepYaw]</code></td><td><span class="badge badge-green">optional</span></td><td><code>true</code> or <code>false</code> — preserve player's look direction</td></tr>
+            <tr><td><code>[destServer]</code></td><td><span class="badge badge-green">optional</span></td><td>Target server name for cross-server teleport (<code>none</code> = same server)</td></tr>
+            <tr><td><code>[permission]</code></td><td><span class="badge badge-green">optional</span></td><td>Permission node required to use this portal (<code>none</code> = public)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PORTALS.YML -->
+    <section id="portals-yml">
+      <h2><span class="ico">💾</span> portals.yml Structure</h2>
+      <p>
+        Every portal is saved to <code>plugins/OreoEssentials/portals/portals.yml</code>.
+        This file is managed automatically by the plugin but it's useful to
+        understand its format, especially for debugging.
+      </p>
+
+<pre><span class="c-cmt"># plugins/OreoEssentials/portals/portals.yml</span>
+
+<span class="c-key">portals:</span>
+  <span class="c-teal">lobby_gate:</span>                       <span class="c-cmt"># portal ID (always lowercase)</span>
+    <span class="c-key">name:</span>        <span class="c-str">lobby_gate</span>         <span class="c-cmt"># original display name</span>
+    <span class="c-key">world:</span>       <span class="c-str">survival</span>           <span class="c-cmt"># world where the portal region exists</span>
+    <span class="c-key">box:</span>
+      <span class="c-key">x1:</span> <span class="c-val">100.0</span>  <span class="c-key">y1:</span> <span class="c-val">64.0</span>  <span class="c-key">z1:</span> <span class="c-val">200.0</span>  <span class="c-cmt"># one corner (min)</span>
+      <span class="c-key">x2:</span> <span class="c-val">102.0</span>  <span class="c-key">y2:</span> <span class="c-val">67.0</span>  <span class="c-key">z2:</span> <span class="c-val">200.0</span>  <span class="c-cmt"># opposite corner (max)</span>
+    <span class="c-key">dest:</span>
+      <span class="c-key">world:</span> <span class="c-str">lobby</span>                   <span class="c-cmt"># destination world</span>
+      <span class="c-key">x:</span>     <span class="c-val">0.5</span>
+      <span class="c-key">y:</span>     <span class="c-val">65.0</span>
+      <span class="c-key">z:</span>     <span class="c-val">0.5</span>
+      <span class="c-key">yaw:</span>   <span class="c-val">180.0</span>                   <span class="c-cmt"># facing direction (0=south, 90=west, 180=north, 270=east)</span>
+      <span class="c-key">pitch:</span> <span class="c-val">0.0</span>
+    <span class="c-key">keepYawPitch:</span> <span class="c-val">false</span>               <span class="c-cmt"># if true, player keeps their own look direction</span>
+    <span class="c-key">permission:</span>   <span class="c-val">null</span>                 <span class="c-cmt"># null or a permission node string</span>
+    <span class="c-key">destServer:</span>   <span class="c-val">null</span>                 <span class="c-cmt"># null = same server; "lobby" = cross-server</span>
+    <span class="c-key">destWarp:</span>     <span class="c-val">null</span>                 <span class="c-cmt"># null = use coords; "spawn" = use a /warp destination</span>
+    <span class="c-key">particles:</span>
+      <span class="c-key">teleport-type:</span>   <span class="c-str">""</span>              <span class="c-cmt"># "" = global default</span>
+      <span class="c-key">teleport-count:</span>  <span class="c-val">-1</span>              <span class="c-cmt"># -1 = global default</span>
+      <span class="c-key">ambient-enabled:</span> <span class="c-val">false</span>
+      <span class="c-key">ambient-type:</span>    <span class="c-str">""</span>
+      <span class="c-key">ambient-count:</span>   <span class="c-val">3</span></pre>
+
+      <div class="alert alert-warn">
+        <b>Don't edit portals.yml while the server is running.</b>
+        The file is loaded into memory. Manual edits are ignored until you run
+        <code>/portal reload</code>. Changes made by the plugin (via commands or GUI)
+        are written immediately and will overwrite your manual edits.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PERMISSION-LOCKED -->
+    <section id="permissions-portals">
+      <h2><span class="ico">🔒</span> Permission-Locked Portals</h2>
+      <p>
+        You can restrict a portal so only certain players can use it.
+        When a player without the required permission walks into the region,
+        they receive a message and are <strong>not teleported</strong>.
+      </p>
+
+      <h3>Setting a permission at creation time</h3>
+<pre><span class="c-cmt"># Positional args: name world x y z keepYaw destServer permission</span>
+/portal create vip_zone lobby 0 64 0 false none oreo.vip</pre>
+
+      <h3>Setting/changing a permission via GUI</h3>
+      <p>
+        Open <code>/portal gui</code>, click the portal, then click
+        <strong>Set Permission</strong>. The GUI closes and you type the permission
+        node in chat (or <code>none</code> to clear it).
+      </p>
+
+      <h3>Assigning the permission with LuckPerms</h3>
+<pre>/lp group vip permission set oreo.vip true</pre>
+      <p>
+        All players in the <code>vip</code> group can now use the portal.
+        Non-VIP players get the message:
+        <em>"You don't have permission to use this portal."</em>
+      </p>
+
+      <div class="alert alert-info">
+        <b>Denied players get the message once per 5 seconds.</b>
+        The plugin tracks the last portal that denied each player and won't
+        spam the message if they keep standing in the region.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ YAW/PITCH -->
+    <section id="yaw-pitch">
+      <h2><span class="ico">🧭</span> Keep Yaw/Pitch</h2>
+      <p>
+        By default, when a player teleports through a portal they face the
+        direction stored in the portal's destination (the <code>yaw</code> and
+        <code>pitch</code> values). This is useful for having them "arrive" facing
+        the right way.
+      </p>
+      <p>
+        If you enable <strong>keepYawPitch</strong> on a portal, the player's
+        camera direction is preserved across the teleport — they come out on the
+        other side still looking the same way they were looking when they entered.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--amber)">keepYawPitch: false (default)</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            Player faces the destination's configured yaw/pitch after teleport.
+            Useful when you want them to always look at something specific on arrival
+            (like the exit portal or a sign).
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--green)">keepYawPitch: true</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            Player keeps their own camera direction. Good for seamless-feeling
+            portals where the transition should feel natural.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        Toggle it via GUI (<strong>Keep Yaw/Pitch button</strong>) or recreate the portal
+        with <code>true</code> as the 6th argument.
+        The global <code>allow-keep-yaw-pitch: false</code> in config.yml disables this
+        feature entirely for all portals.
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PARTICLES -->
+    <section id="particles">
+      <h2><span class="ico">✨</span> Particles</h2>
+      <p>
+        Portals support two types of particles, each configurable globally
+        in <code>config.yml</code> and per-portal via the GUI.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <strong style="color:var(--teal)">Teleport Particles</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            Spawned once at the player's location <strong>when they teleport</strong>.
+            Controlled by <code>default-particles</code> globally and per-portal
+            overrides in the Particles GUI.
+          </p>
+        </div>
+        <div class="card">
+          <strong style="color:var(--purple)">Ambient Particles</strong>
+          <p style="font-size:0.9rem;margin-top:8px">
+            Spawn continuously at random positions <strong>inside the portal region</strong>
+            every N ticks. Disabled by default. Enable globally in
+            <code>ambient-particles.enabled: true</code> and per-portal in the GUI.
+          </p>
+        </div>
+      </div>
+
+      <h3>Setting particles via GUI</h3>
+      <ol class="steps">
+        <li>
+          <div class="content">
+            <strong>Open /portal gui</strong>
+            Click the portal you want to edit.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Click "Particles" button</strong>
+            A 5-row GUI opens showing preset particle types and count options.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Pick a type</strong>
+            Row 1 shows teleport particle presets (PORTAL, FLAME, END_ROD, etc.).
+            Click one to set it. Active selection glows.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Pick a count</strong>
+            Row 2 shows count options (×5, ×10, ×20, ×40, ×80). Click one.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Configure ambient particles (optional)</strong>
+            Row 3 has the ambient toggle and type presets. Enable it here if desired.
+          </div>
+        </li>
+      </ol>
+
+      <div class="alert alert-info">
+        <b>Per-portal overrides take priority over global defaults.</b>
+        Setting a type in the GUI replaces the global default only for that portal.
+        Click "Reset to Default" in the GUI to go back to global settings.
+      </div>
+
+      <h3>Common particle names</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Looks like</th></tr></thead>
+          <tbody>
+            <tr><td><code>PORTAL</code></td><td>The purple swirling particles from vanilla Nether portals</td></tr>
+            <tr><td><code>FLAME</code></td><td>Small orange fire particles</td></tr>
+            <tr><td><code>SOUL_FIRE_FLAME</code></td><td>Blue soul fire particles</td></tr>
+            <tr><td><code>END_ROD</code></td><td>White glowing particles (End rods)</td></tr>
+            <tr><td><code>WITCH</code></td><td>Purple witch magic particles</td></tr>
+            <tr><td><code>ENCHANTMENT_TABLE</code></td><td>Floating green runes</td></tr>
+            <tr><td><code>TOTEM</code></td><td>Bright green/orange totem particles</td></tr>
+            <tr><td><code>SMOKE_NORMAL</code></td><td>Grey smoke puffs</td></tr>
+            <tr><td><code>EXPLOSION_NORMAL</code></td><td>Grey explosion smoke</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ CROSS-SERVER -->
+    <section id="cross-server">
+      <h2><span class="ico">🌐</span> Cross-Server Portals</h2>
+      <p>
+        Cross-server portals teleport the player to a <strong>different server</strong>
+        in your BungeeCord or Velocity network. When a player steps through, the
+        plugin:
+      </p>
+
+      <div class="flow">
+        <div class="flow-node">Player enters portal</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">RabbitMQ sends coords to Server B</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">BungeeCord Connect → Server B</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">Player joins Server B → teleported to coords</div>
+      </div>
+
+      <div class="alert alert-danger">
+        <b>Requirements for cross-server portals:</b>
+        <br>1. RabbitMQ must be configured and running.
+        <br>2. BungeeCord/Velocity proxy must be running.
+        <br>3. <code>bungeecord: true</code> must be set in <code>spigot.yml</code> on all servers.
+        <br>4. The OreoEssentials plugin must be installed on ALL servers.
+        <br>5. <code>server-name</code> in config.yml must match the proxy server name.
+      </div>
+
+      <h3>Setting up a cross-server portal</h3>
+      <ol class="steps">
+        <li>
+          <div class="content">
+            <strong>Configure server-name on each server</strong>
+            Open <code>plugins/OreoEssentials/portals/config.yml</code> on each server.
+            Set <code>server-name</code> to match the server name in your proxy config.
+<pre><span class="c-cmt"># On your survival server:</span>
+<span class="c-key">server-name:</span> <span class="c-str">"survival"</span>
+
+<span class="c-cmt"># On your lobby server:</span>
+<span class="c-key">server-name:</span> <span class="c-str">"lobby"</span></pre>
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Select the region on Server A (survival)</strong>
+            Use the wand or <code>/portal pos1</code> / <code>/portal pos2</code>.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Create with the destServer argument</strong>
+<pre>/portal create to_lobby lobby 0 65 0 false lobby</pre>
+            Format: <code>/portal create &lt;name&gt; &lt;destWorld&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt; [keepYaw] [destServer]</code>
+            <br>Here <code>destWorld</code> is the world on Server B, and <code>destServer</code> is the server name.
+          </div>
+        </li>
+        <li>
+          <div class="content">
+            <strong>Test it</strong>
+            Walk through the portal on Server A. You should be switched to Server B
+            and arrive at the configured coordinates.
+          </div>
+        </li>
+      </ol>
+
+      <div class="alert alert-tip">
+        <b>Timing note:</b> The plugin sends the teleport destination via RabbitMQ 3 ticks
+        before switching the player via BungeeCord. This gives Server B time to receive
+        the destination before the player arrives. On slow networks, the destination is
+        queued and applied when the player joins Server B.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ WARP DEST -->
+    <section id="warp-dest">
+      <h2><span class="ico">🗺️</span> Warp Destination</h2>
+      <p>
+        Instead of hardcoded coordinates, you can set a portal's destination to
+        a <strong>warp point</strong> managed by OreoEssentials' Warps module.
+        This means if the warp location is updated later, the portal automatically
+        uses the new location without needing to be edited.
+      </p>
+
+      <h3>Setting a warp destination via GUI</h3>
+      <ol class="steps">
+        <li><div class="content"><strong>Open /portal gui</strong>, click the portal.</div></li>
+        <li><div class="content"><strong>Click "Dest Warp"</strong>. The GUI closes.</div></li>
+        <li><div class="content"><strong>Type the warp name</strong> in chat (e.g. <code>spawn</code>).
+            If the warp doesn't exist you'll get an error and nothing changes.
+            Type <code>none</code> to go back to using coordinates.</div></li>
+      </ol>
+
+      <div class="alert alert-warn">
+        <b>Warp destination takes priority over coordinates.</b>
+        When a portal has a <code>destWarp</code> set, the <code>dest.x/y/z</code>
+        coordinates in portals.yml are ignored. If the warp is deleted later,
+        players get an error message and cannot teleport through that portal
+        until you fix the warp or clear the destWarp setting.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ GUI -->
+    <section id="gui">
+      <h2><span class="ico">🖥️</span> GUI Editor</h2>
+      <p>
+        Run <code>/portal gui</code> to open a visual portal manager.
+        This requires the <code>oreo.portals.gui</code> permission.
+      </p>
+
+      <h3>Portal List GUI (6 rows)</h3>
+      <p>
+        Shows all portals as Ender Pearl items. Each item displays the portal's
+        name, world, destination, server, and permission. Click any portal to
+        open the Edit GUI for that portal. Supports pagination via Previous/Next
+        arrows in the bottom row.
+      </p>
+
+      <h3>Portal Edit GUI (4 rows)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Button</th><th>Material</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Info Panel</td><td>Ender Pearl</td><td>Displays current portal settings (no click action)</td></tr>
+            <tr><td>Set Dest Here</td><td>Compass</td><td>Updates the destination to your current location immediately</td></tr>
+            <tr><td>Particles</td><td>Blaze Powder</td><td>Opens the Particle Editor GUI</td></tr>
+            <tr><td>Keep Yaw/Pitch</td><td>Lime/Gray Dye</td><td>Toggles keepYawPitch on/off</td></tr>
+            <tr><td>Set Permission</td><td>Name Tag</td><td>Closes GUI, prompts you to type a permission node in chat</td></tr>
+            <tr><td>Dest Warp</td><td>Warped Fungus on a Stick</td><td>Closes GUI, prompts for a warp name in chat</td></tr>
+            <tr><td>Dest Server</td><td>Ender Eye</td><td>Closes GUI, prompts for a server name in chat</td></tr>
+            <tr><td>Delete Portal</td><td>TNT</td><td><strong>Shift-click</strong> to confirm deletion</td></tr>
+            <tr><td>Back</td><td>Barrier</td><td>Returns to the Portal List GUI</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Particle Editor GUI (5 rows)</h3>
+      <p>
+        Row 1 — Teleport particle type presets (click to select)<br>
+        Row 2 — Teleport particle count presets (×5, ×10, ×20, ×40, ×80)<br>
+        Row 3 — Ambient toggle + ambient type presets<br>
+        Row 4 — "Reset to Default" and current settings summary
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ COMMANDS -->
+    <section id="commands">
+      <h2><span class="ico">💬</span> Commands</h2>
+      <p>The main command is <code>/portal</code> (alias: <code>/portals</code>).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>Permission</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>/portal wand</code></td>
+              <td><code>oreo.portals.create</code></td>
+              <td>Gives the selection wand. Left-click = POS1, right-click = POS2.</td>
+            </tr>
+            <tr>
+              <td><code>/portal pos1</code></td>
+              <td><code>oreo.portals.create</code></td>
+              <td>Sets POS1 at your current location (no wand needed).</td>
+            </tr>
+            <tr>
+              <td><code>/portal pos2</code></td>
+              <td><code>oreo.portals.create</code></td>
+              <td>Sets POS2 at your current location.</td>
+            </tr>
+            <tr>
+              <td><code>/portal create &lt;name&gt; &lt;world&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt; [keepYaw] [server] [perm]</code></td>
+              <td><code>oreo.portals.create</code></td>
+              <td>Creates a portal from your current pos1/pos2 selection to the given destination.</td>
+            </tr>
+            <tr>
+              <td><code>/portal remove &lt;name&gt;</code></td>
+              <td><code>oreo.portals.remove</code></td>
+              <td>Deletes a portal permanently (also: <code>/portal delete &lt;name&gt;</code>).</td>
+            </tr>
+            <tr>
+              <td><code>/portal list</code></td>
+              <td><code>oreo.portals.list</code></td>
+              <td>Lists all portal names and their destinations in chat.</td>
+            </tr>
+            <tr>
+              <td><code>/portal info &lt;name&gt;</code></td>
+              <td><code>oreo.portals.info</code></td>
+              <td>Shows detailed info for a specific portal (world, box, destination, permission).</td>
+            </tr>
+            <tr>
+              <td><code>/portal gui</code></td>
+              <td><code>oreo.portals.gui</code></td>
+              <td>Opens the visual GUI editor.</td>
+            </tr>
+            <tr>
+              <td><code>/portal reload</code></td>
+              <td><code>oreo.portals.reload</code></td>
+              <td>Reloads portals.yml from disk. Use after manually editing the file.</td>
+            </tr>
+            <tr>
+              <td><code>/portal help</code></td>
+              <td><em>none</em></td>
+              <td>Shows the help menu with all subcommands.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PERM TABLE -->
+    <section id="perm-table">
+      <h2><span class="ico">🛡️</span> Permissions Table</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Permission</th><th>Default</th><th>What it grants</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>oreo.portals.create</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Use <code>/portal wand</code>, <code>/portal pos1</code>, <code>/portal pos2</code>, <code>/portal create</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.portals.remove</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Delete portals via <code>/portal remove</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.portals.gui</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Open the visual GUI editor with <code>/portal gui</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.portals.list</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>View all portals with <code>/portal list</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.portals.info</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>View portal details with <code>/portal info</code></td>
+            </tr>
+            <tr>
+              <td><code>oreo.portals.reload</code></td>
+              <td><span class="badge badge-red">op</span></td>
+              <td>Reload portals.yml from disk</td>
+            </tr>
+            <tr>
+              <td><code>&lt;custom.perm.node&gt;</code></td>
+              <td><span class="badge badge-amber">varies</span></td>
+              <td>Any custom node set on a portal via the GUI or <code>/portal create</code>. Players without this node cannot enter that portal.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ PLAYER EXAMPLES -->
+    <section id="player-examples">
+      <h2><span class="ico">👥</span> Player Examples</h2>
+      <p>
+        Here are realistic scenarios showing how portals work for different players
+        and setups. All examples use the default config.
+      </p>
+
+      <!-- Steve -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">🧱</div>
+          <div>
+            <div class="player-name">Steve</div>
+            <div class="player-rank">Default player — no special permissions</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;margin:0 0 8px">
+          Steve walks through a portal named <code>spawn_gate</code> (no permission set).
+        </p>
+        <p style="font-size:0.9rem;margin:0 0 4px">
+          ✅ <strong>What happens:</strong> Portal has no permission node. Steve is teleported to the configured destination instantly. An enderman teleport sound plays and 20 PORTAL particles spawn at his previous location.
+        </p>
+        <p style="font-size:0.9rem;margin:0">
+          ⏱️ <strong>Cooldown:</strong> Steve cannot enter any portal again for 1 second (the default <code>cooldown-ms</code>).
+        </p>
+      </div>
+
+      <!-- Alex -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">🌿</div>
+          <div>
+            <div class="player-name">Alex</div>
+            <div class="player-rank">Default player — tries to use a VIP portal</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;margin:0 0 8px">
+          Alex walks into portal <code>vip_lounge</code> which has <code>permission: oreo.vip</code> set.
+          Alex does NOT have <code>oreo.vip</code>.
+        </p>
+        <p style="font-size:0.9rem;margin:0 0 4px">
+          ❌ <strong>What happens:</strong> Alex is NOT teleported. She receives the message:
+          <em>"You don't have permission to use this portal."</em>
+        </p>
+        <p style="font-size:0.9rem;margin:0">
+          🔇 <strong>Spam protection:</strong> If Alex keeps standing in the region,
+          the message only shows once every ~5 seconds (tracked via <code>lastDenied</code>).
+        </p>
+      </div>
+
+      <!-- Notch -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">⛏️</div>
+          <div>
+            <div class="player-name">Notch</div>
+            <div class="player-rank">Admin — creates and edits portals</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;margin:0 0 8px">
+          Notch wants to create a portal from the survival world that sends players to the lobby server.
+        </p>
+<pre style="font-size:0.85rem">/portal wand
+<span class="c-cmt"># ← Notch holds the wand, left-clicks the bottom-left corner of a doorway</span>
+<span class="c-cmt"># ← Then right-clicks the top-right corner</span>
+/portal create to_lobby lobby 0 65 0 false lobby</pre>
+        <p style="font-size:0.9rem;margin:0">
+          Players who step through the doorway are switched to the <code>lobby</code> server
+          via BungeeCord and arrive at <code>0, 65, 0</code> in the <code>lobby</code> world.
+        </p>
+      </div>
+
+      <!-- Herobrine -->
+      <div class="player-box">
+        <div class="player-head">
+          <div class="player-avatar">👁️</div>
+          <div>
+            <div class="player-name">Herobrine</div>
+            <div class="player-rank">VIP — uses a VIP portal with ambient particles</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;margin:0 0 8px">
+          Herobrine has the <code>oreo.vip</code> permission.
+          He approaches portal <code>vip_lounge</code> which has ambient particles enabled
+          (blue <code>SOUL_FIRE_FLAME</code> floating inside it) and keepYawPitch enabled.
+        </p>
+        <p style="font-size:0.9rem;margin:0 0 4px">
+          ✅ <strong>What happens:</strong> Herobrine steps through, hears the teleport sound,
+          sees the PORTAL particle burst, and arrives at the VIP lounge facing the exact same
+          direction he was facing when he entered (keepYawPitch = true preserves his camera).
+        </p>
+        <p style="font-size:0.9rem;margin:0">
+          🌀 The ambient SOUL_FIRE_FLAME particles continue spawning inside the portal region
+          at random positions every 10 ticks (0.5 seconds), making the portal visually distinct
+          to nearby players.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ FAQ -->
+    <section id="faq">
+      <h2><span class="ico">❓</span> FAQ</h2>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: I created a portal but walking through it does nothing. Why?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Check these things in order:<br>
+          1. Run <code>/portal list</code> — does the portal appear?<br>
+          2. Run <code>/portal info &lt;name&gt;</code> — are the box coordinates correct?<br>
+          3. Are you walking through the region, not just touching its border?
+             The bounding box must fully contain your position (<code>BoundingBox.contains()</code>).<br>
+          4. Is the Portals module enabled in OreoEssentials settings?<br>
+          5. Check if you're on portal cooldown — the default is 1 second.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: The portal destination world doesn't exist on this server. How do cross-server portals save?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          This is handled correctly — the plugin saves the original destination world name
+          as a string in <code>portals.yml</code> regardless of whether that world is loaded.
+          For cross-server portals the destination world lives on Server B, not Server A.
+          When you edit other settings (like keepYawPitch) the world name is preserved.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: How do I change a portal's destination without deleting and recreating it?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Open <code>/portal gui</code>, click the portal, then click <strong>Set Dest Here</strong>.
+          Your current location becomes the new destination instantly. All other settings
+          (permission, particles, keepYawPitch) are preserved.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can two portals have the same name?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          No. Portal names are unique and stored lowercase. Trying to create a second portal
+          with the same name gives the error: <em>"A portal with that name already exists"</em>.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can a portal's destination be in a different world on the same server?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. When using <code>/portal create</code>, the <code>&lt;destWorld&gt;</code> argument
+          can be any world loaded on the server. The portal region can be in <code>world</code>
+          and the destination in <code>world_nether</code>, for example.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: I turned on ambient particles in config.yml but they don't show on any portal.</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Each portal also needs ambient particles enabled <em>per-portal</em> via the Particles GUI
+          (<strong>Ambient: DISABLED → click to enable</strong>). The global <code>ambient-particles.enabled</code>
+          setting turns on the ambient task itself, but each portal has its own toggle.
+          Enable both the global setting AND the per-portal toggle.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: How do I make a portal that sends players to a warp that might move later?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Use the <strong>Dest Warp</strong> feature. Open the GUI for the portal,
+          click "Dest Warp", and type the warp name. The portal will always resolve
+          the warp's current location at teleport time, so if the warp moves the
+          portal automatically uses the new location.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Can I have portals in different worlds at the same time?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. Each portal stores its own world in <code>portals.yml</code>.
+          The movement check (<code>PlayerMoveEvent</code>) compares the player's
+          world to each portal's world before doing any bounding box check,
+          so portals in other worlds are simply skipped.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: Is this compatible with Folia?</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          Yes. The plugin detects Folia automatically and switches to async teleportation.
+          All tasks use <code>OreScheduler</code> which is Folia-aware.
+          You can also manually set <code>teleport-async: true</code> in config.yml.
+        </p>
+      </div>
+
+      <div class="card">
+        <strong style="color:var(--text)">Q: I edited portals.yml manually but nothing changed.</strong>
+        <p style="margin-top:8px;font-size:0.9rem">
+          The file is loaded into memory on startup. Manual edits are only picked up
+          when you run <code>/portal reload</code>. Always reload after editing manually.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  OreoEssentials — Portals module &nbsp;·&nbsp;
+  Paper 1.21+ &nbsp;·&nbsp;
+  Config: <code>plugins/OreoEssentials/portals/config.yml</code> &nbsp;·&nbsp;
+  Data: <code>plugins/OreoEssentials/portals/portals.yml</code>
+</footer>
+
+</body>
+</html>

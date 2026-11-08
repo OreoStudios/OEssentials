@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OreoEssentials — Ender Chest Guide</title>
+  <style>
+    :root {
+      --bg: #10161d;
+      --panel: rgba(16, 22, 29, 0.84);
+      --line: #2e4253;
+      --line-soft: #223241;
+      --text: #edf4f8;
+      --muted: #a8bcc8;
+      --soft: #7f98a8;
+      --gold: #f7b955;
+      --teal: #68d9c8;
+      --red: #ff8c7a;
+      --green: #8fe28f;
+      --blue: #7fc0ff;
+      --purple: #c4a8f7;
+      --amber: #f7b955;
+      --amber-dim: rgba(247,185,85,0.14);
+      --amber-border: rgba(247,185,85,0.28);
+      --shadow: 0 18px 40px rgba(0,0,0,0.32);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --code: #0d1318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(104,217,200,0.09), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(196,168,247,0.07), transparent 22%),
+        linear-gradient(180deg, #0d1318 0%, #121a22 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────── */
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow-y: auto;
+      padding: 28px 20px 30px;
+      background: rgba(12,18,23,0.92);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px; padding: 18px;
+      border: 1px solid rgba(104,217,200,0.28);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(104,217,200,0.10), rgba(196,168,247,0.05));
+      box-shadow: var(--shadow);
+    }
+    .brand h1 { margin: 0; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.1; color: var(--teal); }
+    .brand p  { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+
+    .nav-group { margin-top: 18px; }
+    .nav-group h2 { margin: 0 0 8px; color: var(--soft); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+    .nav-group a { display: block; padding: 10px 12px; margin: 4px 0; color: var(--muted); text-decoration: none; border-radius: 10px; border: 1px solid transparent; transition: 0.18s ease; font-size: 0.9rem; }
+    .nav-group a:hover, .nav-group a.active { color: var(--text); border-color: rgba(104,217,200,0.28); background: rgba(104,217,200,0.08); }
+
+    /* ── Main content ─────────────────────────────────────── */
+    .content { padding: 34px 36px 80px; }
+
+    .hero {
+      padding: 30px; border-radius: 28px;
+      background: linear-gradient(135deg, rgba(104,217,200,0.10), rgba(196,168,247,0.06)), rgba(16,22,29,0.78);
+      border: 1px solid rgba(104,217,200,0.28);
+      box-shadow: var(--shadow); margin-bottom: 28px;
+    }
+    .hero .eyebrow { display: inline-block; margin-bottom: 14px; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #ccfff8; background: rgba(104,217,200,0.12); border: 1px solid rgba(104,217,200,0.28); }
+    .hero h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(2rem,4vw,3rem); line-height: 1.05; }
+    .hero p  { max-width: 920px; margin: 16px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.7; }
+    .hero-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 24px; }
+    .hero-card { padding: 14px 16px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+    .hero-card strong { display: block; color: var(--teal); margin-bottom: 6px; }
+
+    section { margin-top: 26px; padding: 28px; border-radius: 24px; background: var(--panel); border: 1px solid var(--line-soft); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+    section h2 { margin: 0 0 18px; font-family: Georgia, serif; font-size: 1.65rem; color: var(--text); }
+    section h3 { margin: 28px 0 12px; font-size: 1.08rem; color: var(--teal); border-bottom: 1px solid var(--line-soft); padding-bottom: 6px; }
+    section h4 { margin: 20px 0 8px; font-size: 0.97rem; color: var(--amber); }
+
+    p, li { color: var(--muted); line-height: 1.75; }
+    strong { color: var(--text); }
+    ul, ol { padding-left: 1.4em; }
+    li { margin-bottom: 6px; }
+
+    code { font-family: Consolas,"Courier New",monospace; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; color: #fff0cc; font-size: 0.9em; }
+
+    pre {
+      font-family: Consolas,"Courier New",monospace;
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      margin: 14px 0;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .y-comment { color: #607d8b; }
+    .y-key     { color: #80cbc4; }
+    .y-val     { color: #fff0cc; }
+    .y-str     { color: #a5d6a7; }
+    .y-section { color: var(--purple); font-weight: 700; }
+    .y-bool    { color: #ef9a9a; }
+    .y-num     { color: #ffcc80; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); }
+    th, td { text-align: left; padding: 13px 15px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    th { background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.92rem; font-weight: 700; }
+    tr:last-child td { border-bottom: 0; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .note { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(127,192,255,0.22); background:rgba(127,192,255,0.07); }
+    .warn { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(255,140,122,0.24); background:rgba(255,140,122,0.07); }
+    .tip  { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(143,226,143,0.24); background:rgba(143,226,143,0.07); }
+    .info { margin-top:16px; padding:15px 18px; border-radius:14px; border:1px solid rgba(104,217,200,0.24); background:rgba(104,217,200,0.06); }
+
+    .note strong { color: var(--blue); }
+    .warn strong { color: var(--red); }
+    .tip  strong { color: var(--green); }
+    .info strong { color: var(--teal); }
+
+    .pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-size:0.82rem; font-family:Consolas,monospace; gap:6px; }
+    .pill.teal   { border-color:rgba(104,217,200,0.30); background:rgba(104,217,200,0.08); color:var(--teal); }
+    .pill.green  { border-color:rgba(143,226,143,0.30); background:rgba(143,226,143,0.07); color:var(--green); }
+    .pill.red    { border-color:rgba(255,140,122,0.28); background:rgba(255,140,122,0.07); color:var(--red); }
+    .pill.blue   { border-color:rgba(127,192,255,0.28); background:rgba(127,192,255,0.07); color:var(--blue); }
+    .pill.amber  { border-color:var(--amber-border); background:var(--amber-dim); color:var(--amber); }
+    .pill.purple { border-color:rgba(196,168,247,0.28); background:rgba(196,168,247,0.07); color:var(--purple); }
+
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { display:grid; grid-template-columns:48px minmax(0,1fr); gap:16px; align-items:start; padding:18px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .step-index { width:48px; height:48px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(135deg,var(--teal),#a0f0e8); color:#0a2020; font-weight:800; font-size:1.1rem; flex-shrink:0; }
+    .step-body h4 { margin:0 0 6px; color:var(--text); font-size:1rem; }
+    .step-body p  { margin:0; color:var(--muted); }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+    .card { padding:18px; border-radius:16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+    .card h4 { margin:0 0 10px; font-size:1rem; color:var(--teal); }
+    .card p { margin:0; color:var(--muted); font-size:0.92rem; }
+
+    .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.78rem; font-weight:700; font-family:Consolas,monospace; margin-left:6px; vertical-align:middle; }
+    .badge.default { background:rgba(143,226,143,0.15); color:var(--green); border:1px solid rgba(143,226,143,0.28); }
+    .badge.op { background:rgba(255,140,122,0.12); color:var(--red); border:1px solid rgba(255,140,122,0.24); }
+    .badge.true { background:rgba(143,226,143,0.15); color:var(--green); border:1px solid rgba(143,226,143,0.28); }
+    .badge.false { background:rgba(255,140,122,0.12); color:var(--red); border:1px solid rgba(255,140,122,0.24); }
+
+    .slot-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:3px; margin-top:14px; max-width:380px; }
+    .slot { width:100%; aspect-ratio:1; border-radius:5px; display:grid; place-items:center; font-size:0.65rem; font-weight:700; color:#fff; }
+    .slot.open    { background:rgba(104,217,200,0.30); border:1px solid rgba(104,217,200,0.50); }
+    .slot.locked  { background:rgba(255,140,122,0.22); border:1px solid rgba(255,140,122,0.40); }
+
+    .flow { display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+    .flow-item { display:flex; gap:12px; align-items:flex-start; }
+    .flow-dot { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:0.75rem; font-weight:800; flex-shrink:0; margin-top:2px; }
+    .flow-dot.teal   { background:rgba(104,217,200,0.25); color:var(--teal); border:1px solid rgba(104,217,200,0.40); }
+    .flow-dot.amber  { background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber-border); }
+    .flow-dot.purple { background:rgba(196,168,247,0.18); color:var(--purple); border:1px solid rgba(196,168,247,0.35); }
+    .flow-dot.red    { background:rgba(255,140,122,0.18); color:var(--red); border:1px solid rgba(255,140,122,0.32); }
+    .flow-dot.green  { background:rgba(143,226,143,0.18); color:var(--green); border:1px solid rgba(143,226,143,0.32); }
+
+    @media (max-width:900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position:relative; height:auto; }
+      .two-col { grid-template-columns:1fr; }
+      .hero-grid { grid-template-columns:1fr; }
+    }
+</style>
+  <link rel="stylesheet" href="oreo-theme.css" />
+  <script defer src="oreo-menu.js"></script>
+</head>
+<body class="has-site-menu">
+<div class="shell">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <h1>🗃 Ender Chest</h1>
+      <p>OreoEssentials Module<br>Per-rank expandable ender chests with cross-server support</p>
+    </div>
+
+    <div class="nav-group">
+      <h2>Getting Started</h2>
+      <a href="#what-is">What Is This Module?</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#quickstart">Quick Start (4 Steps)</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Configuration</h2>
+      <a href="#file-locations">File Locations</a>
+      <a href="#config-file">enderchest.yml Explained</a>
+      <a href="#permission-slots">Permission-Slots Mode</a>
+      <a href="#rank-slots">Rank-Slots Mode</a>
+      <a href="#mode-comparison">Choosing a Mode</a>
+      <a href="#slot-sizes">Slot Size Reference</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>LuckPerms Setup</h2>
+      <a href="#lp-permission-mode">Permission Mode Setup</a>
+      <a href="#lp-rank-mode">Rank Mode Setup</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Commands & Permissions</h2>
+      <a href="#commands">Commands</a>
+      <a href="#permissions">Permissions</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Storage</h2>
+      <a href="#storage-yaml">YAML Storage</a>
+      <a href="#storage-mongo">MongoDB Storage</a>
+      <a href="#storage-compare">Storage Comparison</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Admin Features</h2>
+      <a href="#ecsee">Viewing Player ECs (ecsee)</a>
+      <a href="#cross-server">Cross-Server Mode</a>
+      <a href="#locked-slots">Locked Slots (Barrier)</a>
+    </div>
+
+    <div class="nav-group">
+      <h2>Real Examples</h2>
+      <a href="#example-ranks">Full Rank Setup Example</a>
+      <a href="#example-groups">Full Group Setup Example</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <main class="content">
+
+    <!-- HERO -->
+    <div class="hero">
+      <span class="eyebrow">Module Guide</span>
+      <h1>🗃 Ender Chest</h1>
+      <p>
+        OreoEssentials replaces the vanilla ender chest with a fully custom system.
+        Every player gets a <strong>virtual ender chest</strong> that shows exactly as many
+        slots as their rank deserves — the rest appear as locked red barrier slots.
+        The chest can optionally sync across every server in your network
+        (cross-server mode) so players keep the same inventory everywhere.
+      </p>
+      <div class="hero-grid">
+        <div class="hero-card">
+          <strong>Up to 54 slots</strong>
+          Give VIPs a full 6-row chest while newcomers get 3 rows (27 slots).
+        </div>
+        <div class="hero-card">
+          <strong>Two sizing modes</strong>
+          Grant sizes via permission nodes (oreo.tier.X) <em>or</em> directly by LuckPerms group name — no extra permissions needed.
+        </div>
+        <div class="hero-card">
+          <strong>Cross-server</strong>
+          Enable one setting and every server on your network reads/writes the same stored chest.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WHAT IS THIS MODULE ══ -->
+    <section id="what-is">
+      <h2>What Is This Module?</h2>
+      <p>
+        In vanilla Minecraft, every player gets exactly one ender chest size: <strong>3 rows (27 slots)</strong>.
+        There is no way to give VIPs more slots. This module completely replaces that system.
+      </p>
+      <p>
+        When a player opens their ender chest (by right-clicking a physical ender chest block or by typing <code>/ec</code>),
+        OreoEssentials intercepts it and opens a <strong>virtual inventory</strong> instead.
+        This virtual inventory:
+      </p>
+      <ul>
+        <li>Always shows <strong>54 slots</strong> (6 full rows) visually.</li>
+        <li>The first <em>N</em> slots are <strong>open</strong> (the player's allowed amount).</li>
+        <li>The remaining slots show a <strong>red barrier item</strong> labelled "Locked slot" — they cannot be clicked.</li>
+        <li>When the player closes the chest, contents are <strong>automatically saved</strong> to disk or MongoDB.</li>
+        <li>Next time they open it, their items are loaded back into exactly the same slots.</li>
+      </ul>
+      <div class="info">
+        <strong>Key concept:</strong> OreoEssentials stores its own chest data completely separately from Minecraft's built-in ender chest.
+        The vanilla ender chest blocks still exist in the world — this module just intercepts them.
+        Players still have to find or place an ender chest block, or use <code>/ec</code>.
+      </div>
+    </section>
+
+    <!-- ══ HOW IT WORKS ══ -->
+    <section id="how-it-works">
+      <h2>How It Works — Step by Step</h2>
+      <p>Understanding the flow helps you configure it correctly. Here's exactly what happens when a player opens their ender chest:</p>
+
+      <div class="flow">
+        <div class="flow-item">
+          <div class="flow-dot teal">1</div>
+          <div>
+            <strong>Player opens chest</strong> — They either right-click an ender chest block in the world, or type <code>/ec</code>.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot amber">2</div>
+          <div>
+            <strong>Plugin intercepts</strong> — The <code>EnderChestListener</code> catches the open event and cancels it immediately so the vanilla chest never shows.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot purple">3</div>
+          <div>
+            <strong>Slot count is resolved</strong> — The plugin checks which mode is active (permission-slots or rank-slots) and figures out how many slots the player is allowed.
+            If the player qualifies for multiple tiers, <strong>the highest value always wins</strong>.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot teal">4</div>
+          <div>
+            <strong>Items are loaded</strong> — Saved data is read from YAML or MongoDB for this player.
+            Items are placed into the first <em>N</em> slots.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot amber">5</div>
+          <div>
+            <strong>Locked slots filled</strong> — Every slot from position <em>N</em> to 53 (the 54th slot) is filled with a red BARRIER item tagged as locked.
+            Clicking these does nothing; the event is cancelled.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot green">6</div>
+          <div>
+            <strong>Player uses it</strong> — They see their items. They can drag, shift-click, pick up items, but only within their allowed area.
+            Shift-clicking from their inventory will only move items if there is space in the allowed area.
+          </div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-dot red">7</div>
+          <div>
+            <strong>Player closes</strong> — The <code>InventoryCloseEvent</code> fires. The plugin reads the top inventory, strips out any lock items, and saves the real items back to storage.
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>Good to know:</strong> Items are saved at the <em>moment the chest is closed</em>, not gradually while it's open.
+        If the server crashes while a player has the chest open, their changes since opening it will be lost.
+        This is the same behaviour as most ender chest plugins.
+      </div>
+
+      <h3>What happens if a player upgrades rank mid-session?</h3>
+      <p>
+        The slot count is resolved <strong>at the moment the chest is opened</strong>.
+        If you give a player a new rank while they already have the chest open, their current session still uses the old slot count.
+        They need to close and re-open the chest to get the new, larger size.
+      </p>
+    </section>
+
+    <!-- ══ QUICK START ══ -->
+    <section id="quickstart">
+      <h2>Quick Start — 4 Steps</h2>
+      <p>This is the fastest path to a working setup. Full details follow further down.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Open the config file</h4>
+            <p>Go to <code>plugins/OreoEssentials/enderchests/enderchest.yml</code> on your server.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Pick a sizing mode</h4>
+            <p>
+              Set <code>permission-slots.enabled: true</code> <em>and</em> <code>rank-slots.enabled: false</code>
+              (this is already the default). This means slot sizes are controlled by <strong>permission nodes</strong>
+              like <code>oreo.tier.vip</code>.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Set your slot values</h4>
+            <p>
+              Under <code>permission-slots:</code>, edit the keys and their slot counts.
+              For example: <code>vip: 45</code>, <code>mvp: 54</code>.
+              The key name becomes part of the permission node: <code>oreo.tier.vip</code>, <code>oreo.tier.mvp</code>.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">4</div>
+          <div class="step-body">
+            <h4>Add permissions to LuckPerms groups</h4>
+            <p>
+              In LuckPerms, run:<br>
+              <code>/lp group vip permission set oreo.tier.vip true</code><br>
+              <code>/lp group mvp permission set oreo.tier.mvp true</code><br>
+              Players in those groups now get the correct slot count automatically.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="tip">
+        <strong>Test it:</strong> Give yourself the <code>oreo.ec</code> permission and type <code>/ec</code> in-game.
+        You should see a 6-row inventory with locked barrier slots beyond your allowed amount.
+      </div>
+    </section>
+
+    <!-- ══ FILE LOCATIONS ══ -->
+    <section id="file-locations">
+      <h2>File Locations</h2>
+      <table>
+        <thead><tr><th>File</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>plugins/OreoEssentials/enderchests/enderchest.yml</code></td>
+            <td>The main config. Controls slot sizes, which mode is active, and which rank/tier gets how many slots.</td>
+          </tr>
+          <tr>
+            <td><code>plugins/OreoEssentials/enderchests.yml</code></td>
+            <td>
+              <strong>YAML storage only.</strong> This is where player ender chest data is stored when you are using
+              the built-in YAML backend. Every player's items are serialised to Base64 and saved here.
+              Do NOT edit this file manually — the data is binary-encoded.
+            </td>
+          </tr>
+          <tr>
+            <td>MongoDB collection <code>&lt;prefix&gt;enderchest</code></td>
+            <td>
+              <strong>MongoDB storage only.</strong> If you have MongoDB configured in the main OreoEssentials config,
+              player data goes here instead of the YAML file above.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ══ CONFIG FILE ══ -->
+    <section id="config-file">
+      <h2>enderchest.yml — Full Breakdown</h2>
+      <p>Here is the complete default config file with every line explained:</p>
+
+      <pre><span class="y-comment"># OreoEssentials — Ender Chest configuration</span>
+<span class="y-comment"># Each row = 9 slots. Max is 54 (6 rows).</span>
+<span class="y-comment"># The highest matching value always wins if a player qualifies for multiple entries.</span>
+
+<span class="y-comment"># ── Permission-based slots ────────────────────────────────────────────────────</span>
+<span class="y-comment"># Keys here map to the permission node "oreo.tier.&lt;key&gt;".</span>
+<span class="y-comment"># You must add those permissions to your LuckPerms groups manually.</span>
+<span class="y-comment">#   e.g. "vip: 45"  →  requires "oreo.tier.vip" on the vip group in LuckPerms.</span>
+<span class="y-section">permission-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+  <span class="y-key">vip:</span> <span class="y-num">45</span>
+  <span class="y-key">mvp:</span> <span class="y-num">54</span>
+
+<span class="y-comment"># ── LuckPerms group-based slots ───────────────────────────────────────────────</span>
+<span class="y-comment"># Write your actual LuckPerms group names here.</span>
+<span class="y-comment"># No permissions to create or assign — the plugin checks group membership</span>
+<span class="y-comment"># directly via the LuckPerms API. Inherited groups are included.</span>
+<span class="y-section">rank-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">false</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+  <span class="y-key">vip:</span> <span class="y-num">45</span>
+  <span class="y-key">staff:</span> <span class="y-num">54</span></pre>
+
+      <p>That is the <em>entire</em> config file. It is intentionally simple. Let's understand every single setting.</p>
+    </section>
+
+    <!-- ══ PERMISSION SLOTS ══ -->
+    <section id="permission-slots">
+      <h2>Permission-Slots Mode</h2>
+      <p>
+        This is the <strong>default mode</strong>. When <code>permission-slots.enabled: true</code>,
+        the plugin checks whether the player has certain <strong>Bukkit/LuckPerms permission nodes</strong>
+        to decide how many slots they get.
+      </p>
+
+      <h3>How the keys work</h3>
+      <p>
+        Every key you write under <code>permission-slots:</code> (except <code>enabled</code> and <code>default</code>)
+        becomes a permission node automatically. The formula is:
+      </p>
+      <div class="info">
+        <strong>Formula:</strong> <code>oreo.tier.&lt;your-key&gt;</code><br>
+        Example: If you write <code>vip: 45</code>, the permission node is <code>oreo.tier.vip</code>.
+      </div>
+
+      <p>You assign this node to a LuckPerms group. Any player in that group gets 45 slots. Let's trace through a real example:</p>
+
+      <pre><span class="y-section">permission-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>   <span class="y-comment"># everyone gets at least 27</span>
+  <span class="y-key">vip:</span> <span class="y-num">36</span>       <span class="y-comment"># oreo.tier.vip → 36 slots</span>
+  <span class="y-key">vip_plus:</span> <span class="y-num">45</span>  <span class="y-comment"># oreo.tier.vip_plus → 45 slots</span>
+  <span class="y-key">mvp:</span> <span class="y-num">54</span>       <span class="y-comment"># oreo.tier.mvp → 54 slots</span></pre>
+
+      <h3>The "default" key</h3>
+      <p>
+        <code>default: 27</code> is a special key — it is <strong>not</strong> a permission node.
+        It is the fallback: if a player has no other tier permission, they still get this many slots.
+        Every player on the server gets at least <code>default</code> slots, no permission needed.
+      </p>
+
+      <h3>The "highest wins" rule</h3>
+      <p>
+        If a player has <strong>multiple tier permissions</strong> (e.g. they are in both a <code>vip</code> group
+        and a <code>staff</code> group), the plugin checks all of them and picks the <strong>highest slot count</strong>.
+        It never averages. It never uses the lowest. The biggest number always wins.
+      </p>
+
+      <div class="warn">
+        <strong>Important:</strong> The key names in <code>permission-slots:</code> must be all
+        <strong>lowercase letters, numbers, underscores, or hyphens</strong>.
+        Spaces are not allowed. The permission node generated will be all lowercase.
+        So <code>VIP: 45</code> creates <code>oreo.tier.vip</code> (lowercased).
+      </div>
+
+      <h3>Slot count rules</h3>
+      <ul>
+        <li>Slots are <strong>clamped</strong> between 1 and 54. If you write <code>vip: 99</code>, it becomes 54.</li>
+        <li>If you write <code>vip: 0</code>, it becomes 1 (minimum).</li>
+        <li>Slot counts must be multiples of 9 for clean rows, but technically any value 1–54 works.</li>
+      </ul>
+    </section>
+
+    <!-- ══ RANK SLOTS ══ -->
+    <section id="rank-slots">
+      <h2>Rank-Slots Mode</h2>
+      <p>
+        When <code>rank-slots.enabled: true</code>, the plugin <strong>directly queries LuckPerms</strong>
+        to check which groups a player belongs to. You do not need to create any permission nodes —
+        you just write the group names directly in the config.
+      </p>
+
+      <h3>Why use this instead of permission-slots?</h3>
+      <div class="two-col">
+        <div class="card">
+          <h4>permission-slots</h4>
+          <p>
+            You manage custom permission nodes in LuckPerms.<br>
+            More flexible — you can mix and match.<br>
+            Works even without LuckPerms (any permission plugin).
+          </p>
+        </div>
+        <div class="card">
+          <h4>rank-slots</h4>
+          <p>
+            You write group names directly.<br>
+            No extra permissions to manage in LuckPerms.<br>
+            Requires LuckPerms specifically (uses its Java API).
+          </p>
+        </div>
+      </div>
+
+      <h3>How to configure rank-slots</h3>
+
+      <pre><span class="y-section">rank-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+  <span class="y-key">vip:</span> <span class="y-num">45</span>     <span class="y-comment"># must match the exact LuckPerms group name</span>
+  <span class="y-key">staff:</span> <span class="y-num">54</span>   <span class="y-comment"># "staff" group gets 54 slots</span>
+  <span class="y-key">mvp:</span> <span class="y-num">54</span>     <span class="y-comment"># "mvp" group also gets 54</span></pre>
+
+      <p>The keys here are your <strong>exact LuckPerms group names</strong> (case-insensitive).
+      The plugin compares them in lowercase so <code>VIP</code> and <code>vip</code> are the same.</p>
+
+      <h3>Inherited groups</h3>
+      <p>
+        LuckPerms supports <strong>group inheritance</strong> (one group inherits from another).
+        The plugin checks <strong>all inherited groups too</strong>, not just the player's primary group.
+        So if <code>mvp</code> inherits from <code>vip</code>, an MVP player gets the highest of both slot counts.
+      </p>
+
+      <h3>Can both modes be enabled at once?</h3>
+      <p>
+        <strong>Yes!</strong> You can set both <code>permission-slots.enabled: true</code> and
+        <code>rank-slots.enabled: true</code> simultaneously.
+        The plugin runs both checks and <strong>always picks the highest result</strong> from either source.
+        This is useful if you want to do most things via groups but have one special permission node for exceptional cases.
+      </p>
+
+      <div class="note">
+        <strong>Note:</strong> If LuckPerms is not installed and you enable <code>rank-slots</code>,
+        the group lookup will silently return no groups and <code>default</code> slots will be used.
+        The plugin does not crash — it just falls back gracefully.
+      </div>
+    </section>
+
+    <!-- ══ MODE COMPARISON ══ -->
+    <section id="mode-comparison">
+      <h2>Choosing the Right Mode</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>permission-slots</th>
+            <th>rank-slots</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Requires LuckPerms?</td>
+            <td>No (works with any permission plugin)</td>
+            <td><strong>Yes</strong> (uses LuckPerms API)</td>
+          </tr>
+          <tr>
+            <td>How you give the size</td>
+            <td>Give player the <code>oreo.tier.X</code> permission in LuckPerms</td>
+            <td>Player just needs to be in the LuckPerms group named in the config</td>
+          </tr>
+          <tr>
+            <td>Extra permission nodes to manage</td>
+            <td>Yes — one per tier (e.g. <code>oreo.tier.vip</code>)</td>
+            <td>None — group membership is all that matters</td>
+          </tr>
+          <tr>
+            <td>Works with temporary permissions (LuckPerms)?</td>
+            <td>Yes</td>
+            <td>Yes (checks active groups)</td>
+          </tr>
+          <tr>
+            <td>Inherited group awareness</td>
+            <td>N/A (it's a flat permission check)</td>
+            <td>Yes — inherited groups are included</td>
+          </tr>
+          <tr>
+            <td>Can both be active?</td>
+            <td colspan="2">Yes — highest slot count from either source wins</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>Recommendation for beginners:</strong> Stick with <code>permission-slots</code> (the default).
+        It is simpler to reason about and works with any permissions plugin.
+        Switch to <code>rank-slots</code> if you want to avoid managing extra permission nodes.
+      </div>
+    </section>
+
+    <!-- ══ SLOT SIZE REFERENCE ══ -->
+    <section id="slot-sizes">
+      <h2>Slot Size Reference</h2>
+      <p>
+        Slot counts should ideally be multiples of 9 so you get complete rows with no partial row at the bottom.
+        Here are all valid row sizes:
+      </p>
+      <table>
+        <thead><tr><th>Slots</th><th>Rows</th><th>Use case suggestion</th></tr></thead>
+        <tbody>
+          <tr><td><code>9</code></td><td>1 row</td><td>Severely restricted (punishment / newcomer)</td></tr>
+          <tr><td><code>18</code></td><td>2 rows</td><td>Restricted tier</td></tr>
+          <tr><td><code>27</code></td><td>3 rows</td><td><strong>Default (vanilla size)</strong> — everyone gets this</td></tr>
+          <tr><td><code>36</code></td><td>4 rows</td><td>Donor Tier 1 / VIP</td></tr>
+          <tr><td><code>45</code></td><td>5 rows</td><td>Donor Tier 2 / VIP+</td></tr>
+          <tr><td><code>54</code></td><td>6 rows</td><td><strong>Maximum possible</strong> — MVP / Staff / Legendary</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Visual: 3 rows open (27 slots) + 3 rows locked</h3>
+      <p>This is what a default player sees — 27 open slots (teal) and 27 locked slots (red barrier):</p>
+
+      <div class="slot-grid">
+        <!-- Row 1 (open) -->
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <!-- Row 2 (open) -->
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <!-- Row 3 (open) -->
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <div class="slot open"></div><div class="slot open"></div><div class="slot open"></div>
+        <!-- Row 4 (locked) -->
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <!-- Row 5 (locked) -->
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <!-- Row 6 (locked) -->
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+        <div class="slot locked">🚫</div><div class="slot locked">🚫</div><div class="slot locked">🚫</div>
+      </div>
+      <p style="margin-top:8px; font-size:0.85rem; color:var(--soft);">Teal = open (usable). Red = locked (barrier item, cannot place/take items).</p>
+
+      <div class="note">
+        <strong>Non-multiple-of-9 values:</strong> You can write <code>default: 30</code> and it technically works —
+        30 slots will be open. But the 30th, 31st, 32nd slots in the 4th row will be open while slots
+        33–36 in that same row are locked, creating a visually odd partial row.
+        Stick to multiples of 9 for a clean look.
+      </div>
+    </section>
+
+    <!-- ══ LUCKPERMS PERMISSION MODE ══ -->
+    <section id="lp-permission-mode">
+      <h2>Setting Up LuckPerms — Permission Mode</h2>
+      <p>If you are using <code>permission-slots</code> (the default), follow these steps.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Configure your tiers in enderchest.yml</h4>
+            <p>Open <code>plugins/OreoEssentials/enderchests/enderchest.yml</code> and add your tiers:</p>
+            <pre><span class="y-section">permission-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+  <span class="y-key">vip:</span> <span class="y-num">36</span>
+  <span class="y-key">vip_plus:</span> <span class="y-num">45</span>
+  <span class="y-key">mvp:</span> <span class="y-num">54</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Add the permissions to your LuckPerms groups</h4>
+            <p>Run these commands in your server console or in-game:</p>
+            <pre><span class="y-comment"># Give VIP group 36-slot permission</span>
+/lp group vip permission set oreo.tier.vip true
+
+<span class="y-comment"># Give VIP+ group 45-slot permission</span>
+/lp group vip_plus permission set oreo.tier.vip_plus true
+
+<span class="y-comment"># Give MVP group 54-slot permission</span>
+/lp group mvp permission set oreo.tier.mvp true</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Verify</h4>
+            <p>
+              Log in as a player in the VIP group and type <code>/ec</code>.
+              You should see 36 open slots and 18 locked slots.
+              Use <code>/lp user &lt;name&gt; permission check oreo.tier.vip</code> to confirm the permission is active.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info">
+        <strong>Want the default group to also use a permission?</strong>
+        You can also give the <code>default</code> group (or whatever your lowest group is) a permission like
+        <code>oreo.tier.default</code> and map it to 27 slots.
+        But this is optional — the <code>default: 27</code> setting already handles players with no tier permission.
+      </div>
+    </section>
+
+    <!-- ══ LUCKPERMS RANK MODE ══ -->
+    <section id="lp-rank-mode">
+      <h2>Setting Up LuckPerms — Rank Mode</h2>
+      <p>If you prefer <code>rank-slots</code>, no extra permission nodes are needed. Just match the config keys to your real group names.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-index">1</div>
+          <div class="step-body">
+            <h4>Find your LuckPerms group names</h4>
+            <p>Run <code>/lp listgroups</code> in-game to see all groups. Note the exact names.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">2</div>
+          <div class="step-body">
+            <h4>Edit rank-slots in enderchest.yml</h4>
+            <pre><span class="y-section">rank-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+  <span class="y-key">vip:</span> <span class="y-num">36</span>      <span class="y-comment"># must exactly match the LP group name</span>
+  <span class="y-key">elite:</span> <span class="y-num">45</span>    <span class="y-comment"># "elite" LP group → 45 slots</span>
+  <span class="y-key">legend:</span> <span class="y-num">54</span>   <span class="y-comment"># "legend" LP group → 54 slots</span>
+  <span class="y-key">staff:</span> <span class="y-num">54</span>    <span class="y-comment"># "staff" LP group → 54 slots</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">3</div>
+          <div class="step-body">
+            <h4>Disable permission-slots (optional)</h4>
+            <p>
+              If you only want rank-based sizing, also set <code>permission-slots.enabled: false</code>
+              so you do not accidentally give extra slots via the <code>oreo.tier.*</code> nodes.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-index">4</div>
+          <div class="step-body">
+            <h4>Reload and test</h4>
+            <p>
+              Restart the server (or reload OreoEssentials if it supports hot-reload).
+              A player in the <code>elite</code> group should now get 45 slots.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn">
+        <strong>Case sensitivity:</strong> Group names in the config are compared <em>case-insensitively</em>.
+        So <code>VIP</code>, <code>vip</code>, and <code>Vip</code> all match the LuckPerms group named <code>vip</code>.
+        Still, for clarity, write them in lowercase to match your LuckPerms group names exactly.
+      </div>
+    </section>
+
+    <!-- ══ COMMANDS ══ -->
+    <section id="commands">
+      <h2>Commands</h2>
+
+      <h3>/ec — Open Your Ender Chest</h3>
+      <table>
+        <thead><tr><th>Detail</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Command</td><td><code>/ec</code></td></tr>
+          <tr><td>Alias</td><td><code>/enderchest</code></td></tr>
+          <tr><td>Permission</td><td><code>oreo.ec</code></td></tr>
+          <tr><td>Player only?</td><td>Yes — console cannot use this (there is no chest to open)</td></tr>
+          <tr><td>What it does</td><td>Opens the player's own virtual ender chest with the correct slot count for their rank.</td></tr>
+          <tr><td>Cross-server note</td><td>If cross-server mode is disabled, a yellow message appears: <em>"Note: cross-server EC is disabled. This EC is local to this server."</em></td></tr>
+        </tbody>
+      </table>
+
+      <h3>/ecsee &lt;player&gt; — View Any Player's Ender Chest</h3>
+      <table>
+        <thead><tr><th>Detail</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Command</td><td><code>/ecsee &lt;player&gt;</code></td></tr>
+          <tr><td>Aliases</td><td>None</td></tr>
+          <tr><td>Permission</td><td><code>oreo.ecsee</code></td></tr>
+          <tr><td>Player only?</td><td>Yes</td></tr>
+          <tr><td>Target player</td><td>Can be online, offline, or a UUID. Also supports cross-server PlayerDirectory lookup.</td></tr>
+          <tr><td>What it does</td>
+            <td>
+              Opens the target player's ender chest for the admin to view and edit.
+              When the admin closes the GUI, all changes are automatically saved to the target player's storage.
+              If the target is online and has their chest open, their open GUI is updated in real time.
+            </td>
+          </tr>
+          <tr><td>Tab completion</td><td>Shows online player names and cross-server names from PlayerDirectory.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>Editing offline players:</strong> You can type <code>/ecsee SomeOfflinePlayer</code> for a player who is not online.
+        The plugin looks up their UUID from Bukkit's cache or the cross-server PlayerDirectory.
+        You can add/remove items and everything saves correctly.
+      </div>
+
+      <h3>Physical Ender Chest Block</h3>
+      <p>
+        When a player right-clicks a physical ender chest block in the world, it also opens OreoEssentials' virtual chest
+        (not the vanilla one) — <strong>but only if cross-server mode is enabled</strong>.
+        When cross-server mode is off, the vanilla ender chest opens normally and the <code>/ec</code> command
+        opens the virtual one instead.
+      </p>
+    </section>
+
+    <!-- ══ PERMISSIONS ══ -->
+    <section id="permissions">
+      <h2>Permissions</h2>
+      <table>
+        <thead><tr><th>Permission Node</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>oreo.ec</code></td>
+            <td><span class="badge default">true</span></td>
+            <td>Allows a player to use <code>/ec</code> to open their own ender chest.</td>
+          </tr>
+          <tr>
+            <td><code>oreo.ecsee</code></td>
+            <td><span class="badge op">op</span></td>
+            <td>Allows an admin to use <code>/ecsee &lt;player&gt;</code> to view and edit any player's ender chest.</td>
+          </tr>
+          <tr>
+            <td><code>oreo.tier.&lt;key&gt;</code></td>
+            <td><span class="badge false">manual</span></td>
+            <td>
+              <strong>Only used in permission-slots mode.</strong>
+              Replace <code>&lt;key&gt;</code> with the tier key from your config (e.g. <code>oreo.tier.vip</code>).
+              Grant this to a LuckPerms group to give that group the corresponding slot count.
+              Not needed at all for rank-slots mode.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Assigning permissions in LuckPerms</h3>
+      <pre><span class="y-comment"># Give the default group access to open their EC</span>
+/lp group default permission set oreo.ec true
+
+<span class="y-comment"># Give admins the ability to peek inside other players' chests</span>
+/lp group admin permission set oreo.ecsee true
+
+<span class="y-comment"># Give VIP players 45 slots (permission-slots mode)</span>
+/lp group vip permission set oreo.tier.vip true</pre>
+    </section>
+
+    <!-- ══ YAML STORAGE ══ -->
+    <section id="storage-yaml">
+      <h2>YAML Storage (Default)</h2>
+      <p>
+        If MongoDB is <strong>not</strong> configured in your main OreoEssentials config,
+        all ender chest data is saved to a single file:
+        <code>plugins/OreoEssentials/enderchests.yml</code>
+      </p>
+
+      <h3>What is stored</h3>
+      <p>The file stores one entry per player UUID:</p>
+      <pre><span class="y-section">players:</span>
+  <span class="y-key">xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:</span>
+    <span class="y-key">rows:</span> <span class="y-num">3</span>          <span class="y-comment"># how many rows were used when this was last saved</span>
+    <span class="y-key">data:</span> <span class="y-str">"BASE64DATA..."</span>  <span class="y-comment"># binary-serialised ItemStack array, Base64 encoded</span>
+    <span class="y-key">updatedAt:</span> <span class="y-num">1715000000000</span>  <span class="y-comment"># Unix timestamp (milliseconds)</span></pre>
+
+      <div class="warn">
+        <strong>Never edit the <code>data</code> field manually!</strong>
+        It is a Base64-encoded binary blob of Java-serialised ItemStack objects.
+        Editing it will corrupt the player's chest data.
+        If you need to clear a player's chest, delete their entire UUID block and save the file.
+      </div>
+
+      <h3>Data safety</h3>
+      <ul>
+        <li>Data is saved <strong>synchronously</strong> every time a player closes the chest.</li>
+        <li>If the file save fails, the player sees a red error message: <em>"Failed to save your ender chest. Please contact an administrator."</em></li>
+        <li>A warning is also printed to the console: <code>[EC] YAML save failed for &lt;UUID&gt;: ...</code></li>
+      </ul>
+
+      <h3>Upgrading slot size</h3>
+      <p>
+        The <code>rows</code> field stores how many rows were saved.
+        If you upgrade a player's slot count, the plugin reads all 6 rows worth of data (even if
+        previously only 3 rows were stored). The extra rows are simply empty.
+        Items are never lost when you expand a player's chest.
+      </p>
+    </section>
+
+    <!-- ══ MONGO STORAGE ══ -->
+    <section id="storage-mongo">
+      <h2>MongoDB Storage</h2>
+      <p>
+        When you have MongoDB configured in OreoEssentials' main config, the plugin uses it
+        for ender chest storage automatically.
+        Data is stored in the collection <code>&lt;prefix&gt;enderchest</code>
+        (e.g. if your prefix is <code>oreo_</code>, the collection is <code>oreo_enderchest</code>).
+      </p>
+
+      <h3>Document structure</h3>
+      <pre><span class="y-comment">// One document per player</span>
+{
+  <span class="y-key">_id:</span>         <span class="y-str">"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"</span>,  <span class="y-comment">// player UUID as string</span>
+  <span class="y-key">rows:</span>        <span class="y-num">3</span>,
+  <span class="y-key">data:</span>        <span class="y-str">"BASE64ENCODEDDATA..."</span>,
+  <span class="y-key">updatedAt:</span>   <span class="y-num">1715000000000</span>  <span class="y-comment">// Unix ms timestamp</span>
+}</pre>
+
+      <h3>How saves work</h3>
+      <p>
+        The plugin uses an <strong>upsert</strong> operation: if the document for this UUID already exists,
+        it is replaced entirely. If it does not exist yet, it is created.
+        This is atomic — there is no risk of a half-written state.
+      </p>
+
+      <div class="tip">
+        <strong>For large servers:</strong> MongoDB is strongly recommended over YAML.
+        The YAML file serialises and deserialises the entire file on every save/load.
+        With thousands of players this becomes slow. MongoDB reads and writes only the
+        one document for the player, making it dramatically faster.
+      </div>
+    </section>
+
+    <!-- ══ STORAGE COMPARISON ══ -->
+    <section id="storage-compare">
+      <h2>YAML vs MongoDB — Comparison</h2>
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>YAML (built-in)</th><th>MongoDB</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Setup required</td>
+            <td>None — works out of the box</td>
+            <td>Requires MongoDB server + URI in main config</td>
+          </tr>
+          <tr>
+            <td>Data file location</td>
+            <td><code>plugins/OreoEssentials/enderchests.yml</code></td>
+            <td>Collection <code>&lt;prefix&gt;enderchest</code> in your MongoDB</td>
+          </tr>
+          <tr>
+            <td>Performance (large servers)</td>
+            <td>Slower — whole file read/write per operation</td>
+            <td>Faster — single document upsert per player</td>
+          </tr>
+          <tr>
+            <td>Human-readable?</td>
+            <td>Partially (data field is still Base64 binary)</td>
+            <td>Same (data field is Base64)</td>
+          </tr>
+          <tr>
+            <td>Cross-server possible?</td>
+            <td>No — file is local to one server</td>
+            <td>Yes — all servers point to the same MongoDB</td>
+          </tr>
+          <tr>
+            <td>Backup</td>
+            <td>Copy the YAML file</td>
+            <td>Use <code>mongodump</code> or Atlas backups</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ══ ECSEE ADMIN ══ -->
+    <section id="ecsee">
+      <h2>Admin Feature: /ecsee — View &amp; Edit Any Player's Chest</h2>
+      <p>
+        <code>/ecsee &lt;player&gt;</code> is a powerful admin tool. It opens the target player's ender chest
+        inside a GUI for the admin. The admin can add items, remove items, move things around —
+        exactly like having the player's chest open themselves.
+      </p>
+
+      <h3>How saves work after editing</h3>
+      <p>
+        When the admin <strong>closes</strong> the GUI, the plugin:
+      </p>
+      <ol>
+        <li>Reads all items from the GUI.</li>
+        <li>Saves them to the target player's storage (YAML or MongoDB).</li>
+        <li>
+          <strong>If the target player is online and has their chest open</strong> at the same moment:
+          <ul>
+            <li>If the target is viewing <em>their OreoEssentials virtual EC</em>: their open inventory is updated instantly — they see the changes in real time without having to close and reopen.</li>
+            <li>If they are viewing <em>the vanilla ender chest</em> (first 27 slots): the vanilla chest contents are updated immediately.</li>
+          </ul>
+        </li>
+        <li>Sends the admin the message: <em>"Saved changes to &lt;player&gt;'s ender chest."</em></li>
+      </ol>
+
+      <h3>How player resolution works</h3>
+      <p>You can provide the target player in three ways:</p>
+      <table>
+        <thead><tr><th>Input</th><th>What the plugin tries</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Online player name (e.g. <code>Steve</code>)</td>
+            <td>Looks up directly from online players on this server.</td>
+          </tr>
+          <tr>
+            <td>UUID string (e.g. <code>550e8400-e29b-...</code>)</td>
+            <td>Parsed directly as a UUID — useful for players with name changes.</td>
+          </tr>
+          <tr>
+            <td>Offline player name</td>
+            <td>
+              First tries Bukkit's offline player cache.<br>
+              Then tries the cross-server <code>PlayerDirectory</code> (if configured).<br>
+              Finally falls back to <code>Uuids.resolve()</code> (Bukkit's mojang lookup cache).
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>Slot count for offline players:</strong>
+        When the target is offline, the plugin cannot check their live permissions.
+        Instead, it reads how many rows were stored in their last save and uses that as the chest size.
+        This means the GUI opens with the correct size from their last session.
+      </div>
+
+      <h3>Example: Giving items to a player</h3>
+      <pre><span class="y-comment"># Admin wants to put a diamond sword in a player's EC</span>
+/ecsee PlayerName
+<span class="y-comment"># GUI opens — admin places the sword in an empty slot</span>
+<span class="y-comment"># Admin closes the GUI</span>
+<span class="y-comment"># Console: "[EC] Saved 1 items for PlayerName"</span>
+<span class="y-comment"># The player's next /ec shows the sword</span></pre>
+    </section>
+
+    <!-- ══ CROSS-SERVER ══ -->
+    <section id="cross-server">
+      <h2>Cross-Server Mode</h2>
+      <p>
+        When cross-server mode is enabled in OreoEssentials' main config, the ender chest
+        module stores data in <strong>MongoDB</strong> (which all servers in your network share).
+        This means a player can open their ender chest on Server A, take items out,
+        switch to Server B, and their chest is still correct.
+      </p>
+
+      <h3>What cross-server mode changes</h3>
+      <ul>
+        <li>
+          <strong>Physical ender chest blocks are intercepted</strong>: When a player right-clicks an ender chest
+          block, the event is cancelled and the virtual EC opens instead.
+          Without cross-server mode, the block opens the vanilla chest normally.
+        </li>
+        <li>
+          <strong>A message is shown</strong>: Players see <em>"Opening your cross-server ender chest..."</em>
+          when the virtual chest opens from a block click.
+        </li>
+        <li>
+          <strong>Storage must be MongoDB</strong>: YAML is per-server, so cross-server requires MongoDB.
+          Make sure your MongoDB URI is configured in OreoEssentials' main config.
+        </li>
+      </ul>
+
+      <div class="warn">
+        <strong>Warning about concurrent access:</strong> If a player has their ender chest open on Server A
+        and then (somehow) also opens it on Server B at the same moment, both servers write to MongoDB
+        when the chest closes. The <strong>last write wins</strong>. In practice this rarely happens
+        because players can only be on one server at a time, but it is good to be aware of.
+      </div>
+
+      <h3>Local-only mode</h3>
+      <p>
+        If cross-server mode is <strong>disabled</strong>, players get a local chest only.
+        When they type <code>/ec</code>, a yellow note appears:
+        <em>"Note: cross-server EC is disabled. This EC is local to this server."</em>
+        Physical ender chest blocks open the vanilla chest as normal.
+      </p>
+    </section>
+
+    <!-- ══ LOCKED SLOTS ══ -->
+    <section id="locked-slots">
+      <h2>Locked Slots — How the Barrier Works</h2>
+      <p>
+        Slots beyond the player's allowed count are filled with a special
+        <strong>BARRIER item</strong> (the red no-entry-sign block).
+        This is not a real barrier block — it is just used as a GUI filler item.
+      </p>
+
+      <h3>Technical details</h3>
+      <ul>
+        <li>The barrier item has a <strong>persistent data tag</strong> (<code>ec_locked</code>) set to <code>1</code>
+          on its ItemMeta. This is how the plugin recognises it as a lock item — not just by material type.</li>
+        <li>The item's display name comes from the lang key <code>enderchest.gui.locked-slot-name</code>
+          (default: <em>"&amp;cLocked slot"</em>).</li>
+        <li>The lore comes from <code>enderchest.gui.locked-slot-lore</code> and supports the placeholder
+          <code>%slots%</code> which shows the player's current allowed slot count.</li>
+        <li>
+          <strong>Clicking a locked slot is cancelled</strong> — both direct clicks and drag events.
+          Shift-clicking from the player's inventory into the chest only works if there is free space
+          in the allowed area. If there is no space, the shift-click is cancelled.
+        </li>
+        <li>
+          <strong>Placing the lock barrier item itself</strong> is also blocked.
+          If somehow a player had a copy of the barrier with the lock tag, they could not place it in the chest.
+        </li>
+      </ul>
+
+      <h3>Customising locked slot text</h3>
+      <p>
+        To change the locked slot name or lore, edit your OreoEssentials lang file and set:
+      </p>
+      <pre><span class="y-key">enderchest.gui.locked-slot-name:</span> <span class="y-str">"&amp;cLocked slot"</span>
+<span class="y-key">enderchest.gui.locked-slot-lore:</span>
+  - <span class="y-str">"&amp;7You have &amp;e%slots% &amp;7slots."</span>
+  - <span class="y-str">"&amp;7Upgrade your rank to unlock more!"</span></pre>
+    </section>
+
+    <!-- ══ FULL EXAMPLES ══ -->
+    <section id="example-ranks">
+      <h2>Full Example — Permission-Slots (Rank Tiers)</h2>
+      <p>
+        This is a complete, copy-paste ready setup for a server with 4 donor tiers.
+        The default group gets 27 slots; each paid tier unlocks more.
+      </p>
+
+      <h3>1. enderchest.yml</h3>
+      <pre><span class="y-section">permission-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>       <span class="y-comment"># all non-donors get 3 rows</span>
+  <span class="y-key">iron:</span> <span class="y-num">36</span>          <span class="y-comment"># oreo.tier.iron → 4 rows</span>
+  <span class="y-key">gold:</span> <span class="y-num">45</span>          <span class="y-comment"># oreo.tier.gold → 5 rows</span>
+  <span class="y-key">diamond:</span> <span class="y-num">54</span>       <span class="y-comment"># oreo.tier.diamond → 6 rows (max)</span>
+
+<span class="y-section">rank-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">false</span>    <span class="y-comment"># not using group mode</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span></pre>
+
+      <h3>2. LuckPerms commands</h3>
+      <pre><span class="y-comment"># Everyone can open their EC</span>
+/lp group default permission set oreo.ec true
+
+<span class="y-comment"># Iron donors</span>
+/lp group iron permission set oreo.tier.iron true
+
+<span class="y-comment"># Gold donors</span>
+/lp group gold permission set oreo.tier.gold true
+
+<span class="y-comment"># Diamond donors</span>
+/lp group diamond permission set oreo.tier.diamond true
+
+<span class="y-comment"># Admins can view/edit any chest</span>
+/lp group admin permission set oreo.ecsee true</pre>
+
+      <h3>3. What players see</h3>
+      <table>
+        <thead><tr><th>LuckPerms group</th><th>Slots open</th><th>Rows open</th><th>Rows locked</th></tr></thead>
+        <tbody>
+          <tr><td><code>default</code></td><td>27</td><td>3</td><td>3</td></tr>
+          <tr><td><code>iron</code></td><td>36</td><td>4</td><td>2</td></tr>
+          <tr><td><code>gold</code></td><td>45</td><td>5</td><td>1</td></tr>
+          <tr><td><code>diamond</code></td><td>54</td><td>6</td><td>0 (fully open!)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="example-groups">
+      <h2>Full Example — Rank-Slots (LuckPerms Groups)</h2>
+      <p>
+        Same result as above, but using the <code>rank-slots</code> mode.
+        No extra permission nodes to manage in LuckPerms.
+      </p>
+
+      <h3>1. enderchest.yml</h3>
+      <pre><span class="y-section">permission-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">false</span>   <span class="y-comment"># disabled — using rank-slots instead</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>
+
+<span class="y-section">rank-slots:</span>
+  <span class="y-key">enabled:</span> <span class="y-bool">true</span>
+  <span class="y-key">default:</span> <span class="y-num">27</span>      <span class="y-comment"># everyone not in any listed group gets 3 rows</span>
+  <span class="y-key">iron:</span> <span class="y-num">36</span>         <span class="y-comment"># players in LP group "iron" get 4 rows</span>
+  <span class="y-key">gold:</span> <span class="y-num">45</span>         <span class="y-comment"># players in LP group "gold" get 5 rows</span>
+  <span class="y-key">diamond:</span> <span class="y-num">54</span>      <span class="y-comment"># players in LP group "diamond" get 6 rows</span></pre>
+
+      <h3>2. LuckPerms commands</h3>
+      <pre><span class="y-comment"># Just the /ec command and admin ecsee — no tier nodes needed!</span>
+/lp group default permission set oreo.ec true
+/lp group admin permission set oreo.ecsee true
+
+<span class="y-comment"># Players just need to be in their group — no extra permissions</span>
+<span class="y-comment"># /lp user Steve parent set iron  ← this is all that's needed</span></pre>
+
+      <h3>Behaviour with inherited groups</h3>
+      <p>
+        Say your LuckPerms groups have this inheritance: <code>diamond → gold → iron → default</code>
+        (diamond inherits all parents).
+        A player in the <code>diamond</code> group technically also inherits <code>iron</code> and <code>gold</code>.
+        The plugin sees all three and picks the <strong>highest</strong> — 54 slots. Correct.
+      </p>
+    </section>
+
+    <!-- ══ FAQ ══ -->
+    <section id="faq">
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Q: A player's items disappeared from their ender chest. What happened?</h3>
+      <p>
+        This almost always means the server crashed while they had the chest open.
+        Items are only saved when the chest <strong>closes</strong>.
+        If the server goes down hard (not a clean shutdown), the close event never fires and changes since
+        the last open are lost. To prevent this, consider using MongoDB (it persists to disk independently)
+        and enabling regular server save intervals.
+      </p>
+
+      <h3>Q: I changed a player's rank but their slot count didn't change.</h3>
+      <p>
+        The slot count is resolved when the chest is <strong>opened</strong>.
+        If the player had the chest open when you changed their rank, they need to close and reopen it.
+        After that, the new size takes effect immediately.
+      </p>
+
+      <h3>Q: Can I reduce a player's slot count (downgrade)?</h3>
+      <p>
+        Yes, but <strong>items are never deleted automatically</strong>.
+        If a player had 54 slots and you downgrade them to 27, the next time they open the chest
+        they will only see the first 27 slots as open — but all 54 slots of data are still stored.
+        Items in slots 28–54 are "invisible" and can only be accessed by an admin with <code>/ecsee</code>.
+        If you re-upgrade them to 54 later, their items will still be there.
+      </p>
+
+      <h3>Q: How do I completely wipe a player's ender chest?</h3>
+      <p>
+        <strong>YAML mode:</strong> Open <code>enderchests.yml</code>, find the UUID block for that player, delete it, and save.
+        Restart the server or reload the plugin.<br>
+        <strong>MongoDB mode:</strong> Delete the document with that player's UUID as <code>_id</code>
+        from the <code>oreo_enderchest</code> collection.
+      </p>
+
+      <h3>Q: Can two players on different servers have their ECs open at the same time?</h3>
+      <p>
+        Yes — but the same player cannot be on two servers at once (BungeeCord doesn't allow it).
+        If one admin is using <code>/ecsee</code> on Server A and the player opens their chest on Server B,
+        the last one to close wins. This edge case is rare and typically harmless.
+      </p>
+
+      <h3>Q: Does this affect the vanilla ender chest blocks in the world?</h3>
+      <p>
+        In <strong>cross-server mode</strong>: Yes — physical ender chest blocks are intercepted.
+        The virtual chest opens instead of the vanilla one.<br>
+        In <strong>local mode</strong>: Physical blocks open the vanilla chest (unmodified).
+        Only <code>/ec</code> opens the virtual chest.
+      </p>
+
+      <h3>Q: The locked slot items show "Locked slot" in red. Can I change that text?</h3>
+      <p>
+        Yes. Edit your lang file (usually <code>plugins/OreoEssentials/lang/messages.yml</code> or similar)
+        and set <code>enderchest.gui.locked-slot-name</code> and <code>enderchest.gui.locked-slot-lore</code>.
+        The lore supports the <code>%slots%</code> placeholder.
+      </p>
+
+      <h3>Q: What if I set a tier to a number that is not a multiple of 9, like 30?</h3>
+      <p>
+        It works. Slots 0–29 are open, slots 30–53 are locked.
+        The 4th row will have 3 open slots followed by 6 locked slots.
+        It looks odd visually. Stick to 9, 18, 27, 36, 45, or 54 for clean full rows.
+      </p>
+
+      <h3>Q: Is there a reload command?</h3>
+      <p>
+        The enderchest module does not expose a standalone <code>/ecreload</code> command.
+        Use OreoEssentials' global reload command if one exists, or restart the server to pick up
+        config changes in <code>enderchest.yml</code>.
+      </p>
+
+      <h3>Q: Can I use both permission-slots and rank-slots at once?</h3>
+      <p>
+        Yes. Enable both. The plugin runs both checks and takes the <strong>highest result</strong>.
+        This is useful for special cases, e.g. giving a staff member extra slots via a permission node
+        without changing their LuckPerms rank.
+      </p>
+
+      <h3>Q: The /ecsee GUI title shows the player's name. Can I change it?</h3>
+      <p>
+        The title comes from the lang key <code>ecsee.gui.title</code>
+        (default: <em>"&lt;dark_purple&gt;Ender Chest&lt;/dark_purple&gt; &lt;gray&gt;(%player%)&lt;/gray&gt;"</em>).
+        Edit that key in your lang file to change it. <code>%player%</code> is replaced with the target player's name.
+      </p>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

@@ -20,7 +20,8 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
         cleanup("invlookManager", invlookManager::clear);
         initInventorySync();
         initInvsee();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         registerCommands();
     }
 
@@ -81,7 +82,6 @@ public final class InventorySyncModule extends ManagedModule implements Inventor
                 (channel, pkt) -> { var broker = invseeBroker; if (broker != null) broker.handleEdit(pkt); });
     }
 
-    @dev.oreo.modulith.core.ModuleListener
     public void onMessagingReady(fr.elias.oessentials.messaging.lifecycle.MessagingReady event) {
         if (!isActive()) return;
         if (!services(ConfigurationServices.class).getFeatureSettings().featureOption("cross-server", "invsee", true)) {

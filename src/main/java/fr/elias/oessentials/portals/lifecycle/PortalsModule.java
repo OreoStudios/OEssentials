@@ -1,6 +1,5 @@
 package fr.elias.oessentials.portals.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -15,7 +14,8 @@ public final class PortalsModule extends ManagedModule implements PortalsService
     protected void start() {
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.portals.internal.rabbit.PortalsPacketNamespace());
         initPortals();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         providePublicApi(fr.elias.oessentials.api.IPortalsAPI.class, this::getPortalsApi);
     }
 
@@ -50,7 +50,6 @@ public final class PortalsModule extends ManagedModule implements PortalsService
         services(ConfigurationServices.class).getCommands().registerLegacy("portal", portalCmd, portalCmd);
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive() || portals == null) return;
         portals.initCrossServer(event.packets());

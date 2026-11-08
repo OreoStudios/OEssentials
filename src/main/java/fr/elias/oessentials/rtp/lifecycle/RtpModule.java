@@ -1,6 +1,5 @@
 package fr.elias.oessentials.rtp.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.BootstrapSupport;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
@@ -25,7 +24,8 @@ public final class RtpModule extends ManagedModule implements RtpServices {
     protected void start() {
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.rtp.internal.RtpPacketNamespace());
         initRtp();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         registerReloadStep(6, "rtp", this::reloadRtp);
         registerConfigFile("rtp.yml", () -> rtpConfig.reload());
     }
@@ -56,7 +56,6 @@ public final class RtpModule extends ManagedModule implements RtpServices {
 
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive() || rtpConfig == null || !rtpConfig.isCrossServerEnabled()) return;
         rtpBridge = new fr.elias.oessentials.rtp.internal.RtpCrossServerBridge(

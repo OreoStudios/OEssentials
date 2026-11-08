@@ -1,6 +1,5 @@
 package fr.elias.oessentials.currency.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
@@ -21,7 +20,7 @@ import fr.elias.oessentials.currency.internal.storage.CurrencyStorage;
 import fr.elias.oessentials.currency.internal.storage.JsonCurrencyStorage;
 import fr.elias.oessentials.currency.internal.storage.MongoCurrencyStorage;
 
-@PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"economy::services"})
+@PluginModule(value = "currency-system", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"})
 public final class CurrencySystemModule extends ManagedModule implements CurrencySystemServices {
     // Typed Object: PlaceholderAPI is optional, and module classes are reflected (EventBus) on every server.
     private volatile Object currencyPlaceholders;
@@ -32,7 +31,8 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
     protected void start() {
         services(MessagingServices.class).registerNamespace(new fr.elias.oessentials.currency.internal.rabbitmq.CurrencyPacketNamespace());
         initCurrencySystem();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         registerCommands();
         registerCurrencyPlaceholders();
     }
@@ -76,7 +76,6 @@ public final class CurrencySystemModule extends ManagedModule implements Currenc
         }
     }
 
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive() || currencyService == null || !currencyConfig.isCrossServerEnabled()) return;
         event.packets().subscribe(fr.elias.oessentials.currency.internal.rabbitmq.CurrencySyncPacket.class,

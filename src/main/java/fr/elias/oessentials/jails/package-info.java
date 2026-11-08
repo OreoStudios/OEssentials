@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.jails.lifecycle.JailsModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "jails")
+@dev.oreo.modulith.core.ApplicationModule(id = "jails", uses = {"discord-integration::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "jails", lifecycle = fr.elias.oessentials.jails.lifecycle.JailsModule.class)
 package fr.elias.oessentials.jails;

@@ -118,3 +118,7 @@ build/
 # Common working directory
 run/
 .claude/
+
+# Local JVM memory dumps and generated obfuscation output
+*.hprof
+/obf-out/

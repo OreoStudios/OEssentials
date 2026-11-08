@@ -1,6 +1,5 @@
 package fr.elias.oessentials.player.lifecycle;
 
-import dev.oreo.modulith.core.ModuleListener;
 import dev.oreo.modulith.core.PluginModule;
 import fr.elias.oessentials.messaging.lifecycle.MessagingReady;
 import fr.elias.oessentials.messaging.lifecycle.MessagingServices;
@@ -30,7 +29,7 @@ import fr.elias.oessentials.player.internal.services.GodService;
 import fr.elias.oessentials.player.internal.services.MessageService;
 import fr.elias.oessentials.player.internal.services.VanishService;
 
-@PluginModule(value = "player-services", dependencies = {"configuration::services", "economy::services", "ignore::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"nametag::services"}, after = {"inventory-sync"})
+@PluginModule(value = "player-services", dependencies = {"configuration::services", "economy::services", "ignore::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventory-sync"})
 public final class PlayerServicesModule extends ManagedModule implements PlayerServices {
     private TeleportService teleportService;
     private BackService backService;
@@ -56,7 +55,8 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
         messaging.subscribe(CrossServerMsgPacket.class, new CrossServerMsgHandler(messageService));
         messaging.subscribe(VanishSyncPacket.class,
                 (channel, pkt) -> _vanishService.handleRemoteState(pkt.getPlayerId(), pkt.isVanished(), pkt.getSourceServer()));
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         registerCommands();
         providePublicApi(fr.elias.oessentials.api.ITeleportAPI.class, this::getTeleportApi);
         providePublicApi(fr.elias.oessentials.api.IBackAPI.class, this::getBackApi);
@@ -65,7 +65,6 @@ public final class PlayerServicesModule extends ManagedModule implements PlayerS
     }
 
     /** Cross-server /tpa, /tp and /back, once RabbitMQ is connected. */
-    @ModuleListener
     public void onMessagingReady(MessagingReady event) {
         if (!isActive()) return;
         String serverName = services(ConfigurationServices.class).getServerConfig().serverName();

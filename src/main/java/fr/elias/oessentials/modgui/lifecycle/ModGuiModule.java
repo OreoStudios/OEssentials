@@ -5,7 +5,7 @@ import fr.elias.oessentials.configuration.lifecycle.ConfigurationServices;
 import fr.elias.oessentials.platform.modularity.ManagedModule;
 import fr.elias.oessentials.modgui.internal.world.WorldTweaksListener;
 
-@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, uses = {"chat::services", "ender-chest::services", "freeze::services", "inventory-sync::services", "mute-system::services", "notes::services", "player-services::services"}, after = {"inventories"})
+@PluginModule(value = "mod-gui", dependencies = {"configuration::services", "messaging::events", "messaging::services", "storage::services"}, after = {"inventories"})
 public final class ModGuiModule extends ManagedModule implements ModGuiServices {
     private fr.elias.oessentials.modgui.internal.ModGuiService modGuiService;
     private fr.elias.oessentials.modgui.internal.cross.ModBridge modBridge;
@@ -17,12 +17,12 @@ public final class ModGuiModule extends ManagedModule implements ModGuiServices 
                 .registerNamespace(new fr.elias.oessentials.modgui.internal.cross.rabbit.CrossInvPacketNamespace());
         this.ipTracker = new fr.elias.oessentials.modgui.internal.ip.IpTracker(plugin);
         initModGui();
-        listenForModuleEvents(this);
+        listenForGlobalEvent(fr.elias.oessentials.messaging.lifecycle.MessagingReady.class,
+                "messaging-ready", this::onMessagingReady);
         providePublicApi(fr.elias.oessentials.api.ICrossServerAPI.class, this::getCrossServerApi);
     }
 
     /** Cross-server kick, freeze, vanish and other moderation actions. */
-    @dev.oreo.modulith.core.ModuleListener
     public void onMessagingReady(fr.elias.oessentials.messaging.lifecycle.MessagingReady event) {
         if (!isActive()) return;
         this.modBridge = new fr.elias.oessentials.modgui.internal.cross.ModBridge(plugin, event.packets(),

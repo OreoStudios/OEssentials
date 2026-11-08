@@ -1,0 +1,30 @@
+plugins {
+    id("me.champeau.jmh") version "0.7.3"
+}
+
+dependencies {
+    jmh 'org.openjdk.jmh:jmh-core:1.37'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+}
+
+def generatedResourcesDir = "$buildDir/generated-resources"
+
+tasks.register('generateCommandsProperties') {
+    doLast {
+        def outputDir = file("$generatedResourcesDir")
+        outputDir.mkdirs()
+        def propsFile = new File(outputDir, "commands.properties")
+        propsFile.text = "version=${project.version}"
+    }
+}
+
+processResources.dependsOn(generateCommandsProperties)
+
+// Inclure dans les ressources du build
+sourceSets {
+    main {
+        resources {
+            srcDir generatedResourcesDir
+        }
+    }
+}

@@ -8,7 +8,7 @@
  *
  * @see fr.elias.oessentials.player.lifecycle.PlayerServicesModule
  */
-@dev.oreo.modulith.core.ApplicationModule(id = "player-services")
+@dev.oreo.modulith.core.ApplicationModule(id = "player-services", uses = {"nametag::services"})
 @fr.elias.oessentials.platform.modularity.FeaturePackage(
         id = "player-services", lifecycle = fr.elias.oessentials.player.lifecycle.PlayerServicesModule.class)
 package fr.elias.oessentials.player;

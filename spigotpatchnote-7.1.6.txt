@@ -1,0 +1,71 @@
+===============================================================
+  OEssentials - Version 7.1.6
+  Minecraft 1.21 | Paper / Folia
+===============================================================
+
+Web Panel Without RabbitMQ
+--------------------------
+- Added an outbound WebSocket connection between OEssentials and the web
+  panel. It authenticates with the server API key, so owners can use live
+  panel commands without giving the panel their RabbitMQ credentials or
+  opening an inbound port on the Minecraft server.
+- WebSocket mode supports live config changes, config fetch and push,
+  LuckPerms updates, inventory actions, item deliveries and achievement
+  notifications.
+- RabbitMQ remains an optional transport. Set web-panel.transport to
+  "rabbitmq" to select it. Existing configurations without a transport
+  setting retain RabbitMQ when rabbitmq.enabled is true.
+- The plugin reconnects after WebSocket interruptions, with retry delays
+  increasing up to 60 seconds. The owner panel reports the plugin
+  connection state and accepts WebSocket connections without requiring a
+  RabbitMQ URI.
+- Added setup and reverse-proxy instructions in docs/webpanel-connection.md.
+
+Player Sync and Network Load
+----------------------------
+- Player snapshots now use a bounded HTTP worker queue with at most three
+  concurrent requests. Repeated pending snapshots for a player are
+  coalesced to the latest data, reducing request bursts and API timeouts.
+- Improved Web Panel action polling and panel URL defaults.
+- Expanded submitted player statistics with mob kills, travel distance,
+  jumps and fish caught for achievements and server statistics.
+
+Server Metrics and Prometheus
+-----------------------------
+- Heartbeats now include online players, player capacity, memory usage,
+  loaded chunks, entities and supported TPS/MSPT values.
+- Added an optional Prometheus /metrics endpoint. It is disabled by
+  default and binds to 127.0.0.1:9100 when enabled unless configured
+  otherwise.
+- Folia omits server-wide tick and world metrics that do not have one
+  meaningful global value there.
+
+Config Editor and Maintenance Fixes
+-----------------------------------
+- Fixed panel config updates for maintenance settings so they are written
+  to config/server/maintenance.yml and reloaded by the maintenance
+  service.
+- Auto-reboot settings now reload after a panel config update.
+- Corrected the join flood protection login-limit key and preserved large
+  numeric config values.
+- Fixed the cross-server invsee toggle and player-warps settings path.
+- Fixed panel config-fetch uploads and improved the panel's connection and
+  restart guidance.
+
+Economy Settings
+----------------
+- JSON, MongoDB and PostgreSQL economy storage now read the configured
+  starting balance and balance limits instead of relying on hard-coded
+  defaults.
+- Settings that are read during plugin startup require a server restart
+  after changing them in the panel.
+
+Verification
+------------
+- Added tests for WebSocket authentication, reconnect handling, config
+  routing, heartbeat metrics and economy settings.
+- Built and checked the 7.1.6 plugin JAR.
+
+===============================================================
+  Full changelog / source: https://github.com/OreoStudios/OEssentials
+===============================================================

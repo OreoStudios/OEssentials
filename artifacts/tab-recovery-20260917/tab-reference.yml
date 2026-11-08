@@ -1,0 +1,232 @@
+tab:
+  enabled: true
+  use-placeholderapi: true
+  interval-ticks: 2
+  layout-mode: CUSTOM
+
+  network:
+    all-servers: true
+    excluded-servers:
+      - hub
+
+  # ── 2-column layout ─────────────────────────────────────────────────────────
+  # Sends exactly 40 fake entries → Minecraft renders them as 2 columns of 20 rows.
+  # The gradient border is sent as tab header/footer (full-width above/below the list).
+  # Left column  → profile-name prefix "\u0001A_" (sorted first  → col 1)
+  # Right column → profile-name prefix "\u0001B_" (sorted second → col 2)
+  two-column-layout:
+    enabled: true
+
+    # ── Dynamic column expansion ─────────────────────────────────────────────
+    # When true, columns grow automatically as players join:
+    #   1 col → fills up → 2 cols → fills up → 3 cols (up to max-columns)
+    # When false, the fixed 'columns' value below is used instead.
+    dynamic-columns: true
+
+    # Minimum columns shown even when the server is empty (default: 1).
+    min-columns: 1
+
+    # Maximum columns allowed — the tab will never grow beyond this (default: 3).
+    max-columns: 3
+
+    # ── Fixed column count (only used when dynamic-columns: false) ───────────
+    # 1 → 20 slots  (1 column,  fits ~16 players with 2 top + 2 bottom rows)
+    # 2 → 40 slots  (2 columns, fits ~32 players)
+    # 3 → 60 slots  (3 columns, fits ~48 players)
+    # For 3 columns, add top-center / bottom-center sections below (optional).
+    # If more players are online than available slots, the overflow is not shown.
+    columns: 2
+
+    # ── Shared border line (top and bottom of the header/footer) ────────────
+    # Kept short deliberately so the overall tab list stays compact.
+    border: '<#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶'
+
+    # ── Animated server name — shown centered below the border in the header ─
+    # Each entry is ONE line (no \n needed — the code appends it after the border).
+    # 4 frames pulsing purple ↔ pink.
+    header-title-texts:
+      - '<gradient:#9827F5:#F179B5><bold>✦  OreoStudios  ✦</bold></gradient>'
+      - '<gradient:#AA3FCC:#FF99CC><bold>✦  OreoStudios  ✦</bold></gradient>'
+      - '<#F179B5><bold>✦  OreoStudios  ✦</bold>'
+      - '<gradient:#F179B5:#9827F5><bold>✦  OreoStudios  ✦</bold></gradient>'
+
+    # ── Footer — matching border below the list ──────────────────────────────
+    footer: '<#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶'
+
+    # ── Col1 top: player count + separator
+    # Animated decoration stays inside its column; only the title/border spans the list.
+    top-left:
+      texts:
+        - |-
+          <center><gray>En ligne: <#9827F5>%oe_network_online% <gray>joueur(s)</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>En ligne: <gradient:#9827F5:#F179B5>%oe_network_online%</gradient> <gray>joueur(s)</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>En ligne: <#F179B5>%oe_network_online% <gray>joueur(s)</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>En ligne: <gradient:#F179B5:#9827F5>%oe_network_online%</gradient> <gray>joueur(s)</center>
+          <dark_gray>──────────────
+
+    # ── Col2 top: ping + separator
+    top-right:
+      texts:
+        - |-
+          <center><gray>Ping: <#9827F5>%player_ping% <gray>ms</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>Ping: <gradient:#9827F5:#F179B5>%player_ping%</gradient> <gray>ms</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>Ping: <#F179B5>%player_ping% <gray>ms</center>
+          <dark_gray>──────────────
+        - |-
+          <center><gray>Ping: <gradient:#F179B5:#9827F5>%player_ping%</gradient> <gray>ms</center>
+          <dark_gray>──────────────
+
+    # ── Bottom-left: animated News / Support / Shop
+    bottom-left:
+      texts:
+        - |-
+          <dark_gray>──────────────
+          <center><gray>News <#9827F5>◆<gray> Support <#9827F5>◆<gray> Shop</center>
+        - |-
+          <dark_gray>──────────────
+          <center><gradient:#9827F5:#F179B5>News ◆ Support ◆ Shop</gradient></center>
+        - |-
+          <dark_gray>──────────────
+          <center><#F179B5>News ◆ Support ◆ Shop</center>
+        - |-
+          <dark_gray>──────────────
+          <center><gradient:#F179B5:#9827F5>News ◆ Support ◆ Shop</gradient></center>
+
+    # ── Bottom-right: animated URL
+    bottom-right:
+      texts:
+        - |-
+          <dark_gray>──────────────
+          <center><#9827F5>oreostudios.fr</center>
+        - |-
+          <dark_gray>──────────────
+          <center><gradient:#9827F5:#F179B5>oreostudios.fr</gradient></center>
+        - |-
+          <dark_gray>──────────────
+          <center><#F179B5>oreostudios.fr</center>
+        - |-
+          <dark_gray>──────────────
+          <center><gradient:#F179B5:#9827F5>oreostudios.fr</gradient></center>
+
+  custom-layout:
+    enabled: true
+    change-interval: 30
+
+    # ── TOP SECTION ─────────────────────────────────────────────────────────
+    # 3 rows:
+    #   1 — gradient border (full-width, frames the whole list)
+    #   2 — server title + online count (animated pulse purple ↔ pink)
+    #   3 — thin dashed line (player-list separator — TOP)
+    top-section:
+      texts:
+        - |-
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+          <center><gradient:#9827F5:#F179B5><bold>✦ OreoStudios</bold></gradient>  <dark_gray>·  <gray>%oe_network_online% joueurs en ligne</center>
+          <center><dark_gray>──────────────────────────────────────────</center>
+        - |-
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+          <center><gradient:#AA3FCC:#FF99CC><bold>✦ OreoStudios</bold></gradient>  <dark_gray>·  <gray>%oe_network_online% joueurs en ligne</center>
+          <center><dark_gray>──────────────────────────────────────────</center>
+        - |-
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+          <center><#F179B5><bold>✦ OreoStudios</bold>  <dark_gray>·  <gray>%oe_network_online% joueurs en ligne</center>
+          <center><dark_gray>──────────────────────────────────────────</center>
+        - |-
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+          <center><gradient:#F179B5:#9827F5><bold>✦ OreoStudios</bold></gradient>  <dark_gray>·  <gray>%oe_network_online% joueurs en ligne</center>
+          <center><dark_gray>──────────────────────────────────────────</center>
+
+    # ── PLAYER SECTION ──────────────────────────────────────────────────────
+    player-section:
+      enabled: true
+      player-format:
+        # <center> centers the name within its column (TAB_COL2_PX = 180px target)
+        # %luckperms_prefix% → rank prefix from LuckPerms (requires LuckPerms-PAPI expansion)
+        # %player_color%     → color from rank-colors below (MiniMessage hex or &-codes)
+        # %player_name%      → raw player name
+        # %afk_indicator%    → AFK suffix
+        format: '<center>%luckperms_prefix%%player_color%%player_name%%afk_indicator%</center>'
+        # Map LuckPerms primary group → color  (MiniMessage or &-codes, both supported)
+        # Edit these to match your actual LuckPerms group names.
+        rank-colors:
+          owner:     '<gradient:#FF4500:#FF8C00>'
+          fondateur: '<gradient:#FF4500:#FF8C00>'
+          admin:     '<#FF5555>'
+          moderateur: '<#5599FF>'
+          helper:    '<#77CCFF>'
+          staff:     '<#AAAAFF>'
+          vip_plus:  '<gradient:#FFD700:#FF8C00>'
+          vip:       '<#FFD700>'
+          default:   '<white>'
+        show-afk: true
+        afk-format: ' <dark_gray>[AFK]'
+        show-ping-bars: true
+
+    # ── BOTTOM SECTION ──────────────────────────────────────────────────────
+    # 4 rows:
+    #   1 — thin dashed line (player-list separator — BOTTOM)
+    #   2 — quick links
+    #   3 — website URL (animated color pulse)
+    #   4 — gradient border (mirrors top)
+    bottom-section:
+      texts:
+        - |-
+          <center><dark_gray>──────────────────────────────────────────</center>
+          <center><gray>News  <#9827F5>◆<gray>  Support  <#9827F5>◆<gray>  Shop</center>
+          <center><#9827F5>oreostudios.fr</center>
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+        - |-
+          <center><dark_gray>──────────────────────────────────────────</center>
+          <center><gray>News  <#9827F5>◆<gray>  Support  <#9827F5>◆<gray>  Shop</center>
+          <center><gradient:#9827F5:#F179B5>oreostudios.fr</gradient></center>
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+        - |-
+          <center><dark_gray>──────────────────────────────────────────</center>
+          <center><gray>News  <#9827F5>◆<gray>  Support  <#9827F5>◆<gray>  Shop</center>
+          <center><#F179B5>oreostudios.fr</center>
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+        - |-
+          <center><dark_gray>──────────────────────────────────────────</center>
+          <center><gray>News  <#9827F5>◆<gray>  Support  <#9827F5>◆<gray>  Shop</center>
+          <center><gradient:#F179B5:#9827F5>oreostudios.fr</gradient></center>
+          <#9827F5>◀<gradient:#7D2D9D:#F179B5>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><gold>◈</gold><gradient:#F179B5:#7D2D9D>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient><#9827F5>▶
+
+    sorting:
+      method: RANK
+      # Higher number = higher position in the tab list
+      rank-priority:
+        owner:     100
+        fondateur: 100
+        admin:      90
+        moderateur: 80
+        helper:     70
+        staff:      60
+        vip_plus:   50
+        vip:        40
+        default:    10
+
+  title:
+    enabled: false
+
+  name-format:
+    enabled: true
+    use-rank-formats: false
+    rank-key: '%luckperms_primary_group%'
+    server-tag: ' &8(&7&o%server_name%&8)'
+    pattern: '%luckperms_prefix%%simplenick_nickname%%oe_server_tag%'
+    rank-formats:
+      default: <#8FEBDE> %mcmmo_power_level% <gray>• <reset> <gray>| <reset>%luckperms_prefix%
+        <#7EACA3>%nick_or_name%
+    enforce-max-length: false
+    max-length: 64
+    overflow: TRIM
