@@ -122,3 +122,31 @@ run/
 # Local JVM memory dumps and generated obfuscation output
 *.hprof
 /obf-out/
+
+# Local reference copies, recovery artifacts, and release drafts
+/CommandsAPI-master/
+/artifacts/
+/OEssentials_logo.png
+/message (*.txt
+/spigotpatchnote*.txt
+
+# Standalone documentation website kept locally
+/docs/.gitignore
+/docs/ChatGPT Image*.png
+/docs/app/
+/docs/components/
+/docs/index.html
+/docs/legacy/
+/docs/lib/
+/docs/next-env.d.ts
+/docs/next.config.ts
+/docs/package-lock.json
+/docs/package.json
+/docs/postcss.config.js
+/docs/public/
+/docs/start-site.bat
+/docs/tailwind.config.ts
+/docs/tsconfig.json
+/docs/node_modules/
+/docs/.next/
+/docs/out/
