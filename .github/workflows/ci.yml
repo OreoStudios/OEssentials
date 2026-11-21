@@ -1,0 +1,111 @@
+name: Build & Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oessentials-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tab-policy:
+    name: TAB row policy smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install JDK 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Compile and exercise dependency-free TAB policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir="$(mktemp -d)"
+          mkdir -p "$tmpdir/classes"
+          cat > "$tmpdir/TabRowsPolicySmoke.java" <<'JAVA'
+          package fr.elias.oessentials.tab.internal;
+          final class TabRowsPolicySmoke {
+              public static void main(String[] args) {
+                  var dynamic = TabRowsPolicy.Mode.DYNAMIC;
+                  assertRows(5, dynamic, 1, 1, 0, 2, 2);
+                  assertRows(9, dynamic, 1, 1, 5, 2, 2);
+                  assertRows(12, dynamic, 1, 8, 5, 2, 2);
+                  assertRows(12, dynamic, 2, 17, 0, 2, 2);
+                  assertRows(17, dynamic, 3, 43, 0, 2, 2);
+                  assertRows(20, TabRowsPolicy.Mode.LEGACY, 1, 1, 0, 2, 2);
+              }
+              private static void assertRows(int expected, TabRowsPolicy.Mode mode,
+                                             int columns, int players, int min, int top, int bottom) {
+                  int actual = TabRowsPolicy.rows(mode, columns, players, min, top, bottom);
+                  if (actual != expected) {
+                      throw new AssertionError(mode + ": expected " + expected + " rows, got " + actual);
+                  }
+              }
+          }
+          JAVA
+          javac -encoding UTF-8 -d "$tmpdir/classes" \
+            src/main/java/fr/elias/oessentials/tab/internal/TabRowsPolicy.java \
+            "$tmpdir/TabRowsPolicySmoke.java"
+          java -cp "$tmpdir/classes" fr.elias.oessentials.tab.internal.TabRowsPolicySmoke
+
+  gradle-build:
+    name: Gradle build, tests & Modulith verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out OEssentials
+        uses: actions/checkout@v4
+      - name: Check out pinned UltimateChristmas API source
+        uses: actions/checkout@v4
+        with:
+          repository: OreoStudios/UltimateChristmas
+          ref: 967bedf1ac8832ba4b95ed9154ce59cd53fac4cc
+          path: .ci/ultimate-christmas
+          persist-credentials: false
+      - name: Install JDK 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Configure Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Build compile-only UltimateChristmas integration JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mvn -B -ntp -f .ci/ultimate-christmas/pom.xml -DskipTests \
+            -Dpython.executable=python3 package
+          mkdir -p libs
+          # Gradle currently references this historical file path.
+          cp .ci/ultimate-christmas/target/UltimateChristmas-4.1.1.jar \
+            libs/UltimateChristmas-3.2-SNAPSHOT.jar
+      - name: Test, verify module boundaries, and assemble shaded plugin
+        shell: bash
+        run: |
+          ./gradlew --no-daemon --no-configuration-cache --stacktrace clean build
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oessentials-test-reports
+          path: |
+            build/reports/tests/
+            build/test-results/test/
+          if-no-files-found: ignore
+      - name: Upload plugin artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oessentials-plugin-jar
+          path: build/libs/OEssentials-*.jar
+          if-no-files-found: error
+          retention-days: 14

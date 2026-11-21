@@ -706,9 +706,13 @@ public class CustomTablistLayout {
                 cfg.getString("tab.custom-layout.empty-slots.mode", "LEGACY"));
         int playerCount = cfg.getBoolean("tab.custom-layout.player-section.enabled", true)
                 ? sortedEntries.size() : 0;
-        int visibleRows = TabRowsPolicy.rows(emptyMode, numCols, playerCount,
+        int lastColumnRows = TabRowsPolicy.rows(emptyMode, numCols, playerCount,
                 cfg.getInt("tab.custom-layout.empty-slots.min-rows", 0), topRows, botRows);
-        int botStart = visibleRows - botRows;
+        // Minecraft always starts a new column after 20 entries. Earlier columns
+        // must remain full; only the last column may shrink dynamically.
+        int[] columnRows = new int[numCols];
+        Arrays.fill(columnRows, COL_ROWS);
+        columnRows[numCols - 1] = lastColumnRows;
 
         // ── Fill top and bottom decoration rows ────────────────────────────
         for (int c = 0; c < numCols; c++) {
@@ -719,7 +723,7 @@ public class CustomTablistLayout {
                         prefix + fmt2(i), text, TAB_COL2_PX);
             }
             for (int i = 0; i < botRows; i++) {
-                int row = botStart + i;
+                int row = columnRows[c] - botRows + i;
                 String text = i < botLines[c].length ? botLines[c][i] : "";
                 cols[c][row] = makeDecorSlot(PacketTablistManager.colSlotUuid(c, row),
                         prefix + fmt2(row), text, TAB_COL2_PX);
@@ -733,13 +737,14 @@ public class CustomTablistLayout {
         //   numCols=3 → first ⌈N/3⌉ in col 0, next ⌈N/3⌉ in col 1, rest in col 2
         boolean playerSectionEnabled = cfg.getBoolean("tab.custom-layout.player-section.enabled", true);
         if (playerSectionEnabled) {
-            int total = Math.min(sortedEntries.size(), numCols * (botStart - topRows));
-            int availRows = botStart - topRows;        // player rows available per column
+            int perColumnCapacity = COL_ROWS - topRows - botRows;
+            int total = Math.min(sortedEntries.size(), numCols * perColumnCapacity);
             int chunkSize = (total + numCols - 1) / numCols; // ⌈total/numCols⌉
 
             for (int c = 0; c < numCols; c++) {
                 String prefix   = COL_PREFIXES[c];
                 int startIdx    = c * chunkSize;
+                int availRows = columnRows[c] - topRows - botRows;
                 for (int slot = 0; slot < Math.min(availRows, chunkSize); slot++) {
                     int pIdx = startIdx + slot;
                     if (pIdx >= total) break;
@@ -758,11 +763,11 @@ public class CustomTablistLayout {
         }
 
         // ── Collect all slots (empty slots fill unused rows) ───────────────
-        List<PacketTablistManager.TabSlot> slots = new ArrayList<>(numCols * visibleRows);
+        List<PacketTablistManager.TabSlot> slots = new ArrayList<>((numCols - 1) * COL_ROWS + lastColumnRows);
         List<TextureProperty> fillerSkin = getEmptySlotSkin(cfg);
         for (int c = 0; c < numCols; c++) {
             String prefix = COL_PREFIXES[c];
-            for (int i = 0; i < visibleRows; i++) {
+            for (int i = 0; i < columnRows[c]; i++) {
                 slots.add(cols[c][i] != null ? cols[c][i]
                         : new PacketTablistManager.TabSlot(
                                 PacketTablistManager.colSlotUuid(c, i), prefix + fmt2(i),

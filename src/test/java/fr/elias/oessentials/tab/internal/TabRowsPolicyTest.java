@@ -17,14 +17,16 @@ class TabRowsPolicyTest {
     }
 
     @Test void dynamicallyFitsPlayersInActiveColumns() {
-        assertEquals(13, TabRowsPolicy.rows(DYNAMIC, 2, 17, 0, 2, 2));
-        assertEquals(17, TabRowsPolicy.rows(DYNAMIC, 2, 25, 0, 2, 2));
-        assertEquals(19, TabRowsPolicy.rows(DYNAMIC, 3, 43, 0, 2, 2));
+        assertEquals(12, TabRowsPolicy.rows(DYNAMIC, 2, 17, 0, 2, 2));
+        assertEquals(16, TabRowsPolicy.rows(DYNAMIC, 2, 25, 0, 2, 2));
+        assertEquals(17, TabRowsPolicy.rows(DYNAMIC, 3, 43, 0, 2, 2));
     }
 
     @Test void maintainsMinecraftColumnBreakpoints() {
-        assertEquals(11, TabRowsPolicy.rows(DYNAMIC, 2, 1, 0, 2, 2));
-        assertEquals(14, TabRowsPolicy.rows(DYNAMIC, 3, 1, 0, 2, 2));
+        assertEquals(4, TabRowsPolicy.rows(DYNAMIC, 2, 1, 0, 2, 2));
+        assertEquals(4, TabRowsPolicy.rows(DYNAMIC, 3, 1, 0, 2, 2));
+        // Minecraft only recognizes a second column after the first 20 entries.
+        assertEquals(32, 20 + TabRowsPolicy.rows(DYNAMIC, 2, 17, 0, 2, 2));
     }
 
     @Test void fixedCountsDecorationRows() {

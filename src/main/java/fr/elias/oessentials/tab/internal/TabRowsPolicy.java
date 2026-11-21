@@ -31,13 +31,16 @@ final class TabRowsPolicy {
         int players = Math.max(0, playerCount);
         int minimum = Math.max(0, configuredMinimum);
         int decorations = Math.max(0, topRows) + Math.max(0, bottomRows);
-        int perColumnPlayers = (players + cols - 1) / cols;
+        int chunkSize = (players + cols - 1) / cols;
+        int lastColumnPlayers = Math.max(0, players - (cols - 1) * chunkSize);
+        int previousColumnCapacity = (cols - 1) * Math.max(0, ROWS_PER_COLUMN - decorations);
+        int lastColumnMinimum = Math.max(0, minimum - previousColumnCapacity);
         int requested = mode == Mode.FIXED
-                ? Math.max(minimum, decorations + perColumnPlayers)
-                : decorations + (Math.max(players, minimum) + cols - 1) / cols;
+                ? Math.max(minimum, decorations + lastColumnPlayers)
+                : decorations + Math.max(lastColumnPlayers, lastColumnMinimum);
 
-        // For 2 or 3 columns Minecraft needs at least 21 or 41 entries.
-        int keepColumns = ((cols - 1) * ROWS_PER_COLUMN + cols) / cols;
-        return Math.min(ROWS_PER_COLUMN, Math.max(requested, keepColumns));
+        // Earlier columns stay full (20 slots). The last column contains
+        // its own decoration and players and has at least one entry.
+        return Math.min(ROWS_PER_COLUMN, Math.max(1, requested));
     }
 }
