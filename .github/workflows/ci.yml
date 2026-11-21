@@ -91,9 +91,31 @@ jobs:
       - name: Test, verify module boundaries, and assemble shaded plugin
         shell: bash
         run: |
-          ./gradlew --no-daemon --no-configuration-cache --stacktrace clean build
-      - name: Upload JUnit reports
-        if: always()
+          ./gradlew --no-daemon --no-configuration-cache --stacktrace clean build stageRuntimeLibraries
+      - name: Prepare separate plugin and library downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^version=//p' gradle.properties | head -n 1 | tr -d '\r')"
+          test -n "$version"
+          plugin="build/libs/OEssentials-${version}.jar"
+          test -s "$plugin"
+          mkdir -p build/distributions/plugin
+          cp "$plugin" build/distributions/plugin/
+          test -n "$(find build/distributions/runtime-libraries -maxdepth 1 -type f -name '*.jar' -print -quit)"
+          cat > build/distributions/runtime-libraries/README.txt <<'TXT'
+          These are the external runtime dependency JARs for OEssentials.
+
+          They are provided as a separate download for developers and debugging.
+          The installable OEssentials plugin already bundles its required runtime
+          libraries (Shadow JAR). Do not place these individual library jars in
+          your Paper server's plugins/ folder.
+
+          For normal server installation, use the separate oessentials-plugin-jar
+          download instead.
+          TXT
+      - name: Upload JUnit reports (on failure)
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: oessentials-test-reports
@@ -101,11 +123,19 @@ jobs:
             build/reports/tests/
             build/test-results/test/
           if-no-files-found: ignore
-      - name: Upload plugin artifact
+      - name: Upload standalone plugin artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: oessentials-plugin-jar
-          path: build/libs/OEssentials-*.jar
+          path: build/distributions/plugin/*.jar
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload separate libraries artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oessentials-libraries
+          path: build/distributions/runtime-libraries/
           if-no-files-found: error
           retention-days: 14

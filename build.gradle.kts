@@ -154,6 +154,19 @@ tasks.build {
     dependsOn(tasks.shadowJar, "modulithDocs")
 }
 
+// Publish resolved runtime dependency jars as an independent CI artifact.
+// The regular shaded OEssentials JAR remains the only installable server plugin.
+// These jars are for inspection/integration, not files to put in plugins/.
+tasks.register<Sync>("stageRuntimeLibraries") {
+    group = "distribution"
+    description = "Stage runtime dependency JARs separately from the installable plugin."
+    from(configurations.runtimeClasspath)
+    into(layout.buildDirectory.dir("distributions/runtime-libraries"))
+    include("*.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+
 tasks.test {
     useJUnitPlatform()
     // Mockito/ByteBuddy need this to instrument on the JDK 25 test runtime.
