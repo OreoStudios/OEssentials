@@ -96,6 +96,7 @@ public final class JsonAuctionStorage implements AuctionStorage {
                 m.put("buyerName", a.getBuyerName());
                 m.put("soldTime",  a.getSoldTime());
             }
+            if (a.getSellerProceeds() != null) m.put("sellerProceeds", a.getSellerProceeds());
             if (a.getItemsAdderID()  != null) m.put("itemsAdderID",  a.getItemsAdderID());
             if (a.getNexoID()        != null) m.put("nexoID",        a.getNexoID());
             if (a.getOraxenID()      != null) m.put("oraxenID",      a.getOraxenID());
@@ -136,6 +137,7 @@ public final class JsonAuctionStorage implements AuctionStorage {
                 if (m.containsKey("oraxenID"))        a.setOraxenID((String) m.get("oraxenID"));
                 if (m.containsKey("customModelData")) a.setCustomModelData(((Number) m.get("customModelData")).intValue());
                 if (m.containsKey("currencyId"))      a.setCurrencyId((String) m.get("currencyId"));
+                if (m.get("sellerProceeds") instanceof Number n) a.setSellerProceeds(n.doubleValue());
 
                 out.add(a);
             } catch (Exception e) {

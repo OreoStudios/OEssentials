@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -127,4 +128,12 @@ public interface IAuctionHouseAPI {
      */
     @NotNull
     List<Auction> getPlayerSold(@NotNull UUID playerId);
+
+    /** Completed auction totals: net seller proceeds and gross buyer expenses. */
+    record FinancialTotals(double profit, double expend) {}
+
+    /** Totals by currency. Key "vault" represents the server's Vault currency. */
+    default @NotNull Map<String, FinancialTotals> getPlayerFinancialTotals(@NotNull UUID playerId) {
+        return Map.of();
+    }
 }
