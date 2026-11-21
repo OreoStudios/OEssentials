@@ -85,4 +85,4 @@ public class AuctionHouseAPIImpl implements IAuctionHouseAPI {
     public @NotNull Map<String, FinancialTotals> getPlayerFinancialTotals(@NotNull UUID playerId) {
         return module.getPlayerFinancialTotals(playerId);
     }
-
+}

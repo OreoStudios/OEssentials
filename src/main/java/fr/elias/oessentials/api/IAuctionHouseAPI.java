@@ -136,4 +136,4 @@ public interface IAuctionHouseAPI {
     default @NotNull Map<String, FinancialTotals> getPlayerFinancialTotals(@NotNull UUID playerId) {
         return Map.of();
     }
-
+}
