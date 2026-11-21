@@ -45,6 +45,10 @@ repositories {
     maven("https://repo.groupez.dev/releases")
     maven("https://repo.triumphteam.dev/releases/")
     maven("https://repo.triumphteam.dev/snapshots/")
+    // FancyLib, FancySitula and FancyAnalytics: the previous fancyplugins.de
+    // Maven hostname was retired in 2026. Keep the official replacement.
+    maven("https://repo.fancyinnovations.com/releases")
+    maven("https://repo.fancyinnovations.com/snapshots")
     maven("https://repo.lushplugins.org/releases")
     maven("https://repo.viaversion.com/")
     maven("https://repo.opencollab.dev/main/")
@@ -87,7 +91,8 @@ dependencies {
     compileOnly("io.lumine:Mythic-Dist:5.6.1")
     compileOnly("com.nexomc:nexo:1.15.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.24.0")
-    compileOnly("dev.lone:api-itemsadder:4.0.10")
+    // Official ItemsAdder API coordinates (the old dev.lone artifact is unavailable).
+    compileOnly("beer.devs:itemsadder-api:4.0.17")
     compileOnly("redis.clients:jedis:5.1.0")
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("com.rabbitmq:amqp-client:5.15.0")
