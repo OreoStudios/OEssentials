@@ -322,6 +322,7 @@ public final class AuctionHouseModule {
                                   double sellerReceives, String auctionCurrencyId) {
         // auction was already removed from activeAuctions by purchaseAuction()
         auction.markAsSold(buyer.getUniqueId(), buyer.getName());
+        auction.setSellerProceeds(sellerReceives);
         soldAuctions.add(auction);
         broadcastSync(AuctionSyncPacket.purchase(serverName(), auction.getId(),
                 buyer.getUniqueId(), buyer.getName()));
@@ -413,6 +414,15 @@ public final class AuctionHouseModule {
 
     public List<Auction> getPlayerSold(UUID playerId) {
         return soldAuctions.stream().filter(a -> a.getSeller().equals(playerId)).collect(Collectors.toList());
+    }
+
+    public Map<String, fr.elias.oessentials.api.IAuctionHouseAPI.FinancialTotals>
+    getPlayerFinancialTotals(UUID playerId) {
+        if (!enabled()) return Map.of();
+        return AuctionFinance.summarize(playerId, soldAuctions.stream()
+                .map(a -> new AuctionFinance.Sale(a.getId(), a.getSeller(), a.getBuyer(),
+                        a.getCurrencyId(), a.getPrice(), a.getSellerProceeds()))
+                .toList());
     }
 
 
@@ -615,6 +625,9 @@ public final class AuctionHouseModule {
                 .findFirst().orElse(null);
         if (a == null) return;
         a.markAsSold(pkt.getBuyerUuid(), pkt.getBuyerName());
+        // Older cross-server packets contain no payout amount; estimate using local tax.
+        // Shared storage retains the actual originating server's payout when available.
+        a.setSellerProceeds(a.getPrice() * (1.0 - cfg.taxPercent() / 100.0));
         activeAuctions.remove(a);
         soldAuctions.add(a);
     }

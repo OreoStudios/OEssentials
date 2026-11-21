@@ -18,6 +18,8 @@ public class Auction {
     private UUID buyer;
     private String buyerName;
     private long soldTime;
+    /** Actual payout after auction sales tax; null for historical transactions. */
+    private Double sellerProceeds;
 
     private String itemsAdderID;
     private String nexoID;
@@ -110,6 +112,8 @@ public class Auction {
 
     public long getSoldTime()                 { return soldTime; }
     public void setSoldTime(long t)           { this.soldTime = t; }
+    public Double getSellerProceeds()         { return sellerProceeds; }
+    public void setSellerProceeds(Double v)   { this.sellerProceeds = v; }
 
     public String  getItemsAdderID()                   { return itemsAdderID; }
     public void    setItemsAdderID(String id)          { this.itemsAdderID = id; }

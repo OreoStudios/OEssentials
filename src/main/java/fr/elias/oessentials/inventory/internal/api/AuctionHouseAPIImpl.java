@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class AuctionHouseAPIImpl implements IAuctionHouseAPI {
@@ -79,4 +80,9 @@ public class AuctionHouseAPIImpl implements IAuctionHouseAPI {
     public @NotNull List<Auction> getPlayerSold(@NotNull UUID playerId) {
         return module.getPlayerSold(playerId);
     }
-}
+
+    @Override
+    public @NotNull Map<String, FinancialTotals> getPlayerFinancialTotals(@NotNull UUID playerId) {
+        return module.getPlayerFinancialTotals(playerId);
+    }
+

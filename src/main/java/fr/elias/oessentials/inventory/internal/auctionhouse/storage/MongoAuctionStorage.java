@@ -95,6 +95,7 @@ public final class MongoAuctionStorage implements AuctionStorage {
                     .append("buyerName", a.getBuyerName())
                     .append("soldTime",  a.getSoldTime());
         }
+        if (a.getSellerProceeds() != null) doc.append("sellerProceeds", a.getSellerProceeds());
         if (a.getItemsAdderID()    != null) doc.append("itemsAdderID",    a.getItemsAdderID());
         if (a.getNexoID()          != null) doc.append("nexoID",          a.getNexoID());
         if (a.getOraxenID()        != null) doc.append("oraxenID",        a.getOraxenID());
@@ -125,6 +126,7 @@ public final class MongoAuctionStorage implements AuctionStorage {
         if (doc.containsKey("oraxenID"))        a.setOraxenID(doc.getString("oraxenID"));
         if (doc.containsKey("customModelData")) a.setCustomModelData(doc.getInteger("customModelData"));
         if (doc.containsKey("currencyId"))      a.setCurrencyId(doc.getString("currencyId"));
+        if (doc.get("sellerProceeds") instanceof Number n) a.setSellerProceeds(n.doubleValue());
         return a;
     }
 }

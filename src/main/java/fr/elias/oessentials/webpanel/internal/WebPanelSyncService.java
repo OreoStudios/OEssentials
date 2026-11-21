@@ -358,6 +358,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
         // Gather everything that must be read on the main thread
         final UUID   uuid       = player.getUniqueId();
         final String name       = player.getName();
+        final String auctionHouseJson = serializeAuctionHouse(uuid);
         final double balance    = vaultBalance(player);
         final long   playtime   = playtime(uuid);
         final int    kills      = stat(player, Statistic.PLAYER_KILLS);
@@ -386,7 +387,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
             final String orders2 = serializeOrders(uuid);
             if (currencies2.isEmpty()) {
                 sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ipFallback, orders2));
+                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ipFallback, orders2, auctionHouseJson));
                 return;
             }
             List<CompletableFuture<Void>> futures2 = new ArrayList<>();
@@ -398,7 +399,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
             CompletableFuture.allOf(futures2.toArray(new CompletableFuture[0])).thenRun(() -> {
                 String currenciesJson2 = buildCurrenciesJson(currencies2, balances2);
                 sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson2, ipFallback, orders2));
+                        kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson2, ipFallback, orders2, auctionHouseJson));
             });
             return;
         }
@@ -408,7 +409,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
 
         if (currencies.isEmpty()) {
             sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ip, orders));
+                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, "{}", ip, orders, auctionHouseJson));
             return;
         }
 
@@ -422,8 +423,33 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
             String currenciesJson = buildCurrenciesJson(currencies, balances);
             sendAsync(uuid, name, buildJson(uuid, name, online, balance, playtime,
-                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson, ip, orders));
+                    kills, deaths, joinCount, extraStats, homes, inv, armor, shopPrices, lastSeen, currenciesJson, ip, orders, auctionHouseJson));
         });
+    }
+
+    /**
+     * Serialize one player's settled auction totals into their web-panel snapshot.
+     * The server's existing player-sync HTTP transport is redistributed to the
+     * authenticated player dashboard through the backend WebSocket.
+     */
+    private String serializeAuctionHouse(UUID uuid) {
+        JsonObject result = new JsonObject();
+        JsonObject currencies = new JsonObject();
+        var api = plugin.getModuleRegistry().read(
+                fr.elias.oessentials.inventory.lifecycle.InventoriesServices.class,
+                fr.elias.oessentials.inventory.lifecycle.InventoriesServices::getAuctionHouseApi);
+        boolean available = api != null && api.isEnabled();
+        result.addProperty("available", available);
+        if (available) {
+            for (var row : api.getPlayerFinancialTotals(uuid).entrySet()) {
+                JsonObject totals = new JsonObject();
+                totals.addProperty("profit", row.getValue().profit());
+                totals.addProperty("expend", row.getValue().expend());
+                currencies.add(row.getKey(), totals);
+            }
+        }
+        result.add("currencies", currencies);
+        return result.toString();
     }
 
     /**
@@ -587,7 +613,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
     private String buildJson(UUID uuid, String name, boolean online, double balance,
                               long playtime, int kills, int deaths, int joinCount,
                               String extraStats, int homes, String inv, String armor, String shopPrices,
-                              String lastSeen, String currencies, String ip, String orders) {
+                              String lastSeen, String currencies, String ip, String orders, String auctionHouse) {
         return "{" +
                 "\"uuid\":\"" + uuid + "\"," +
                 "\"playerName\":\"" + name.replace("\\", "\\\\").replace("\"", "\\\"") + "\"," +
@@ -607,6 +633,7 @@ public class WebPanelSyncService implements Listener, fr.elias.oessentials.afk.a
                 "\"currencies\":" + currencies + "," +
                 "\"ip\":\"" + (ip != null ? ip.replace("\"", "\\\"") : "") + "\"," +
                 "\"orders\":" + (orders != null ? orders : "[]") + "," +
+                "\"auctionHouse\":" + (auctionHouse != null ? auctionHouse : "{}") + "," +
                 "\"lastSeen\":\"" + lastSeen + "\"" +
                 "}";
     }
