@@ -711,7 +711,7 @@ public class CustomTablistLayout {
         // Minecraft always starts a new column after 20 entries. Earlier columns
         // must remain full; only the last column may shrink dynamically.
         int[] columnRows = new int[numCols];
-        Arrays.fill(columnRows, COL_ROWS);
+        java.util.Arrays.fill(columnRows, COL_ROWS);
         columnRows[numCols - 1] = lastColumnRows;
 
         // ── Fill top and bottom decoration rows ────────────────────────────

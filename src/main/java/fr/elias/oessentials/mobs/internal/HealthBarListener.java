@@ -282,10 +282,6 @@ public final class HealthBarListener implements Listener {
             if (SantaHook.isSanta(le) || GrinchHook.isGrinch(le)) return false;
         } catch (Throwable ignored) {}
 
-        if (xmas != null) {
-            try { if (xmas.isSantaEntity(le)) return false; } catch (Throwable ignored) {}
-        }
-
         if (le instanceof Player) return includePlayers;
         if (!includePassive && isPassive(le.getType())) return false;
         return true;
@@ -632,7 +628,6 @@ public final class HealthBarListener implements Listener {
     }
 
     private boolean safeIsSantaViaApi(LivingEntity le) {
-        try { return xmas != null && xmas.isSantaEntity(le); }
-        catch (Throwable ignored) { return false; }
+        return SantaHook.isSanta(le);
     }
 }
