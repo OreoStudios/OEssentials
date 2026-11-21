@@ -89,6 +89,17 @@ tab:
 
   custom-layout:
     enabled: true
+
+    # LEGACY preserves the existing tab appearance.
+    empty-slots:
+      mode: LEGACY # LEGACY, DYNAMIC, FIXED, FILL
+      min-rows: 0 # DYNAMIC: min player positions; 0 = only online players
+      # FIXED counts top/bottom decoration as part of min-rows.
+      # FILL keeps 20 rows per active column.
+      skin:
+        enabled: false
+        texture: '' # Mojang base64 skin texture for empty player positions
+        signature: '' # Optional Mojang signature
     change-interval: 30
 
     top-section:

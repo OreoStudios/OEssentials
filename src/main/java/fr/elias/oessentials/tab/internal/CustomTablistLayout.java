@@ -442,6 +442,11 @@ public class CustomTablistLayout {
         }
 
         // ── Bottom section ───────────────────────────────────────────────────
+        // Remember where the bottom section begins; insert optional player padding
+        // before it, preserving both decoration order and real player entries.
+        int paddingInsertionIndex = slots.size();
+        int playerSlotCount = playerSectionEnabled ? sortedEntries.size() : 0;
+        int topSlotCount = paddingInsertionIndex - playerSlotCount;
         List<String> bottomFrames = cfg.getStringList("tab.custom-layout.bottom-section.texts");
         if (!bottomFrames.isEmpty()) {
             String bottomText = bottomFrames.get(currentFrame % bottomFrames.size());
@@ -476,6 +481,22 @@ public class CustomTablistLayout {
             }
         }
 
+        TabRowsPolicy.Mode emptyMode = TabRowsPolicy.Mode.parse(
+                cfg.getString("tab.custom-layout.empty-slots.mode", "LEGACY"));
+        if (playerSectionEnabled && emptyMode != TabRowsPolicy.Mode.LEGACY) {
+            int bottomSlotCount = slots.size() - paddingInsertionIndex;
+            int totalRows = TabRowsPolicy.rows(emptyMode, 1, playerSlotCount,
+                    cfg.getInt("tab.custom-layout.empty-slots.min-rows", 0),
+                    topSlotCount, bottomSlotCount);
+            int fillerCount = Math.max(0, totalRows - slots.size());
+            List<TextureProperty> fillerSkin = getEmptySlotSkin(cfg);
+            for (int i = 0; i < fillerCount; i++) {
+                slots.add(paddingInsertionIndex + i, new PacketTablistManager.TabSlot(
+                        PacketTablistManager.colSlotUuid(0, i),
+                        "\u0002_zzzz_padding_" + String.format("%02d", i),
+                        Component.empty(), fillerSkin, 1));
+            }
+        }
         return slots;
     }
 
@@ -681,7 +702,13 @@ public class CustomTablistLayout {
         int[] reservedRows = decorationRows(cfg, numCols);
         int topRows = reservedRows[0];
         int botRows = reservedRows[1];
-        int botStart = COL_ROWS - botRows;
+        TabRowsPolicy.Mode emptyMode = TabRowsPolicy.Mode.parse(
+                cfg.getString("tab.custom-layout.empty-slots.mode", "LEGACY"));
+        int playerCount = cfg.getBoolean("tab.custom-layout.player-section.enabled", true)
+                ? sortedEntries.size() : 0;
+        int visibleRows = TabRowsPolicy.rows(emptyMode, numCols, playerCount,
+                cfg.getInt("tab.custom-layout.empty-slots.min-rows", 0), topRows, botRows);
+        int botStart = visibleRows - botRows;
 
         // ── Fill top and bottom decoration rows ────────────────────────────
         for (int c = 0; c < numCols; c++) {
@@ -731,14 +758,15 @@ public class CustomTablistLayout {
         }
 
         // ── Collect all slots (empty slots fill unused rows) ───────────────
-        List<PacketTablistManager.TabSlot> slots = new ArrayList<>(numCols * COL_ROWS);
+        List<PacketTablistManager.TabSlot> slots = new ArrayList<>(numCols * visibleRows);
+        List<TextureProperty> fillerSkin = getEmptySlotSkin(cfg);
         for (int c = 0; c < numCols; c++) {
             String prefix = COL_PREFIXES[c];
-            for (int i = 0; i < COL_ROWS; i++) {
+            for (int i = 0; i < visibleRows; i++) {
                 slots.add(cols[c][i] != null ? cols[c][i]
                         : new PacketTablistManager.TabSlot(
                                 PacketTablistManager.colSlotUuid(c, i), prefix + fmt2(i),
-                                Component.empty(), PacketTablistManager.NO_SKIN, 1));
+                                Component.empty(), fillerSkin, 1));
             }
         }
         return slots;
@@ -759,6 +787,16 @@ public class CustomTablistLayout {
     private Component buildTwoColFooter(Player viewer, FileConfiguration cfg, int onlineCount) {
         return parseToComponent(applyPlaceholders(viewer,
                 cfg.getString("tab.two-column-layout.footer", ""), onlineCount));
+    }
+
+    /** Empty player positions can use a Mojang base64 textures property. */
+    private static List<TextureProperty> getEmptySlotSkin(FileConfiguration cfg) {
+        String base = "tab.custom-layout.empty-slots.skin";
+        if (!cfg.getBoolean(base + ".enabled", false)) return PacketTablistManager.NO_SKIN;
+        String texture = Objects.toString(cfg.getString(base + ".texture", ""), "").trim();
+        if (texture.isEmpty()) return PacketTablistManager.NO_SKIN;
+        return List.of(new TextureProperty("textures", texture,
+                Objects.toString(cfg.getString(base + ".signature", ""), "")));
     }
 
     /** Build a decoration slot (no skin). */
