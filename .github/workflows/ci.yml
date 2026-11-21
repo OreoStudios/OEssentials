@@ -76,8 +76,16 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-      - name: Configure Gradle
+      - name: Configure Gradle and optional Develocity Build Scan
         uses: gradle/actions/setup-gradle@v6
+        with:
+          # A Build Scan uploads build metadata to Gradle's public service.
+          # Repository owners must explicitly accept the terms by setting
+          # OESSENTIALS_BUILD_SCAN_TOS_ACCEPTED=yes under Actions variables.
+          # Fork PRs do not publish build metadata.
+          build-scan-publish: ${{ vars.OESSENTIALS_BUILD_SCAN_TOS_ACCEPTED == 'yes' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: ${{ vars.OESSENTIALS_BUILD_SCAN_TOS_ACCEPTED }}
       - name: Build compile-only UltimateChristmas integration JAR
         shell: bash
         run: |
