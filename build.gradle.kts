@@ -45,6 +45,10 @@ repositories {
     maven("https://repo.groupez.dev/releases")
     maven("https://repo.triumphteam.dev/releases/")
     maven("https://repo.triumphteam.dev/snapshots/")
+    // FancyLib, FancySitula and FancyAnalytics are published by FancyPlugins.
+    // Without this repository clean CI runners cannot resolve hologram dependencies.
+    maven("https://repo.fancyplugins.de/releases")
+    maven("https://repo.fancyplugins.de/snapshots")
     maven("https://repo.lushplugins.org/releases")
     maven("https://repo.viaversion.com/")
     maven("https://repo.opencollab.dev/main/")
