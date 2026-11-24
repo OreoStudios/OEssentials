@@ -279,7 +279,8 @@ public final class HealthBarListener implements Listener {
         if (le.getScoreboardTags().contains(HOLO_TAG)) return false;
 
         try {
-            if (SantaHook.isSanta(le) || GrinchHook.isGrinch(le)) return false;
+            if (SantaHook.isSanta(le) || GrinchHook.isGrinch(le)
+                    || GrinchHook.isChristmasManaged(le)) return false;
         } catch (Throwable ignored) {}
 
         if (le instanceof Player) return includePlayers;
@@ -308,6 +309,7 @@ public final class HealthBarListener implements Listener {
         if (!hasViewer(le)
                 || SantaHook.isSanta(le)
                 || GrinchHook.isGrinch(le)
+                || GrinchHook.isChristmasManaged(le)
                 || (xmas != null && safeIsSantaViaApi(le))) {
             cleanupMob(le.getUniqueId());
             return;
@@ -322,13 +324,7 @@ public final class HealthBarListener implements Listener {
             return;
         }
 
-        String mobName = mythicEnabled ? MythicMobsHook.tryName(le) : null;
-        if (mobName == null || mobName.isEmpty()) {
-            String base = le.getType().name()
-                    .toLowerCase(java.util.Locale.ROOT)
-                    .replace('_', ' ');
-            mobName = Character.toUpperCase(base.charAt(0)) + base.substring(1);
-        }
+        String mobName = HealthBarMobName.resolve(le, mythicEnabled ? MythicMobsHook.tryName(le) : null);
 
         String bar    = buildBar(cur, max);
         String curStr = showNumbers ? formatHp(cur) : "";
@@ -527,6 +523,7 @@ public final class HealthBarListener implements Listener {
                     || le.getHealth() <= 0
                     || SantaHook.isSanta(le)
                     || GrinchHook.isGrinch(le)
+                    || GrinchHook.isChristmasManaged(le)
                     || (xmas != null && safeIsSantaViaApi(le))) {
                 removeStand(as);
                 it.remove();

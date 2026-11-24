@@ -63,6 +63,7 @@ public abstract class ManagedModule implements MinecraftModule {
         }
     }
 
+
     private <T> void publish(Class<T> api) {
         T service = api.cast(this);
         context.services().publish(api, service);
